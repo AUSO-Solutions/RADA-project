@@ -3,7 +3,7 @@ import styles from './button.module.scss'
 import { Box } from '@mui/material'
 import { colors } from 'Assets'
 
-const Button = ({ children, r, className, bgcolor, color, shadow, height, width }) => {
+const Button = ({ children, r, className, bgcolor, color, shadow, height, width, onClick }) => {
     return (
         <Box
             className={`${styles.button} ${className}`}
@@ -20,6 +20,7 @@ const Button = ({ children, r, className, bgcolor, color, shadow, height, width 
                 width,cursor:'pointer',
                 fontWeight:'500'
             }}
+            onClick={onClick}
         >
             {children}
         </Box>
