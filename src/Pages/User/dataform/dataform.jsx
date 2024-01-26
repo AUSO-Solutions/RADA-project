@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import { BsXLg } from 'react-icons/bs'
+import { toast } from 'react-toastify';
 
 
 const DataForm = () => {
@@ -52,12 +53,73 @@ const DataForm = () => {
                     <Input label={'Exported Gas (MMSCF)'} />
                     <Input label={'Flared Gas (MMSCF)'} />
                 </div>
-                <Button width={'100px'} >Save</Button>
+                <Button width={'100px'} onClick={()=> toast.success('Production Figures Uploaded Successfully')} >Save</Button>
             </div>
         } />
-        <Dropdown header={'Well History'} />
-        <Dropdown header={'Shipment'}/>
-        <Dropdown header={'HSE/Security'} />
+        <Dropdown header={'Well History'} 
+        children={
+          <div style={{display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center'}}>
+              <div style={{display: 'flex', gap: '24px', justifyContent: 'center'}}>
+                  <Input label={'Gross Oil Produced (BPD)'} />
+                  <Input label={'Net Oil Produced (BPD)'} />
+                  
+              </div>
+              <div style={{display: 'flex', gap: '24px', justifyContent: 'center'}}>
+              <Input label={'BSW (BBL)'} />
+              <Input label={'Gas Produced (MMSCF)'} />
+
+              </div>
+              <div style={{display: 'flex', gap: '24px', justifyContent: 'center'}}>
+                 
+                  <Input label={'Exported Gas (MMSCF)'} />
+                  <Input label={'Flared Gas (MMSCF)'} />
+              </div>
+              <Button width={'100px'} >Save</Button>
+          </div>
+      } />
+        <Dropdown header={'Shipment'} 
+        children={
+          <div style={{display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center'}}>
+              <div style={{display: 'flex', gap: '24px', justifyContent: 'center'}}>
+                  <Input label={'Gross Oil Produced (BPD)'} />
+                  <Input label={'Net Oil Produced (BPD)'} />
+                  
+              </div>
+              <div style={{display: 'flex', gap: '24px', justifyContent: 'center'}}>
+              <Input label={'BSW (BBL)'} />
+              <Input label={'Gas Produced (MMSCF)'} />
+
+              </div>
+              <div style={{display: 'flex', gap: '24px', justifyContent: 'center'}}>
+                 
+                  <Input label={'Exported Gas (MMSCF)'} />
+                  <Input label={'Flared Gas (MMSCF)'} />
+              </div>
+              <Button width={'100px'} >Save</Button>
+          </div>
+      } />
+        <Dropdown header={'HSE/Security'}  
+          children={
+            <div style={{display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center'}}>
+                <div style={{display: 'flex', gap: '24px', justifyContent: 'center'}}>
+                    <Input label={'Gross Oil Produced (BPD)'} />
+                    <Input label={'Net Oil Produced (BPD)'} />
+                    
+                </div>
+                <div style={{display: 'flex', gap: '24px', justifyContent: 'center'}}>
+                <Input label={'BSW (BBL)'} />
+                <Input label={'Gas Produced (MMSCF)'} />
+
+                </div>
+                <div style={{display: 'flex', gap: '24px', justifyContent: 'center'}}>
+                   
+                    <Input label={'Exported Gas (MMSCF)'} />
+                    <Input label={'Flared Gas (MMSCF)'} />
+                </div>
+                <Button width={'100px'} >Save</Button>
+            </div>
+        } 
+        />
         <Button onClick={handleOpen} width={'150px'} >Done</Button>
         <Modal
         open={open}
