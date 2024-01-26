@@ -30,7 +30,7 @@ const Homepage = () => {
       </div>
       <div className={styles.comp} >
 
-        <HomeCard img={images.oml152} color={'#0274BD'} text={'OML 154'} onClick={() => navigate('/152/login')} />
+        <HomeCard img={images.oml152} color={'#0274BD'} text={'OML 152'} onClick={() => navigate('/152/login')} />
         <HomeCard img={images.oml147} color={'#E51E3F'} text={'OML 147'} onClick={() => navigate('/147/login')}/>
         <HomeCard img={images.oml24} text={'OML 24'} color={'#2B1870'}onClick={() => navigate('/24/login')} />
       </div>

@@ -10,7 +10,7 @@ const Layout = ({ children }) => {
     return (
         <div className={styles.layout}>
             <div className={styles.content} >
-                <img src={window.location.pathname.includes('152') ? images.newcross152 : window.location.pathname.includes('147') ? images.oml147 : window.location.pathname.includes('24') ? images.oml24 : images.logo } alt="" />
+                <img src={window.location.pathname.includes('152') ? images.newcross152 : window.location.pathname.includes('147') ? images.panocean147 : window.location.pathname.includes('24') ? images.nepl24 : images.logo } alt="" />
             </div>
             {children}
         </div>
