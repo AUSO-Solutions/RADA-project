@@ -39,286 +39,500 @@ const DataForm = () => {
       <Dropdown header={'Production Volume'} children={
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
           <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
-            <Input label={'Gross Oil Produced (BPD)'} />
-            <Input label={'Net Oil Produced (BPD)'} />
+            <Input label={'Well ID)'} />
+            <Input label={'Created Date'} />
 
           </div>
           <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
-            <Input label={'BSW (BBL)'} />
-            <Input label={'Gas Produced (MMSCF)'} />
+            <Input label={'Basic Sediment and Water'} />
+            <Input label={'Net Oil'} />
 
           </div>
           <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
 
-            <Input label={'Exported Gas (MMSCF)'} />
-            <Input label={'Flared Gas (MMSCF)'} />
+            <Input label={'Produced Gas'} />
+            <Input label={'Export Gas '} />
+          </div>
+
+          <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+            <Input label={'Fuel Gas'} />
+            <Input label={'Flare Gas '} />
+          </div>
+
+          <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+            <Input label={'Condensate Produced'} />
+            <Input label={'Loss '} />
+          </div>
+
+          <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+            <Input label={'Water Gas Rate'} />
+            <Input label={'Status '} />
+          </div>
+          <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+            <Input label={'Updated Date'} />
+            {/* <Input label={'Status '} /> */}
           </div>
           <Button width={'100px'} onClick={() => toast.success('Production Figures Uploaded Successfully')} >Save</Button>
         </div>
       } />
+
       <Dropdown header={'Cumulative Production'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
-              <Input label={'Gross Oil Produced (BPD)'} />
-              <Input label={'Net Oil Produced (BPD)'} />
+              <Input label={'Well ID)'} />
+              <Input label={'Created Date'} />
 
             </div>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
-              <Input label={'BSW (BBL)'} />
-              <Input label={'Gas Produced (MMSCF)'} />
+              <Input label={'Production Days Uptime'} />
+              <Input label={'Choke Size'} />
 
             </div>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
 
-              <Input label={'Exported Gas (MMSCF)'} />
-              <Input label={'Flared Gas (MMSCF)'} />
+              <Input label={'Oil Rate'} />
+              <Input label={'Gas Rate'} />
+            </div>
+
+            <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+              <Input label={'Water Rate'} />
+              <Input label={'Basic Sediment and Water'} />
+            </div>
+
+            <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+              <Input label={'Gross Oil'} />
+              <Input label={'Net Oil'} />
+            </div>
+
+            <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+              <Input label={'Cumulative Oil'} />
+              <Input label={'Cumulative Gas'} />
+            </div>
+
+            <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+              <Input label={'Cumulative Water'} />
+              <Input label={'Average Net Oil'} />
+            </div>
+
+            <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+              <Input label={'Average Gross Oil'} />
+              <Input label={'Status'} />
+            </div>
+
+            <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+              <Input label={'Updated Date'} />
+              {/* <Input label={'Status'} /> */}
             </div>
             <Button width={'100px'} >Save</Button>
           </div>
         } />
+
+
       <Dropdown header={'Well Flow'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
-              <Input label={'Gross Oil Produced (BPD)'} />
-              <Input label={'Net Oil Produced (BPD)'} />
+              <Input label={'Well ID)'} />
+              <Input label={'Created Date'} />
 
             </div>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
-              <Input label={'BSW (BBL)'} />
-              <Input label={'Gas Produced (MMSCF)'} />
+              <Input label={'Flowing Turbing Head Pressure THB'} />
+              <Input label={'Flow Line Pressure'} />
 
             </div>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
 
-              <Input label={'Exported Gas (MMSCF)'} />
-              <Input label={'Flared Gas (MMSCF)'} />
+              <Input label={'Choke Size'} />
+              <Input label={'Casing Head Pressure'} />
+            </div>
+
+            <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+              <Input label={'Manifold Head Pressure'} />
+              <Input label={'Short In Tubing Head Pressure'} />
+            </div>
+
+            <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+              <Input label={'Status'} />
+              <Input label={'Updated Date'} />
             </div>
             <Button width={'100px'} >Save</Button>
           </div>
         } />
+
+
       <Dropdown header={'OFM Sys Configuration'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
-              <Input label={'Gross Oil Produced (BPD)'} />
-              <Input label={'Net Oil Produced (BPD)'} />
+              <Input label={'Well ID)'} />
+              <Input label={'Created Date'} />
 
             </div>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
-              <Input label={'BSW (BBL)'} />
-              <Input label={'Gas Produced (MMSCF)'} />
+              <Input label={'Module'} />
+              <Input label={'Property'} />
 
             </div>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
 
-              <Input label={'Exported Gas (MMSCF)'} />
-              <Input label={'Flared Gas (MMSCF)'} />
+              <Input label={'Value'} />
+              <Input label={'Status'} />
+            </div>
+
+            <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+              <Input label={'Updated Date'} />
+              {/* <Input label={'Status'} /> */}
             </div>
             <Button width={'100px'} >Save</Button>
           </div>
         }
       />
+
+
       <Dropdown header={'OFM Sys Date Range'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
-              <Input label={'Gross Oil Produced (BPD)'} />
-              <Input label={'Net Oil Produced (BPD)'} />
+              <Input label={'Well ID)'} />
+              <Input label={'Created Date'} />
 
             </div>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
-              <Input label={'BSW (BBL)'} />
-              <Input label={'Gas Produced (MMSCF)'} />
+              <Input label={'Property'} />
+              <Input label={'Value'} />
 
             </div>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
 
-              <Input label={'Exported Gas (MMSCF)'} />
-              <Input label={'Flared Gas (MMSCF)'} />
+              <Input label={'Status'} />
+              <Input label={'Updated Date'} />
             </div>
             <Button width={'100px'} >Save</Button>
           </div>
         }
       />
+
+
       <Dropdown header={'OFM Sys Field Prod'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
-              <Input label={'Gross Oil Produced (BPD)'} />
-              <Input label={'Net Oil Produced (BPD)'} />
+              <Input label={'Well ID)'} />
+              <Input label={'Created Date'} />
 
             </div>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
-              <Input label={'BSW (BBL)'} />
-              <Input label={'Gas Produced (MMSCF)'} />
+              <Input label={'Table Name'} />
+              <Input label={'Field Name'} />
 
             </div>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
 
-              <Input label={'Exported Gas (MMSCF)'} />
-              <Input label={'Flared Gas (MMSCF)'} />
+              <Input label={'Field Property'} />
+              <Input label={'Field Value'} />
+            </div>
+
+            <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+              <Input label={'Status'} />
+              <Input label={'Updated Date'} />
             </div>
             <Button width={'100px'} >Save</Button>
           </div>
         }
       />
+
+
       <Dropdown header={'OFM Sys Multipliers'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
-              <Input label={'Gross Oil Produced (BPD)'} />
-              <Input label={'Net Oil Produced (BPD)'} />
+              <Input label={'Well ID)'} />
+              <Input label={'Created Date'} />
 
             </div>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
-              <Input label={'BSW (BBL)'} />
-              <Input label={'Gas Produced (MMSCF)'} />
+              <Input label={'Metric 1'} />
+              <Input label={'Metric 2'} />
 
             </div>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
 
-              <Input label={'Exported Gas (MMSCF)'} />
-              <Input label={'Flared Gas (MMSCF)'} />
+              <Input label={'English'} />
+              <Input label={'Factor'} />
             </div>
+
+            <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+              <Input label={'Status'} />
+              <Input label={'Updated Date'} />
+            </div>
+
             <Button width={'100px'} >Save</Button>
           </div>
         }
       />
+
+
       <Dropdown header={'OFM Sys Parser'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
-              <Input label={'Gross Oil Produced (BPD)'} />
-              <Input label={'Net Oil Produced (BPD)'} />
+              <Input label={'Well ID)'} />
+              <Input label={'Created Date'} />
 
             </div>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
-              <Input label={'BSW (BBL)'} />
-              <Input label={'Gas Produced (MMSCF)'} />
+              <Input label={'Type'} />
+              <Input label={'Name'} />
 
             </div>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
 
-              <Input label={'Exported Gas (MMSCF)'} />
-              <Input label={'Flared Gas (MMSCF)'} />
+              <Input label={'Code'} />
+              <Input label={'Definition'} />
+            </div>
+
+            <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+              <Input label={'Username'} />
+              <Input label={'VAR Class'} />
+            </div>
+
+            <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+              <Input label={'Status'} />
+              <Input label={'Updated Date'} />
             </div>
             <Button width={'100px'} >Save</Button>
           </div>
         }
       />
+
+
       <Dropdown header={'OFM Sys Table Info'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
-              <Input label={'Gross Oil Produced (BPD)'} />
-              <Input label={'Net Oil Produced (BPD)'} />
+              <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+                <Input label={'Well ID)'} />
+                <Input label={'Created Date'} />
+
+              </div>
 
             </div>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
-              <Input label={'BSW (BBL)'} />
-              <Input label={'Gas Produced (MMSCF)'} />
+              <Input label={'Table Name'} />
+              <Input label={'Table Property'} />
 
             </div>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
 
-              <Input label={'Exported Gas (MMSCF)'} />
-              <Input label={'Flared Gas (MMSCF)'} />
+              <Input label={'Table Value'} />
+              <Input label={'Status'} />
+            </div>
+
+            <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+              <Input label={'Updated Date'} />
+              {/* <Input label={'Status'} /> */}
             </div>
             <Button width={'100px'} >Save</Button>
           </div>
         }
       />
+
+
       <Dropdown header={'OFM Sys Table Map'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
-              <Input label={'Gross Oil Produced (BPD)'} />
-              <Input label={'Net Oil Produced (BPD)'} />
+              <Input label={'Well ID)'} />
+              <Input label={'Created Date'} />
 
             </div>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
-              <Input label={'BSW (BBL)'} />
-              <Input label={'Gas Produced (MMSCF)'} />
+              <Input label={'Table Name'} />
+              <Input label={'Field Name'} />
 
             </div>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
 
-              <Input label={'Exported Gas (MMSCF)'} />
-              <Input label={'Flared Gas (MMSCF)'} />
+              <Input label={'Source Table'} />
+              <Input label={'Source Field'} />
+            </div>
+
+            <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+              <Input label={'Status'} />
+              <Input label={'Updated Date'} />
             </div>
             <Button width={'100px'} >Save</Button>
           </div>
         }
       />
+
+
       <Dropdown header={'OFM Sys Units'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
-              <Input label={'Gross Oil Produced (BPD)'} />
-              <Input label={'Net Oil Produced (BPD)'} />
+              <Input label={'Well ID)'} />
+              <Input label={'Created Date'} />
 
             </div>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
-              <Input label={'BSW (BBL)'} />
-              <Input label={'Gas Produced (MMSCF)'} />
+              <Input label={'Metric'} />
+              <Input label={'English'} />
 
             </div>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
 
-              <Input label={'Exported Gas (MMSCF)'} />
-              <Input label={'Flared Gas (MMSCF)'} />
+              <Input label={'Operation'} />
+              <Input label={'Factor'} />
+            </div>
+
+            <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+              <Input label={'Status'} />
+              <Input label={'Updated Date'} />
             </div>
             <Button width={'100px'} >Save</Button>
           </div>
         }
       />
+
+
       <Dropdown header={'Bottom Head Pressure'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
-              <Input label={'Gross Oil Produced (BPD)'} />
-              <Input label={'Net Oil Produced (BPD)'} />
+              <Input label={'Well ID)'} />
+              <Input label={'Created Date'} />
 
             </div>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
-              <Input label={'BSW (BBL)'} />
-              <Input label={'Gas Produced (MMSCF)'} />
+              <Input label={'Build Up Time'} />
+              <Input label={'CP Grad'} />
 
             </div>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
 
-              <Input label={'Exported Gas (MMSCF)'} />
-              <Input label={'Flared Gas (MMSCF)'} />
+              <Input label={'Datum Pressure'} />
+              <Input label={'DOB'} />
+            </div>
+
+            <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+              <Input label={'FBHP'} />
+              <Input label={'FBHT'} />
+            </div>
+
+            <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+              <Input label={'FP Grad'} />
+              <Input label={'GPI'} />
+            </div>
+
+            <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+              <Input label={'BS & W'} />
+              <Input label={'GOR'} />
+            </div>
+
+            <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+              <Input label={'Choke Size'} />
+              <Input label={'Initial Reservoir Pressure'} />
+            </div>
+
+            <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+              <Input label={'Reservoir Bubble Point Pressure'} />
+              <Input label={'THP'} />
+            </div>
+
+            <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+              <Input label={'chp'} />
+              <Input label={'FBHP'} />
+            </div>
+
+            <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+              <Input label={'SBHP'} />
+              <Input label={'Calculated Reservoir Pressure'} />
+            </div>
+
+            <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+              <Input label={'Status'} />
+              <Input label={'Updated Date'} />
             </div>
             <Button width={'100px'} >Save</Button>
           </div>
         }
       />
+
+
       <Dropdown header={'Deviation Data'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
-              <Input label={'Gross Oil Produced (BPD)'} />
-              <Input label={'Net Oil Produced (BPD)'} />
+              <Input label={'Well ID)'} />
+              <Input label={'Created Date'} />
 
             </div>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
-              <Input label={'BSW (BBL)'} />
-              <Input label={'Gas Produced (MMSCF)'} />
+              <Input label={'Well Bore'} />
+              <Input label={'MDAH FT'} />
 
             </div>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
 
-              <Input label={'Exported Gas (MMSCF)'} />
-              <Input label={'Flared Gas (MMSCF)'} />
+              <Input label={'TVBDF FT'} />
+              <Input label={'DY FT'} />
+            </div>
+
+            <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+              <Input label={'DX FT'} />
+              <Input label={'UNCL'} />
+            </div>
+
+            <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+              <Input label={'AZM'} />
+              <Input label={'Well UMI'} />
+            </div>
+
+            <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+              <Input label={'Status'} />
+              <Input label={'Updated Date'} />
             </div>
             <Button width={'100px'} >Save</Button>
           </div>
         }
       />
-       <Dropdown header={'Master'}
+
+      
+      <Dropdown header={'Master'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
@@ -340,7 +554,7 @@ const DataForm = () => {
           </div>
         }
       />
-       <Dropdown header={'Monthly Production'}
+      <Dropdown header={'Monthly Production'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
@@ -362,7 +576,7 @@ const DataForm = () => {
           </div>
         }
       />
-       <Dropdown header={'OFM Data Annotation'}
+      <Dropdown header={'OFM Data Annotation'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
@@ -384,7 +598,7 @@ const DataForm = () => {
           </div>
         }
       />
-       <Dropdown header={'OFM Data Annotation Config'}
+      <Dropdown header={'OFM Data Annotation Config'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
@@ -406,7 +620,7 @@ const DataForm = () => {
           </div>
         }
       />
-       <Dropdown header={'OFM Data DCA Analytical'}
+      <Dropdown header={'OFM Data DCA Analytical'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
@@ -428,7 +642,7 @@ const DataForm = () => {
           </div>
         }
       />
-       <Dropdown header={'OFM Data DCA Case'}
+      <Dropdown header={'OFM Data DCA Case'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
@@ -450,7 +664,7 @@ const DataForm = () => {
           </div>
         }
       />
-       <Dropdown header={'OFM Data DCA Configuration'}
+      <Dropdown header={'OFM Data DCA Configuration'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
@@ -472,7 +686,7 @@ const DataForm = () => {
           </div>
         }
       />
-       <Dropdown header={'OFM Data DCA Entity'}
+      <Dropdown header={'OFM Data DCA Entity'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
@@ -494,7 +708,7 @@ const DataForm = () => {
           </div>
         }
       />
-       <Dropdown header={'OFM Data DCA Forecast'}
+      <Dropdown header={'OFM Data DCA Forecast'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
@@ -516,7 +730,7 @@ const DataForm = () => {
           </div>
         }
       />
-       <Dropdown header={'OFM Data DCA Group'}
+      <Dropdown header={'OFM Data DCA Group'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
@@ -538,7 +752,7 @@ const DataForm = () => {
           </div>
         }
       />
-       <Dropdown header={'OFM Data DCA Hist Production'}
+      <Dropdown header={'OFM Data DCA Hist Production'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
@@ -560,7 +774,7 @@ const DataForm = () => {
           </div>
         }
       />
-       <Dropdown header={'OFM Data DCA Hist Regression'}
+      <Dropdown header={'OFM Data DCA Hist Regression'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
@@ -582,7 +796,7 @@ const DataForm = () => {
           </div>
         }
       />
-       <Dropdown header={'OFM Data Hist Regression'}
+      <Dropdown header={'OFM Data Hist Regression'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
@@ -604,7 +818,7 @@ const DataForm = () => {
           </div>
         }
       />
-       <Dropdown header={'OFM Data DCA Limits'}
+      <Dropdown header={'OFM Data DCA Limits'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
@@ -692,7 +906,7 @@ const DataForm = () => {
           </div>
         }
       />
-       <Dropdown header={'OFM Data DCA Schedule'}
+      <Dropdown header={'OFM Data DCA Schedule'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
@@ -714,7 +928,7 @@ const DataForm = () => {
           </div>
         }
       />
-       <Dropdown header={'OFM Data Deviation'}
+      <Dropdown header={'OFM Data Deviation'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
@@ -736,7 +950,7 @@ const DataForm = () => {
           </div>
         }
       />
-       <Dropdown header={'OFM Data Entity Color'}
+      <Dropdown header={'OFM Data Entity Color'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
@@ -758,7 +972,7 @@ const DataForm = () => {
           </div>
         }
       />
-       <Dropdown header={'OFM Data Fault'}
+      <Dropdown header={'OFM Data Fault'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
@@ -780,7 +994,7 @@ const DataForm = () => {
           </div>
         }
       />
-       <Dropdown header={'OFM Data Log'}
+      <Dropdown header={'OFM Data Log'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
@@ -802,7 +1016,7 @@ const DataForm = () => {
           </div>
         }
       />
-       <Dropdown header={'OFM Data Marker'}
+      <Dropdown header={'OFM Data Marker'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
@@ -824,7 +1038,7 @@ const DataForm = () => {
           </div>
         }
       />
-       <Dropdown header={'OFM Data Pattern'}
+      <Dropdown header={'OFM Data Pattern'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
@@ -846,7 +1060,7 @@ const DataForm = () => {
           </div>
         }
       />
-       <Dropdown header={'OFM Data PVT'}
+      <Dropdown header={'OFM Data PVT'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
@@ -868,7 +1082,7 @@ const DataForm = () => {
           </div>
         }
       />
-       <Dropdown header={'OFM Data WBD Anno'}
+      <Dropdown header={'OFM Data WBD Anno'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
@@ -978,7 +1192,7 @@ const DataForm = () => {
           </div>
         }
       />
-         <Dropdown header={'PVT DV'}
+      <Dropdown header={'PVT DV'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
@@ -1000,7 +1214,7 @@ const DataForm = () => {
           </div>
         }
       />
-         <Dropdown header={'PVT SEP'}
+      <Dropdown header={'PVT SEP'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
@@ -1022,7 +1236,7 @@ const DataForm = () => {
           </div>
         }
       />
-         <Dropdown header={'PVT VISC'}
+      <Dropdown header={'PVT VISC'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
@@ -1044,7 +1258,7 @@ const DataForm = () => {
           </div>
         }
       />
-         <Dropdown header={'Sort Category'}
+      <Dropdown header={'Sort Category'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
@@ -1066,7 +1280,7 @@ const DataForm = () => {
           </div>
         }
       />
-         <Dropdown header={'Well Test'}
+      <Dropdown header={'Well Test'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
