@@ -1,11 +1,11 @@
 import React from 'react';
 import styles from './header.module.scss'
-import { BsChevronDown } from 'react-icons/bs'
+// import { BsChevronDown } from 'react-icons/bs'
 import { Box, Typography } from '@mui/material';
 // import ClickAway from '../clickaway';
-import { Divider } from "@mui/material";
+// import { Divider } from "@mui/material";
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
+// import { useNavigate } from 'react-router';
 // import { useDispatch, useSelector } from 'react-redux';
 // import { logOutUser } from "../../store/reducers/user";
 // import ClickAwayListener from 'react-click-away-listener';
@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router';
 
 function Header() {
     // const user = useSelector(state => state.user.data.details)
-    const [drop, setDrop] = useState(false)
+    const [, setDrop] = useState(false)
     // console.log(user)
     // const { data } = useSelector(state => state.user)
     // const user = data?.user_data

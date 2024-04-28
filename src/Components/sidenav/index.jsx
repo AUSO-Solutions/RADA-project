@@ -1,20 +1,20 @@
 import React from "react";
 import styles from "./sidenav.module.scss";
 import { ImHome } from "react-icons/im";
-import { MdSchool } from "react-icons/md";
+// import { MdSchool } from "react-icons/md";
 import { AiFillSetting } from "react-icons/ai";
-import { IoMdCheckmarkCircleOutline } from "react-icons/io";
-import { FaUser, FaClock } from "react-icons/fa";
-import { PiListNumbersFill } from "react-icons/pi";
-import { GrUserAdmin } from "react-icons/gr";
-import { useLocation, useNavigate } from "react-router";
+// import { IoMdCheckmarkCircleOutline } from "react-icons/io";
+import {  FaClock } from "react-icons/fa";
+// import { PiListNumbersFill } from "react-icons/pi";
+// import { GrUserAdmin } from "react-icons/gr";
+import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import Img152 from '../../Assets/images/newcross152.svg'
 
 
 function Sidenav() {
   const navigate = useNavigate();
-  const location = useLocation();
+  // const location = useLocation();
   // const user = useSelector((state) => state.user.data.details);
 
 

@@ -1,6 +1,5 @@
 import React from 'react'
 import styles from './homepage.module.scss'
-import { Layout } from 'Partials'
 import { images } from 'Assets'
 import { useNavigate } from 'react-router-dom'
 

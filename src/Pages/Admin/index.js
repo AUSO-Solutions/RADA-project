@@ -1,6 +1,6 @@
 import Dashboard from "./dashboard";
 import Reports from "./reports";
-import UserData from "./usersdata";
+// import UserData from "./usersdata";
 
 export const admin_routes = [
     { path: '/admin', Component: <>ADMIN Login</>, layout: true },
