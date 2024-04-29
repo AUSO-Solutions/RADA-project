@@ -1,6 +1,5 @@
 import React from 'react'
 import Layout from 'Components/layout'
-import { Box } from '@mui/material'
 
 const Dashboard = () => {
 
