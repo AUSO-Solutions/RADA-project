@@ -27,7 +27,7 @@ function Sidenav() {
       id: 1,
       name: "Home",
       icon: <ImHome />,
-      path: "/lseb-admin",
+      path: "/admin/home",
     },
     {
       id: 2,
