@@ -40,7 +40,7 @@ const downloadCSV = (data, fileName) => {
 };
 
 const downloadTemplate = (data) => {
-  downloadCSV(user, 'user-template')
+  downloadCSV(data, 'user-template')
 }
 
 export { user, downloadTemplate }

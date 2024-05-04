@@ -137,7 +137,7 @@ const getUsers = onCall(async ({ }) => {
 
     try {
         const db = admin.firestore()
-        const res = await db.collection('users').get()
+        const res = await db.collection('users') .get()
         const data = res?.docs?.map(doc => doc.data()) || []
         return { status: 'success', data }
     } catch (error) {

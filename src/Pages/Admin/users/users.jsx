@@ -3,7 +3,7 @@ import RadaTable from 'Components/RadaTable'
 import Header from 'Components/header'
 import { closeModal, openModal } from 'Store/slices/modalSlice'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import CreateUser from './createuser'
 import TableAction from 'Components/RadaTable/TableAction'
@@ -12,12 +12,35 @@ import { deleteUser } from './deleteUser'
 import ImportUsers from './importUsers'
 import { downloadTemplate, user } from './downloadTemplate'
 import CsvDownloadButton from "react-json-to-csv"
+import { firebaseFunctions } from 'Services'
+import { Button } from 'Components'
 // import { CSVDownload } from 'react-csv';
 // import { toast } from 'react-toastify'
 
 
 const Users = () => {
   const dispatch = useDispatch()
+  const [downloadLoading, setDownloading] = useState(false)
+  const [usersToDownloading, setUsertoDownload] = useState([])
+
+  const downloadUser = async () => {
+    setDownloading(true)
+    if (downloadLoading) return;
+    try {
+      const users = await firebaseFunctions("getUsers")
+      let list = users?.data?.map(user => ({ firstName: user?.firstName, lastName: user?.lastName, email: user?.email, })) || []
+      list.unshift({ "firstName": "firstName", "lastName": "lastName", "email": "email" })
+      // setUsertoDownload(users?.data?.map(user => ({ firstName: user?.firstName, lastName: user?.lastName,  email: user?.email, })))
+      downloadTemplate(list)
+    } catch (error) {
+
+    } finally {
+      setDownloading(false)
+    }
+  }
+
+
+
   return (
     <div>
       <Header
@@ -26,7 +49,7 @@ const Users = () => {
           { text: 'Create user', onClick: () => dispatch(openModal({ title: 'Create User', component: <CreateUser /> })) },
           { text: 'Import users', onClick: () => dispatch(openModal({ title: 'Import Users', component: <ImportUsers /> })) },
           {
-            text: <>  <CsvDownloadButton data={user} >Download template  </CsvDownloadButton>  </>, onClick: () => null
+            text: <>  <Button data={usersToDownloading} loading={downloadLoading} >{downloadLoading ? 'Loading...' : 'Download template '} </Button>  </>, onClick: () => downloadUser()
           },
         ]}
       />
