@@ -13,18 +13,18 @@ const Reports = () => {
         'Production Volume',
         'Cumulative Production',
         'Well Flow',
-        'OFM Sys Configuration',
-        'OFM Sys Date Range',
-        'OFM Sys Field Production',
-        'OFM Sys Multipliers',
-        'OFM Sys Parser',
-        'OFM Sys Table Info',
-        'OFM Sys Table Map',
-        'OFM Sys Units',
-        'Buttom Head Pressure',
-        'Deviation Data',
-        'OFM Data DCA Ratio',
-        'OFM Data DCA RadioForecast',
+        // 'OFM Sys Configuration',
+        // 'OFM Sys Date Range',
+        // 'OFM Sys Field Production',
+        // 'OFM Sys Multipliers',
+        // 'OFM Sys Parser',
+        // 'OFM Sys Table Info',
+        // 'OFM Sys Table Map',
+        // 'OFM Sys Units',
+        // 'Buttom Head Pressure',
+        // 'Deviation Data',
+        // 'OFM Data DCA Ratio',
+        // 'OFM Data DCA RadioForecast',
        
     ]
 
@@ -37,8 +37,8 @@ const Reports = () => {
 
                 {(tab === 0) && <UserData />}
                 {(tab === 1) && <UserData />}
-                {(tab === 3) && <UserData />}
-                {(tab === 4) && <UserData />}
+                {(tab === 2) && <UserData />}
+                {/* {(tab === 4) && <UserData />}
                 {(tab === 5) && <UserData />}
                 {(tab === 6) && <UserData />}
                 {(tab === 7) && <UserData />}
@@ -49,7 +49,7 @@ const Reports = () => {
                 {(tab === 12) && <UserData />}
                 {(tab === 13) && <UserData />}
                 {(tab === 14) && <UserData />}
-                {(tab === 15) && <UserData />}
+                {(tab === 15) && <UserData />} */}
             </div>
     </Layout>
   )

@@ -7,7 +7,12 @@ import Skeleton from '@mui/material/Skeleton';
 
 // import PageLoader from 'next/dist/client/page-loader';
 
-function Component({ columns, data }) {
+function Component({ columns, data= { Name : 'Emmanuel',
+NetOil : '98',
+} }) {
+
+
+    
     // Use the state and functions returned from useTable to build your UI
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow, } = useTable({ columns, data, })
 

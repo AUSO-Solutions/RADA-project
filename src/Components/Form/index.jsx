@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 
 const RadaForm = ({
     btnText, onSubmit = () => null,
+    btnClass,
     className, children, url, method,
     extraFields = {}, successMessage,
     onSuccess = () => null, validationSchema }) => {
@@ -61,7 +62,7 @@ const RadaForm = ({
     return (
         <form onSubmit={submit} className={className}>
             {children}
-            <Button className={'p-3'} type='submit' loading={loading}>{btnText}</Button>
+            <Button className={`${btnClass} p-3 mt-4`} type='submit' loading={loading}>{btnText}</Button>
         </form>
     )
 }

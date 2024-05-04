@@ -5,19 +5,21 @@ import * as Yup from 'yup';
 import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
-const UserLogin = () => {
+const CreateQA_QC = () => {
 
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     const schema= Yup.object().shape({
         email: Yup.string().required(),
-        password: Yup.string().required().min(8),
+        // password: Yup.string().required().min(8),
     })
 
     return (
-        <RadaForm validationSchema={schema} btnText={'Login'} url={'/users/login'} method={'post'} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', width: '500px', gap: '20px' }} >
+        <RadaForm validationSchema={schema} btnText={'Create QA/QC'} url={'/admin/create-qaQc'} method={'post'} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', width: '500px', gap: '20px' }} >
+            <Input label={'First Name'} name='firstname' />
+            <Input label={'Last Name'} name='firstname' />
             <Input label={'Username'} name='email' />
-            <Input label={'Password'} name='password' />
+            <Input label={'Asset'} name='asset' />
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: '300px' }} >
                 {/* <Button width={'100px'} shadow onClick={() => window.location.pathname.includes('152') ? navigate('/152/register') : window.location.pathname.includes('147') ? navigate('/147/register') : navigate('/24/register')} >
                     Register
@@ -27,11 +29,9 @@ const UserLogin = () => {
                 </Button> */}
             </div>
 
-            <Link to={'/forgot-password'} className='flex cursor-pointer'>
-                Forget password?
-            </Link>
+          
         </RadaForm>
     )
 }
 
-export default UserLogin
+export default CreateQA_QC
