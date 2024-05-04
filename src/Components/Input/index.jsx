@@ -4,16 +4,16 @@ import { Box } from '@mui/material';
 import OtpInput from 'react-otp-input';
 
 const OTPInput = (props) => {
-    const [otp,setOtp] = useState()
+    const [otp, setOtp] = useState()
     return <OtpInput
-        value={otp} 
+        value={otp}
         onChange={setOtp}
-        containerStyle={{width:'100%'}}
-        inputStyle={{width:'100%', color:'red'}}
+        containerStyle={{ width: '100%' }}
+        inputStyle={{ width: '100%', color: 'red' }}
         {...props}
         numInputs={4}
-        shouldAutoFocus 
-skipDefaultStyles
+        shouldAutoFocus
+        skipDefaultStyles
         renderSeparator={<span className='mx-3'></span>}
         renderInput={(inputProps) => <input   {...inputProps} />}
     />
@@ -28,13 +28,13 @@ const Input = ({
     ...props
 }) => {
     const change = (e) => {
-  
+
         onChange(e)
         getObj({ [e.target.name]: e.target.value })
     }
 
     const input_id = 'input-id'
-    const defaults = ['text', 'password', 'email']
+    const defaults = ['text', 'password', 'email', 'number']
     return (
         <Box className={`${styles.container} ${containerClass}`}>
             <Box component={'label'} htmlFor={input_id}>

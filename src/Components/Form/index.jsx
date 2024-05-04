@@ -22,10 +22,12 @@ const RadaForm = ({
         try {
             const res = await apiRequest({ method, url, payload, params })
             if (successMessage) { toast.success(successMessage) } else { toast.success(res.data.message) }
-            onSuccess(res)
+            console.log({ res, payload })
+            onSuccess(res, payload)
         }
         catch (error) {
-            onSuccess()
+            console.log({  payload })
+            onSuccess(error,payload)
         } finally {
             setLoading(false)
 
