@@ -14,7 +14,7 @@ export const user_routes = [
     { path: '/152/register', Component: <UserRegister />, layout: true },
     { path: '/147/register', Component: <UserRegister />, layout: true },
     { path: '/24/register', Component: <UserRegister />, layout: true },
-    { path: '/152/form', Component: <DataForm />, layout: true },
+    { path: '/data-form', Component: <DataForm />, layout: true },
     { path: '/change-password', Component: <ChangePassword />, layout: true },
     { path: '/forgot-password', Component: <ForgotPassword />, layout: true },
 ]
