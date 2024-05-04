@@ -20,57 +20,60 @@ const ForgotPassword = () => {
     // });
     const { search } = useLocation()
 
-    const forms = {
-        "default": {
-            header: 'Forgot Password',
-            btnText: 'Send',
-            url: '/forgot-password',
-            method: 'post',
-            onSuccess: () => {
-                toast.success('Code sent to your email.')
-                navigate(`/forgot-password?page=validate-otp&email=${email}`)
+    const forms = useMemo(() => {
+        return {
+            "default": {
+                header: 'Forgot Password',
+                btnText: 'Send',
+                url: '/forgot-password',
+                method: 'post',
+                onSuccess: (res, req) => {
+                    console.log({ res, req })
+                    toast.success(`Code sent to your email ${req?.email}`)
+                    navigate(`/forgot-password?page=validate-otp&email=${req?.email}`)
+                },
+                schema: Yup.object().shape({
+                    email: Yup.string().required(),
+                }),
+                fields: [{ type: 'email', name: 'email', label: 'Email', onChange: (e) => setEmail(e.target.value) }]
             },
-            schema: Yup.object().shape({
-                email: Yup.string().required(),
-            }),
-            fields: [{ type: 'email', name: 'email', label: 'Email', onChange: (e) => setEmail(e.target.value) }]
-        },
-        "validate-otp": {
-            header: 'OTP',
-            btnText: 'Validate',
-            url: '/validate-otp',
-            method: 'get',
-            onSuccess: () => {
-                toast.success('OTP validated successfully.')
-                navigate(`/forgot-password?page=change-password&email=${email}&otp=${otp}`)
+            "validate-otp": {
+                header: 'OTP',
+                btnText: 'Validate',
+                url: '/validate-otp',
+                method: 'get',
+                onSuccess: (res, req) => {
+                    toast.success('OTP validated successfully.')
+                    navigate(`/forgot-password?page=change-password&email=${email}&otp=${req?.otp}`)
+                },
+                schema: Yup.object().shape({
+                    otp: Yup.string().required(),
+                }),
+                fields: [],
+                Component: <div className='w-100 flex !justify-center'><OTPInput onChange={setOtp} name={'otp'} /></div>
             },
-            schema: Yup.object().shape({
-                otp: Yup.string().required(),
-            }),
-            fields: [],
-            Component: <div className='w-100 flex !justify-center'><OTPInput onChange={setOtp} name={'otp'} /></div>
-        },
-        "change-password": {
-            header: 'Enter new Password',
-            btnText: 'Validate',
-            url: '/forgot-password/reset',
-            method: 'patch',
-            onSuccess: () => {
-                toast.success('Password reset successful.')
-                navigate(`/login`)
-            },
-            schema: Yup.object().shape({
-                newPassword: Yup.string().required(),
-                confirmPassword: Yup.string().required(),
-            }),
-            fields: [
-                { hidden: true, type: 'email', name: 'email', value: email },
-                { hidden: true, type: 'number', name: 'otp' },
-                { type: 'password', name: 'newPassword', label: 'New password' },
-                { type: 'password', name: 'confirmPassword', label: 'Confirm passwoord' },
-            ]
+            "change-password": {
+                header: 'Enter new Password',
+                btnText: 'Validate',
+                url: '/forgot-password/reset',
+                method: 'patch',
+                onSuccess: () => {
+                    toast.success('Password reset successful.')
+                    navigate(`/login`)
+                },
+                schema: Yup.object().shape({
+                    newPassword: Yup.string().required(),
+                    confirmPassword: Yup.string().required(),
+                }),
+                fields: [
+                    { hidden: true, type: 'email', name: 'email', value: email },
+                    { hidden: true, type: 'number', name: 'otp', value: otp },
+                    { type: 'password', name: 'newPassword', label: 'New password' },
+                    { type: 'password', name: 'confirmPassword', label: 'Confirm passwoord' },
+                ]
+            }
         }
-    }
+    }, [email, otp, navigate])
 
     const currentForm = useMemo(() => {
         const searchParams = new URLSearchParams(search)
