@@ -4,23 +4,28 @@ import { Layout } from "Partials";
 import './index.css'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Provider } from 'react-redux';
+import { store } from "Store";
 
 
 function App() {
+
   return (
-    <BrowserRouter>
-    <ToastContainer />
-      <Routes>
-        {routes.map(route => {
-          const layout = route.layout
-          const path = route.path
-          const Component = layout ? <Layout>{route.Component}</Layout> : route.Component
-          return (
-            <Route path={path} element={Component} />
-          )
-        })}
-      </Routes>
-    </BrowserRouter>
+    <Provider store={store}>
+      <BrowserRouter>
+        <ToastContainer />
+        <Routes>
+          {routes.map(route => {
+            const layout = route.layout
+            const path = route.path
+            const Component = layout ? <Layout>{route.Component}</Layout> : route.Component
+            return (
+              <Route path={path} element={Component} key={path}/>
+            )
+          })}
+        </Routes>
+      </BrowserRouter>
+    </Provider>
   );
 }
 
