@@ -4,9 +4,9 @@ import { ImHome } from "react-icons/im";
 // import { MdSchool } from "react-icons/md";
 import { AiFillSetting } from "react-icons/ai";
 // import { IoMdCheckmarkCircleOutline } from "react-icons/io";
-import {  FaClock } from "react-icons/fa";
+import { FaClock } from "react-icons/fa";
 // import { PiListNumbersFill } from "react-icons/pi";
-// import { GrUserAdmin } from "react-icons/gr";
+import { GrUserAdmin } from "react-icons/gr";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import Img152 from '../../Assets/images/newcross152.svg'
@@ -37,21 +37,27 @@ function Sidenav() {
     },
     {
       id: 3,
+      name: "Users",
+      icon: <GrUserAdmin />,
+      path: "/admin/create-users",
+    },
+    {
+      id: 3,
       name: "My Profile",
       icon: <AiFillSetting />,
       path: "/admin/profile",
     },
-    
+
   ];
 
- 
-    // {
-    //   id: 3,
-    //   name: "Reconciliation",
-    //   icon: <IoMdCheckmarkCircleOutline />,
-    //   path: "/lseb-admin/reconciliation",
-    // },
-   
+
+  // {
+  //   id: 3,
+  //   name: "Reconciliation",
+  //   icon: <IoMdCheckmarkCircleOutline />,
+  //   path: "/lseb-admin/reconciliation",
+  // },
+
 
 
 
@@ -69,7 +75,7 @@ function Sidenav() {
         </Link>
       </div>
       <div className={styles.barsContainer}>
-        { paths.map((x) => {
+        {paths.map((x) => {
           return (
             <div
               className={
@@ -85,7 +91,7 @@ function Sidenav() {
               {x.icon} <span className={styles.barText}>{x.name}</span>
             </div>
           );
-        }) }
+        })}
       </div>
     </div>
   );
