@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import Layout from 'Components/layout'
 import Tab from 'Components/tab'
-import UserData from '../usersdata'
+// import UserData from '../usersdata'
 import CreateFieldOPerator from './createFieldOPerator'
-import CreateQA_QC from './createQA_QC'
+import CreateQAQC from './createQAQC'
 import CreateAdmin from './createAdmin'
 import CreateSuperAdmin from './createSuperAdmin'
 import { useSelector } from 'react-redux'
@@ -43,7 +43,7 @@ const CreateUsers = () => {
         </ tabs>
 
         {(tab === 0) && <CreateFieldOPerator  />}
-        {(tab === 1) && <CreateQA_QC />}
+        {(tab === 1) && <CreateQAQC />}
         {(tab === 2) && <CreateAdmin />}
         {(tab === 3) && <CreateSuperAdmin />}
         {/* {(tab === 4) && <UserData />}

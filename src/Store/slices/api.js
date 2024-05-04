@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 export const apiSlice = createSlice({
-    name: 'todos',
+    name: 'api',
     initialState: [],
     reducers: {
         resolve: (state, action) => {

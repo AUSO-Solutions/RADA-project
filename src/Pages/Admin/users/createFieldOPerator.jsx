@@ -1,9 +1,7 @@
 
-import { Input, Button, RadaForm } from 'Components'
-import { login } from 'Services/auth';
+import { Input, RadaForm } from 'Components'
 import * as Yup from 'yup';
 import React from 'react'
-import { Link, useNavigate } from 'react-router-dom'
 
 const CreateFieldOPerator = () => {
 
