@@ -44,8 +44,16 @@ const RadaForm = ({
         let formValues = {}
         for (let [key, value] of formData.entries()) {
             formValues[key] = value
+            console.log(value)
+            if(String(value).includes('select-array-list')){
+                formValues[key] = value?.replace('select-array-list').split("-sal-,-sal-")
+            }
+
+            console.log(formValues[key] )
+
         }
         formValues = { ...formValues, ...extraFields }
+        console.log(formValues)
         onSubmit(formValues)
         if (validationSchema) {
             try {

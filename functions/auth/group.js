@@ -2,56 +2,88 @@
 const admin = require("firebase-admin");
 const logger = require("firebase-functions/logger");
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
-
-
+const { crypto } = require('crypto')
 
 
 const createGroup = onCall(async (request) => {
-    // try {
-    //     let { data } = request
-    //     const name = data?.group_name
-    //     const dateCreated = Date.now()
-    //     await db.collection("groups").doc(name).set({ group_name, members: [], dateCreated })
-    //     return { status: 'success', data, message: 'User created successfully' }
-
-    // } catch (error) {
-    //     logger.log('error ===> ', error)
-    //     throw new HttpsError(error?.code, error?.message)
-    // }
+    try {
+        const { data } = request
+        const { groupName, members } = data
+        if (!groupName) throw { code: 'cancelled', message: 'Group name is missing' }
+        if (!members.length) throw { code: 'cancelled', message: 'Members should be an array of users uid\'' }
+        const dateCreated = Date.now()
+        const db = admin.firestore()
+        const id = crypto.randomBytes(8).toString("hex");
+        await db.collection("groups").doc(id).set({ groupName, members: [], dateCreated, id })
+        return { status: 'success', data, message: 'Group created successfully' }
+    } catch (error) {
+        logger.log('error ===> ', error)
+        throw new HttpsError(error?.code, error?.message)
+    }
 });
 const addMembersToGroup = onCall(async ({ data }) => {
 
-    // try {
-    //     const { email, password } = data
-    //     logger.log({ data })
-    //     const passwordHash = hash(password)
-    //     // logger.log({ uid, passwordHash, passwordSalt, password_Hash })  
-    //     const db = admin.firestore()
-    //     const user = (await db.collection('users').where("email", "==", email).where("passwordHash", "==", passwordHash).get())?.docs[0]
-    //     if (!user.exists) throw ({ code: "permission-denied", message: "Account does not exist" })
-    //     logger.log("user => ", user)
-    //     return { status: 'success', data: user.data() }
-    // } catch (error) {
-    //     logger.log("error => ", error)
-    //     throw new HttpsError(error?.code, error?.message)
-    // }
+    try {
+        const { groupId, members } = data
+        if (!groupId) throw { code: 'cancelled', message: 'Group id is missing' }
+        if (!members.length) throw { code: 'cancelled', message: 'Members should be an array of users uid\'' }
+        const db = admin.firestore()
+        const res = (await db.collection("groups").doc(groupId).get()).data()
+        let groupMembers = res?.members || []
+        let message = ''
+        members.forEach(member => {
+            if (!groupMembers.includes(member)) groupMembers.push(uid)
+        });
+        await db.collection("groups").doc(groupId).update({ members })
+        return { status: 'success', data: {}, message: 'Members added successfully' }
+    } catch (error) {
+        logger.log("error => ", error)
+        throw new HttpsError(error?.code, error?.message)
+    }
 
 })
+const deleteMembersToGroup = onCall(async ({ data }) => {
+
+    try {
+
+
+        const { groupId, members } = data
+        if (!groupId) throw { code: 'cancelled', message: 'Group id is missing' }
+        if (!members.length) throw { code: 'cancelled', message: 'Members should be an array of users uid\'' }
+
+        const db = admin.firestore()
+        const res = (await db.collection("groups").doc(groupId).get()).data()
+        let groupMembers = res?.members || []
+        let message = ''
+
+        members.forEach(member => {
+            if (groupMembers.includes(member)) groupMembers.filter(memUid => memUid === member)
+        });
+        await db.collection("groups").doc(groupId).update({ members })
+        return { status: 'success', data: {}, message: 'Members deleted successfully' }
+    } catch (error) {
+        logger.log("error => ", error)
+        throw new HttpsError(error?.code, error?.message)
+    }
+
+})
+
 
 const getGroups = onCall(async ({ }) => {
-    // const limit = 10
+    const limit = 10
 
-    // try {
-    //     const db = admin.firestore()
-    //     const res = await db.collection('users').get()
-    //     const data = res?.docs?.map(doc => doc.data()) || []
-    //     return { status: 'success', data }
-    // } catch (error) {
-    //     logger.log('error=>', error)
-    //     return { status: 'failed', error }
-    // }
+    try {
+        const db = admin.firestore()
+        const res = await db.collection('groups').get()
+
+        const data = res?.docs?.map(doc => doc.data()) || []
+        return { status: 'success', data }
+    } catch (error) {
+        logger.log('error=>', error)
+        return { status: 'failed', error }
+    }
 
 })
 
 
-// module.exports = { login, createUser, getUsers },xw
+module.exports = { createGroup, addMembersToGroup, getGroups, deleteMembersToGroup }

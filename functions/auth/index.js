@@ -50,6 +50,7 @@ const saveUserInDb = async (data, uid) => {
 const createUser = onCall(async (request) => {
     try {
         let { data } = request
+
         logger.log('data ----', { data })
         const { email, password } = data
 
@@ -193,6 +194,26 @@ const deleteUserByUid = onCall(async (request) => {
             await admin.auth().deleteUser(uid)
             await db.collection("users").doc(uid).delete()
             return { status: 'success', message: 'User deleted successfully' }
+        } else {
+            throw { code: 'cancelled', message: 'Error deleting user.' }
+        }
+    } catch (error) {
+        logger.log('error ===> ', error)
+        throw new HttpsError(error?.code, error?.message)
+    }
+});
+
+const resetPassword = onCall(async (request) => {
+    try {
+        let { uid } = request
+        // logger.log('data ----', { data })
+        // const { uid } = data
+        // const db = admin.firestore()
+        const defaultPassword = "password123"
+        if (uid) {
+            // await admin.auth().deleteUser(uid)
+            // await db.collection("users").doc(uid).delete()
+            // return { status: 'success', message: 'User deleted successfully' }
         } else {
             throw { code: 'cancelled', message: 'Error deleting user.' }
         }
