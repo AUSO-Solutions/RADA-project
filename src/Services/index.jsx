@@ -1,3 +1,4 @@
+import { store } from 'Store';
 import axios from 'axios'
 import { toast } from 'react-toastify';
 
@@ -9,7 +10,10 @@ const apiRequest = async ({
     params,  // pass url search parameters as object 
     contentType = "application/json"
 }) => {
-    const token = ""
+    const state = store.getState().auth.user
+    const token = state.access_token
+    console.log(token)
+
     const axiosInstance = axios.create({
         baseURL,
         timeout: 10000,
