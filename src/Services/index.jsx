@@ -12,7 +12,7 @@ const apiRequest = async ({
 }) => {
     const state = store.getState().auth.user
     const token = state.access_token
-    console.log(token)
+    // console.log(token)
 
     const axiosInstance = axios.create({
         baseURL,

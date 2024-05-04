@@ -10,7 +10,7 @@ const CreateQAQC = () => {
 
     // const navigate = useNavigate();
     const state = useSelector(state => state.auth)
-    console.log(state?.user)
+    // console.log(state?.user)
 
     const schema = Yup.object().shape({
         email: Yup.string().required(),
