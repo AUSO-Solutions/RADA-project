@@ -1,4 +1,4 @@
-import { Button, Input } from 'Components'
+import { Button, Input, RadaForm } from 'Components'
 import Dropdown from 'Components/dropdown'
 import React, { useState } from 'react'
 import Typography from '@mui/material/Typography';
@@ -6,6 +6,7 @@ import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import { BsXLg } from 'react-icons/bs'
 import { toast } from 'react-toastify';
+import { forms } from './formFields';
 
 
 const DataForm = () => {
@@ -36,7 +37,62 @@ const DataForm = () => {
   return (
 
     <div style={{ display: 'flex', flexDirection: 'column', gap: '30px', padding: '10px 10px', justifyContent: 'center', alignItems: 'center' }}>
-      <Dropdown header={'Production Volume'} children={
+      {Object.values(forms).map((form) => {
+        return (
+          <Dropdown header={form.name}>
+            <RadaForm style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
+
+              {
+                form.fields.map(field => (
+                  <Input {...field} containerClass={'min-w-[50%]'} />
+                ))
+              }
+
+              <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+                <Input label={'Well ID)'} />
+                <Input label={'Created Date'} />
+
+              </div>
+              <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+                <Input label={'Basic Sediment and Water'} />
+                <Input label={'Net Oil'} />
+
+              </div>
+              <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+                <Input label={'Produced Gas'} />
+                <Input label={'Export Gas '} />
+              </div>
+
+              <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+                <Input label={'Fuel Gas'} />
+                <Input label={'Flare Gas '} />
+              </div>
+
+              <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+                <Input label={'Condensate Produced'} />
+                <Input label={'Loss '} />
+              </div>
+
+              <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+                <Input label={'Water Gas Rate'} />
+                <Input label={'Status '} />
+              </div>
+              <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+                <Input label={'Updated Date'} />
+                {/* <Input label={'Status '} /> */}
+              </div>
+              <Button width={'100px'} onClick={() => toast.success('Production Figures Uploaded Successfully')} >Save</Button>
+            </RadaForm>
+          </Dropdown >
+        )
+      })}
+
+      <Dropdown header={'Production Volume'}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
           <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
             <Input label={'Well ID)'} />
@@ -78,7 +134,7 @@ const DataForm = () => {
           </div>
           <Button width={'100px'} onClick={() => toast.success('Production Figures Uploaded Successfully')} >Save</Button>
         </div>
-      } />
+      </Dropdown >
 
       <Dropdown header={'Cumulative Production'}
         children={
@@ -174,7 +230,7 @@ const DataForm = () => {
         } />
 
 
-      
+
       <Button onClick={handleOpen} width={'150px'} >Done</Button>
       <Modal
         open={open}
