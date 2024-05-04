@@ -1,21 +1,34 @@
 
-import { Input, Button, RadaForm } from 'Components'
-import { login } from 'Services/auth';
+import { Input, RadaForm } from 'Components'
+// import { login } from 'Services/auth';
 import * as Yup from 'yup';
 import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { setUser } from 'Store/slices/auth';
+import { useDispatch } from 'react-redux';
 
 const UserLogin = () => {
 
     const navigate = useNavigate();
+    const dispatch = useDispatch()
 
-    const schema= Yup.object().shape({
+    const schema = Yup.object().shape({
         email: Yup.string().required(),
         password: Yup.string().required().min(8),
     })
 
     return (
-        <RadaForm validationSchema={schema} btnText={'Login'} url={'/users/login'} method={'post'} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', width: '500px', gap: '20px' }} >
+        <RadaForm
+            validationSchema={schema}
+            btnText={'Login'}
+            url={'/users/login'}
+            method={'post'}
+            onSuccess={(res) => {
+                dispatch(setUser(res))
+                navigate('/admin/create-users')
+            }}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', width: '500px', gap: '20px' }}
+        >
             <Input label={'Username'} name='email' />
             <Input label={'Password'} name='password' />
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: '300px' }} >

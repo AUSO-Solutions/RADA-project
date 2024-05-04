@@ -6,10 +6,12 @@ import CreateFieldOPerator from './createFieldOPerator'
 import CreateQA_QC from './createQA_QC'
 import CreateAdmin from './createAdmin'
 import CreateSuperAdmin from './createSuperAdmin'
+import { useSelector } from 'react-redux'
 
 const CreateUsers = () => {
 
-
+  const state = useSelector(state => state.auth)
+  console.log(state.user)
   const [tab, setTab] = useState(0)
 
   const tabs = [
@@ -40,7 +42,7 @@ const CreateUsers = () => {
           {tabs.map((x, i) => <Tab key={i} text={x} active={i === tab} onClick={() => setTab(i)} />)}
         </ tabs>
 
-        {(tab === 0) && <CreateFieldOPerator />}
+        {(tab === 0) && <CreateFieldOPerator  />}
         {(tab === 1) && <CreateQA_QC />}
         {(tab === 2) && <CreateAdmin />}
         {(tab === 3) && <CreateSuperAdmin />}
