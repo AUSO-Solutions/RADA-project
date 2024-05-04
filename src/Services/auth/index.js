@@ -46,7 +46,7 @@ const createFieldOperator = async (createFOPayload) => {
  * @param {Object} createQaQcPayload
  * @param {string} createQaQcPayload.adminEmail
  * @param {string} createQaQcPayload.qaqcEmail
- * @param {string} createQaQcPayload.qaqcFirstName
+ * @param {string} createQaQcPayload.qaqcFirstName 
  * @param {string} createQaQcPayload.qaqcLastName
  * @param {string} createQaQcPayload.assetType
  * @return {void} 

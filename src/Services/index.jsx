@@ -5,7 +5,7 @@ const baseURL = process.env.REACT_APP_BASE_URL
 const apiRequest = async ({
     method = 'get',
     url,
-    payload, 
+    payload,
     params,  // pass url search parameters as object 
     contentType = "application/json"
 }) => {

@@ -48,7 +48,7 @@ const forcePasswordRequest = async (email = "emmanueloludairo61@gmail.com") => {
             }
         })
         console.log(res)
-        //do something with res
+        //do something with resz
     } catch (error) {
 
     }

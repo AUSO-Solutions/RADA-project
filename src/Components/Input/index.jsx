@@ -1,21 +1,54 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './input.module.scss'
 import { Box } from '@mui/material';
+import OtpInput from 'react-otp-input';
 
-const Input = ({ label, type = 'text', containerClass }) => {
+const OTPInput = (props) => {
+    const [otp,setOtp] = useState()
+    return <OtpInput
+        value={otp} 
+        onChange={setOtp}
+        containerStyle={{width:'100%'}}
+        inputStyle={{width:'100%', color:'red'}}
+        {...props}
+        numInputs={4}
+        shouldAutoFocus 
+skipDefaultStyles
+        renderSeparator={<span className='mx-3'></span>}
+        renderInput={(inputProps) => <input   {...inputProps} />}
+    />
+
+}
+const Input = ({
+    label,
+    type = 'text',
+    containerClass,
+    onChange = () => null,
+    getObj = () => null,
+    ...props
+}) => {
+    const change = (e) => {
+  
+        onChange(e)
+        getObj({ [e.target.name]: e.target.value })
+    }
 
     const input_id = 'input-id'
-
+    const defaults = ['text', 'password', 'email']
     return (
         <Box className={`${styles.container} ${containerClass}`}>
             <Box component={'label'} htmlFor={input_id}>
                 {label}
             </Box>
-            <Box
-                component={'input'}
+            {type === 'otp' && <OTPInput
+                onChange={change}
+                {...props}
+            />}
+            {defaults.includes(type) && <input
                 type={type}
-                id={input_id}
-            />
+                onChange={change}
+                {...props}
+            />}
         </Box>
     )
 }

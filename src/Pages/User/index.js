@@ -1,3 +1,5 @@
+import ChangePassword from "./Auth/ChangePassword";
+import ForgotPassword from "./Auth/ForgotPassword";
 import UserLogin from "./Auth/Login";
 import UserRegister from "./Auth/register";
 import DataForm from "./dataform/dataform";
@@ -13,6 +15,6 @@ export const user_routes = [
     { path: '/147/register', Component: <UserRegister />, layout: true },
     { path: '/24/register', Component: <UserRegister />, layout: true },
     { path: '/152/form', Component: <DataForm />, layout: true },
-
-
+    { path: '/change-password', Component: <ChangePassword />, layout: true },
+    { path: '/forgot-password', Component: <ForgotPassword />, layout: true },
 ]
