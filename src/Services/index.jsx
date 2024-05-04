@@ -12,7 +12,7 @@ const apiRequest = async ({
     const token = ""
     const axiosInstance = axios.create({
         baseURL,
-        timeout: 3000,
+        timeout: 10000,
         headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": contentType,
