@@ -5,26 +5,28 @@ import './index.css'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Provider } from 'react-redux';
-import { store } from "Store";
-
+import { persistor, store } from "Store";
+import { PersistGate } from 'redux-persist/integration/react';
 
 function App() {
 
   return (
     <Provider store={store}>
-      <BrowserRouter>
-        <ToastContainer />
-        <Routes>
-          {routes.map(route => {
-            const layout = route.layout
-            const path = route.path
-            const Component = layout ? <Layout>{route.Component}</Layout> : route.Component
-            return (
-              <Route path={path} element={Component} key={path}/>
-            )
-          })}
-        </Routes>
-      </BrowserRouter>
+      <PersistGate loading={null} persistor={persistor}>
+        <BrowserRouter>
+          <ToastContainer />
+          <Routes>
+            {routes.map(route => {
+              const layout = route.layout
+              const path = route.path
+              const Component = layout ? <Layout>{route.Component}</Layout> : route.Component
+              return (
+                <Route path={path} element={Component} key={path} />
+              )
+            })}
+          </Routes>
+        </BrowserRouter>
+      </PersistGate>
     </Provider>
   );
 }
