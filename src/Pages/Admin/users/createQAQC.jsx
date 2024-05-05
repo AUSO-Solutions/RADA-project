@@ -5,6 +5,7 @@ import * as Yup from 'yup';
 import React from 'react'
 
 import { useSelector } from 'react-redux';
+import { asset_types } from 'util/assetType';
 
 const CreateQAQC = () => {
 
@@ -23,7 +24,15 @@ const CreateQAQC = () => {
             <Input label={'First Name'} name='firstName' />
             <Input label={'Last Name'} name='lastName' />
             <Input label={'Username'} name='email' />
-            <Input label={'Asset'} name='assetType' />
+            <Input label={'Asset'} name='asset' type='select' options={Object.values(asset_types).map(type => ({ label: type.name, value: type.value }))} />
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '300px' }} >
+                {/* <Button width={'100px'} shadow onClick={() => window.location.pathname.includes('152') ? navigate('/152/register') : window.location.pathname.includes('147') ? navigate('/147/register') : navigate('/24/register')} >
+                    Register
+                </Button> */}
+                {/* <Button width={'100px'} shadow onClick={() => login({ email: '', "password": "" })} >
+                    Login
+                </Button> */}
+            </div>
 
 
         </RadaForm>

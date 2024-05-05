@@ -46,18 +46,6 @@ const CreateUsers = () => {
         {(tab === 1) && <CreateQAQC />}
         {(tab === 2) && <CreateAdmin />}
         {(tab === 3) && <CreateSuperAdmin />}
-        {/* {(tab === 4) && <UserData />}
-                {(tab === 5) && <UserData />}
-                {(tab === 6) && <UserData />}
-                {(tab === 7) && <UserData />}
-                {(tab === 8) && <UserData />}
-                {(tab === 9) && <UserData />}
-                {(tab === 10) && <UserData />}
-                {(tab === 11) && <UserData />}
-                {(tab === 12) && <UserData />}
-                {(tab === 13) && <UserData />}
-                {(tab === 14) && <UserData />}
-                {(tab === 15) && <UserData />} */}
       </div>
     </Layout>
   )

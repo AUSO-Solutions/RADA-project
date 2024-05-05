@@ -27,8 +27,8 @@ const RadaForm = ({
             onSuccess(res, payload)
         }
         catch (error) {
-            console.log({  payload })
-            onSuccess(error,payload)
+            console.log({ payload })
+            onSuccess(error, payload)
         } finally {
             setLoading(false)
 
@@ -61,7 +61,9 @@ const RadaForm = ({
 
     return (
         <form onSubmit={submit} className={className}>
-            {children}
+            <div>
+                {children}
+            </div>
             <Button className={`${btnClass} p-3 mt-4`} type='submit' loading={loading}>{btnText}</Button>
         </form>
     )
