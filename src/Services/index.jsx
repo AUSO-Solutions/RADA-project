@@ -33,7 +33,11 @@ const apiRequest = async ({
         return data
     } catch (error) {
         console.error(error);
-        if (error?.message) toast.error(error.message)
+        const err_code = error?.response?.status
+        // console.log(err_code)
+        const is_403 = err_code === 403
+        if (is_403) toast.error('Unauthorized')
+        if (error?.message && !is_403) toast.error(error.message)
         throw error
     }
 }

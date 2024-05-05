@@ -6,12 +6,12 @@ import CreateFieldOPerator from './createFieldOPerator'
 import CreateQAQC from './createQAQC'
 import CreateAdmin from './createAdmin'
 import CreateSuperAdmin from './createSuperAdmin'
-import { useSelector } from 'react-redux'
+// import { useSelector } from 'react-redux'
 
 const CreateUsers = () => {
 
-  const state = useSelector(state => state.auth)
-  console.log(state.user)
+  // const state = useSelector(state => state.auth)
+  // console.log(state.user)
   const [tab, setTab] = useState(0)
 
   const tabs = [
