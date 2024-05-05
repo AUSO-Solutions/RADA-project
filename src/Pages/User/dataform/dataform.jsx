@@ -5,8 +5,9 @@ import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import { BsXLg } from 'react-icons/bs'
-import { toast } from 'react-toastify';
+// import { toast } from 'react-toastify';
 import { forms } from './formFields';
+import { useSelector } from 'react-redux';
 
 
 const DataForm = () => {
@@ -32,6 +33,7 @@ const DataForm = () => {
     setOpen(false);
   };
 
+  const state = useSelector(state => state.auth.user)
 
 
   return (
@@ -40,15 +42,24 @@ const DataForm = () => {
       {Object.values(forms).map((form) => {
         return (
           <Dropdown header={form.name}>
-            <RadaForm style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
+            <RadaForm
+              method={'post'}
+              btnText={'Save'}
+              btnClass={'px-5'}
+              url={`${form.url}?email=${state.data.email}`}
+            >
 
-              {
-                form.fields.map(field => (
-                  <Input {...field} containerClass={'min-w-[50%]'} />
-                ))
-              }
+              <div className='flex flex-wrap justify-between'>
+                {
+                  form.fields.map(field => (
+                    <div className={'!min-w-[47%]'}>
+                      <Input {...field} />
+                    </div>
+                  ))
+                }
+              </div>
 
-              <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+              {/* <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
                 <Input label={'Well ID)'} />
                 <Input label={'Created Date'} />
 
@@ -84,18 +95,18 @@ const DataForm = () => {
               <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
 
                 <Input label={'Updated Date'} />
-                {/* <Input label={'Status '} /> */}
+
               </div>
-              <Button width={'100px'} onClick={() => toast.success('Production Figures Uploaded Successfully')} >Save</Button>
+              <Button width={'100px'} onClick={() => toast.success('Production Figures Uploaded Successfully')} >Save</Button> */}
             </RadaForm>
           </Dropdown >
         )
       })}
 
-      <Dropdown header={'Production Volume'}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
+      {/* <Dropdown header={'Production Volume'}>
+        <RadaForm url={`/fields/create-production-volume-field?email=emmanueloludairo61@gmail.com`} style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
           <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
-            <Input label={'Well ID)'} />
+            <Input label={'Well ID)'} name={'wellIdentity'} />
             <Input label={'Created Date'} />
 
           </div>
@@ -109,7 +120,6 @@ const DataForm = () => {
             <Input label={'Produced Gas'} />
             <Input label={'Export Gas '} />
           </div>
-
           <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
 
             <Input label={'Fuel Gas'} />
@@ -130,10 +140,10 @@ const DataForm = () => {
           <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
 
             <Input label={'Updated Date'} />
-            {/* <Input label={'Status '} /> */}
+
           </div>
           <Button width={'100px'} onClick={() => toast.success('Production Figures Uploaded Successfully')} >Save</Button>
-        </div>
+        </RadaForm>
       </Dropdown >
 
       <Dropdown header={'Cumulative Production'}
@@ -188,14 +198,14 @@ const DataForm = () => {
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
 
               <Input label={'Updated Date'} />
-              {/* <Input label={'Status'} /> */}
+
             </div>
             <Button width={'100px'} >Save</Button>
           </div>
-        } />
+        } /> */}
 
 
-      <Dropdown header={'Well Flow'}
+      {/* <Dropdown header={'Well Flow'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
@@ -227,7 +237,7 @@ const DataForm = () => {
             </div>
             <Button width={'100px'} >Save</Button>
           </div>
-        } />
+        } /> */}
 
 
 

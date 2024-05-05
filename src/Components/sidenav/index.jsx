@@ -22,30 +22,36 @@ function Sidenav() {
 
   // const { data: { user_data: user } } = useSelector(state => state.user)
 
+
+
   const paths = [
     {
       id: 1,
       name: "Home",
       icon: <ImHome />,
       path: "/admin/home",
+      users:['']
+
     },
     {
       id: 2,
       name: "Reports",
       icon: <FaClock />,
       path: "/admin/reports",
+      users:[]
     },
     {
       id: 3,
       name: "Users",
       icon: <GrUserAdmin />,
       path: "/admin/create-users",
+      users:['']
     },
     {
       id: 3,
       name: "My Profile",
       icon: <AiFillSetting />,
-      path: "/admin/profile",
+      path: "/profile",
     },
 
   ];
