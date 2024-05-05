@@ -7,39 +7,9 @@ import { useSelector } from 'react-redux'
 // import dayjs from 'dayjs'
 
 
-const UserData = ({ url, header, fn = () => null, actions, idKey, refresh, ...props }) => {
-
-  const renders = (data, field) => {
-    if (field?.tableRender) {
-      return field?.tableRender(data)
-    }
-    return ''
-  }
-  const columns = forms[header]
-    .fields
-    .filter(field => field?.in?.includes('table') || !field?.in?.length)
-    .map(field => ({
-      name: field.label,
-      key: field.name,
-      render: (data) => renders(data, field)
-    }))
-
-  const state = useSelector(state => state?.auth?.user)
-
-  const addAssetType = useMemo(() => {
-    const assetType = state?.data?.assetType
-
-    return assetType ? `-by-asset-type?asset_type=${assetType}` : ''
-  }, [state?.data?.assetType])
-
-
-  const { data, refetch } = useQuery(url + addAssetType)
-
-  useEffect(() => {
-    refetch()
-  
-  }, [refresh])
-  // const updatedColumns = 
+const UserData = ({url, header}) => {
+  const columns = forms[header].fields.map(field => ({ name: field.label, key: field.name }))
+  const { data } = useQuery(url)
   return (
     <div style={{ padding: '10px 0px 70px 0px' }} className='w-[100%]'>
       {/* <TableFilter /> */}

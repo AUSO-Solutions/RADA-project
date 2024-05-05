@@ -38,97 +38,40 @@ const Modify = ({ form, data, url , onSuccess=()=>null}) => {
 }
 
 const Reports = () => {
-  const disptach = useDispatch()
+
+
   const [tab, setTab] = useState(0)
-  const [refresh, setRefresh] = useState()
+
   const tabs = [
+
     'Production Volume',
     'Cumulative Production',
     'Well Flow',
+    // 'OFM Sys Configuration',
+    // 'OFM Sys Date Range',
+    // 'OFM Sys Field Production',
+    // 'OFM Sys Multipliers',
+    // 'OFM Sys Parser',
+    // 'OFM Sys Table Info',
+    // 'OFM Sys Table Map',
+    // 'OFM Sys Units',
+    // 'Buttom Head Pressure',
+    // 'Deviation Data',
+    // 'OFM Data DCA Ratio',
+    // 'OFM Data DCA RadioForecast',
+
   ]
-  const update_column = (columns = []) => {
-    return columns.map(column => {
-      if (column.key === 'wellIdentity') return ({ ...column, key: 'wellID' })
-      return column
-    })
-  }
-  const actions = (name, key, data, idKey) => {
 
-    return [
-      {
-        component: 'Accept',
-        onClick: () => disptach(openModal({
-          title: "Accept",
-          component: <Action method={'put'} component={`Are you sure yo want to accept this ${name} data?`}
-            url={`/change-${key}-status/${data[idKey]}?status=APPROVED`}
-            onSuccess={() => {  disptach(closeModal()) ; setRefresh(Math.random()) }
-            } />,
-        }))
-      },
-      {
-        component: 'Modify',
-        onClick: () => disptach(openModal({
-          title: "Modify",
-          component: <Modify form={name} data={data} url={`/update-${key}/${data[idKey]}`} onSuccess={
-            ()=>{
-              disptach(closeModal())
-              setRefresh(Math.random())
-            }
-          } />
-        })),
-
-      },
-      {
-        component: 'Roll back',
-        onClick: () => disptach(openModal({
-          title: "Roll back",
-          component: <Action method={'put'} component={`Mark this ${name} data as denied`}
-            url={`/change-${key}-status/${data[idKey]}?status=REJECTED`}
-            onSuccess={() => { disptach(closeModal()) ; setRefresh(Math.random());}
-            } />,
-        }))
-      },
-    ]
-  }
   return (
     <Layout name={"FIELD REPORTS"}>
-      <div style={{ width: '100%' }}>
-        < div style={{ display: 'flex', gap: '20px' }} >
+      <div style={{ padding: '20px', width: '100%' }}>
+        < tabs style={{ display: 'flex', gap: '20px' }} >
           {tabs.map((x, i) => <Tab key={i} text={x} active={i === tab} onClick={() => setTab(i)} />)}
-        </ div>
+        </ tabs>
 
-        {(tab === 0) && <UserData
-          refresh={refresh}
-          url={'/get-all-production-volume'}
-          header={'Production Volume'}
-          fn={(data) => update_column(data)}
-          actions={(data) => <TableAction
-            actions={actions('Production Volume', 'production-volume', data, 'productionVolumeID')}
-            idKey={'productionVolumeID'} />}
-        />}
-
-        {(tab === 1) && <UserData
-          refresh={refresh}
-          url={'get-all-cumulative-production'}
-          header={'Cumulative Production'}
-          fn={(data) => update_column(data)}
-          actions={(data) => <TableAction
-            actions={actions('Cumulative Production', 'cumulative-production', data, 'cumulativeProductionID')}
-            idKey={'cumulativeProductionID'} />
-          }
-        />}
-
-        {(tab === 2) && <UserData
-          refresh={refresh}
-          url={'get-all-well-flow'}
-          header={'Well Flow'}
-          fn={(data) => update_column(data)}
-
-          actions={(data) => <TableAction
-            actions={actions('Well Flow', 'well-flow', data, 'wellFlowID')}
-            idKey={'wellFlowID'}
-          />
-          } />}
+        {(tab === 0) && <UserData url={'/fields/get-all-production-volume'} header={'Production Volume'} />}
+        {(tab === 1) && <UserData url={'fields/get-all-cumulative-production'} header={'Cumulative Production'} />}
+        {(tab === 2) && <UserData url={'fields/get-all-well-flow'} header={'Well Flow'} />}
 
       </div>
     </Layout>
