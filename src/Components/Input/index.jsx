@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styles from './input.module.scss'
 import { Box } from '@mui/material';
 import OtpInput from 'react-otp-input';
+import RadaSelect from './Select';
 
 const OTPInput = (props) => {
     const [otp, setOtp] = useState()
@@ -19,6 +20,8 @@ const OTPInput = (props) => {
     />
 
 }
+
+
 const Input = ({
     label,
     type = 'text',
@@ -44,6 +47,7 @@ const Input = ({
                 onChange={change}
                 {...props}
             />}
+            {type === 'select' && <RadaSelect {...props} onChange={onChange} />}
             {defaults.includes(type) && <input
                 type={type}
                 onChange={change}

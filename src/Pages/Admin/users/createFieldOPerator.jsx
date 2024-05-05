@@ -5,14 +5,9 @@ import React from 'react'
 import { useSelector } from 'react-redux';
 
 const CreateFieldOPerator = () => {
-
-    // const navigate = useNavigate();
     const state = useSelector(state => state.auth?.user)
-    // console.log(state)
-
     const schema = Yup.object().shape({
         email: Yup.string().required(),
-        // password: Yup.string().required().min(8),
     })
 
     return (
@@ -26,17 +21,7 @@ const CreateFieldOPerator = () => {
             <Input label={'First Name'} name='firstName' />
             <Input label={'Last Name'} name='lastName' />
             <Input label={'Username'} name='email' />
-            <Input label={'Asset'} name='asset' />
-            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '300px' }} >
-                {/* <Button width={'100px'} shadow onClick={() => window.location.pathname.includes('152') ? navigate('/152/register') : window.location.pathname.includes('147') ? navigate('/147/register') : navigate('/24/register')} >
-                    Register
-                </Button> */}
-                {/* <Button width={'100px'} shadow onClick={() => login({ email: '', "password": "" })} >
-                    Login
-                </Button> */}
-            </div>
-
-
+            <Input label={'Asset'} name='asset'  type='select'/>
         </RadaForm>
     )
 }
