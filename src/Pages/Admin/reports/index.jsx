@@ -6,51 +6,40 @@ import UserData from '../usersdata'
 const Reports = () => {
 
 
-    const [tab, setTab] = useState(0)
+  const [tab, setTab] = useState(0)
 
-    const tabs = [
+  const tabs = [
 
-        'Production Volume',
-        'Cumulative Production',
-        'Well Flow',
-        // 'OFM Sys Configuration',
-        // 'OFM Sys Date Range',
-        // 'OFM Sys Field Production',
-        // 'OFM Sys Multipliers',
-        // 'OFM Sys Parser',
-        // 'OFM Sys Table Info',
-        // 'OFM Sys Table Map',
-        // 'OFM Sys Units',
-        // 'Buttom Head Pressure',
-        // 'Deviation Data',
-        // 'OFM Data DCA Ratio',
-        // 'OFM Data DCA RadioForecast',
-       
-    ]
+    'Production Volume',
+    'Cumulative Production',
+    'Well Flow',
+    // 'OFM Sys Configuration',
+    // 'OFM Sys Date Range',
+    // 'OFM Sys Field Production',
+    // 'OFM Sys Multipliers',
+    // 'OFM Sys Parser',
+    // 'OFM Sys Table Info',
+    // 'OFM Sys Table Map',
+    // 'OFM Sys Units',
+    // 'Buttom Head Pressure',
+    // 'Deviation Data',
+    // 'OFM Data DCA Ratio',
+    // 'OFM Data DCA RadioForecast',
+
+  ]
 
   return (
     <Layout name={"FIELD REPORTS"}>
       <div style={{ padding: '20px', width: '100%' }}>
-                < tabs style={{ display: 'flex', gap: '20px' }} >
-                    {tabs.map((x, i) => <Tab key={i} text={x} active={i === tab} onClick={() => setTab(i)} />)}
-                </ tabs>
+        < tabs style={{ display: 'flex', gap: '20px' }} >
+          {tabs.map((x, i) => <Tab key={i} text={x} active={i === tab} onClick={() => setTab(i)} />)}
+        </ tabs>
 
-                {(tab === 0) && <UserData />}
-                {(tab === 1) && <UserData />}
-                {(tab === 2) && <UserData />}
-                {/* {(tab === 4) && <UserData />}
-                {(tab === 5) && <UserData />}
-                {(tab === 6) && <UserData />}
-                {(tab === 7) && <UserData />}
-                {(tab === 8) && <UserData />}
-                {(tab === 9) && <UserData />}
-                {(tab === 10) && <UserData />}
-                {(tab === 11) && <UserData />}
-                {(tab === 12) && <UserData />}
-                {(tab === 13) && <UserData />}
-                {(tab === 14) && <UserData />}
-                {(tab === 15) && <UserData />} */}
-            </div>
+        {(tab === 0) && <UserData url={'/fields/get-all-production-volume'} header={'Production Volume'} />}
+        {(tab === 1) && <UserData url={'fields/get-all-cumulative-production'} header={'Cumulative Production'} />}
+        {(tab === 2) && <UserData url={'fields/get-all-well-flow'} header={'Well Flow'} />}
+
+      </div>
     </Layout>
   )
 }
