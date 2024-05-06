@@ -7,9 +7,20 @@ import { useSelector } from 'react-redux'
 // import dayjs from 'dayjs'
 
 
-const UserData = ({url, header}) => {
+const UserData = ({url, header, fn =()=> null}) => {
   const columns = forms[header].fields.map(field => ({ name: field.label, key: field.name }))
+
+// const pd_columns = [
+//   {name:'',key:''},
+//   {name:'',key:''},
+//   {name:'',key:''},
+//   {name:'',key:''},
+//   {name:'',key:''},
+//   {name:'',key:''}, q
+// ]
+
   const { data } = useQuery(url)
+  // const updatedColumns = 
   return (
     <div style={{ padding: '10px 0px 70px 0px' }} className='w-[100%]'>
       {/* <TableFilter /> */}
