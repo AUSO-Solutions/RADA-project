@@ -47,13 +47,13 @@ const Reports = () => {
     'Production Volume',
     'Cumulative Production',
     'Well Flow',
-    
+
 
   ]
 
-  const update_column =(columns = [])=>{
-    return columns.map(column =>{
-      if (column.key  ===  'wellIdentity') return ({...column, key : 'wellID'})
+  const update_column = (columns = []) => {
+    return columns.map(column => {
+      if (column.key === 'wellIdentity') return ({ ...column, key: 'wellID' })
       return column
     })
   }
@@ -66,9 +66,9 @@ const Reports = () => {
         </ tabs>
 
 
-        {(tab === 0) && <UserData url={'/fields/get-all-production-volume'} header={'Production Volume'} fn={update_column} />}
-        {(tab === 1) && <UserData url={'fields/get-all-cumulative-production'} header={'Cumulative Production'} />}
-        {(tab === 2) && <UserData url={'fields/get-all-well-flow'} header={'Well Flow'} />}
+        {(tab === 0) && <UserData url={'/fields/get-all-production-volume'} header={'Production Volume'} fn={(data) => update_column(data)} />}
+        {(tab === 1) && <UserData url={'fields/get-all-cumulative-production'} header={'Cumulative Production'} fn={(data) => update_column(data)} />}
+        {(tab === 2) && <UserData url={'fields/get-all-well-flow'} header={'Well Flow'} fn={(data) => update_column(data)} />}
 
       </div>
     </Layout>
