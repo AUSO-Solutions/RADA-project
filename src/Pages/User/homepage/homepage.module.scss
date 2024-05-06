@@ -2,19 +2,20 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 34px;
     justify-content: center;
     align-items: center;
 
     .ped {
         display: flex;
         flex-direction: column;
-        gap: 100px;
+        // gap: 100px;
+        margin-top: 20px;
     }
 
     .comp {
         display: flex;
-        gap: 100px;
+        margin-top: 30px;
         justify-content: center;
         align-items: center;
 

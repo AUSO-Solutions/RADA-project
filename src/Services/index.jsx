@@ -20,7 +20,7 @@ const apiRequest = async ({
         headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": contentType,
-            // "Accept": "application/json",
+            "Accept": "application/json",
         }
     });
     try {

@@ -40,41 +40,28 @@ const rows = [
     createData('Gingerbread', 356, 16.0, 49, 3.9),
 ];
 
-export default function RadaTable({ data = [], columns = [] }) {
+export default function RadaTable({ data = [], columns = [], fn = () => null }) {
+    const updatec = fn() ? fn(columns) : columns
+
+
     return (
         <TableContainer component={Paper}>
             <Table sx={{ minWidth: 700 }} aria-label="customized table">
                 <TableHead>
                     <TableRow>
-                    <StyledTableCell>S/N</StyledTableCell>
+                        <StyledTableCell>S/N</StyledTableCell>
                         {
-                            columns.map(column => <StyledTableCell>{column.name}</StyledTableCell>)
+                            updatec.map(column => <StyledTableCell>{column.name}</StyledTableCell>)
                         }
-                        {/* <StyledTableCell>Dessert (100g serving)</StyledTableCell>
-                        <StyledTableCell align="right">Calories</StyledTableCell>
-                        <StyledTableCell align="right">Fat&nbsp;(g)</StyledTableCell>
-                        <StyledTableCell align="right">Carbs&nbsp;(g)</StyledTableCell>
-                        <StyledTableCell align="right">Protein&nbsp;(g)</StyledTableCell> */}
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {data.map((row,i) => (
+                    {data.map((row, i) => (
                         <>
                             <StyledTableRow key={row[data.id]}>
-                            <StyledTableCell align="right">{i+1}</StyledTableCell>
+                                <StyledTableCell align="right">{i + 1}</StyledTableCell>
                                 {
-                                    columns.map(column => (
-
-                                        <>
-                                            {/* <StyledTableCell component="th" scope="row">
-                                                {row[column.key]}
-                                            </StyledTableCell>
-                                            <StyledTableCell align="right">{row[column.key]}</StyledTableCell>
-                                            <StyledTableCell align="right">{row[column.key]}</StyledTableCell>
-                                            <StyledTableCell align="right">{row[column.key]}</StyledTableCell> */}
-                                            <StyledTableCell align="left">{row[column.key]}</StyledTableCell>
-                                        </>
-                                    ))
+                                    updatec.map(column => <StyledTableCell align="left">{row[column.key]}</StyledTableCell>)
 
                                 }
 
