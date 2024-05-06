@@ -7,24 +7,16 @@ import { useSelector } from 'react-redux'
 // import dayjs from 'dayjs'
 
 
-const UserData = ({url, header, fn =()=> null}) => {
+const UserData = ({ url, header, fn = () => null, actions}) => {
   const columns = forms[header].fields.map(field => ({ name: field.label, key: field.name }))
 
-// const pd_columns = [
-//   {name:'',key:''},
-//   {name:'',key:''},
-//   {name:'',key:''},
-//   {name:'',key:''},
-//   {name:'',key:''},
-//   {name:'',key:''}, q
-// ]
 
   const { data } = useQuery(url)
   // const updatedColumns = 
   return (
     <div style={{ padding: '10px 0px 70px 0px' }} className='w-[100%]'>
       {/* <TableFilter /> */}
-      <RadaTable columns={columns} data={data} fn={fn} actions={actions} idKey={idKey} {...props} />
+      {/* <RadaTable columns={columns} data={data} fn={fn} actions={actions} idKey={idKey} {...props} /> */}
     </div >
   )
 }
