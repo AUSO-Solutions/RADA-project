@@ -20,6 +20,8 @@ const UserLogin = () => {
     return (
         <RadaForm
             validationSchema={schema}
+            btnClass={'w-[100%] '}
+            className={'w-[500px]'}
             btnText={'Login'}
             url={'/users/login'}
             method={'post'}
@@ -28,9 +30,9 @@ const UserLogin = () => {
                 dispatch(setUser(res))
                 navigate('/admin/create-users')
             }}
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', width: '500px', gap: '20px' }}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', width: '700px', gap: '20px' }}
         >
-            <Input label={'Username'} name='email' />
+            <Input label={'Email'} name='email' />
             <Input label={'Password'} name='password' />
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: '300px' }} >
                 {/* <Button width={'100px'} shadow onClick={() => window.location.pathname.includes('152') ? navigate('/152/register') : window.location.pathname.includes('147') ? navigate('/147/register') : navigate('/24/register')} >

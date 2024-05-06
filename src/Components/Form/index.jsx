@@ -64,7 +64,7 @@ const RadaForm = ({
             <div>
                 {children}
             </div>
-            <Button className={`${btnClass} p-3 mt-4`} type='submit' loading={loading}>{btnText}</Button>
+            <Button className={`${btnClass} p-3 mt-8`} type='submit' loading={loading}>{btnText}</Button>
         </form>
     )
 }

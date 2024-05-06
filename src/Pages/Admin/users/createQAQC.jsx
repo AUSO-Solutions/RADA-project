@@ -19,7 +19,7 @@ const CreateQAQC = () => {
     })
 
     return (
-        <RadaForm validationSchema={schema} btnText={'Create QA/QC'} url={'/api/admin/create-qaQc'} method={'post'} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', width: '500px', gap: '20px' }} >
+        <RadaForm validationSchema={schema}  btnClass={'w-[fit-content]'} btnText={'Create QA/QC'} url={'/api/admin/create-qaQc'} method={'post'} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', width: '500px', gap: '20px' }} >
             <Input label={''} name='superAdminEmail' hidden value={state?.user?.data?.email} />
             <Input label={'First Name'} name='firstName' />
             <Input label={'Last Name'} name='lastName' />

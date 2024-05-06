@@ -13,20 +13,16 @@ const Reports = () => {
     'Production Volume',
     'Cumulative Production',
     'Well Flow',
-    // 'OFM Sys Configuration',
-    // 'OFM Sys Date Range',
-    // 'OFM Sys Field Production',
-    // 'OFM Sys Multipliers',
-    // 'OFM Sys Parser',
-    // 'OFM Sys Table Info',
-    // 'OFM Sys Table Map',
-    // 'OFM Sys Units',
-    // 'Buttom Head Pressure',
-    // 'Deviation Data',
-    // 'OFM Data DCA Ratio',
-    // 'OFM Data DCA RadioForecast',
+
 
   ]
+
+  const update_column = (columns = []) => {
+    return columns.map(column => {
+      if (column.key === 'wellIdentity') return ({ ...column, key: 'wellID' })
+      return column
+    })
+  }
 
   return (
     <Layout name={"FIELD REPORTS"}>
@@ -35,9 +31,10 @@ const Reports = () => {
           {tabs.map((x, i) => <Tab key={i} text={x} active={i === tab} onClick={() => setTab(i)} />)}
         </ tabs>
 
-        {(tab === 0) && <UserData url={'/fields/get-all-production-volume'} header={'Production Volume'} />}
-        {(tab === 1) && <UserData url={'fields/get-all-cumulative-production'} header={'Cumulative Production'} />}
-        {(tab === 2) && <UserData url={'fields/get-all-well-flow'} header={'Well Flow'} />}
+
+        {(tab === 0) && <UserData url={'/fields/get-all-production-volume'} header={'Production Volume'} fn={(data) => update_column(data)} />}
+        {(tab === 1) && <UserData url={'fields/get-all-cumulative-production'} header={'Cumulative Production'} fn={(data) => update_column(data)} />}
+        {(tab === 2) && <UserData url={'fields/get-all-well-flow'} header={'Well Flow'} fn={(data) => update_column(data)} />}
 
       </div>
     </Layout>
