@@ -1,18 +1,28 @@
 .container {
     display: flex;
     flex-direction: column;
-
-    border: 1px red solid;
-
     width: 100%;
+    align-items: start;
+    // justify-content: space-between;
 
     .header {
         display: flex;
         justify-content: space-between;
-        height: 100px;
+        // width: auto;
+        gap: 72px;
+        // height: 100px;
         align-items: center;
-        &>div{
-            
+
+        .card {
+            background-color: #0274bd;
+            width: 380px;
+            height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 15px 0px 15px 0px;
+            box-shadow: 4px 4px #62bff8;
         }
     }
 

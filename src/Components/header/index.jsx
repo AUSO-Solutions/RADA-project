@@ -38,7 +38,7 @@ function Header() {
             <Box sx={{ width: '30%' }}>
                
             </Box> */}
-            <Typography variant='h6' style={{color: '#143f2a'}} >RADA ADMIN PORTAL</Typography>
+            <Typography variant='h6' style={{color: '#0274bd'}} >RADA ADMIN PORTAL</Typography>
             <Box className={styles.right}>
                 <div className={styles.circle} onClick={() => setDrop(true)} > {'EO'} </div>
                 {/* {drop && <ClickAwayListener onClickAway={() => setDrop(false)} showshadow={true}
