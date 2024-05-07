@@ -31,7 +31,7 @@ function Layout({ name = "Home", children, btn, goBack = () => null }) {
         />
         <div className={styles.action}>
           <Typography
-            style={{ fontSize: "20px", fontWeight: "bold", color: "#9D949C" }}
+            style={{ fontSize: "20px", fontWeight: "bold", color: "#0274bd" }}
             className="flex items-center gap-[10px]"
           >
             {" "}

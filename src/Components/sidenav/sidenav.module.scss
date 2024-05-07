@@ -29,8 +29,8 @@
 }
 
 .barSelected {
-    color: #143f2a;
-    background-color: #c2e4d4;
+    color: #FFF;
+    background-color: #0274bd;
     padding-left: 24px;
     display: flex;
     gap: 10px;
@@ -51,15 +51,15 @@
     }
 
     &:hover {
-        color: #34A56F;
-        background-color: #FBF8FF;
+        color: #0274bd;
+        background-color: #d6f0fd;
         padding-left: 24px;
     }
 
 }
 
 .barUnSelected {
-    color: #143f2a;
+    color: #0274bd;
     background-color: none;
     padding-left: 0px;
     display: flex;

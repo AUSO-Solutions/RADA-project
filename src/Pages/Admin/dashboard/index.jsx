@@ -1,8 +1,30 @@
 import React from 'react'
 import Layout from 'Components/layout'
 import styles from './dashboard.module.scss'
+import Text from 'Components/Text'
+import { useQuery } from 'react-query'
+
 
 const Dashboard = () => {
+
+
+
+  const InfoCard = ({ url, name }) => {
+
+    const { data } = useQuery(url)
+    console.log(data)
+
+    return (
+      <div className={styles.card} >
+        <Text color='#FFF' >
+          {name}
+        </Text>
+        <Text size={'28px'} color='#FFF' >
+          {data ? data.length : 0}
+        </Text>
+      </div>
+    )
+  }
 
 
   return (
@@ -14,20 +36,11 @@ const Dashboard = () => {
         padding: "30px 10px",
       }}  >
         <div className={styles.container}>
-          <div className={styles.header}>
-            <div>
-              Production Volume
-              (50)
-            </div>
-            <div>
-              Production Volume
-            </div>
-            <div>
-              Production Volume
-            </div>
-          </div>
-          <div>
 
+          <div className={styles.header}>
+            <InfoCard url={'fields/get-all-production-volume'} name={'Total Production Volume'} />
+            <InfoCard url={'fields/get-all-cumulative-production'} name={'Total Cumulative Production'} />
+            <InfoCard url={'fields/get-all-well-flow'} name={'Total Well Flow'} />
           </div>
         </div>
       </div>
