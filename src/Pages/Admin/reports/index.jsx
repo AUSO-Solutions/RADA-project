@@ -6,6 +6,8 @@ import TableAction from 'Components/RadaTable/TableAction'
 import { useDispatch } from 'react-redux'
 import { openModal } from 'Store/slices/modalSlice'
 import Action from './Action'
+import { Input, RadaForm } from 'Components'
+import { forms } from 'Pages/User/dataform/formFields'
 
 const Reports = () => {
 
@@ -39,10 +41,21 @@ const Reports = () => {
             {
               component: 'Accept', onClick: () => disptach(openModal({
                 title: "Accept",
-                component: <Action component={'Mark this production volume data as accepted'} />,
+                component: <Action component={'Are you sure yo want to accept this production volume data?'} />,
               }))
             },
-            { component: 'Modify' },
+            {
+              component: 'Modify',
+              onClick: () => disptach(openModal({
+                title: "Modify",
+                component: <RadaForm btnText={'Modify'} method={'put'}>
+                  <div className='flex  flex-wrap'>
+                    {forms['Production Volume'].fields.map(field => <Input className={'w-[45%]'} {...field} />)}
+                  </div>
+                </RadaForm>
+              })),
+
+            },
             {
               component: 'Roll back', onClick: () => disptach(openModal({
                 title: "Roll back",
