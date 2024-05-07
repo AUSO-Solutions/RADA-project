@@ -25,6 +25,7 @@ const UserLogin = () => {
             btnText={'Login'}
             url={'/users/login'}
             method={'post'}
+            noToken
             onSuccess={(res) => {
                 dispatch(setUser(res))
                 navigate('/admin/create-users')

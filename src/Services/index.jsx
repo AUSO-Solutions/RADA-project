@@ -8,15 +8,14 @@ const apiRequest = async ({
     url,
     payload,
     params,  // pass url search parameters as object 
-    contentType = "application/json"
+    contentType = "application/json", noToken
 }) => {
     const state = store.getState().auth.user
-    const token = state.access_token
+    const token = noToken ? '' : state.access_token
     // console.log(token)
 
     const axiosInstance = axios.create({
         baseURL,
-        // timeout: 10000,
         headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": contentType,

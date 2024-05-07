@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import Layout from 'Components/layout'
 import Tab from 'Components/tab'
 import UserData from '../usersdata'
+import TableAction from 'Components/RadaTable/TableAction'
 
 const Reports = () => {
 
@@ -32,7 +33,14 @@ const Reports = () => {
         </ tabs>
 
 
-        {(tab === 0) && <UserData url={'/fields/get-all-production-volume'} header={'Production Volume'} fn={(data) => update_column(data)} />}
+        {(tab === 0) && <UserData url={'/fields/get-all-production-volume'} header={'Production Volume'} fn={(data) => update_column(data)} actions={(data) => <TableAction
+          actions={[
+            { component: 'Accept', onClick: (data) => console.log(data) },
+            { component: 'Modify' },
+            { component: 'Roll back' },
+          ]}
+        />
+        } />}
         {(tab === 1) && <UserData url={'fields/get-all-cumulative-production'} header={'Cumulative Production'} fn={(data) => update_column(data)} />}
         {(tab === 2) && <UserData url={'fields/get-all-well-flow'} header={'Well Flow'} fn={(data) => update_column(data)} />}
 

@@ -7,6 +7,8 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import { BsThreeDots } from 'react-icons/bs';
+import { useMemo } from 'react';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -40,8 +42,11 @@ const rows = [
     createData('Gingerbread', 356, 16.0, 49, 3.9),
 ];
 
-export default function RadaTable({ data = [], columns = [], fn = () => null }) {
-    const updatec = fn() ? fn(columns) : columns
+export default function RadaTable({ data = [], columns = [], fn = () => null, actions = () => null, noaction }) {
+    const updatec = useMemo(() => {
+        return fn() ? fn(columns) : columns
+    }, [columns])
+    const [showAction, setShowAction] = React.useState(false)
 
 
     return (
@@ -53,6 +58,7 @@ export default function RadaTable({ data = [], columns = [], fn = () => null }) 
                         {
                             updatec.map(column => <StyledTableCell>{column.name}</StyledTableCell>)
                         }
+                        <StyledTableCell>Action</StyledTableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -64,7 +70,15 @@ export default function RadaTable({ data = [], columns = [], fn = () => null }) 
                                     updatec.map(column => <StyledTableCell align="left">{row[column.key]}</StyledTableCell>)
 
                                 }
+                                {!noaction && <StyledTableCell align="right">
+                                    <BsThreeDots color='black' className='cursor-pointer' onClick={() => setShowAction(true)} />
+                                    {
+                                        showAction && <div className='absolute flex flex-col bg-white shadow rounded-[8px]  min-w-[100px] text-left right-[50px]'>
+                                            {actions(data[i], i)}
 
+                                        </div>
+                                    }
+                                </StyledTableCell>}
                             </StyledTableRow>
                         </>
 

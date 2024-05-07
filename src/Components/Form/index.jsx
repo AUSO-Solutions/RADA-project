@@ -11,7 +11,7 @@ const RadaForm = ({
     btnClass,
     className, children, url, method,
     extraFields = {}, successMessage,
-    onSuccess = () => null, validationSchema }) => {
+    onSuccess = () => null, validationSchema , noToken}) => {
 
     const [loading, setLoading] = useState(false)
 
@@ -21,7 +21,7 @@ const RadaForm = ({
         if (method === 'get' && payload) params = { ...payload }
         setLoading(true)
         try {
-            const res = await apiRequest({ method, url, payload, params })
+            const res = await apiRequest({ method, url, payload, params, noToken })
             if (successMessage) { toast.success(successMessage) } else { toast.success(res.data.message) }
             console.log({ res, payload })
             onSuccess(res, payload)
