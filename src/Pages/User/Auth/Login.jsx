@@ -28,7 +28,15 @@ const UserLogin = () => {
             noToken
             onSuccess={(res) => {
                 dispatch(setUser(res))
-                navigate('/admin/create-users')
+                // console.log(res)
+                const role =  res?.data?.roles[0]
+                // console.log(role)
+                const roles_login_paths = {
+                    "SUPER_ADMIN" : "/admin/home",
+                    "FIELD_OPERATOR" : "/data-form",
+                    "QUALITY_CONTROLLER":'/admin/home'
+                }
+                navigate(roles_login_paths[role])
             }}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', width: '700px', gap: '20px' }}
         >

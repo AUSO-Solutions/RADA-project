@@ -3,17 +3,20 @@ import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import apiSlice from './slices/api';
 import authSlice from './slices/auth';
+import modalSlice from './slices/modalSlice';
 
 const persistConfig = {
   key: 'root',
   storage,
+  blacklist:['modal']
   // Specify the reducers you want to persist
   // whitelist: ['user'], // In this example, we persist the 'user' reducer
 };
 
 const reducers = combineReducers({
   api: apiSlice,
-  auth: authSlice
+  auth: authSlice,
+  modal:modalSlice
 })
 
 const persistedReducer = persistReducer(persistConfig, reducers);
