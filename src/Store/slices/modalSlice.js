@@ -5,16 +5,17 @@ export const modalSlice = createSlice({
     initialState:
     {
         title: '',
-        component: null
+        component: ''
     }
     ,
     reducers: {
         openModal: (state, { payload }) => {
             state.component = payload.component
-            // console.log(payload)
+            state.title = payload.title
+
         },
         closeModal: (state) => {
-            state.component = null
+            state.component = ''
         }
 
     }

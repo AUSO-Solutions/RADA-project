@@ -5,6 +5,7 @@ import UserData from '../usersdata'
 import TableAction from 'Components/RadaTable/TableAction'
 import { useDispatch } from 'react-redux'
 import { openModal } from 'Store/slices/modalSlice'
+import Action from './Action'
 
 const Reports = () => {
 
@@ -28,24 +29,29 @@ const Reports = () => {
   return (
     <Layout name={"FIELD REPORTS"}>
       <div style={{ padding: '20px', width: '100%' }}>
-        < tabs style={{ display: 'flex', gap: '20px' }} >
+        < div style={{ display: 'flex', gap: '20px' }} >
           {tabs.map((x, i) => <Tab key={i} text={x} active={i === tab} onClick={() => setTab(i)} />)}
-        </ tabs>
+        </ div>
 
 
         {(tab === 0) && <UserData url={'/fields/get-all-production-volume'} header={'Production Volume'} fn={(data) => update_column(data)} actions={(data) => <TableAction
           actions={[
             {
               component: 'Accept', onClick: () => disptach(openModal({
-                component: 'km kmkod',
-                title: "uyuyn"
+                title: "Accept",
+                component: <Action component={'Mark this production volume data as accepted'} />,
               }))
             },
             { component: 'Modify' },
-            { component: 'Roll back' },
+            {
+              component: 'Roll back', onClick: () => disptach(openModal({
+                title: "Roll back",
+                component: <Action component={'Mark this production volume data as denied'} />,
+              }))
+            },
           ]}
         />
-        } />}
+        } idKey={'productionVolumeID'} />}
         {(tab === 1) && <UserData url={'fields/get-all-cumulative-production'} header={'Cumulative Production'} fn={(data) => update_column(data)} />}
         {(tab === 2) && <UserData url={'fields/get-all-well-flow'} header={'Well Flow'} fn={(data) => update_column(data)} />}
 

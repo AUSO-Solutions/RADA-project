@@ -32,7 +32,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 
 
-export default function RadaTable({ data = [], columns = [], fn = () => null, actions = () => null, noaction }) {
+export default function RadaTable({ data = [], columns = [], fn = () => null, actions = () => null, noaction, idKey = "id" }) {
     const updatec = useMemo(() => {
         return fn() ? fn(columns) : columns
     }, [columns,fn])
@@ -46,18 +46,18 @@ export default function RadaTable({ data = [], columns = [], fn = () => null, ac
                     <TableRow>
                         <StyledTableCell>S/N</StyledTableCell>
                         {
-                            updatec.map(column => <StyledTableCell>{column.name}</StyledTableCell>)
+                            updatec.map((column,i) => <StyledTableCell key={i} >{column.name}</StyledTableCell>)
                         }
                         <StyledTableCell>Action</StyledTableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {data.map((row, i) => (
-                        <>
-                            <StyledTableRow key={row[data.id]}>
-                                <StyledTableCell align="right">{i + 1}</StyledTableCell>
+                    { data.map((row, i) => (
+                        <React.Fragment   key={i}>
+                            <StyledTableRow>
+                                <StyledTableCell align="right">{i + 1} </StyledTableCell>
                                 {
-                                    updatec.map(column => <StyledTableCell align="left">{row[column.key]}</StyledTableCell>)
+                                    updatec.map((column,inner_index) => <StyledTableCell key={i+inner_index} align="left">{row[column.key]}</StyledTableCell>)
 
                                 }
                                 {!noaction && <StyledTableCell align="right">
@@ -73,9 +73,9 @@ export default function RadaTable({ data = [], columns = [], fn = () => null, ac
                                     }
                                 </StyledTableCell>}
                             </StyledTableRow>
-                        </>
+                        </React.Fragment>
 
-                    ))}
+                    )) }
                 </TableBody>
             </Table>
         </TableContainer>

@@ -8,6 +8,7 @@ import modalSlice from './slices/modalSlice';
 const persistConfig = {
   key: 'root',
   storage,
+  blacklist:['modal']
   // Specify the reducers you want to persist
   // whitelist: ['user'], // In this example, we persist the 'user' reducer
 };
