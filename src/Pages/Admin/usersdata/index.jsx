@@ -1,6 +1,4 @@
 import React from 'react'
-import Table from 'Components/table'
-import TableAction from 'Components/tableaction'
 import RadaTable from 'Components/RadaTable'
 import { forms } from 'Pages/User/dataform/formFields'
 import { useQuery } from 'react-query'
