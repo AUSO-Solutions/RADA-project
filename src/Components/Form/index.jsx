@@ -7,11 +7,15 @@ import { toast } from 'react-toastify';
 
 
 const RadaForm = ({
-    btnText, onSubmit = () => null,
+    btnText,
     btnClass,
     className, children, url, method,
     extraFields = {}, successMessage,
-    onSuccess = () => null, validationSchema , noToken}) => {
+    validationSchema, noToken,
+    onSuccess = () => null,
+    onSubmit = () => null,
+    modifyPayload = () => null
+}) => {
 
     const [loading, setLoading] = useState(false)
 
@@ -21,7 +25,9 @@ const RadaForm = ({
         if (method === 'get' && payload) params = { ...payload }
         setLoading(true)
         try {
-            const res = await apiRequest({ method, url, payload, params, noToken })
+            let final_payload = modifyPayload(payload) || payload
+
+            const res = await apiRequest({ method, url, payload: final_payload, params, noToken })
             if (successMessage) { toast.success(successMessage) } else { toast.success(res.data.message) }
             console.log({ res, payload })
             onSuccess(res, payload)

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import Layout from 'Components/layout'
 import Tab from 'Components/tab'
 import UserData from '../usersdata'
@@ -9,25 +9,35 @@ import Action from './Action'
 import { Input, RadaForm } from 'Components'
 import { forms } from 'Pages/User/dataform/formFields'
 
+
+const Modify = ({ form, data, url }) => {
+  const convertDataToPatchPayload = useCallback((payload) => {
+    return (Object.entries(payload || {}).map(entry => ({ "op": "replace", "path": entry[0], "value": entry[1] })))
+  }, [])
+  console.log(convertDataToPatchPayload)
+  return (
+    <RadaForm btnText={'Modify'} method={'patch'} url={url} modifyPayload={(payload) => convertDataToPatchPayload(payload)}>
+      <div className='flex  flex-wrap'>
+        {forms[form].fields.map(field => <Input className={'w-[45%]'} defaultValue={data[field.name]} {...field} />)}
+      </div>
+    </RadaForm>
+  )
+}
+
 const Reports = () => {
-
   const disptach = useDispatch()
-
   const [tab, setTab] = useState(0)
-
   const tabs = [
     'Production Volume',
     'Cumulative Production',
     'Well Flow',
   ]
-
   const update_column = (columns = []) => {
     return columns.map(column => {
       if (column.key === 'wellIdentity') return ({ ...column, key: 'wellID' })
       return column
     })
   }
-
   return (
     <Layout name={"FIELD REPORTS"}>
       <div style={{ padding: '20px', width: '100%' }}>
@@ -48,11 +58,7 @@ const Reports = () => {
               component: 'Modify',
               onClick: () => disptach(openModal({
                 title: "Modify",
-                component: <RadaForm btnText={'Modify'} method={'put'}>
-                  <div className='flex  flex-wrap'>
-                    {forms['Production Volume'].fields.map(field => <Input className={'w-[45%]'} {...field} />)}
-                  </div>
-                </RadaForm>
+                component: <Modify form={'Production Volume'} data={data} url={`/fields/production-volume/${data.productionVolumeID}`} />
               })),
 
             },
