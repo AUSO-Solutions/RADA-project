@@ -6,7 +6,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    overflow: auto;
+    overflow-y: scroll;
+    
 
     .content {
         display: flex;
@@ -19,4 +20,5 @@
         // width: auto;
         // padding: 0px 0px 14px 0px;
     }
+  
 }
