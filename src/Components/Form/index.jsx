@@ -2,10 +2,6 @@ import { Button } from 'Components'
 import { apiRequest } from 'Services'
 import React, { useState } from 'react'
 import { toast } from 'react-toastify';
-// import yup from 'yup';
-
-
-
 const RadaForm = ({
     btnText,
     btnClass,
@@ -18,33 +14,26 @@ const RadaForm = ({
 }) => {
 
     const [loading, setLoading] = useState(false)
-
-
     const callApi = async (payload) => {
         let params = {}
         if (method === 'get' && payload) params = { ...payload }
         setLoading(true)
         try {
             let final_payload = modifyPayload(payload) || payload
-
             const res = await apiRequest({ method, url, payload: final_payload, params, noToken })
-            if (successMessage) { toast.success(successMessage) } else { toast.success(res.data.message) }
-            console.log({ res, payload })
+            if (successMessage) { toast.success(successMessage) } else { toast.success('Successful') }
             onSuccess(res, payload)
         }
         catch (error) {
-            console.log({ payload })
-            onSuccess(error, payload)
+            throw error
         } finally {
             setLoading(false)
-
         }
     }
     const submit = async (event) => {
         event.preventDefault()
         const formData = new FormData(event.target)
         let formValues = {}
-        // console.log(formData.entries())
         for (let [key, value] of formData.entries()) {
             formValues[key] = value
         }
@@ -75,9 +64,4 @@ const RadaForm = ({
     )
 }
 
-
-const RadaFormInput = ({ Component }) => (props) => {
-    // const {} = useFormContext()
-    return <Component {...props} />
-}
-export { RadaForm, RadaFormInput }
+export { RadaForm }

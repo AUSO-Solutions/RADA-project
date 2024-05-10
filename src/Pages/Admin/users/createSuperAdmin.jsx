@@ -3,8 +3,6 @@ import { Input, RadaForm } from 'Components'
 // import { login } from 'Services/auth';
 import * as Yup from 'yup';
 import React from 'react'
-import { asset_types } from 'util/assetType';
-
 
 const CreateSuperAdmin = () => {
 
@@ -18,6 +16,7 @@ const CreateSuperAdmin = () => {
     return (
         <RadaForm
             validationSchema={schema}
+            noToken
             btnText={'Create Super Admin'}
             btnClass={'w-[fit-content]'}
             url={'/users/create'} method={'post'}
@@ -25,7 +24,6 @@ const CreateSuperAdmin = () => {
             <Input label={'First Name'} name='firstName' />
             <Input label={'Last Name'} name='lastName' />
             <Input label={'Username'} name='email' />
-            <Input label={'Asset'} name='asset' type='select' options={Object.values(asset_types).map(type => ({ label: type.name, value: type.value }))} />
             <Input label={'Password'} name='password' />
         </RadaForm>
     )

@@ -18,7 +18,7 @@ export const forms = {
     },
     "Cumulative Production": {
         name: "Cumulative Production",
-        url: "",
+        url: "/fields/create-cumulative-production-field",
         fields: [
             { type: "text", name: "wellIdentity", label: "Well ID" },
             { type: "text", name: "productionDaysUptime", label: "Production Days Uptime" },
@@ -38,7 +38,7 @@ export const forms = {
     },
     "Well Flow": {
         name: "Well Flow",
-        url: "",
+        url: "/fields/create-well-flow-field",
         fields: [
 
             { type: "text", name: "wellIdentity", label: "Well ID" },

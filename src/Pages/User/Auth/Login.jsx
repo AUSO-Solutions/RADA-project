@@ -21,7 +21,7 @@ const UserLogin = () => {
         <RadaForm
             validationSchema={schema}
             btnClass={'w-[100%] '}
-            className={'w-[500px]'}
+            className={'w-[500px] mx-auto'}
             btnText={'Login'}
             url={'/users/login'}
             method={'post'}
