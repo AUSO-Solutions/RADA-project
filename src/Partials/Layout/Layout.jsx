@@ -12,8 +12,10 @@ const Layout = ({ children }) => {
             <div className={styles.content} >
                 <img src={window.location.pathname.includes('152') ? images.newcross152 : window.location.pathname.includes('147') ? images.panocean147 : window.location.pathname.includes('24') ? images.nepl24 : images.logo} alt="" />
             </div>
-            {children}
+          <div className='overflow w-[100%]' style={{overflow:'auto'}}>
+          {children}
 
+          </div>
         </div>
     )
 }

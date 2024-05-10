@@ -1,4 +1,4 @@
-import { Button, Input, RadaForm } from 'Components'
+import { Input, RadaForm } from 'Components'
 import Dropdown from 'Components/dropdown'
 import React, { useState } from 'react'
 import Typography from '@mui/material/Typography';
@@ -38,7 +38,8 @@ const DataForm = () => {
 
   return (
 
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '30px', padding: '10px 10px', justifyContent: 'center', alignItems: 'center' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '30px',  justifyContent: 'center', alignItems: 'center' , overflow:'scroll'}}
+>
       {Object.values(forms).map((form) => {
         return (
           <Dropdown header={form.name}>
@@ -47,6 +48,7 @@ const DataForm = () => {
               btnText={'Save'}
               btnClass={'px-5'}
               url={`${form.url}?email=${state.data.email}`}
+              onSuccess={handleOpen}
             >
 
               <div className='flex flex-wrap justify-between'>
@@ -241,7 +243,7 @@ const DataForm = () => {
 
 
 
-      <Button onClick={handleOpen} width={'150px'} >Done</Button>
+      {/* <Button onClick={handleOpen} width={'150px'} >Done</Button> */}
       <Modal
         open={open}
         onClose={handleClose}
