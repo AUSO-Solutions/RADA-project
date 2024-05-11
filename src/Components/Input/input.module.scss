@@ -19,17 +19,17 @@
 
         padding: 10px;
         border-radius: 10px;
-        border: .5px grey solid ;
+        border: .5px grey solid;
         gap: 10px;
         font-family: Hind;
-            font-size: 25px;
-            font-weight: 500;
-            line-height: 40px;
-            letter-spacing: 0em;
-            text-align: left;
-        // outline: none;
+        font-size: 25px;
+        font-weight: 500;
+        line-height: 40px;
+        letter-spacing: 0em;
+        text-align: left;
+        outline: none;
 
-        ::placeholder {
+        &::placeholder {
             font-family: Hind;
             font-size: 25px;
             font-weight: 500;
@@ -38,8 +38,19 @@
             text-align: left;
         }
 
-        :focus {
-            outline: .5px red solid;
+
+        &:focus {
+                outline-color: .5px solid red;
         }
+        
+        &:hover{
+
+                border: .5px solid red;
+        }
+        
+
     }
+
+
 }
+

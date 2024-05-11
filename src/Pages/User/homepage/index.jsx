@@ -7,7 +7,7 @@ import UserLogin from '../Auth/Login'
 
 const Homepage = () => {
 
-  
+
 
   return (
 
@@ -17,6 +17,13 @@ const Homepage = () => {
         {/* <p style={{ fontWeight: 'bold', fontSize: '18px', textAlign: 'center', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>CHOOSE YOUR ASSET</p> */}
       </div>
       <div className={styles.comp} >
+
+        <div>
+          ldldl
+        </div>
+        <div>
+          kdkfk
+        </div>
 
 
         <UserLogin />

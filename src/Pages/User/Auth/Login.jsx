@@ -40,7 +40,7 @@ const UserLogin = () => {
             }}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', width: '700px', gap: '20px' }}
         >
-            <Input label={'Email'} name='email' />
+            <Input label={'Email'} name='email' placeholder={"johndoe@gmail.com"}/>
             <Input label={'Password'} name='password' />
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: '300px' }} >
                 {/* <Button width={'100px'} shadow onClick={() => window.location.pathname.includes('152') ? navigate('/152/register') : window.location.pathname.includes('147') ? navigate('/147/register') : navigate('/24/register')} >
