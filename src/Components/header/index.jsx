@@ -1,64 +1,68 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import styles from './header.module.scss'
-// import { BsChevronDown } from 'react-icons/bs'
+import { BsChevronDown } from 'react-icons/bs'
 import { Box, Typography } from '@mui/material';
-// import ClickAway from '../clickaway';
-// import { Divider } from "@mui/material";
+import ClickAway from '../clickaway';
 import { useState } from 'react';
-// import { useNavigate } from 'react-router';
-// import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router';
+import { useDispatch, useSelector } from 'react-redux';
 // import { logOutUser } from "../../store/reducers/user";
 // import ClickAwayListener from 'react-click-away-listener';
 
 
 
 function Header() {
-    // const user = useSelector(state => state.user.data.details)
-    const [, setDrop] = useState(false)
+    const user = useSelector(state => state.auth.user.data)
+    const [drop, setDrop] = useState(false)
     // console.log(user)
-    // const { data } = useSelector(state => state.user)
-    // const user = data?.user_data
-    // const dispatch = useDispatch()
 
 
-    // const dispatch = useDispatch()
-    // const navigate = useNavigate()
 
-    // const logout = () => {
-    //     dispatch(logOutUser())
-    //     // dispatch(setId(null))
-    //     navigate('/')
-    // }
+
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+
+    const logout = () => {
+        dispatch()
+        // dispatch(setId(null))
+        navigate('/')
+    }
     // console.log(user)
+
+    const initials = useMemo(() => {
+
+        return `${[...user?.firstName][0]}
+            ${[...user?.lastName][0]}`.toUpperCase()
+    }, [user?.firstName,user?.lastName])
 
 
     return (
-        <div className={styles.body}>
+        <div className={` ${styles.body}`}>
             {/* <Typography size='17px' weight='500' > {`Welcome ${'Jane Doe'}!`} </Typography>
             <Box sx={{ width: '30%' }}>
                
             </Box> */}
-            <Typography variant='h6' style={{color: '#0274bd'}} >RADA ADMIN PORTAL</Typography>
-            <Box className={styles.right}>
-                <div className={styles.circle} onClick={() => setDrop(true)} > {'EO'} </div>
-                {/* {drop && <ClickAwayListener onClickAway={() => setDrop(false)} showshadow={true}
-                > */}
-                    {/* <div
-                        className={styles.dropdown}
-                    > */}
+            <Typography variant='h6' style={{ color: '#0274bd' }} >RADA ADMIN PORTAL</Typography>
+            <Box className={`${styles.right}`}>
+                <div className={styles.circle} onClick={() => setDrop(true)} > {initials} </div><BsChevronDown onClick={() => setDrop(true)}/>
+                {drop && <ClickAway onClickAway={() => setDrop(false)} showshadow={true}
+                >
+                    <div
+                        className={`shadow ${styles.dropdown}`}
+                    >
                         {/* <Typography
                             onClick={() => window.location.assign('/')}
                             className='font-bold cursor-pointer py-2'>
                             Home
                         </Typography> */}
-                       
+
                         {/* <Divider /> */}
-                        {/* <Typography className='font-bold cursor-pointer py-2'
+                        <Typography className='font-bold cursor-pointer py-1'
                             onClick={() => logout()}
-                            >
-                            Logout</Typography> */}
-                    {/* </div> */}
-                {/* </ClickAwayListener>} */}
+                        >
+                            Logout</Typography>
+                    </div>
+                </ClickAway>}
             </Box>
         </div>
     )

@@ -16,7 +16,7 @@ export default function OTPInput({ onChange = () => null, name }) {
             containerStyle={{ width: '100%' }}
             inputStyle={{ width: '100%', border: '1px solid lightgray', borderRadius: '8px', height: '50px' }}
             onChange={setOtp}
-            numInputs={4}
+            numInputs={6}
             renderSeparator={<div className='mx-2'> </div>}
             renderInput={(props) => <input {...props} />}
         />

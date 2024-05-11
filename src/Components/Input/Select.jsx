@@ -14,7 +14,7 @@ const RadaSelect = ({ name, onChange, options }) => {
 
         <>
             <input type="hidden" name={name} value={value.value} />
-            <Select options={options} onChange={setValue} />
+            <Select options={options}  onChange={setValue} />
         </>
     )
 }
