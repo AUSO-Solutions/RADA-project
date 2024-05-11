@@ -4,6 +4,6 @@ export const images = {
     oml147: require('./oml147.svg').default,
     oml24: require('./oml24.svg').default,
     newcross152: require('./newcross152.svg').default,
-    panocean147: require('./panocean.png').default,
-    nepl24: require('./nepl.png').default
+    panocean147: require('./panocean.png'),
+    nepl24: require('./nepl.png'),
 }

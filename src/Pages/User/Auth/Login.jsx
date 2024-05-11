@@ -33,7 +33,7 @@ const UserLogin = () => {
                 // console.log(role)
                 const roles_login_paths = {
                     "SUPER_ADMIN" : "/admin/home",
-                    "FIELD_OPERATOR" : "/data-form",
+                    "FIELD_OPERATOR" : "/field-op-cta",
                     "QUALITY_CONTROLLER":'/admin/home'
                 }
                 navigate(roles_login_paths[role])
@@ -41,7 +41,7 @@ const UserLogin = () => {
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', width: '700px', gap: '20px' }}
         >
             <Input label={'Email'} name='email' placeholder={"johndoe@gmail.com"}/>
-            <Input label={'Password'} name='password' />
+            <Input label={'Password'} name='password' placeholder={'password'} />
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: '300px' }} >
                 {/* <Button width={'100px'} shadow onClick={() => window.location.pathname.includes('152') ? navigate('/152/register') : window.location.pathname.includes('147') ? navigate('/147/register') : navigate('/24/register')} >
                     Register
