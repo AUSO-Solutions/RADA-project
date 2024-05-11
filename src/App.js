@@ -10,6 +10,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { QueryClientProvider } from 'react-query'
 import { queryClient } from "Services/queryClient";
 import Modal from "Components/Modal";
+import Refresh from "Partials/Refresh";
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
           <BrowserRouter>
             <ToastContainer />
             <Modal />
+            <Refresh/>
             <Routes>
               {routes.map(route => {
                 const layout = route.layout
