@@ -56,7 +56,7 @@ const ForgotPassword = () => {
                 header: 'Enter new Password',
                 btnText: 'Validate',
                 url: '/forgot-password/reset',
-                method: 'patch',
+                method: 'put',
                 onSuccess: () => {
                     toast.success('Password reset successful.')
                     navigate(`/login`)
@@ -84,7 +84,7 @@ const ForgotPassword = () => {
         // eslint-disable-next-line
     }, [search])
 
-    const formClass = 'w-[400px] h-[100%] flex flex-col items-center  pt-[7%]'
+    const formClass = 'w-[400px] h-[100%] mx-auto flex flex-col items-center   pt-[7%]'
     return (
         <RadaForm
             className={formClass}
@@ -96,7 +96,7 @@ const ForgotPassword = () => {
                 {currentForm.header}
             </Text>
 
-            <div className='w-[400px]  mt-[30px]'>
+            <div className='w-[400px] mt-[30px]'>
                 {
                     currentForm.fields.map(field => <Input key={field.label} {...field} />)
                 }

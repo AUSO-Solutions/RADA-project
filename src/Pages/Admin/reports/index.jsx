@@ -12,7 +12,7 @@ import { forms } from 'Pages/User/dataform/formFields'
 
 const Modify = ({ form, data, url }) => {
   const convertDataToPatchPayload = useCallback((payload) => {
-    return (Object.entries(payload || {}).map(entry => ({ "op": "replace", "path": entry[0], "value": entry[1] })))
+    return (Object.entries(payload || {}).map(entry => ({ "op": "replace", "path": `/${entry[0]}`, "value": entry[1] })))
   }, [])
   console.log(convertDataToPatchPayload)
   return (

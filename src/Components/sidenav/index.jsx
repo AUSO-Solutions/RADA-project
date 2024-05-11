@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import styles from "./sidenav.module.scss";
 import { ImHome } from "react-icons/im";
 // import { MdSchool } from "react-icons/md";
@@ -10,17 +10,18 @@ import { GrUserAdmin } from "react-icons/gr";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import Img152 from '../../Assets/images/newcross152.svg'
+import { useSelector } from "react-redux";
+import { ROLES } from "./roles.ts";
 
 
 function Sidenav() {
   const navigate = useNavigate();
-  // const location = useLocation();
-  // const user = useSelector((state) => state.user.data.details);
+  const user = useSelector(state => state?.auth?.user)
 
-
-  // console.log(location.path);
-
-  // const { data: { user_data: user } } = useSelector(state => state.user)
+const roles_list =  ROLES
+  const roles = useMemo(() => {
+    return (user?.data?.roles)
+  }, [user])
 
 
 
@@ -30,7 +31,7 @@ function Sidenav() {
       name: "Home",
       icon: <ImHome />,
       path: "/admin/home",
-      users:['']
+      users: ['ALL']
 
     },
     {
@@ -38,20 +39,21 @@ function Sidenav() {
       name: "Reports",
       icon: <FaClock />,
       path: "/admin/reports",
-      users:[]
+      users: ['ALL']
     },
     {
       id: 3,
       name: "Users",
       icon: <GrUserAdmin />,
       path: "/admin/create-users",
-      users:['']
+      users: [roles_list.SUPER_ADMIN]
     },
     {
       id: 4,
       name: "My Profile",
       icon: <AiFillSetting />,
       path: "/profile",
+      users: ['ALL']
     },
 
   ];
@@ -63,8 +65,6 @@ function Sidenav() {
   //   icon: <IoMdCheckmarkCircleOutline />,
   //   path: "/lseb-admin/reconciliation",
   // },
-
-
 
 
   return (
@@ -81,7 +81,7 @@ function Sidenav() {
         </Link>
       </div>
       <div className={styles.barsContainer}>
-        {paths.map((x) => {
+        {paths.filter(path => path.users.includes(roles[0]) || path.users[0] === 'ALL').map((x) => {
           return (
             <div
               className={

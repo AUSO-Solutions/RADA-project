@@ -4,7 +4,7 @@ export const forms = {
         name: "Production Volume",
         url: "/fields/create-production-volume-field",
         fields: [
-            { type: "text", name: "wellIdentity", label: "Well ID" },
+            { type: "text", name: "wellID", label: "Well ID" },
             { type: "text", name: "basicSedimentAndWater", label: "Basic Sediment and Water" },
             { type: "text", name: "netOil", label: "Net Oil" },
             { type: "text", name: "producedGas", label: "Produced Gas" },
