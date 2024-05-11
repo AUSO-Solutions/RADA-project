@@ -29,11 +29,7 @@ function Header() {
     }
     // console.log(user)
 
-    const initials = useMemo(() => {
-
-        return `${[...user?.firstName][0]}
-            ${[...user?.lastName][0]}`.toUpperCase()
-    }, [user?.firstName,user?.lastName])
+    const initials = useMemo(() => `${[...user?.firstName][0]} ${[...user?.lastName][0]}`.toUpperCase(), [user?.firstName, user?.lastName])
 
 
     return (
@@ -44,7 +40,7 @@ function Header() {
             </Box> */}
             <Typography variant='h6' style={{ color: '#0274bd' }} >RADA ADMIN PORTAL</Typography>
             <Box className={`${styles.right}`}>
-                <div className={styles.circle} onClick={() => setDrop(true)} > {initials} </div><BsChevronDown onClick={() => setDrop(true)}/>
+                <div className={styles.circle} onClick={() => setDrop(true)} > {initials} </div><BsChevronDown onClick={() => setDrop(true)} />
                 {drop && <ClickAway onClickAway={() => setDrop(false)} showshadow={true}
                 >
                     <div

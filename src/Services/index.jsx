@@ -1,4 +1,5 @@
 import { store } from 'Store';
+import { reuse } from 'Store/slices/auth';
 import axios from 'axios'
 import { toast } from 'react-toastify';
 
@@ -22,6 +23,7 @@ const apiRequest = async ({
             "Accept": "application/json",
         }
     });
+    store.dispatch(reuse())
     try {
         const { data } = await axiosInstance({
             method,

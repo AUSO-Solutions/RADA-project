@@ -12,7 +12,7 @@ const Dashboard = () => {
   const InfoCard = ({ url, name }) => {
 
     const { data } = useQuery(url)
-    console.log(data)
+
 
     return (
       <div className={styles.card} >
