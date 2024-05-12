@@ -14,7 +14,7 @@ const Homepage = () => {
 
     <div className={styles.body} >
       <div className={styles.ped} >
-        <p style={{ fontWeight: 'bold', fontSize: '26px', textAlign: 'center', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>PED WEB APPLICATION</p>
+        <p style={{ fontWeight: 'bold', fontSize: '26px', textAlign: 'center', display: 'flex', justifyContent: 'center', alignItems: 'center', color:'white' }}>PED WEB APPLICATION</p>
         {/* <p style={{ fontWeight: 'bold', fontSize: '18px', textAlign: 'center', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>CHOOSE YOUR ASSET</p> */}
       </div>
       <div className={styles.comp} >

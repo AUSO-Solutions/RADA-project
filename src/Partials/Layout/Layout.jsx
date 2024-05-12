@@ -4,7 +4,7 @@ import { images } from 'Assets'
 import { useSelector } from 'react-redux'
 import Text from 'Components/Text'
 import { Divider } from '@mui/material'
-import img from '../../Assets/images/oml147.svg'
+import img from '../../Assets/images/newcrossfield.jpg'
 
 
 const Layout = ({ children }) => {
@@ -17,8 +17,8 @@ const Layout = ({ children }) => {
     return (
         <div className={styles.layout} >
 
-            <div style={{ backgroundImage: `url(${img})`, backgroundRepeat: 'no-repeat',  backgroundPosition:'center', backgroundSize: 'cover', height: "100vh", width: "100vw", backgroundBlendMode: 'normal', }} className='!bg-[#000] absolute z-[1] opacity-[.5]' >
-                
+            <div style={{ backgroundImage: `url(${img})`, backgroundRepeat: 'no-repeat', backgroundPosition: 'center', backgroundSize: 'cover', height: "100vh", width: "100vw", backgroundBlendMode: 'multiply', color:'' }} className='!bg-[darkslategray] absolute z-[1] opacity-[.9]' >
+
             </div>
 
             <div className={`absolute z-[10] ${styles.content}`}>

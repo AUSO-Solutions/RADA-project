@@ -6,4 +6,6 @@ export const images = {
     newcross152: require('./newcross152.svg').default,
     panocean147: require('./panocean.png'),
     nepl24: require('./nepl.png'),
+    newcrossField: require('./newcrossfield.jpg'),
+
 }
