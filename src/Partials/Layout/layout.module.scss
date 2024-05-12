@@ -1,24 +1,28 @@
 .layout {
-    width: 100% ;
+    width: 100%;
     height: 100vh !important;
     background-color: white;
     display: flex;
     flex-direction: column;
     align-items: center;
+    // background-image: '../../Assets/images/oml147.svg';
     // justify-content: center;
     // overflow-y: scroll;
-    
+
 
     .content {
         display: flex;
         flex-direction: column;
-        // top: 0;
+        width: 100%;
         align-items: center;
         justify-content: center;
         // gap: 24px;
 
         // width: auto;
-        padding: 120px 0px 14px 0px;
+        padding: 0px 0px 0px 0px;
+        // border-left: 2px solid #0274bd;
+        // border-right: 2px solid #0274bd;
+        // border-bottom: 2px solid #0274bd;
     }
-  
+
 }
