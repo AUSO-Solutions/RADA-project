@@ -14,7 +14,7 @@ const Modify = ({ form, data, url }) => {
   const convertDataToPatchPayload = useCallback((payload) => {
     return (Object.entries(payload || {}).map(entry => ({ "op": "replace", "path": `/${entry[0]}`, "value": entry[1] })))
   }, [])
-  console.log(convertDataToPatchPayload)
+
   return (
     <RadaForm btnText={'Modify'} method={'patch'} url={url} modifyPayload={(payload) => convertDataToPatchPayload(payload)}>
       <div className='flex  flex-wrap'>

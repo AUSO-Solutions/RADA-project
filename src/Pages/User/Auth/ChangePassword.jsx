@@ -1,22 +1,37 @@
 import { Input, RadaForm } from 'Components'
-import Text from 'Components/Text'
 import React from 'react'
+import { useSelector } from 'react-redux'
+import { toast } from 'react-toastify';
+import * as Yup from 'yup';
 
 const ChangePassword = () => {
-  const formClass = 'w-[400px] h-[100%] flex flex-col items-center  pt-[7%]'
+  const formClass = 'w-[500px]  h-[100%] flex flex-col items-center  pt-[20px]'
+  const user = useSelector(state => state?.auth?.user)
+
+  const schema = Yup.object().shape({
+    email: Yup.string().required(),
+    initialPassword: Yup.string().required().min(8),
+    newPassword: Yup.string().required().min(8),
+    confirmPassword: Yup.string().required().min(8),
+})
   return (
     <RadaForm
       className={formClass}
       btnText={'Submit'} url={'/users/change-password'}
-      method={'put'} validationSchema={null}
-
+      method={'put'} validationSchema={schema}
+      onError={err => {
+        console.log(err)
+        if (err?.response?.status === 403) {
+          toast.error('Current password in correct')
+        }
+      }}
     >
-      <Text size={20} weight={600} className={'text-center'}>
+      {/* <Text size={20} weight={600} className={'text-center'}>
         Change password
-      </Text>
+      </Text> */}
 
-      <div className='w-[400px] mt-[30px]'>
-        <Input type='email' name='email'   value={'kehindesalaudee22@gmail.com'}/>
+      <div className='w-[500px]'>
+        <Input type='email' name='email'   value={user?.data?.email}/>
         <Input label={'Current password'} name='initialPassword' />
         <Input label={'New password'} name={'newPassword'}/>
         <Input label={'Confirm password'} name={'confirmPassword'} />

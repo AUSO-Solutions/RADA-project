@@ -6,11 +6,9 @@ export const authSlice = createSlice({
     reducers: {
         setUser: (state, { payload }) => {
             if (payload) {
-                // console.log(payload)
                 state.user = payload
                 state.user.data.name = payload.data?.firstName + " " + payload.data?.lastName;
                 state.user.loggedInAt = Date.now()
-
             }
         },
         logout: (state, { payload }) => {

@@ -6,6 +6,7 @@ import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { setUser } from 'Store/slices/auth';
 import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
 
 const UserLogin = () => {
 
@@ -29,18 +30,24 @@ const UserLogin = () => {
             onSuccess={(res) => {
                 dispatch(setUser(res))
                 // console.log(res)
-                const role =  res?.data?.roles[0]
+                const role = res?.data?.roles[0]
                 // console.log(role)
                 const roles_login_paths = {
-                    "SUPER_ADMIN" : "/admin/home",
-                    "FIELD_OPERATOR" : "/field-op-cta",
-                    "QUALITY_CONTROLLER":'/admin/home'
+                    "SUPER_ADMIN": "/admin/home",
+                    "FIELD_OPERATOR": "/field-op-cta",
+                    "QUALITY_CONTROLLER": '/admin/home'
                 }
                 navigate(roles_login_paths[role])
             }}
+            onError={err => {
+                if (err?.response?.status === 401){
+                    toast.error('Account does not exist!')
+                }
+            }}
+
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', width: '700px', gap: '20px' }}
         >
-            <Input label={'Email'} name='email' placeholder={"johndoe@gmail.com"}/>
+            <Input label={'Email'} name='email' placeholder={"johndoe@gmail.com"} />
             <Input label={'Password'} name='password' placeholder={'password'} />
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: '300px' }} >
                 {/* <Button width={'100px'} shadow onClick={() => window.location.pathname.includes('152') ? navigate('/152/register') : window.location.pathname.includes('147') ? navigate('/147/register') : navigate('/24/register')} >

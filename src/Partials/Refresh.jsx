@@ -10,7 +10,7 @@ let timer = 0;
 const Refresh = () => {
     const dispatch = useDispatch()
     const state = useSelector(state => state?.auth?.user)
-    const {pathname} =  useLocation()
+    const { pathname } = useLocation()
     // console.log(dayjs(state?.lastUsedApp).format('YYYY MMM DD hh:mm:ssA'))
     useEffect(() => {
         // refreshToken()
@@ -18,12 +18,12 @@ const Refresh = () => {
             const time_spent_after_login = dayjs().diff(state?.loggedInAt, 'seconds')
             const time_spent_without_activity = dayjs().diff(state?.lastUsedApp, 'seconds')
 
-            console.log({ time_spent_after_login, time_spent_without_activity })
+            // console.log({ time_spent_after_login, time_spent_without_activity })
             if (time_spent_after_login > 28 * 60) {
                 if (time_spent_without_activity > 28 * 60) {
-                    dispatch(logout())
+                    if (pathname !== '/login') dispatch(logout())
                 } else {
-                  if(pathname !== '/login')  refreshToken()
+                    if (pathname !== '/login') refreshToken()
                 }
             }
 
@@ -38,7 +38,7 @@ const Refresh = () => {
 
             })
         }
-    }, [state?.loggedInAt, dispatch, state?.lastUsedApp,pathname])
+    }, [state?.loggedInAt, dispatch, state?.lastUsedApp, pathname])
 
     return (
         ''
