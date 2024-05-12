@@ -3,6 +3,8 @@ import styles from './layout.module.scss'
 import { images } from 'Assets'
 import { useSelector } from 'react-redux'
 import Text from 'Components/Text'
+import { Divider } from '@mui/material'
+import img from '../../Assets/images/oml147.svg'
 
 
 const Layout = ({ children }) => {
@@ -13,15 +15,22 @@ const Layout = ({ children }) => {
 
 
     return (
-        <div className={styles.layout}>
-            <div>
-                <img src={state?.assetType === 'OML_152' ? images.newcross152 : state?.assetType === 'OML_147' ? images.panocean147 : state?.assetType === 'OML_24' ? images.nepl24 : images.logo} alt="" />
+        <div className={styles.layout} >
+
+            <div style={{ backgroundImage: `url(${img})`, backgroundRepeat: 'no-repeat',  backgroundPosition:'center', backgroundSize: 'cover', height: "100vh", width: "100vw", backgroundBlendMode: 'normal', }} className='!bg-[#000] absolute z-[1] opacity-[.5]' >
+                
             </div>
-            <div style={{ display: 'flex', gap: '100px' }} >
-                <Text weight={'600'} color={'#000'} size={'18px'} > Hi, {state?.firstName}</Text>
-                <Text weight={'600'} color={'#000'} size={'18px'} > {state?.email} </Text>
-            </div>
-            <div className={styles.content}>
+
+            <div className={`absolute z-[10] ${styles.content}`}>
+                <div className='z-[1] flex flex-col justify-center items-center'>
+                    <div>
+                        <img src={state?.assetType === 'OML_152' ? images.newcross152 : state?.assetType === 'OML_147' ? images.panocean147 : state?.assetType === 'OML_24' ? images.nepl24 : images.logo} alt="" />
+                    </div>
+                    {/* <div style={{ display: 'flex', gap: '100px', padding: '10px', borderRadius: '5px' }} >
+                        <Text weight={'600'} color={'#0274bd'} size={'18px'} > Hi, {state?.firstName}</Text>
+                        <Text weight={'600'} color={'#0274bd'} size={'18px'} > {state?.email} </Text>
+                    </div> */}
+                </div>
                 {children}
             </div>
         </div>
