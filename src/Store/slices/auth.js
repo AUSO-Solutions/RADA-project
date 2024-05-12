@@ -6,11 +6,9 @@ export const authSlice = createSlice({
     reducers: {
         setUser: (state, { payload }) => {
             if (payload) {
-                // console.log(payload)
                 state.user = payload
                 state.user.data.name = payload.data?.firstName + " " + payload.data?.lastName;
                 state.user.loggedInAt = Date.now()
-
             }
         },
         logout: (state, { payload }) => {
@@ -23,6 +21,7 @@ export const authSlice = createSlice({
         refreshTokens: (state, {payload}) => {
             state.user.access_token = payload?.access_token
             state.user.refresh_token = payload?.refresh_token
+            state.user.loggedInAt =  Date.now()
         }
     }
 });

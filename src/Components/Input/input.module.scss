@@ -40,17 +40,17 @@
 
 
         &:focus {
-                outline-color: .5px solid red;
-        }
-        
-        &:hover{
+            outline-color: 1.5px solid #0274BD;
 
-                border: .5px solid red;
         }
-        
+
+        &:hover {
+            box-shadow: 1px 1px 1px #0274BD;
+            border: 1px solid #0274BD;
+        }
+
 
     }
 
 
 }
-
