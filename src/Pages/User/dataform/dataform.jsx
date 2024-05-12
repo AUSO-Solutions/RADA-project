@@ -44,9 +44,9 @@ const DataForm = () => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        maxHeight: "700px", overflow: 'scroll',
+        // height: "700px", 
       }}
-      className='border bg-danger pt-[50px]'
+      className=' bg-danger py-[50px]'
     >
       {Object.values(forms).map((form) => {
         return (
