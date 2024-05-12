@@ -4,7 +4,7 @@ import React from 'react'
 
 const Action = ({ url, method, component }) => {
     return (
-        <RadaForm url={url} method={method} btnText={'Proceed'}>
+        <RadaForm url={url} method={method}  btnText={'Proceed'}>
             {component}
         </RadaForm>
     )

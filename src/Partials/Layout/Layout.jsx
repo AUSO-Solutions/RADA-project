@@ -2,8 +2,6 @@ import React from 'react'
 import styles from './layout.module.scss'
 import { images } from 'Assets'
 import { useSelector } from 'react-redux'
-import Text from 'Components/Text'
-import { Divider } from '@mui/material'
 import img from '../../Assets/images/newcrossfield.jpg'
 
 
