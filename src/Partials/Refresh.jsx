@@ -3,12 +3,14 @@ import { logout, reuse } from 'Store/slices/auth';
 import dayjs from 'dayjs'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useLocation } from 'react-router-dom';
 
 
 let timer = 0;
 const Refresh = () => {
     const dispatch = useDispatch()
     const state = useSelector(state => state?.auth?.user)
+    const {pathname} =  useLocation()
     // console.log(dayjs(state?.lastUsedApp).format('YYYY MMM DD hh:mm:ssA'))
     useEffect(() => {
         // refreshToken()
@@ -19,10 +21,9 @@ const Refresh = () => {
             console.log({ time_spent_after_login, time_spent_without_activity })
             if (time_spent_after_login > 28 * 60) {
                 if (time_spent_without_activity > 28 * 60) {
-                    console.log('first')
                     dispatch(logout())
                 } else {
-                    refreshToken()
+                  if(pathname !== '/login')  refreshToken()
                 }
             }
 
@@ -37,7 +38,7 @@ const Refresh = () => {
 
             })
         }
-    }, [state?.loggedInAt, dispatch, state?.lastUsedApp])
+    }, [state?.loggedInAt, dispatch, state?.lastUsedApp,pathname])
 
     return (
         ''
