@@ -14,20 +14,20 @@ const Refresh = () => {
     // console.log(dayjs(state?.lastUsedApp).format('YYYY MMM DD hh:mm:ssA'))
     useEffect(() => {
         // refreshToken()
-        timer = setInterval(() => {
-            const time_spent_after_login = dayjs().diff(state?.loggedInAt, 'seconds')
-            const time_spent_without_activity = dayjs().diff(state?.lastUsedApp, 'seconds')
+        // timer = setInterval(() => {
+        //     const time_spent_after_login = dayjs().diff(state?.loggedInAt, 'seconds')
+        //     const time_spent_without_activity = dayjs().diff(state?.lastUsedApp, 'seconds')
 
-            // console.log({ time_spent_after_login, time_spent_without_activity })
-            if (time_spent_after_login > 28 * 60) {
-                if (time_spent_without_activity > 28 * 60) {
-                    if (pathname !== '/login') dispatch(logout())
-                } else {
-                    if (pathname !== '/login') refreshToken()
-                }
-            }
+        //     // console.log({ time_spent_after_login, time_spent_without_activity })
+        //     if (time_spent_after_login > 28 * 60) {
+        //         if (time_spent_without_activity > 28 * 60) {
+        //             // if (pathname !== '/login') dispatch(logout())
+        //         } else {
+        //             // if (pathname !== '/login') refreshToken()
+        //         }
+        //     }
 
-        }, 5000)
+        // }, 5000)
 
         window.addEventListener('focus', () => {
             dispatch(reuse())

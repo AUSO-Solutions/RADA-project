@@ -15,7 +15,7 @@ const Layout = ({ children }) => {
     return (
         <div className={styles.layout} >
 
-            <div style={{  backgroundImage: `url(${img})`, backgroundRepeat: 'no-repeat', backgroundPosition: 'center', backgroundSize: 'cover', height: "100vh", width: "100vw", backgroundBlendMode: 'multiply', overlay:'' }} className=' absolute z-[1] opacity-[.4]' >
+            <div style={{  backgroundImage: `url(${img})`, backgroundRepeat: 'no-repeat', backgroundPosition: 'center', backgroundSize: 'cover', height: "100vh", width: "100vw", backgroundBlendMode: 'multiply', overlay:'' }} className=' absolute z-[1] opacity-[.1]' >
 
             </div>
 
