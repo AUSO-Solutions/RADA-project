@@ -8,6 +8,7 @@ const RadaForm = ({
     className, children, url, method,
     extraFields = {}, successMessage,
     validationSchema, noToken,
+    inputsContainer,
     onSuccess = () => null,
     onSubmit = () => null,
     modifyPayload = () => null
@@ -56,7 +57,7 @@ const RadaForm = ({
 
     return (
         <form onSubmit={submit} className={className}>
-            <div>
+            <div className={`${inputsContainer}`}>
                 {children}
             </div>
             <Button className={`${btnClass} p-3 mt-8`} type='submit' loading={loading}>{btnText}</Button>

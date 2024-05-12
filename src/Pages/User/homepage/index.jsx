@@ -3,11 +3,12 @@ import styles from './homepage.module.scss'
 // import { images } from 'Assets'
 // import { useNavigate } from 'react-router-dom'
 import UserLogin from '../Auth/Login'
+// import Text from 'Components/Text'
 
 
 const Homepage = () => {
 
-  
+
 
   return (
 
@@ -17,6 +18,8 @@ const Homepage = () => {
         {/* <p style={{ fontWeight: 'bold', fontSize: '18px', textAlign: 'center', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>CHOOSE YOUR ASSET</p> */}
       </div>
       <div className={styles.comp} >
+
+        
 
 
         <UserLogin />
