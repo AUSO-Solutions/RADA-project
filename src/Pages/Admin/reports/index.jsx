@@ -38,6 +38,32 @@ const Reports = () => {
       return column
     })
   }
+  const actions = (name, key, data, idKey) => {
+    console.log(data[idKey], idKey)
+    return [
+      {
+        component: 'Accept', onClick: () => disptach(openModal({
+          title: "Accept",
+          component: <Action component={`Are you sure yo want to accept this ${name} data?`}
+            url={`/fields/change-${key}-status/${data[idKey]}?status=APPROVED&fieldId=${data[idKey]}`} />,
+        }))
+      },
+      {
+        component: 'Modify',
+        onClick: () => disptach(openModal({
+          title: "Modify",
+          component: <Modify form={name} data={data} url={`/fields/${key}/${data[idKey]}`} />
+        })),
+
+      },
+      {
+        component: 'Roll back', onClick: () => disptach(openModal({
+          title: "Roll back",
+          component: <Action component={`Mark this ${name} data as denied`} />,
+        }))
+      },
+    ]
+  }
   return (
     <Layout name={"FIELD REPORTS"}>
       <div style={{ padding: '20px', width: '100%' }}>
@@ -46,33 +72,23 @@ const Reports = () => {
         </ div>
 
 
-        {(tab === 0) && <UserData url={'/fields/get-all-production-volume'} header={'Production Volume'} fn={(data) => update_column(data)} actions={(data) => <TableAction
-          actions={[
-            {
-              component: 'Accept', onClick: () => disptach(openModal({
-                title: "Accept",
-                component: <Action component={'Are you sure yo want to accept this production volume data?'} />,
-              }))
-            },
-            {
-              component: 'Modify',
-              onClick: () => disptach(openModal({
-                title: "Modify",
-                component: <Modify form={'Production Volume'} data={data} url={`/fields/production-volume/${data.productionVolumeID}`} />
-              })),
+        {(tab === 0) && <UserData url={'/fields/get-all-production-volume'} header={'Production Volume'} fn={(data) => update_column(data)}
+          actions={(data) => <TableAction
+            actions={actions('Production volume', 'production-volume', data, 'productionVolumeID')}
+          />}
+          idKey={'productionVolumeID'} />}
+        {(tab === 1) && <UserData url={'fields/get-all-cumulative-production'} header={'Cumulative Production'} fn={(data) => update_column(data)}
+          actions={(data) => <TableAction
+            actions={actions('Cumulative production volume', 'cumulative-production', data, 'productionVolumeId')}
+          />
+          }
+        />}
+        {(tab === 2) && <UserData url={'fields/get-all-well-flow'} header={'Well Flow'} fn={(data) => update_column(data)}
 
-            },
-            {
-              component: 'Roll back', onClick: () => disptach(openModal({
-                title: "Roll back",
-                component: <Action component={'Mark this production volume data as denied'} />,
-              }))
-            },
-          ]}
-        />
-        } idKey={'productionVolumeID'} />}
-        {(tab === 1) && <UserData url={'fields/get-all-cumulative-production'} header={'Cumulative Production'} fn={(data) => update_column(data)} />}
-        {(tab === 2) && <UserData url={'fields/get-all-well-flow'} header={'Well Flow'} fn={(data) => update_column(data)} />}
+          actions={(data) => <TableAction
+            actions={actions('Cumulative production volume', 'cumulative-production', data, 'productionVolumeId')}
+          />
+          } />}
 
       </div>
     </Layout>

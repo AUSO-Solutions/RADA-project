@@ -1,10 +1,11 @@
 .body {
-    width: 100%;
+    width: 500px;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 2 4px;
     justify-content: center;
     align-items: center;
+    // background-color: white;
 
     .ped {
         display: flex;
@@ -14,6 +15,7 @@
     }
 
     .comp {
+        // background-color: ;
         display: flex;
         // margin-top: 30px;
         justify-content: center;

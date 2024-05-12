@@ -1,7 +1,4 @@
 import React from "react";
-import CtaCard from "Components/ctacard/ctacard";
-import { GrDocumentUpdate } from "react-icons/gr";
-import { LuFileInput } from "react-icons/lu";
 import Text from "Components/Text";
 import { Button } from "Components";
 

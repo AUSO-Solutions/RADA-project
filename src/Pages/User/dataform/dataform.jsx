@@ -38,8 +38,16 @@ const DataForm = () => {
 
   return (
 
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '30px',  justifyContent: 'center', alignItems: 'center' , overflow:'scroll'}}
->
+    <div
+      style={{
+        display: 'flex', gap: '30px',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        maxHeight: "700px", overflow: 'scroll',
+      }}
+      className='border bg-danger pt-[50px]'
+    >
       {Object.values(forms).map((form) => {
         return (
           <Dropdown header={form.name}>

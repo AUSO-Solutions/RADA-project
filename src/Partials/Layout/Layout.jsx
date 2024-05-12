@@ -2,9 +2,7 @@ import React from 'react'
 import styles from './layout.module.scss'
 import { images } from 'Assets'
 import { useSelector } from 'react-redux'
-import Text from 'Components/Text'
-import { Divider } from '@mui/material'
-import img from '../../Assets/images/oml147.svg'
+import img from '../../Assets/images/newcrossfield.jpg'
 
 
 const Layout = ({ children }) => {
@@ -17,12 +15,12 @@ const Layout = ({ children }) => {
     return (
         <div className={styles.layout} >
 
-            <div style={{ backgroundImage: `url(${img})`, backgroundRepeat: 'no-repeat',  backgroundPosition:'center', backgroundSize: 'cover', height: "100vh", width: "100vw", backgroundBlendMode: 'normal', }} className='!bg-[#000] absolute z-[1] opacity-[.5]' >
-                
+            <div style={{ backgroundImage: `url(${img})`, backgroundRepeat: 'no-repeat', backgroundPosition: 'center', backgroundSize: 'cover', height: "100vh", width: "100vw", backgroundBlendMode: 'multiply', color:'' }} className='!bg-[darkslategray] absolute z-[1] opacity-[.9]' >
+
             </div>
 
-            <div className={`absolute z-[10] ${styles.content}`}>
-                <div className='z-[1] flex flex-col justify-center items-center'>
+            <div className={`absolute z-[10] flex flex-col h-full -center ${styles.content}`}>
+                <div className='z-[1] flex flex-col justify-center  items-center'>
                     <div>
                         <img src={state?.assetType === 'OML_152' ? images.newcross152 : state?.assetType === 'OML_147' ? images.panocean147 : state?.assetType === 'OML_24' ? images.nepl24 : images.logo} alt="" />
                     </div>
