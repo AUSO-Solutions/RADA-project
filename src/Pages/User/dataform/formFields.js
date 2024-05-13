@@ -2,6 +2,7 @@ export const forms = {
 
     "Production Volume": {
         name: "Production Volume",
+        key:'productionVolume',
         url: "/fields/create-production-volume-field",
         fields: [
             { type: "text", name: "wellID", label: "Well ID" },
@@ -18,6 +19,7 @@ export const forms = {
     },
     "Cumulative Production": {
         name: "Cumulative Production",
+        key:'cumulativeProduction',
         url: "/fields/create-cumulative-production-field",
         fields: [
             { type: "text", name: "wellIdentity", label: "Well ID" },
@@ -38,6 +40,7 @@ export const forms = {
     },
     "Well Flow": {
         name: "Well Flow",
+        key:'wellFlow',
         url: "/fields/create-well-flow-field",
         fields: [
 

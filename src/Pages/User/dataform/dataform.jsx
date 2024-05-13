@@ -1,13 +1,16 @@
 import { Input, RadaForm } from 'Components'
 import Dropdown from 'Components/dropdown'
-import React, { useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
-import { BsXLg } from 'react-icons/bs'
+import { BsCheck, BsXLg } from 'react-icons/bs'
 // import { toast } from 'react-toastify';
 import { forms } from './formFields';
 import { useSelector } from 'react-redux';
+import Tab from 'Components/tab';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useQuery } from 'react-query';
 
 
 const DataForm = () => {
@@ -34,7 +37,55 @@ const DataForm = () => {
   };
 
   const state = useSelector(state => state.auth.user)
+  const { search, pathname } = useLocation()
+  const navigate = useNavigate()
 
+  const [tab, setTab] = useState(0)
+  const tabs = [
+    'New field data',
+    'Existing field data'
+  ]
+  const handleFormChange = (index) => {
+    const selectedTab = tabs[index]
+    const page = (selectedTab?.replaceAll(' ', '-')?.toLowerCase())
+    const link = page === 'existing-field-data' ? `?page=${page}&field-id=1` : `?page=${page}`
+    navigate(pathname + link)
+  }
+  const currentPage = useMemo(() => {
+    const page = new URLSearchParams(search).get("page")?.replaceAll('-', ' ') || " "
+    const fieldId = new URLSearchParams(search).get("field-id")?.replaceAll('-', ' ') || null
+    const currTab_ = page[0].toUpperCase() + page.slice(1);
+    const currTab = tabs.indexOf(currTab_)
+    return {
+      currTab, fieldId
+    }
+  }, [search])
+
+  const { data: field } = useQuery(`/fields/get-field-by-id/${currentPage?.fieldId}`, { enabled: Boolean(parseInt(currentPage?.fieldId)) })
+
+  const existing_form_data = useMemo(() => {
+
+    const entries = Object.entries(field || {}) || []
+    return { entries, field: field || {} }
+  }, [field])
+
+
+  const isExist = useCallback((key) => {
+    return existing_form_data.field[key] || false
+  }, [])
+  const getDefaultValue = useCallback((key, innerKey) => {
+    let value = ''
+
+    if (field) {
+      if (field[key]) {
+        if (field[key][innerKey]) {
+          value = field[key][innerKey]
+        }
+      }
+    }
+    return value
+
+  }, [existing_form_data])
 
   return (
 
@@ -48,9 +99,12 @@ const DataForm = () => {
       }}
       className=' bg-danger py-[50px]'
     >
+      < div style={{ display: 'flex', gap: '20px', }} className='b'>
+        {tabs.map((x, i) => <Tab className='!text-[white]' key={i} text={x} active={i === currentPage.currTab} onClick={() => handleFormChange(i)} />)}
+      </ div>
       {Object.values(forms).map((form) => {
         return (
-          <Dropdown header={form.name}>
+          <Dropdown header={<div className='flex gap-2 items-center'>{form.name} {isExist(form.key) && <BsCheck />} </div>}>
             <RadaForm
               method={'post'}
               btnText={'Save'}
@@ -63,7 +117,8 @@ const DataForm = () => {
                 {
                   form.fields.map(field => (
                     <div className={'!min-w-[47%]'}>
-                      <Input {...field} />
+                      { }
+                      <Input {...field} defaultValue={getDefaultValue(form.key, field.name)} />
                     </div>
                   ))
                 }
