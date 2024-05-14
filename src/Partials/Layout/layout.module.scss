@@ -5,10 +5,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: linear-gradient(rgb(31, 30, 30), rgba(11, 11, 11, 0.911));
+    background: linear-gradient(rgb(228, 224, 224), rgba(153, 147, 147, 0.911));
     // background-image: '../../Assets/images/oml147.svg';
     // justify-content: center;
-    // overflow-y: scroll;
+    overflow-y: scroll;
 
 
     .content {
@@ -20,7 +20,7 @@
         // overflow-y: scroll;
         // gap: 24px;
         height: 100%;
-        overflow: auto;
+        // overflow-y: auto;
 
         // width: auto;
         padding: 0px 0px 0px 0px;
