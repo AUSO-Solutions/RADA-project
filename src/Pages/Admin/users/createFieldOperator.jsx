@@ -23,7 +23,7 @@ const CreateFieldOperator = () => {
             <Input label={'Last Name'} name='lastName' />
             <Input label={'Username'} name='email' />
 
-            <Input label={'Asset'} name='assetType' type='select' options={Object.values(asset_types).map(type => ({ label: type.name, value: type.value }))} />
+            <Input label={'Asset'} name='assetType' type='select' options={Object.values(asset_types).map(type => ({ label: type.value, value: type.value }))} />
         </RadaForm>
     )
 }
