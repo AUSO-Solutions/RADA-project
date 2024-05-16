@@ -51,16 +51,15 @@ const Profile = () => {
                         </div>
                     </div>
 
-                    <div className={dataContainer}>
+                  {state.data.assetType  &&  <div className={dataContainer}>
                         <div className={nameClass}>
                             Asset type
                         </div>
                         <div className={dataClass}>
                             {state.data.assetType}
                         </div>
-                    </div>
+                    </div>}
 
-                    <Link>Change password</Link>
                 </div>
             }
             {

@@ -24,7 +24,7 @@ const CreateQAQC = () => {
             <Input label={'First Name'} name='firstName' />
             <Input label={'Last Name'} name='lastName' />
             <Input label={'Username'} name='email' />
-            <Input label={'Asset'} name='asset' type='select' options={Object.values(asset_types).map(type => ({ label: type.name, value: type.value }))} />
+            <Input label={'Asset'} name='assetType' type='select' options={Object.values(asset_types).map(type => ({ label: type.value, value: type.value }))} />
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: '300px' }} >
                 {/* <Button width={'100px'} shadow onClick={() => window.location.pathname.includes('152') ? navigate('/152/register') : window.location.pathname.includes('147') ? navigate('/147/register') : navigate('/24/register')} >
                     Register
