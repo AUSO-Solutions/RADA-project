@@ -17,8 +17,8 @@ const Modify = ({ form, data, url }) => {
 
   return (
     <RadaForm btnText={'Modify'} method={'patch'} url={url} modifyPayload={(payload) => convertDataToPatchPayload(payload)}>
-      <div className='flex  flex-wrap'>
-        {forms[form].fields.map(field => <Input className={'w-[45%]'} defaultValue={data[field.name]} {...field} />)}
+      <div className='flex  flex-wrap'> {form}
+        {forms[form]?.fields.map(field => <Input className={'w-[45%]'} defaultValue={data[field.name]} {...field} />)}
       </div>
     </RadaForm>
   )
@@ -39,13 +39,13 @@ const Reports = () => {
     })
   }
   const actions = (name, key, data, idKey) => {
-    console.log(data[idKey], idKey)
+
     return [
       {
         component: 'Accept', onClick: () => disptach(openModal({
           title: "Accept",
-          component: <Action component={`Are you sure yo want to accept this ${name} data?`}
-            url={`/fields/change-${key}-status/${data[idKey]}?status=APPROVED&fieldId=${data[idKey]}`} />,
+          component: <Action method={'put'} component={`Are you sure yo want to accept this ${name} data?`}
+            url={`/change-${key}-status/${data[idKey]}?status=APPROVED&fieldId=${data[idKey]}`} />,
         }))
       },
       {
@@ -59,7 +59,7 @@ const Reports = () => {
       {
         component: 'Roll back', onClick: () => disptach(openModal({
           title: "Roll back",
-          component: <Action component={`Mark this ${name} data as denied`} />,
+          component: <Action method={'put'} component={`Mark this ${name} data as denied`}   url={`/change-${key}-status/${data[idKey]}?status=REJECTED&fieldId=${data[idKey]}`}/>,
         }))
       },
     ]
@@ -72,18 +72,18 @@ const Reports = () => {
         </ div>
 
 
-        {(tab === 0) && <UserData url={'/fields/get-all-production-volume'} header={'Production Volume'} fn={(data) => update_column(data)}
+        {(tab === 0) && <UserData url={'/get-all-production-volume'} header={'Production Volume'} fn={(data) => update_column(data)}
           actions={(data) => <TableAction
-            actions={actions('Production volume', 'production-volume', data, 'productionVolumeID')}
+            actions={actions('Production Volume', 'production-volume', data, 'productionVolumeID')}
           />}
           idKey={'productionVolumeID'} />}
-        {(tab === 1) && <UserData url={'fields/get-all-cumulative-production'} header={'Cumulative Production'} fn={(data) => update_column(data)}
+        {(tab === 1) && <UserData url={'get-all-cumulative-production'} header={'Cumulative Production'} fn={(data) => update_column(data)}
           actions={(data) => <TableAction
-            actions={actions('Cumulative production volume', 'cumulative-production', data, 'productionVolumeId')}
+            actions={actions('Cumulative production olume', 'cumulative-production', data, 'productionVolumeId')}
           />
           }
         />}
-        {(tab === 2) && <UserData url={'fields/get-all-well-flow'} header={'Well Flow'} fn={(data) => update_column(data)}
+        {(tab === 2) && <UserData url={'get-all-well-flow'} header={'Well Flow'} fn={(data) => update_column(data)}
 
           actions={(data) => <TableAction
             actions={actions('Cumulative production volume', 'cumulative-production', data, 'productionVolumeId')}

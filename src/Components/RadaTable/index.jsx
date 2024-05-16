@@ -61,9 +61,9 @@ export default function RadaTable({ data = [], columns = [], fn = () => null, ac
 
                                 }
                                 {!noaction && <StyledTableCell align="right">
-                                    <BsThreeDots color='black' className='cursor-pointer' onClick={() => setShowAction(true)} />
+                                    <BsThreeDots color='black' className='cursor-pointer' onClick={() => setShowAction(i)} />
                                     {
-                                        showAction && <>
+                                        (showAction === i) && <>
                                         <div className='h-[100vh] w-[100vw] top-0 left-0  fixed' onClick={()=>setShowAction(false)}></div>
                                             <div className='absolute flex flex-col bg-white shadow rounded-[8px]  min-w-[100px] text-left right-[50px]'>
                                                 {actions(data[i], i)}

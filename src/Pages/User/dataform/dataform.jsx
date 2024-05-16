@@ -37,6 +37,7 @@ const DataForm = () => {
   };
 
   const state = useSelector(state => state.auth.user)
+  console.log(state)
   const { search, pathname } = useLocation()
   const navigate = useNavigate()
 
