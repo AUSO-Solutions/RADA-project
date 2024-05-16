@@ -40,7 +40,7 @@ const DataForm = () => {
   const { search, pathname } = useLocation()
   const navigate = useNavigate()
 
-  const [tab, setTab] = useState(0)
+ 
   const tabs = [
     'New field data',
     'Existing field data'
@@ -91,17 +91,20 @@ const DataForm = () => {
 
     <div
       style={{
-        display: 'flex', gap: '30px',
+        display: 'grid', gap: '30px',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
+        overflowY:'auto'
+        ,
+        placeItems:'center'
         // height: "700px", 
       }}
-      className=' bg-danger py-[50px]'
+      className=' w-full h-[600px] py-4'
     >
-      < div style={{ display: 'flex', gap: '20px', }} className='b'>
+      {/* < div style={{ display: 'flex', gap: '20px', }} className='b'>
         {tabs.map((x, i) => <Tab className='!text-[white]' key={i} text={x} active={i === currentPage.currTab} onClick={() => handleFormChange(i)} />)}
-      </ div>
+      </ div> */}
       {Object.values(forms).map((form) => {
         return (
           <Dropdown header={<div className='flex gap-2 items-center'>{form.name} {isExist(form.key) && <BsCheck />} </div>}>
