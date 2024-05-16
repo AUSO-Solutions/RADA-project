@@ -35,7 +35,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 export default function RadaTable({ data = [], columns = [], fn = () => null, actions = () => null, noaction, idKey = "id" }) {
     const updatec = useMemo(() => {
         return fn() ? fn(columns) : columns
-    }, [columns,fn])
+    }, [columns, fn])
     const [showAction, setShowAction] = React.useState(false)
 
 
@@ -46,36 +46,36 @@ export default function RadaTable({ data = [], columns = [], fn = () => null, ac
                     <TableRow>
                         <StyledTableCell>S/N</StyledTableCell>
                         {
-                            updatec.map((column,i) => <StyledTableCell key={i} >{column.name}</StyledTableCell>)
+                            updatec.map((column, i) => <StyledTableCell key={i} >{column.name}</StyledTableCell>)
                         }
-                        <StyledTableCell>Action</StyledTableCell>
+                        {!noaction && <StyledTableCell>Action</StyledTableCell>}
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    { data.map((row, i) => (
-                        <React.Fragment   key={i}>
+                    {data.map((row, i) => (
+                        <React.Fragment key={i}>
                             <StyledTableRow>
                                 <StyledTableCell align="right">{i + 1} </StyledTableCell>
                                 {
-                                    updatec.map((column,inner_index) => <StyledTableCell key={i+inner_index} align="left">{row[column.key]}</StyledTableCell>)
+                                    updatec.map((column, inner_index) => <StyledTableCell key={i + inner_index} align="left">{row[column.key]}</StyledTableCell>)
 
                                 }
                                 {!noaction && <StyledTableCell align="right">
                                     <BsThreeDots color='black' className='cursor-pointer' onClick={() => setShowAction(i)} />
                                     {
                                         (showAction === i) && <>
-                                        <div className='h-[100vh] w-[100vw] top-0 left-0  fixed' onClick={()=>setShowAction(false)}></div>
+                                            <div className='h-[100vh] w-[100vw] top-0 left-0  fixed' onClick={() => setShowAction(false)}></div>
                                             <div className='absolute flex flex-col bg-white shadow rounded-[8px]  min-w-[100px] text-left right-[50px]'>
                                                 {actions(data[i], i)}
 
                                             </div>
-                                            </>
+                                        </>
                                     }
                                 </StyledTableCell>}
                             </StyledTableRow>
                         </React.Fragment>
 
-                    )) }
+                    ))}
                 </TableBody>
             </Table>
         </TableContainer>

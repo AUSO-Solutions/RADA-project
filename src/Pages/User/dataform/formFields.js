@@ -2,10 +2,11 @@ export const forms = {
 
     "Production Volume": {
         name: "Production Volume",
-        key:'productionVolume',
+        key: 'productionVolume',
         url: "/create-production-volume-field",
         fields: [
-            { type: "text", name: "wellIdentity", label: "Well ID" },
+            { type: "text", name: "wellIdentity", label: "Well ID", in: ['input'] },
+            { type: "text", name: "wellID", label: "Well ID", in: ['table'] },
             { type: "text", name: "basicSedimentAndWater", label: "Basic Sediment and Water" },
             { type: "text", name: "netOil", label: "Net Oil" },
             { type: "text", name: "producedGas", label: "Produced Gas" },
@@ -19,10 +20,11 @@ export const forms = {
     },
     "Cumulative Production": {
         name: "Cumulative Production",
-        key:'cumulativeProduction',
+        key: 'cumulativeProduction',
         url: "/create-cumulative-production-field",
         fields: [
-            { type: "text", name: "wellIdentity", label: "Well ID" },
+            { type: "text", name: "wellIdentity", label: "Well ID", in: ['input'] },
+            { type: "text", name: "wellID", label: "Well ID", in: ['table'] },
             { type: "text", name: "productionDaysUptime", label: "Production Days Uptime" },
             { type: "text", name: "chokeSize", label: "Choke Size" },
             { type: "text", name: "oilRate", label: "Oil Rate" },
@@ -40,11 +42,11 @@ export const forms = {
     },
     "Well Flow": {
         name: "Well Flow",
-        key:'wellFlow',
-        url: "/fields/create-well-flow-field",
+        key: 'wellFlow',
+        url: "/create-well-flow-field",
         fields: [
-
-            { type: "text", name: "wellIdentity", label: "Well ID" },
+            { type: "text", name: "wellIdentity", label: "Well ID", in: ['input'] },
+            // { type: "text", name: "wellID", label: "Well ID", in: ['table'] },
             { type: "text", name: "flowingTurbingHeadPressureTHB", label: "Flowing Turbing Head Pressure THB" },
             { type: "text", name: "flowLinePressure", label: "Flow Line Pressure" },
             { type: "text", name: "chokeSize", label: "Choke Size" },

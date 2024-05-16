@@ -8,7 +8,6 @@ import { BsCheck, BsXLg } from 'react-icons/bs'
 // import { toast } from 'react-toastify';
 import { forms } from './formFields';
 import { useSelector } from 'react-redux';
-import Tab from 'Components/tab';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useQuery } from 'react-query';
 
@@ -37,7 +36,6 @@ const DataForm = () => {
   };
 
   const state = useSelector(state => state.auth.user)
-  console.log(state)
   const { search, pathname } = useLocation()
   const navigate = useNavigate()
 
@@ -46,12 +44,12 @@ const DataForm = () => {
     'New field data',
     'Existing field data'
   ]
-  const handleFormChange = (index) => {
-    const selectedTab = tabs[index]
-    const page = (selectedTab?.replaceAll(' ', '-')?.toLowerCase())
-    const link = page === 'existing-field-data' ? `?page=${page}&field-id=1` : `?page=${page}`
-    navigate(pathname + link)
-  }
+  // const handleFormChange = (index) => {
+  //   const selectedTab = tabs[index]
+  //   const page = (selectedTab?.replaceAll(' ', '-')?.toLowerCase())
+  //   const link = page === 'existing-field-data' ? `?page=${page}&field-id=1` : `?page=${page}`
+  //   navigate(pathname + link)
+  // }
   const currentPage = useMemo(() => {
     const page = new URLSearchParams(search).get("page")?.replaceAll('-', ' ') || " "
     const fieldId = new URLSearchParams(search).get("field-id")?.replaceAll('-', ' ') || null
