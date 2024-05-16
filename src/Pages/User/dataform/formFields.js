@@ -3,9 +3,9 @@ export const forms = {
     "Production Volume": {
         name: "Production Volume",
         key:'productionVolume',
-        url: "/fields/create-production-volume-field",
+        url: "/create-production-volume-field",
         fields: [
-            { type: "text", name: "wellID", label: "Well ID" },
+            { type: "text", name: "wellIdentity", label: "Well ID" },
             { type: "text", name: "basicSedimentAndWater", label: "Basic Sediment and Water" },
             { type: "text", name: "netOil", label: "Net Oil" },
             { type: "text", name: "producedGas", label: "Produced Gas" },
@@ -20,7 +20,7 @@ export const forms = {
     "Cumulative Production": {
         name: "Cumulative Production",
         key:'cumulativeProduction',
-        url: "/fields/create-cumulative-production-field",
+        url: "/create-cumulative-production-field",
         fields: [
             { type: "text", name: "wellIdentity", label: "Well ID" },
             { type: "text", name: "productionDaysUptime", label: "Production Days Uptime" },
