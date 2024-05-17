@@ -8,7 +8,7 @@ import { BsCheck, BsXLg } from 'react-icons/bs'
 // import { toast } from 'react-toastify';
 import { forms } from './formFields';
 import { useSelector } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useQuery } from 'react-query';
 
 
@@ -36,8 +36,7 @@ const DataForm = () => {
   };
 
   const state = useSelector(state => state.auth.user)
-  const { search, pathname } = useLocation()
-  const navigate = useNavigate()
+  const { search } = useLocation()
 
  
   const tabs = [
@@ -58,6 +57,7 @@ const DataForm = () => {
     return {
       currTab, fieldId
     }
+    // eslint-disable-next-line
   }, [search])
 
   const { data: field } = useQuery(`/fields/get-field-by-id/${currentPage?.fieldId}`, { enabled: Boolean(parseInt(currentPage?.fieldId)) })
@@ -71,7 +71,7 @@ const DataForm = () => {
 
   const isExist = useCallback((key) => {
     return existing_form_data.field[key] || false
-  }, [])
+  }, [existing_form_data?.field])
   const getDefaultValue = useCallback((key, innerKey) => {
     let value = ''
 
@@ -84,7 +84,7 @@ const DataForm = () => {
     }
     return value
 
-  }, [existing_form_data])
+  }, [field])
 
   return (
 
