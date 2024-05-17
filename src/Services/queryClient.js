@@ -6,7 +6,7 @@ export const queryClient = new QueryClient({
         queries: {
             queryFn: async ({ queryKey: [url] }) => {
                 if (typeof url === 'string') {
-                    const data  = await apiRequest({ url: url.toLowerCase(), hasAuth: true, showError: false })
+                    const data  = await apiRequest({ url, hasAuth: true, showError: false })
                     // console.log(data)
                     return data
                 }
