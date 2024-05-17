@@ -38,7 +38,7 @@ const DataForm = () => {
   const state = useSelector(state => state.auth.user)
   const { search } = useLocation()
 
- 
+
   const tabs = [
     'New field data',
     'Existing field data'
@@ -95,7 +95,7 @@ const DataForm = () => {
         justifyContent: 'center',
         alignItems: 'center',
         // overflowY:'auto',
-        placeItems:'center'
+        placeItems: 'center'
         // height: "700px", 
       }}
       className=' w-full h-[600px] py-4'
@@ -116,7 +116,7 @@ const DataForm = () => {
 
               <div className='flex flex-wrap justify-between'>
                 {
-                  form.fields.map(field => (
+                  form.fields.filter(field => field?.in?.includes('input') || !field?.in?.length).map(field => (
                     <div className={'!min-w-[47%]'}>
                       { }
                       <Input {...field} defaultValue={getDefaultValue(form.key, field.name)} />

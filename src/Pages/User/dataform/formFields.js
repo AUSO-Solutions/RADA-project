@@ -46,7 +46,7 @@ export const forms = {
         url: "/create-well-flow-field",
         fields: [
             { type: "text", name: "wellIdentity", label: "Well ID", in: ['input'] },
-            // { type: "text", name: "wellID", label: "Well ID", in: ['table'] },
+            { type: "text", name: "wellID", label: "Well ID", in: ['table'] },
             { type: "text", name: "flowingTurbingHeadPressureTHB", label: "Flowing Turbing Head Pressure THB" },
             { type: "text", name: "flowLinePressure", label: "Flow Line Pressure" },
             { type: "text", name: "chokeSize", label: "Choke Size" },
