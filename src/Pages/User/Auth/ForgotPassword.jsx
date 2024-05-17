@@ -84,7 +84,7 @@ const ForgotPassword = () => {
         // eslint-disable-next-line
     }, [search])
 
-    const formClass = 'w-[400px] h-[100%] mx-auto flex flex-col items-center   pt-[7%]'
+    const formClass = 'w-[500px] mx-auto flex flex-col items-center justify-center bg-[white] p-[50px] shadow-[_5px_5px_4px_rgba(0,0,0,0.25)] rounded-[5px] '
     return (
         <RadaForm
             className={formClass}

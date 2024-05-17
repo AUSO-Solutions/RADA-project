@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import * as Yup from 'yup';
 
 const ChangePassword = () => {
-  const formClass = 'w-[500px]  h-[100%] flex flex-col items-center  pt-[20px]'
+  const formClass = 'w-[500px] mx-auto flex flex-col items-center justify-center p-[50px] shadow-[_5px_5px_4px_rgba(0,0,0,0.25)] rounded-[5px]'
   const user = useSelector(state => state?.auth?.user)
 
   const schema = Yup.object().shape({

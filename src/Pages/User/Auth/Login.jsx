@@ -22,7 +22,7 @@ const UserLogin = () => {
         <RadaForm
             validationSchema={schema}
             btnClass={'w-[100%] '}
-            className={'w-[500px] mx-auto text-[white]'}
+            className={'w-[500px] mx-auto text-[black] bg-[white] p-[50px] shadow-[_5px_5px_4px_rgba(0,0,0,0.25)] rounded-[5px]'}
             // #0274bd
             btnText={'Login'}
             url={'/users/login'}
