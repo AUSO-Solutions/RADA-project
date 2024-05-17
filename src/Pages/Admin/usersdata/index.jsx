@@ -12,7 +12,7 @@ const UserData = ({ url, header, fn = () => null, actions, idKey, ...props }) =>
   const addAssetType = useMemo(() => {
     const assetType = state?.data?.assetType
 
-    return assetType ? `-by-asset-type?asset_type=${'OML_147'}` : ''
+    return assetType ? `-by-asset-type?asset_type=${assetType}` : ''
   }, [])
 
 
