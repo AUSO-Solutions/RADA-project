@@ -35,13 +35,13 @@ const UserLogin = () => {
                 // console.log(role)
                 const roles_login_paths = {
                     "SUPER_ADMIN": "/admin/home",
-                    "FIELD_OPERATOR": "/field-op-cta",
+                    "FIELD_OPERATOR": "/data-form",
                     "QUALITY_CONTROLLER": '/admin/home'
                 }
                 navigate(roles_login_paths[role])
             }}
             onError={err => {
-                if (err?.response?.status === 401){
+                if (err?.response?.status === 401) {
                     toast.error('Account does not exist!')
                 }
             }}
