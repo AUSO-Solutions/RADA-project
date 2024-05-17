@@ -2,11 +2,11 @@ export const forms = {
 
     "Production Volume": {
         name: "Production Volume",
-        key:'productionVolume',
+        key: 'productionVolume',
         url: "/create-production-volume-field",
         fields: [
             { type: "text", name: "wellIdentity", label: "Well ID" },
-            { type: "text", name: "basicSedimentAndWater", label: "Basic Sediment and Water" },
+            { type: "text", name: "basicSedimentAndWater", label: "BS & Water" },
             { type: "text", name: "netOil", label: "Net Oil" },
             { type: "text", name: "producedGas", label: "Produced Gas" },
             { type: "text", name: "exportGas", label: "Export Gas" },
@@ -19,7 +19,7 @@ export const forms = {
     },
     "Cumulative Production": {
         name: "Cumulative Production",
-        key:'cumulativeProduction',
+        key: 'cumulativeProduction',
         url: "/create-cumulative-production-field",
         fields: [
             { type: "text", name: "wellIdentity", label: "Well ID" },
@@ -28,7 +28,7 @@ export const forms = {
             { type: "text", name: "oilRate", label: "Oil Rate" },
             { type: "text", name: "gasRate", label: "Gas Rate" },
             { type: "text", name: "waterRate", label: "Water Rate" },
-            { type: "text", name: "basicSedimentAndWater", label: "Basic Sediment and Water" },
+            { type: "text", name: "basicSedimentAndWater", label: "BS & Water" },
             { type: "text", name: "grossOil", label: "Gross Oil" },
             { type: "text", name: "netOil", label: "Net Oil" },
             { type: "text", name: "cumulativeOil", label: "Cumulative Oil" },
@@ -40,7 +40,7 @@ export const forms = {
     },
     "Well Flow": {
         name: "Well Flow",
-        key:'wellFlow',
+        key: 'wellFlow',
         url: "/fields/create-well-flow-field",
         fields: [
 

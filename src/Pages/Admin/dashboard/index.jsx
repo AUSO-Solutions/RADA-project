@@ -38,9 +38,9 @@ const Dashboard = () => {
         <div className={styles.container}>
 
           <div className={styles.header}>
-            <InfoCard url={'fields/get-all-production-volume'} name={'Total Production Volume'} />
-            <InfoCard url={'fields/get-all-cumulative-production'} name={'Total Cumulative Production'} />
-            <InfoCard url={'fields/get-all-well-flow'} name={'Total Well Flow'} />
+            <InfoCard url={'get-all-production-volume'} name={'Total Production Volume'} />
+            <InfoCard url={'get-all-cumulative-production'} name={'Total Cumulative Production'} />
+            <InfoCard url={'get-all-well-flow'} name={'Total Well Flow'} />
           </div>
         </div>
       </div>
