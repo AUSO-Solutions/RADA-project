@@ -94,8 +94,7 @@ const DataForm = () => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        overflowY:'auto'
-        ,
+        // overflowY:'auto',
         placeItems:'center'
         // height: "700px", 
       }}
