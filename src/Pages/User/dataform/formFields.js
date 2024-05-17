@@ -6,7 +6,7 @@ export const forms = {
         url: "/create-production-volume-field",
         fields: [
             { type: "text", name: "wellIdentity", label: "Well ID", in: ['input'] },
-            { type: "text", name: "wellID", label: "Well ID", in: ['table'] },
+            // { type: "text", name: "wellID", label: "Well ID", in: ['table'] },
             { type: "text", name: "basicSedimentAndWater", label: "BS & Water" },
             { type: "text", name: "netOil", label: "Net Oil" },
             { type: "text", name: "producedGas", label: "Produced Gas" },
@@ -24,7 +24,7 @@ export const forms = {
         url: "/create-cumulative-production-field",
         fields: [
             { type: "text", name: "wellIdentity", label: "Well ID", in: ['input'] },
-            { type: "text", name: "wellID", label: "Well ID", in: ['table'] },
+            // { type: "text", name: "wellID", label: "Well ID", in: ['table'] },
             { type: "text", name: "productionDaysUptime", label: "Production Days Uptime" },
             { type: "text", name: "chokeSize", label: "Choke Size" },
             { type: "text", name: "oilRate", label: "Oil Rate" },

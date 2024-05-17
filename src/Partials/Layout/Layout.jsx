@@ -20,7 +20,7 @@ const Layout = ({ children }) => {
             </div>
 
             <div className={`absolute z-[10] ${styles.content}`}>
-                <div className='z-[1] flex  justify-between items-center shadow-[_0px_5px_4px_rgba(0,0,0,0.25)] bg-[white] w-[100%] pl-[20px] pr-[20px] fixed top-0'>
+                <div className='z-[1] flex  justify-between items-center shadow-[_0px_5px_4px_rgba(0,0,0,0.25)] bg-[white] w-[100%] pl-[20px] pr-[20px] pb-[10px] pt-[10px] fixed top-0'>
 
                     <div>
                         <p style={{ fontWeight: 'bold', fontSize: '26px', textAlign: 'center', display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'black' }}>PED WEB APPLICATION</p>
