@@ -4,7 +4,7 @@ import Tab from 'Components/tab'
 import UserData from '../usersdata'
 import TableAction from 'Components/RadaTable/TableAction'
 import { useDispatch } from 'react-redux'
-import { openModal } from 'Store/slices/modalSlice'
+import { closeModal, openModal } from 'Store/slices/modalSlice'
 import Action from './Action'
 import { Input, RadaForm } from 'Components'
 import { forms } from 'Pages/User/dataform/formFields'
@@ -45,7 +45,7 @@ const Reports = () => {
         component: 'Accept', onClick: () => disptach(openModal({
           title: "Accept",
           component: <Action method={'put'} component={`Are you sure yo want to accept this ${name} data?`}
-            url={`/change-${key}-status/${data[idKey]}?status=APPROVED&fieldId=${data[idKey]}`} />,
+            url={`/change-${key}-status/${data[idKey]}?status=APPROVED&fieldId=${data[idKey]}`} onSuccess={()=>disptach(closeModal())} />,
         }))
       },
       {
@@ -59,7 +59,7 @@ const Reports = () => {
       {
         component: 'Roll back', onClick: () => disptach(openModal({
           title: "Roll back",
-          component: <Action method={'put'} component={`Mark this ${name} data as denied`}   url={`/change-${key}-status/${data[idKey]}?status=REJECTED&fieldId=${data[idKey]}`}/>,
+          component: <Action method={'put'} component={`Mark this ${name} data as denied`}   url={`/change-${key}-status/${data[idKey]}?status=REJECTED&fieldId=${data[idKey]}`} onSuccess={()=>disptach(closeModal())} />,
         }))
       },
     ]
@@ -86,7 +86,7 @@ const Reports = () => {
         {(tab === 2) && <UserData url={'get-all-well-flow'} header={'Well Flow'} fn={(data) => update_column(data)}
 
           actions={(data) => <TableAction
-            actions={actions('Cumulative production volume', 'cumulative-production', data, 'productionVolumeId')}
+            actions={actions('Well flow', 'well-flow', data, 'wellFlowID')}
           />
           } />}
 
