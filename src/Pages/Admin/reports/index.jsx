@@ -17,8 +17,8 @@ const Modify = ({ form, data, url }) => {
 
   return (
     <RadaForm btnText={'Modify'} method={'patch'} url={url} modifyPayload={(payload) => convertDataToPatchPayload(payload)}>
-      <div className='flex  flex-wrap'> {form}
-        {forms[form]?.fields.map(field => <Input className={'w-[45%]'} defaultValue={data[field.name]} {...field} />)}
+      <div className='flex  flex-wrap'>
+        {forms[form]?.fields.filter(field => field?.in?.includes('input') || !field?.in?.length).map(field => <Input className={'w-[45%]'} defaultValue={data[field.name]} {...field} />)}
       </div>
     </RadaForm>
   )
@@ -45,21 +45,22 @@ const Reports = () => {
         component: 'Accept', onClick: () => disptach(openModal({
           title: "Accept",
           component: <Action method={'put'} component={`Are you sure yo want to accept this ${name} data?`}
-            url={`/change-${key}-status/${data[idKey]}?status=APPROVED&fieldId=${data[idKey]}`} onSuccess={()=>disptach(closeModal())} />,
+            url={`/change-${key}-status/${data[idKey]}?status=APPROVED}`} onSuccess={() => disptach(closeModal())} />,
         }))
       },
       {
         component: 'Modify',
         onClick: () => disptach(openModal({
           title: "Modify",
-          component: <Modify form={name} data={data} url={`/fields/${key}/${data[idKey]}`} />
+          component: <Modify form={name} data={data} url={`/update-${key}/${data[idKey]}`} />
         })),
 
       },
       {
         component: 'Roll back', onClick: () => disptach(openModal({
           title: "Roll back",
-          component: <Action method={'put'} component={`Mark this ${name} data as denied`}   url={`/change-${key}-status/${data[idKey]}?status=REJECTED&fieldId=${data[idKey]}`} onSuccess={()=>disptach(closeModal())} />,
+          component: <Action method={'put'} component={`Mark this ${name} data as denied`}
+            url={`/change-${key}-status/${data[idKey]}?status=REJECTED`} onSuccess={() => disptach(closeModal())} />,
         }))
       },
     ]
@@ -79,14 +80,14 @@ const Reports = () => {
           idKey={'productionVolumeID'} />}
         {(tab === 1) && <UserData url={'get-all-cumulative-production'} header={'Cumulative Production'} fn={(data) => update_column(data)}
           actions={(data) => <TableAction
-            actions={actions('Cumulative production olume', 'cumulative-production', data, 'productionVolumeId')}
+            actions={actions('Cumulative Production Volume', 'cumulative-production', data, 'productionVolumeId')}
           />
           }
         />}
         {(tab === 2) && <UserData url={'get-all-well-flow'} header={'Well Flow'} fn={(data) => update_column(data)}
 
           actions={(data) => <TableAction
-            actions={actions('Well flow', 'well-flow', data, 'wellFlowID')}
+            actions={actions('Well Flow', 'well-flow', data, 'wellFlowID')}
           />
           } />}
 
