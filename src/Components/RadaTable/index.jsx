@@ -57,7 +57,9 @@ export default function RadaTable({ data = [], columns = [], fn = () => null, ac
                             <StyledTableRow>
                                 <StyledTableCell align="right">{i + 1} </StyledTableCell>
                                 {
-                                    updatec.map((column, inner_index) => <StyledTableCell key={i + inner_index} align="left">{row[column.key]}</StyledTableCell>)
+                                    updatec.map((column, inner_index) => <StyledTableCell key={i + inner_index} align="left">
+                                        { column.render(row) ||  row[column.key]}
+                                    </StyledTableCell>)
 
                                 }
                                 {!noaction && <StyledTableCell align="right">

@@ -6,6 +6,7 @@ import ClickAway from '../clickaway';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
+import { logout } from 'Store/slices/auth';
 // import { logOutUser } from "../../store/reducers/user";
 // import ClickAwayListener from 'react-click-away-listener';
 
@@ -15,15 +16,11 @@ function Header() {
     const user = useSelector(state => state.auth.user.data)
     const [drop, setDrop] = useState(false)
     // console.log(user)
-
-
-
-
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
-    const logout = () => {
-        dispatch()
+    const logout_ = () => {
+        dispatch(logout())
         // dispatch(setId(null))
         navigate('/')
     }
@@ -53,8 +50,8 @@ function Header() {
                         </Typography> */}
 
                         {/* <Divider /> */}
-                        <Typography className='font-bold cursor-pointer py-1'
-                            onClick={() => logout()}
+                        <Typography className='font-bold cursor-pointer py-1 relative z-[100]'
+                            onClick={() => logout_()}
                         >
                             Logout</Typography>
                     </div>
