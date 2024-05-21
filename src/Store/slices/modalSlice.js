@@ -5,7 +5,8 @@ export const modalSlice = createSlice({
     initialState:
     {
         title: '',
-        component: ''
+        component: '',
+        closeData: ""
     }
     ,
     reducers: {
@@ -14,8 +15,9 @@ export const modalSlice = createSlice({
             state.title = payload.title
 
         },
-        closeModal: (state) => {
+        closeModal: (state, payload) => {
             state.component = ''
+            state.closeData = payload
         }
 
     }

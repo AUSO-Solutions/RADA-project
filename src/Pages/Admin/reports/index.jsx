@@ -10,15 +10,28 @@ import { Input, RadaForm } from 'Components'
 import { forms } from 'Pages/User/dataform/formFields'
 
 
-const Modify = ({ form, data, url }) => {
+const Modify = ({ form, data, url , onSuccess=()=>null}) => {
   const convertDataToPatchPayload = useCallback((payload) => {
     return (Object.entries(payload || {}).map(entry => ({ "op": "replace", "path": `/${entry[0]}`, "value": entry[1] })))
   }, [])
 
+  const disptach = useDispatch()
+  const getDefaultValue = (data, field) => {
+    return data[field?.defaultValue] || data[field.name]
+  }
+
+
   return (
-    <RadaForm btnText={'Modify'} method={'patch'} url={url} modifyPayload={(payload) => convertDataToPatchPayload(payload)}>
+    <RadaForm btnText={'Modify'} method={'patch'} url={url} modifyPayload={(payload) => convertDataToPatchPayload(payload)} onSuccess={onSuccess} >
       <div className='flex  flex-wrap'>
-        {forms[form]?.fields.filter(field => field?.in?.includes('input') || !field?.in?.length).map(field => <Input className={'w-[45%]'} defaultValue={data[field.name]} {...field} />)}
+        {forms[form]
+          ?.fields
+          .filter(field => field?.in?.includes('input') || !field?.in?.length)
+          .map(field => <Input
+            {...field} name={field?.defaultValue || field?.name}
+            className={'w-[45%]'}
+            defaultValue={getDefaultValue(data, field)}
+          />)}
       </div>
     </RadaForm>
   )
@@ -27,6 +40,7 @@ const Modify = ({ form, data, url }) => {
 const Reports = () => {
   const disptach = useDispatch()
   const [tab, setTab] = useState(0)
+  const [refresh, setRefresh] = useState()
   const tabs = [
     'Production Volume',
     'Cumulative Production',
@@ -42,25 +56,36 @@ const Reports = () => {
 
     return [
       {
-        component: 'Accept', onClick: () => disptach(openModal({
+        component: 'Accept',
+        onClick: () => disptach(openModal({
           title: "Accept",
           component: <Action method={'put'} component={`Are you sure yo want to accept this ${name} data?`}
-            url={`/change-${key}-status/${data[idKey]}?status=APPROVED}`} onSuccess={() => disptach(closeModal())} />,
+            url={`/change-${key}-status/${data[idKey]}?status=APPROVED`}
+            onSuccess={() => {  disptach(closeModal()) ; setRefresh(Math.random()) }
+            } />,
         }))
       },
       {
         component: 'Modify',
         onClick: () => disptach(openModal({
           title: "Modify",
-          component: <Modify form={name} data={data} url={`/update-${key}/${data[idKey]}`} />
+          component: <Modify form={name} data={data} url={`/update-${key}/${data[idKey]}`} onSuccess={
+            ()=>{
+              disptach(closeModal())
+              setRefresh(Math.random())
+            }
+          } />
         })),
 
       },
       {
-        component: 'Roll back', onClick: () => disptach(openModal({
+        component: 'Roll back',
+        onClick: () => disptach(openModal({
           title: "Roll back",
           component: <Action method={'put'} component={`Mark this ${name} data as denied`}
-            url={`/change-${key}-status/${data[idKey]}?status=REJECTED`} onSuccess={() => disptach(closeModal())} />,
+            url={`/change-${key}-status/${data[idKey]}?status=REJECTED`}
+            onSuccess={() => { disptach(closeModal()) ; setRefresh(Math.random());}
+            } />,
         }))
       },
     ]
@@ -72,22 +97,36 @@ const Reports = () => {
           {tabs.map((x, i) => <Tab key={i} text={x} active={i === tab} onClick={() => setTab(i)} />)}
         </ div>
 
-
-        {(tab === 0) && <UserData url={'/get-all-production-volume'} header={'Production Volume'} fn={(data) => update_column(data)}
+        {(tab === 0) && <UserData
+          refresh={refresh}
+          url={'/get-all-production-volume'}
+          header={'Production Volume'}
+          fn={(data) => update_column(data)}
           actions={(data) => <TableAction
             actions={actions('Production Volume', 'production-volume', data, 'productionVolumeID')}
-          />}
-          idKey={'productionVolumeID'} />}
-        {(tab === 1) && <UserData url={'get-all-cumulative-production'} header={'Cumulative Production'} fn={(data) => update_column(data)}
+            idKey={'productionVolumeID'} />}
+        />}
+
+        {(tab === 1) && <UserData
+          refresh={refresh}
+          url={'get-all-cumulative-production'}
+          header={'Cumulative Production'}
+          fn={(data) => update_column(data)}
           actions={(data) => <TableAction
-            actions={actions('Cumulative Production Volume', 'cumulative-production', data, 'productionVolumeId')}
-          />
+            actions={actions('Cumulative Production', 'cumulative-production', data, 'cumulativeProductionID')}
+            idKey={'cumulativeProductionID'} />
           }
         />}
-        {(tab === 2) && <UserData url={'get-all-well-flow'} header={'Well Flow'} fn={(data) => update_column(data)}
+
+        {(tab === 2) && <UserData
+          refresh={refresh}
+          url={'get-all-well-flow'}
+          header={'Well Flow'}
+          fn={(data) => update_column(data)}
 
           actions={(data) => <TableAction
             actions={actions('Well Flow', 'well-flow', data, 'wellFlowID')}
+            idKey={'wellFlowID'}
           />
           } />}
 
