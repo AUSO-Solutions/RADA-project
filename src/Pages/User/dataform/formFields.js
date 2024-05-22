@@ -18,8 +18,8 @@ export const forms = {
             { type: "text", name: "condensateProduced", label: "Condensate Produced" },
             { type: "text", name: "loss", label: "Loss" },
             { type: "text", name: "waterGasRate", label: "Water Gas Rate" },
-            { type: "text", name: "status", label: "status", in: ['table'] },
-            { type: "text", name: "reportDate", label: "Date", tableRender: (data) => <div className="!break-keep">{dayjs(data?.reportDate).format('MMM DD, YYYY. hh:mmA')}</div>, in: ['table'] },
+            { type: "text", name: "status", label: "Status", in: ['table'] },
+            { type: "text", name: "reportDate", label: "Upload Date", tableRender: (data) => <div className="!break-keep">{dayjs(data?.reportDate).format('MMM DD, YYYY. hh:mmA')}</div>, in: ['table'] },
 
         ]
     },
