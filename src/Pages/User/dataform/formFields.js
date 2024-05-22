@@ -19,7 +19,7 @@ export const forms = {
             { type: "text", name: "loss", label: "Loss" },
             { type: "text", name: "waterGasRate", label: "Water Gas Rate" },
             { type: "text", name: "status", label: "status", in: ['table'] },
-            { type: "text", name: "reportDate", label: "Date", tableRender: (data) => dayjs(data?.reportDate).format('MMM DD, YYYY. hh:mmA'), in: ['table'] },
+            { type: "text", name: "reportDate", label: "Date", tableRender: (data) => <div className="!break-keep">{dayjs(data?.reportDate).format('MMM DD, YYYY. hh:mmA')}</div>, in: ['table'] },
 
         ]
     },

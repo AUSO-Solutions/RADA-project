@@ -9,40 +9,55 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { BsThreeDots } from 'react-icons/bs';
 import { useMemo } from 'react';
+import TableFilter from 'Pages/Admin/usersdata/TableFilter';
+import { RadaForm } from 'Components';
+import TableSearch from './TableSearch';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
-        backgroundColor: theme.palette.common.black,
-        color: theme.palette.common.white,
+        // backgroundColor: theme.palette.common.white,    
+        backgroundColor: theme.palette.action.hover,
+        color: theme.palette.common.black,
     },
     [`&.${tableCellClasses.body}`]: {
         fontSize: 14,
+        wordBreak: 'keep-all !important',
+        // color:'red'
     },
 }));
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
-    '&:nth-of-type(odd)': {
+    '&:nth-of-type(even)': {
         backgroundColor: theme.palette.action.hover,
     },
+
     // hide last border
     '&:last-child td, &:last-child th': {
         border: 0,
     },
+    // border:'1px dashed grey'
 }));
 
 
 
-export default function RadaTable({ data = [], columns = [], fn = () => null, actions = () => null, noaction, idKey = "id" }) {
+export default function RadaTable({ data = [], columns = [], fn = () => null, actions = () => null, noaction, idKey = "id", searchKey = 'search' }) {
     const updatec = useMemo(() => {
         return fn() ? fn(columns) : columns
     }, [columns, fn])
     const [showAction, setShowAction] = React.useState(false)
+    const [search, setSearch] = React.useState('')
 
+    const tableData = useMemo(() => {
+        if (search) return (data.filter(datum => Object.values(datum).some(field => String(field).toLowerCase().includes(search))))
+        return data
+    }, [data, search])
 
     return (
-        <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                <TableHead>
+        <TableContainer component={'div'} sx={{ overflowX: 'auto' }} className=' w-full'>
+            <TableSearch onChange={(e) => setSearch(e.target.value?.toLowerCase())} />
+            {/* <TableFilter /> */}
+            <Table sx={{ minWidth: 700, bgcolor: 'white' }} className='' aria-label="customized table">
+                <TableHead sx={{ bgcolor: 'white !important', color: 'black' }} className='border-t'>
                     <TableRow>
                         <StyledTableCell>S/N</StyledTableCell>
                         {
@@ -52,13 +67,13 @@ export default function RadaTable({ data = [], columns = [], fn = () => null, ac
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {data.map((row, i) => (
+                    {tableData.map((row, i) => (
                         <React.Fragment key={i}>
                             <StyledTableRow>
                                 <StyledTableCell align="right">{i + 1} </StyledTableCell>
                                 {
                                     updatec.map((column, inner_index) => <StyledTableCell key={i + inner_index} align="left">
-                                        { column.render(row) ||  row[column.key]}
+                                        {column.render(row) || row[column.key]}
                                     </StyledTableCell>)
 
                                 }

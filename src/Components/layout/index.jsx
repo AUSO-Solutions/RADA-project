@@ -22,7 +22,7 @@ function Layout({ name = "Home", children, btn, goBack = () => null }) {
           <Sidenav />{" "}
         </ClickAway>
       )}
-      <div style={{ width: "100%" }}>
+      <div className={styles.content}>
         <Header />
         <BsMenuButton
           size={20}
