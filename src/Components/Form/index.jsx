@@ -11,7 +11,7 @@ const RadaForm = ({
     inputsContainer,
     onSuccess = () => null,
     onSubmit = () => null,
-    onError=()=>null,
+    onError = () => null,
     modifyPayload = () => null,
 
 }) => {
@@ -25,7 +25,7 @@ const RadaForm = ({
             let final_payload = modifyPayload(payload) || payload
             const res = await apiRequest({ method, url, payload: final_payload, params, noToken })
             console.log(res)
-            if (successMessage) { toast.success(successMessage) } else { toast.success(res?.message || 'Successful' ) }
+            if (successMessage) { toast.success(successMessage) } else { toast.success(res?.message || 'Successful') }
             onSuccess(res, payload)
         }
         catch (error) {
@@ -64,7 +64,11 @@ const RadaForm = ({
             <div className={`${inputsContainer}`}>
                 {children}
             </div>
-            <Button className={`${btnClass} p-3 mt-8`} type='submit' loading={loading}>{btnText}</Button>
+            {btnText
+                ? <Button className={`${btnClass} p-3 mt-8`} type='submit' loading={loading}>{btnText}</Button>
+
+                : <button hidden type='submit'></button>
+            }
         </form>
     )
 }

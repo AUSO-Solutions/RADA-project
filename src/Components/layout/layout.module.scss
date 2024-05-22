@@ -4,6 +4,10 @@
     display: flex;
     position: fixed;
     background-color: #FFFFFF;
+    .content{
+        width: calc(100% - 250px);
+        // display: none;
+    }
 }
 
 .menubutton {

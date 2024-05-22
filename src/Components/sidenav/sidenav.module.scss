@@ -1,5 +1,5 @@
 .body {
-    width: 20%;
+   min-width: 250px;
     height: 100%;
     border-right: 1px solid #c8dad1;
     background-color: white;
@@ -74,7 +74,7 @@
     line-height: 161.1%;
 }
 
-.logout{
+.logout {
     display: flex;
     align-items: center;
     height: 50px;
@@ -87,5 +87,5 @@
     line-height: 161.1%;
     margin-top: 200px;
     color: #143f2a;
-    
+
 }

@@ -92,7 +92,7 @@ const Reports = () => {
   }
   return (
     <Layout name={"FIELD REPORTS"}>
-      <div style={{ padding: '20px', width: '100%' }}>
+      <div style={{ width: '100%' }}>
         < div style={{ display: 'flex', gap: '20px' }} >
           {tabs.map((x, i) => <Tab key={i} text={x} active={i === tab} onClick={() => setTab(i)} />)}
         </ div>

@@ -8,10 +8,6 @@ import img from '../../Assets/images/newcrossfield.jpg'
 const Layout = ({ children }) => {
 
     const state = useSelector(state => state.auth.user.data)
-    console.log(state)
-
-
-
     return (
         <div className={styles.layout} >
 
