@@ -15,7 +15,7 @@ const Modify = ({ form, data, url , onSuccess=()=>null}) => {
     return (Object.entries(payload || {}).map(entry => ({ "op": "replace", "path": `/${entry[0]}`, "value": entry[1] })))
   }, [])
 
-  const disptach = useDispatch()
+  // const disptach = useDispatch()
   const getDefaultValue = (data, field) => {
     return data[field?.defaultValue] || data[field.name]
   }

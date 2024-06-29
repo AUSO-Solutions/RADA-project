@@ -1,9 +1,9 @@
 .body {
-   min-width: 250px;
+    min-width: 250px;
     height: 100%;
     border-right: 1px solid #c8dad1;
     background-color: white;
-    padding: 10px;
+    // padding: 10px;
 
     @media screen and (max-width:600px) {
         width: 70%;
@@ -13,18 +13,17 @@
 }
 
 .sidebarHeader {
-    height: 10vh;
+    height: 8vh;
+    background-color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px 0;
 }
 
 .barsContainer {
-    padding-top: 50px;
-    padding-left: 20px;
     display: flex;
     flex-direction: column;
+
     // justify-content: space-between;
 }
 
@@ -34,16 +33,17 @@
     padding-left: 24px;
     display: flex;
     gap: 10px;
-    border-radius: 4px;
 }
 
 .bars {
     display: flex;
     align-items: center;
-    height: 50px;
+    height: 60px;
     cursor: pointer;
     text-transform: capitalize;
-    padding: 10px 21px;
+    padding-left: 24px !important;
+    // border: 1px red solid;
+
 
     @media screen and (max-width:900px) {
 
@@ -53,13 +53,13 @@
     &:hover {
         color: #0274bd;
         background-color: #d6f0fd;
-        padding-left: 24px;
+        // padding-left: 24px;
     }
 
 }
 
 .barUnSelected {
-    color: #0274bd;
+    color: #000000;
     background-color: none;
     padding-left: 0px;
     display: flex;
@@ -70,7 +70,7 @@
     // font-family: 'Palanquin';    
     font-style: normal;
     font-weight: 500;
-    font-size: 18px;
+    font-size: 15px;
     line-height: 161.1%;
 }
 

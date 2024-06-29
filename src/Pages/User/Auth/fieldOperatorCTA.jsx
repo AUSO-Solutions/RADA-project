@@ -1,5 +1,5 @@
 import React from "react";
-import Text from "Components/Text";
+// import Text from "Components/Text";
 import { Button } from "Components";
 import { useNavigate } from "react-router-dom";
 

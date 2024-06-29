@@ -19,7 +19,7 @@ const CreateSuperAdmin = () => {
             noToken
             btnText={'Create Super Admin'}
             btnClass={'w-[fit-content]'}
-            url={'/users/create'} method={'post'}
+            url={'createSuperAdmin'} method={'post'}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', width: '500px', gap: '20px' }} >
             <Input label={'First Name'} name='firstName' />
             <Input label={'Last Name'} name='lastName' />

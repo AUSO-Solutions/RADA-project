@@ -6,7 +6,7 @@ import { colors } from 'Assets'
 const Button = ({ children, r, className, bgcolor, color, shadow, height, width, onClick, loading = false, disabled, type = 'button' }) => {
     return (
         <Box
-            className={`${styles.button} ${className}`}
+            className={`${styles.button} px-2 ${className}`}
             component={'button'}
             style={{
                 whiteSpace: 'nowrap',

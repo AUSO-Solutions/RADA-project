@@ -1,9 +1,13 @@
 import { store } from 'Store';
 import { reuse } from 'Store/slices/auth';
 import axios from 'axios'
+import { project_functions } from 'firebase-config';
+import { httpsCallable } from 'firebase/functions';
 // import { toast } from 'react-toastify';
 
 const baseURL = process.env.REACT_APP_BASE_URL
+const baseFirebaseUrl =  process.env.REACT_APP_FIREBASE_URL
+
 const apiRequest = async ({
     method = 'get',
     url,
@@ -16,7 +20,7 @@ const apiRequest = async ({
     // console.log(token)
 
     const axiosInstance = axios.create({
-        baseURL,
+        baseFirebaseUrl,
         headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": contentType,
@@ -41,8 +45,18 @@ const apiRequest = async ({
         // if (is_403) toast.error('Unauthorized')
         // if (error?.message && !is_403) toast.error(error.message)
         throw error
-           
+
     }
 }
 
-export { baseURL, apiRequest }
+const firebaseFunctions = async (functionName, payload) => {
+    try {
+        const call = httpsCallable(project_functions, functionName)
+        const res = (await call(payload)).data
+        return res
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export { baseURL, apiRequest, firebaseFunctions }

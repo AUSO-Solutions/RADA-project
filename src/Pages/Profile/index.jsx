@@ -4,7 +4,7 @@ import Tab from 'Components/tab'
 import ChangePassword from 'Pages/User/Auth/ChangePassword'
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
+// import { Link } from 'react-router-dom'
 
 
 const Profile = () => {

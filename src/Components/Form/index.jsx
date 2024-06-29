@@ -1,7 +1,9 @@
 import { Button } from 'Components'
-import { apiRequest } from 'Services'
+import { firebaseFunctions } from 'Services'
+
 import React, { useState } from 'react'
 import { toast } from 'react-toastify';
+
 const RadaForm = ({
     btnText,
     btnClass,
@@ -23,7 +25,8 @@ const RadaForm = ({
         setLoading(true)
         try {
             let final_payload = modifyPayload(payload) || payload
-            const res = await apiRequest({ method, url, payload: final_payload, params, noToken })
+            const res = await firebaseFunctions(url, final_payload)
+            // const res = await apiRequest({ method, url, payload: final_payload, params, noToken })
             console.log(res)
             if (successMessage) { toast.success(successMessage) } else { toast.success(res?.message || 'Successful') }
             onSuccess(res, payload)

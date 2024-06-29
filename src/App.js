@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import { routes } from "./routes";
-import { Layout } from "Partials";
+// import { Layout } from "Partials";
 import './index.css'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -11,6 +11,7 @@ import { QueryClientProvider } from 'react-query'
 import { queryClient } from "Services/queryClient";
 import Modal from "Components/Modal";
 import Refresh from "Partials/Refresh";
+import Layout from "Components/layout";
 
 function App() {
 
@@ -21,7 +22,7 @@ function App() {
           <BrowserRouter>
             <ToastContainer />
             <Modal />
-            <Refresh/>
+            {/* <Refresh/> */}
             <Routes>
               {routes.map(route => {
                 const layout = route.layout

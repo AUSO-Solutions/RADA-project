@@ -6,11 +6,11 @@ import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
+// import Paper from '@mui/material/Paper';
 import { BsThreeDots } from 'react-icons/bs';
 import { useMemo } from 'react';
-import TableFilter from 'Pages/Admin/usersdata/TableFilter';
-import { RadaForm } from 'Components';
+// import TableFilter from 'Pages/Admin/usersdata/TableFilter';
+// import { RadaForm } from 'Components';
 import TableSearch from './TableSearch';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -53,7 +53,7 @@ export default function RadaTable({ data = [], columns = [], fn = () => null, ac
     }, [data, search])
 
     return (
-        <TableContainer component={'div'} sx={{ overflowX: 'auto' }} className=' w-full'>
+        <TableContainer component={'div'} sx={{ overflowX: 'auto' }} className='px-3 w-full'>
             <TableSearch onChange={(e) => setSearch(e.target.value?.toLowerCase())} />
             {/* <TableFilter /> */}
             <Table sx={{ minWidth: 700, bgcolor: 'white' }} className='' aria-label="customized table">

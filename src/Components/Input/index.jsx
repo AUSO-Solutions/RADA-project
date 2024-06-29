@@ -28,6 +28,7 @@ const Input = ({
     containerClass,
     onChange = () => null,
     getObj = () => null,
+    inputClass,
     ...props
 }) => {
     const change = (e) => {
@@ -51,6 +52,7 @@ const Input = ({
             {defaults.includes(type) && <input
                 type={type}
                 onChange={change}
+                className={inputClass}
                 {...props}
             />}
         </Box>
