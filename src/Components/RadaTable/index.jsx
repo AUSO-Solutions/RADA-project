@@ -12,6 +12,7 @@ import { useMemo } from 'react';
 // import TableFilter from 'Pages/Admin/usersdata/TableFilter';
 // import { RadaForm } from 'Components';
 import TableSearch from './TableSearch';
+import { apiRequest, firebaseFunctions } from 'Services';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -40,17 +41,29 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 
 
-export default function RadaTable({ data = [], columns = [], fn = () => null, actions = () => null, noaction, idKey = "id", searchKey = 'search' }) {
+export default function RadaTable({ data = [], columns = [], fn = () => null, actions = () => null, noaction, idKey = "id", searchKey = 'search', firebaseApi = '' }) {
     const updatec = useMemo(() => {
         return fn() ? fn(columns) : columns
     }, [columns, fn])
     const [showAction, setShowAction] = React.useState(false)
     const [search, setSearch] = React.useState('')
+    const [resFromBackend, setResFromBackend] = React.useState([])
+
+    React.useEffect(() => {
+        const fetch = async () => {
+            if (firebaseApi) {
+                const res = await firebaseFunctions(firebaseApi)
+               if(res?.data?.length) setResFromBackend(res?.data)
+            }
+        }
+        fetch()
+    }, [firebaseApi])
 
     const tableData = useMemo(() => {
-        if (search) return (data.filter(datum => Object.values(datum).some(field => String(field).toLowerCase().includes(search))))
-        return data
-    }, [data, search])
+        let result = resFromBackend || data
+        if (search) result = (result.filter(datum => Object.values(datum).some(field => String(field).toLowerCase().includes(search))))
+        return result
+    }, [data, search, resFromBackend])
 
     return (
         <TableContainer component={'div'} sx={{ overflowX: 'auto' }} className='px-3 w-full'>
@@ -70,10 +83,10 @@ export default function RadaTable({ data = [], columns = [], fn = () => null, ac
                     {tableData.map((row, i) => (
                         <React.Fragment key={i}>
                             <StyledTableRow>
-                                <StyledTableCell align="right">{i + 1} </StyledTableCell>
+                                <StyledTableCell align="left">{i + 1} </StyledTableCell>
                                 {
                                     updatec.map((column, inner_index) => <StyledTableCell key={i + inner_index} align="left">
-                                        {column.render(row) || row[column.key]}
+                                        {column?.render ? column?.render(row)  : row[column.key]}
                                     </StyledTableCell>)
 
                                 }

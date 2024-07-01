@@ -56,6 +56,7 @@ const firebaseFunctions = async (functionName, payload) => {
         return res
     } catch (error) {
         console.log(error)
+        throw error
     }
 }
 

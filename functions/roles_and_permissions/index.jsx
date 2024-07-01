@@ -12,11 +12,11 @@ const hash = (password) => {
         .update(password).digest("hex")
 }
 
-const createUser = onCall(async (request) => {
+const createRole = onCall(async (request) => {
     try {
         let { data } = request
         logger.log('data ----', { data })
-        const { email, password } = data
+        const { name, password } = data
         const db = admin.firestore()
 
         // check if user exists
@@ -41,26 +41,23 @@ const createUser = onCall(async (request) => {
         throw new HttpsError(error?.code, error?.message)
     }
 });
-const login = onCall(async ({ data }) => {
+
+const getRoles = onCall(async ({ }) => {
+    const limit = 10
 
     try {
-        const { email, password } = data
-        logger.log({ data })
-        const passwordHash = hash(password)
-        // logger.log({ uid, passwordHash, passwordSalt, password_Hash })  
         const db = admin.firestore()
-        const user = (await db.collection('users').where("email", "==", email).where("passwordHash", "==", passwordHash).get())?.docs[0]
-        if (!user.exists) throw ({ code: "permission-denied", message: "Account does not exist" })
-        logger.log("user => ", user)
-        return { status: 'success', data: user.data() }
+        const res = await db.collection('users').get()
+        const data = res?.docs?.map(doc => doc.data()) || []
+        return { status: 'success', data }
     } catch (error) {
-        logger.log("error => ", error)
-        throw new HttpsError(error?.code, error?.message)
+        logger.log('error=>', error)
+        return { status: 'failed', error }
     }
 
 })
 
-const getUsers = onCall(async ({ }) => {
+const getRole = onCall(async ({ }) => {
     const limit = 10
 
     try {

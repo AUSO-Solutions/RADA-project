@@ -3,12 +3,13 @@ const admin = require("firebase-admin");
 // const { getFirestore } = require("firebase-admin/firestore");
 // const logger = require("firebase-functions/logger");
 // const { onCall } = require("firebase-functions/v2/https");
-const { login, createUser } = require("./auth");
+const { login, createUser, getUsers } = require("./auth");
 
 admin.initializeApp()
 
 
 module.exports = {
   createUser,
-  login
+  login,
+  getUsers
 }

@@ -27,8 +27,8 @@ const RadaForm = ({
             let final_payload = modifyPayload(payload) || payload
             const res = await firebaseFunctions(url, final_payload)
             // const res = await apiRequest({ method, url, payload: final_payload, params, noToken })
-            console.log(res)
-            if (successMessage) { toast.success(successMessage) } else { toast.success(res?.message || 'Successful') }
+            console.log(res,'ddd')
+            // if (successMessage) { toast.success(successMessage) } else { toast.success(res?.message || 'Successful') }
             onSuccess(res, payload)
         }
         catch (error) {
@@ -68,7 +68,7 @@ const RadaForm = ({
                 {children}
             </div>
             {btnText
-                ? <Button className={`${btnClass} p-3 mt-8`} type='submit' loading={loading}>{btnText}</Button>
+                ? <Button className={`${btnClass} font-bold p-3 mt-8`} type='submit' loading={loading}>{btnText}</Button>
 
                 : <button hidden type='submit'></button>
             }

@@ -22,7 +22,7 @@ function Sidenav() {
 
   // const roles_list = ROLES
   const roles = useMemo(() => {
-    return (user?.data?.roles)
+    // return (user?.data?.roles)
   }, [user])
 
 
@@ -114,7 +114,7 @@ function Sidenav() {
         </Link>
       </div>
       <div className={styles.barsContainer}>
-        {paths.filter(path => path.users.includes(roles[0]) || path.users[0] === 'ALL').map((x) => {
+        {paths.filter(path => path.users.includes(roles?.[0]) || path.users[0] === 'ALL').map((x) => {
           return (
             <div
               className={

@@ -19,7 +19,7 @@ const Button = ({ children, r, className, bgcolor, color, shadow, height, width,
                 justifyContent: 'center',
                 alignItems: 'center',
                 width, cursor: 'pointer',
-                fontWeight: '500',
+                fontWeight: '600',
                 opacity: loading ? .4 : 1,
 
             }}

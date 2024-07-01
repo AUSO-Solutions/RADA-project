@@ -37,7 +37,7 @@ const UserLogin = () => {
 
 
 
-            <Grid item className='flex justify-center-center'  sx={{backgroundImage: `url(${img})`,height:'100vh', backgroundSize:'cover', backgroundPosition:'top', backgroundRepeat:'no-repeat'}} md={8}>
+            <Grid item className='flex justify-center-center' sx={{ backgroundImage: `url(${img})`, height: '100vh', backgroundSize: 'cover', backgroundPosition: 'top', backgroundRepeat: 'no-repeat' }} md={8}>
                 {/* <img style={{ filter: 'drop-shadow(0.13rem 0.13rem  white)', width: '200px', height: '100px', }} src={images.logo} alt="" /> */}
             </Grid>
             <Grid item md={4}>
@@ -47,20 +47,23 @@ const UserLogin = () => {
                     className={'w-[500px] mx-auto text-[black] bg-[white] p-[50px] shadow border rounded-[5px]'}
                     // #0274bd
                     btnText={'Login'}
-                    url={'/users/login'}
+                    url={'login'}
                     method={'post'}
                     noToken
                     onSuccess={(res) => {
-                        dispatch(setUser(res))
-                        // console.log(res)
-                        const role = res?.data?.roles[0]
-                        // console.log(role)
-                        const roles_login_paths = {
-                            "SUPER_ADMIN": "/admin/home",
-                            "FIELD_OPERATOR": "/data-form",
-                            "QUALITY_CONTROLLER": '/admin/home'
-                        }
-                        navigate(roles_login_paths[role])
+                        const user = (res?.data)
+                        console.log(user)
+                        dispatch(setUser(user))
+                        navigate('/admin/users')
+                        // const role = res?.data?.roles[0]
+                        // const roles_login_paths = {
+                        //     "SUPER_ADMIN": "/admin/home",
+                        //     "FIELD_OPERATOR": "/data-form",
+                        //     "QUALITY_CONTROLLER": '/admin/home'
+                        // }
+            // 
+
+                        // s01MdWjT
                     }}
                     onError={err => {
                         if (err?.response?.status === 401) {

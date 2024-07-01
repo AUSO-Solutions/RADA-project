@@ -13,7 +13,7 @@ import { logout } from 'Store/slices/auth';
 
 
 function Navbar() {
-    const user = useSelector(state => state.auth.user.data)
+    // const user = useSelector(state => state.auth.user.data)
     const [drop, setDrop] = useState(false)
     // console.log(user)
     const dispatch = useDispatch()
@@ -26,7 +26,7 @@ function Navbar() {
     }
     // console.log(user)
 
-    const initials = useMemo(() => `${[...user?.firstName][0]} ${[...user?.lastName][0]}`.toUpperCase(), [user?.firstName, user?.lastName])
+    // const initials = useMemo(() => `${[...user?.firstName][0]} ${[...user?.lastName][0]}`.toUpperCase(), [user?.firstName, user?.lastName])
 
 
     return (
@@ -37,7 +37,7 @@ function Navbar() {
             </Box> */}
             <Typography variant='h6' fontWeight={600} style={{ color: '#000000' }} >RADA ADMIN PORTAL</Typography>
             <Box className={`${styles.right}`}>
-                <div className={styles.circle} onClick={() => setDrop(true)} > {initials} </div><BsChevronDown onClick={() => setDrop(true)} />
+                <div className={styles.circle} onClick={() => setDrop(true)} > {} </div><BsChevronDown onClick={() => setDrop(true)} />
                 {drop && <ClickAway onClickAway={() => setDrop(false)} showshadow={true}
                 >
                     <div
