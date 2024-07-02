@@ -95,8 +95,9 @@ export default function RadaTable({ data = [], columns = [], fn = () => null, ac
                                     {
                                         (showAction === i) && <>
                                             <div className='h-[100vh] w-[100vw] top-0 left-0  fixed' onClick={() => setShowAction(false)}></div>
-                                            <div className='absolute flex flex-col bg-white shadow rounded-[8px]  min-w-[100px] text-left right-[50px]'>
-                                                {actions(data[i], i)}
+                                            <div className='absolute flex flex-col bg-white shadow-md rounded-[8px]  min-w-[100px] text-left right-[50px]'>
+                                     
+                                                {actions(row, i)}
 
                                             </div>
                                         </>

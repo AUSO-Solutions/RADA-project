@@ -26,10 +26,11 @@ function generatePass() {
     return pass;
 }
 
-console.log(generatePass())
+// console.log(generatePass())
 
-const CreateUser = () => {
+const CreateUser = ({updateUserId=null, defaultValues}) => {
 
+    // console.log(defaultValues)
     const schema = Yup.object().shape({
         email: Yup.string().required(),
         // password: Yup.string().required().min(8),
@@ -42,19 +43,21 @@ const CreateUser = () => {
             noToken
             btnText={'Submit'}
             btnClass={'w-[100%] flex justify-center'}
-            url={'createUser'} method={'post'}
+            url={defaultValues?'updateUserByUid':"createUser"} method={'post'}
             onSuccess={() => {
-                toast.success('User created-- successfully')
+                toast.success('Successfully')
                 dispatch(closeModal())
             }}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', width: '600px', gap: '20px' }} >
             <Stack direction={'row'} spacing={1}>
-                <Input label={'First Name'} name='firstName' />
-                <Input label={'Last Name'} name='lastName' />
+                <Input label={'First Name'} name='firstName' defaultValue={defaultValues?.firstName}  />
+                <Input label={'Last Name'} name='lastName' defaultValue={defaultValues?.lastName}  />
             </Stack>
-            <Input label={'Email'} name='email' />
+            <Input label={'Email'} name='email'  defaultValue={defaultValues?.email} />
             <Input label={'Roles'} name='roles' />
-            <Input label={'Password'} name='password' value={generatePass()} />
+            {!defaultValues?.email && <Input label={'Password'} name='password' value={generatePass()} />}
+            {defaultValues?.email && <Input hidden label={''} name='uid' value={defaultValues?.uid} />}
+
         </RadaForm>
     )
 }

@@ -74,6 +74,63 @@ const getUsers = onCall(async ({ }) => {
     }
 
 })
+const getUserByUid = onCall(async ({ data }) => {
+    const limit = 10
+    const { uid } = data
+
+    try {
+        if (uid) {
+            const db = admin.firestore()
+            const res = await db.collection('users').doc(uid).get()
+            const data = res.data()
+            return { status: 'success', data }
+        }
+    } catch (error) {
+        logger.log('error=>', error)
+        return { status: 'failed', error }
+    }
+
+})
+
+const updateUserByUid = onCall(async (request) => {
+    try {
+        let { data } = request
+        logger.log('data ----', { data })
+        const { email, uid, firstName, lastName, roles } = data
+        const db = admin.firestore()
+        if (uid) {
+            await db.collection("users").doc(uid).update({ firstName, lastName, email, roles })
+            return { status: 'success', data, message: 'User updated successfully' }
+        } else {
+            throw { code: 'cancelled', message: 'Error updating user.' }
+        }
+    } catch (error) {
+        logger.log('error ===> ', error)
+        throw new HttpsError(error?.code, error?.message)
+    }
+});
 
 
-module.exports = { login, createUser, getUsers }
+const deleteUserByUid = onCall(async (request) => {
+    try {
+        let { data } = request
+        logger.log('data ----', { data })
+        const { uid } = data
+        const db = admin.firestore()
+        if (uid) {
+            await admin.auth().deleteUser(uid)
+            await db.collection("users").doc(uid).delete()
+            return { status: 'success', message: 'User deleted successfully' }
+        } else {
+            throw { code: 'cancelled', message: 'Error deleting user.' }
+        }
+    } catch (error) {
+        logger.log('error ===> ', error)
+        throw new HttpsError(error?.code, error?.message)
+    }
+});
+
+
+
+
+module.exports = { login, createUser, getUsers, updateUserByUid, deleteUserByUid, getUserByUid }
