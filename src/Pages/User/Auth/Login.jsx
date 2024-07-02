@@ -30,7 +30,7 @@ const UserLogin = () => {
                 height: '100vh',
                 // flexDirection:'column',
                 // bgcolor: "red !important",
-                width: '100vw !important',
+                width: '100% !important',
                 alignItems: 'center',
                 justifyContent: 'center'
             }}>

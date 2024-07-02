@@ -13,6 +13,7 @@ import { useMemo } from 'react';
 // import { RadaForm } from 'Components';
 import TableSearch from './TableSearch';
 import { apiRequest, firebaseFunctions } from 'Services';
+import { useSelector } from 'react-redux';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -48,22 +49,24 @@ export default function RadaTable({ data = [], columns = [], fn = () => null, ac
     const [showAction, setShowAction] = React.useState(false)
     const [search, setSearch] = React.useState('')
     const [resFromBackend, setResFromBackend] = React.useState([])
-
+    // const []
+    const { isOpen } = useSelector(state => state.modal)
     React.useEffect(() => {
         const fetch = async () => {
             if (firebaseApi) {
                 const res = await firebaseFunctions(firebaseApi)
-               if(res?.data?.length) setResFromBackend(res?.data)
+                if (res?.data?.length) setResFromBackend(res?.data)
             }
         }
-        fetch()
-    }, [firebaseApi])
+       if(!isOpen) fetch()
+    }, [firebaseApi,isOpen])
+
 
     const tableData = useMemo(() => {
         let result = resFromBackend || data
         if (search) result = (result.filter(datum => Object.values(datum).some(field => String(field).toLowerCase().includes(search))))
         return result
-    }, [data, search, resFromBackend])
+    }, [data, search, resFromBackend, ])
 
     return (
         <TableContainer component={'div'} sx={{ overflowX: 'auto' }} className='px-3 w-full'>
@@ -86,7 +89,7 @@ export default function RadaTable({ data = [], columns = [], fn = () => null, ac
                                 <StyledTableCell align="left">{i + 1} </StyledTableCell>
                                 {
                                     updatec.map((column, inner_index) => <StyledTableCell key={i + inner_index} align="left">
-                                        {column?.render ? column?.render(row)  : row[column.key]}
+                                        {column?.render ? column?.render(row) : row[column.key]}
                                     </StyledTableCell>)
 
                                 }
@@ -96,7 +99,7 @@ export default function RadaTable({ data = [], columns = [], fn = () => null, ac
                                         (showAction === i) && <>
                                             <div className='h-[100vh] w-[100vw] top-0 left-0  fixed' onClick={() => setShowAction(false)}></div>
                                             <div className='absolute flex flex-col bg-white shadow-md rounded-[8px]  min-w-[100px] text-left right-[50px]'>
-                                     
+
                                                 {actions(row, i)}
 
                                             </div>

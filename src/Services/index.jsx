@@ -3,10 +3,11 @@ import { reuse } from 'Store/slices/auth';
 import axios from 'axios'
 import { project_functions } from 'firebase-config';
 import { httpsCallable } from 'firebase/functions';
+import handleError from './handleError';
 // import { toast } from 'react-toastify';
 
 const baseURL = process.env.REACT_APP_BASE_URL
-const baseFirebaseUrl =  process.env.REACT_APP_FIREBASE_URL
+const baseFirebaseUrl = process.env.REACT_APP_FIREBASE_URL
 
 const apiRequest = async ({
     method = 'get',
@@ -49,13 +50,14 @@ const apiRequest = async ({
     }
 }
 
-const firebaseFunctions = async (functionName, payload) => {
+const firebaseFunctions = async (functionName, payload,hideError = false)  => {
     try {
         const call = httpsCallable(project_functions, functionName)
         const res = (await call(payload)).data
         return res
     } catch (error) {
-        console.log(error)
+        // console.log(error)
+        if (hideError) handleError(error)
         throw error
     }
 }

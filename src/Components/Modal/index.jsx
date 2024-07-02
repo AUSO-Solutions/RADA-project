@@ -11,7 +11,7 @@ const Modal = () => {
     return (
         component && <>
             <div className='h-[100vh] bg-[black] z-[10] w-[100vw] top-0 left-0   opacity-[.3] fixed' onClick={() => dispatch(closeModal(false))}></div>
-            <div className={`${styles.modal} rounded min-w-[500px] p-3  max-w-[fit-content] max-h-[700px]  !bg-[white]`}>
+            <div className={`${styles.modal} rounded-[12px] min-w-[fit-content] p-[24px]  max-w-[fit-content] max-h-[700px]  !bg-[white]`}>
                 <div className='flex justify-center'>
                     <Text size={20} weight={600} align={'center'} className={'text-center mx-auto !mb-[0px]'}>
                         {title}

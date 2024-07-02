@@ -11,31 +11,103 @@ const hash = (password) => {
     return crypto.createHash("sha256", secret)
         .update(password).digest("hex")
 }
+function generatePass() {
+    let pass = '';
+    let str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +
+        'abcdefghijklmnopqrstuvwxyz0123456789@#$';
+
+    for (let i = 1; i <= 8; i++) {
+        let char = Math.floor(Math.random()
+            * str.length + 1);
+
+        pass += str.charAt(char)
+    }
+
+    return pass;
+}
+
+
+const genUid = async (email, password) => {
+    // check if user exists
+    const db = admin.firestore()
+    const userExists = (await db.collection('users').where('email', "==", email).get())?.docs[0]?.exists
+    logger.log('userExists', { userExists })
+    if (userExists) throw { code: 'already-exists', message: 'This email is taken' }
+    const { uid } = await admin.auth().createUser({ email, password })
+    return { uid }
+}
+
+const saveUserInDb = async (data, uid) => {
+    const db = admin.firestore()
+    let user = data
+    const passwordHash = hash(user.password)
+    delete user.password
+    const created = Date.now()
+    await db.collection("users").doc(uid).set({ ...user, status: 'offline', uid, passwordHash, created })
+    return { user }
+}
 
 const createUser = onCall(async (request) => {
     try {
         let { data } = request
         logger.log('data ----', { data })
         const { email, password } = data
+
+        const db = admin.firestore()
+        const { uid } = await genUid(email, password)
+        logger.log({ uid })
+        const { user } = await saveUserInDb(data, uid)
+        return { status: 'success', message: 'User created successfully', data: user }
+
+    } catch (error) {
+        logger.log('error ===> ', error)
+        throw new HttpsError(error?.code, error?.message)
+    }
+});
+
+const createUsers = onCall(async (request) => {
+    try {
+        let { data } = request
+        logger.log('data ----', { data })
+        const { users } = data
         const db = admin.firestore()
 
-        // check if user exists
-        const userExists = (await db.collection('users').where('email', "==", email).get())?.docs[0]?.exists
-        logger.log('userExists', { userExists })
-        if (userExists) throw { code: 'already-exists', message: 'This email is taken' }
 
-        const { uid } = await admin.auth().createUser({ email, password })
-        // const { uid } = await admin.auth().createCustomToken({ email, password })
+        const allFilled = (data, fields = []) => fields.every(field => data?.[field])
+        const listCompete = users?.every(user => allFilled(user, ['firstName', 'lastName', 'email']))
 
-        logger.log({ uid })
-        if (uid) {
-            const passwordHash = hash(data.password)
-            delete data.password
-            await db.collection("users").doc(uid).set({ ...data, status: 'offline', uid, passwordHash })
-            return { status: 'success', data, message: 'User created successfully' }
-        } else {
-            throw { code: 'cancelled', message: 'Error creating user.' }
+        if (!listCompete) throw { code: 'cancelled', message: 'some fields are missing' }
+
+        const chechDuplicateEmails = (list = []) => {
+            let alreadySeen = {}, res = false;
+            list.forEach(function (str = '') {
+                if (alreadySeen[String(str).toLowerCase()]) { res = true }
+                else { alreadySeen[String(str).toLowerCase()] = true; }
+            });
+            return res
         }
+        const hasDuplicateEmail = chechDuplicateEmails(users?.map(user => user?.email))
+        if (hasDuplicateEmail) throw { code: 'cancelled', message: 'Duplicate email found' }
+
+
+        // return { status: 'success', data: {}, message: 'Users added successfully' }
+        let success = 0
+        for (let i = 0; i < users.length; i++) {
+
+            let user = { ...users[i], password: generatePass() };
+            logger.log(user)
+            const { email, password } = user
+            genUid(email, password)
+                .then((res) => {
+                    const uid = res.uid
+                    saveUserInDb(user, uid).then(() => {
+                        success++
+                    }).catch(err => logger.log('Error in saveUserInDb', err))
+                }).catch(err => logger.log('Error in genUid', err))
+        }
+        return { status: 'success', data: {}, message: 'Users added successfully' }
+
+
     } catch (error) {
         logger.log('error ===> ', error)
         throw new HttpsError(error?.code, error?.message)
@@ -133,4 +205,4 @@ const deleteUserByUid = onCall(async (request) => {
 
 
 
-module.exports = { login, createUser, getUsers, updateUserByUid, deleteUserByUid, getUserByUid }
+module.exports = { login, createUser, getUsers, updateUserByUid, deleteUserByUid, getUserByUid, createUsers }

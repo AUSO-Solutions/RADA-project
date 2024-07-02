@@ -6,18 +6,22 @@ export const modalSlice = createSlice({
     {
         title: '',
         component: '',
-        closeData: ""
+        closeData: "", 
+        isOpen: false,
+        
     }
     ,
     reducers: {
         openModal: (state, { payload }) => {
             state.component = payload.component
             state.title = payload.title
+            state.isOpen =  true
 
         },
         closeModal: (state, payload) => {
             state.component = ''
             state.closeData = payload
+            state.isOpen = false
         }
 
     }

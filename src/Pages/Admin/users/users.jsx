@@ -42,7 +42,7 @@ const Users = () => {
         actions={(data, i) => <TableAction
           actions={[
             { component: 'Update user', onClick: () => dispatch(openModal({ title: 'Update User', component: <CreateUser defaultValues={data} /> })) },
-            { component: 'Delete user', onClick: () => dispatch(openModal({ title: 'Delete User', component: <ConfirmModal onProceed={() => deleteUser(data?.uid, () => dispatch(closeModal()))} /> })) },
+            { component: 'Delete user', onClick: () => dispatch(openModal({ title: 'Delete User', component: <ConfirmModal color='red' onProceed={() => deleteUser(data?.uid, () => dispatch(closeModal()))} /> })) },
           ]}
         />}
       />

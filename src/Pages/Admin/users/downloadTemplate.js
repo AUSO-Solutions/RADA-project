@@ -4,6 +4,11 @@ const user = [
     "firstName": 'John',
     "lastName": 'Doe',
     "email": 'johndoe@gmail.com',
+  },
+  {
+    "firstName": 'Kenny',
+    "lastName": 'Doe',
+    "email": 'johnnydoe@gmail.com',
   }
 ]
 
