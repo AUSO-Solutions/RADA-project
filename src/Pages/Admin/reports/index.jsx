@@ -39,16 +39,14 @@ const Modify = ({ form, data, url , onSuccess=()=>null}) => {
 
 const Reports = () => {
 
+  const disptach = useDispatch()
 
   const [tab, setTab] = useState(0)
 
   const tabs = [
-
     'Production Volume',
     'Cumulative Production',
     'Well Flow',
-
-
   ]
 
   const update_column = (columns = []) => {
@@ -68,7 +66,12 @@ const Reports = () => {
 
         {(tab === 0) && <UserData url={'/fields/get-all-production-volume'} header={'Production Volume'} fn={(data) => update_column(data)} actions={(data) => <TableAction
           actions={[
-            { component: 'Accept', onClick: (data) => console.log(data) },
+            {
+              component: 'Accept', onClick: () => disptach(openModal({
+                component: 'km kmkod',
+                title: "uyuyn"
+              }))
+            },
             { component: 'Modify' },
             { component: 'Roll back' },
           ]}
