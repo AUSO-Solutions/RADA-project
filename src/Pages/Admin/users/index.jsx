@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import Layout from 'Components/layout'
 import Tab from 'Components/tab'
 // import UserData from '../usersdata'
-import CreateFieldOperator from './createFieldOperator'
+// import CreateFieldOperator from './createFieldOperator'
 import CreateQAQC from './createQAQC'
 import CreateAdmin from './createAdmin'
 import CreateSuperAdmin from './createSuperAdmin'
@@ -42,7 +42,7 @@ const CreateUsers = () => {
           {tabs.map((x, i) => <Tab key={i} text={x} active={i === tab} onClick={() => setTab(i)} />)}
         </ tabs>
 
-        {(tab === 0) && <CreateFieldOperator  />}
+        {/* {(tab === 0) && <CreateFieldOperator  />} */}
         {(tab === 1) && <CreateQAQC />}
         {(tab === 2) && <CreateAdmin />}
         {(tab === 3) && <CreateSuperAdmin />}
