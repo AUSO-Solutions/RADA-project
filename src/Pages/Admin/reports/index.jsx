@@ -1,41 +1,38 @@
-import React, { useCallback, useState } from 'react'
+import React, { useState } from 'react'
 import Layout from 'Components/layout'
 import Tab from 'Components/tab'
 import UserData from '../usersdata'
 import TableAction from 'Components/RadaTable/TableAction'
 import { useDispatch } from 'react-redux'
-import { closeModal, openModal } from 'Store/slices/modalSlice'
-import Action from './Action'
-import { Input, RadaForm } from 'Components'
-import { forms } from 'Pages/User/dataform/formFields'
+import {  openModal } from 'Store/slices/modalSlice'
 
 
-const Modify = ({ form, data, url , onSuccess=()=>null}) => {
-  const convertDataToPatchPayload = useCallback((payload) => {
-    return (Object.entries(payload || {}).map(entry => ({ "op": "replace", "path": `/${entry[0]}`, "value": entry[1] })))
-  }, [])
+// const Modify = ({ form, data, url , onSuccess=()=>null}) => {
+//   const convertDataToPatchPayload = useCallback((payload) => {
+//     return (Object.entries(payload || {}).map(entry => ({ "op": "replace", "path": `/${entry[0]}`, "value": entry[1] })))
+//   }, [])
 
-  // const disptach = useDispatch()
-  const getDefaultValue = (data, field) => {
-    return data[field?.defaultValue] || data[field.name]
-  }
+//   // const disptach = useDispatch()
+//   const getDefaultValue = (data, field) => {
+//     return data[field?.defaultValue] || data[field.name]
+//   }
 
 
-  return (
-    <RadaForm btnText={'Modify'} method={'patch'} url={url} modifyPayload={(payload) => convertDataToPatchPayload(payload)} onSuccess={onSuccess} >
-      <div className='flex  flex-wrap'>
-        {forms[form]
-          ?.fields
-          .filter(field => field?.in?.includes('input') || !field?.in?.length)
-          .map(field => <Input
-            {...field} name={field?.defaultValue || field?.name}
-            className={'w-[45%]'}
-            defaultValue={getDefaultValue(data, field)}
-          />)}
-      </div>
-    </RadaForm>
-  )
-}
+//   return (
+//     <RadaForm btnText={'Modify'} method={'patch'} url={url} modifyPayload={(payload) => convertDataToPatchPayload(payload)} onSuccess={onSuccess} >
+//       <div className='flex  flex-wrap'>
+//         {forms[form]
+//           ?.fields
+//           .filter(field => field?.in?.includes('input') || !field?.in?.length)
+//           .map(field => <Input
+//             {...field} name={field?.defaultValue || field?.name}
+//             className={'w-[45%]'}
+//             defaultValue={getDefaultValue(data, field)}
+//           />)}
+//       </div>
+//     </RadaForm>
+//   )
+// }
 
 const Reports = () => {
 

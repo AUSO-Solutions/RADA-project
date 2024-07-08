@@ -30,8 +30,8 @@ const ConfirmModal = ({
                 }} >
                     {leftText}
                 </Button>
-                <Button onClick={onProceed} bgcolor={color} className={'px-3'}>
-                    {rightText}
+                <Button onClick={onProceed} disabled={loading} bgcolor={color} className={'px-3'}>
+                    {loading ? 'Loading...' : rightText}
                 </Button>
             </Stack>
         </div>

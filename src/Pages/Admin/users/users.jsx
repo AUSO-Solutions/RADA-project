@@ -10,8 +10,8 @@ import TableAction from 'Components/RadaTable/TableAction'
 import ConfirmModal from 'Components/Modal/ConfirmModal'
 import { deleteUser } from './deleteUser'
 import ImportUsers from './importUsers'
-import { downloadTemplate, user } from './downloadTemplate'
-import CsvDownloadButton from "react-json-to-csv"
+import { downloadTemplate } from './downloadTemplate'
+
 import { firebaseFunctions } from 'Services'
 import { Button } from 'Components'
 // import { CSVDownload } from 'react-csv';
@@ -21,7 +21,7 @@ import { Button } from 'Components'
 const Users = () => {
   const dispatch = useDispatch()
   const [downloadLoading, setDownloading] = useState(false)
-  const [usersToDownloading, setUsertoDownload] = useState([])
+  const [usersToDownloading] = useState([])
 
   const downloadUser = async () => {
     setDownloading(true)

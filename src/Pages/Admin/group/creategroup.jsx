@@ -2,7 +2,7 @@ import React from 'react'
 import { Input, RadaForm } from 'Components'
 // import { login } from 'Services/auth';
 import * as Yup from 'yup';
-import { Stack } from '@mui/material';
+
 import { useDispatch } from 'react-redux';
 import { closeModal } from 'Store/slices/modalSlice';
 import { toast } from 'react-toastify';
@@ -20,7 +20,7 @@ const CreateGroup = ({ }) => {
         // members: Yup.array().required(),
         // password: Yup.string().required().min(8),
     })
-    const { users, loading } = useUsers()
+    const { users } = useUsers()
     // console.log(users)
 
     const dispatch = useDispatch()

@@ -46,7 +46,7 @@ const RadaForm = ({
             formValues[key] = value
             console.log(value)
             if(String(value).includes('select-array-list')){
-                formValues[key] = value?.replace('select-array-list').split("-sal-,-sal-")
+                formValues[key] = value?.replace('select-array-list','').split("-sal-,-sal-")
             }
 
             console.log(formValues[key] )

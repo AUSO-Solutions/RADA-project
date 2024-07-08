@@ -5,7 +5,7 @@ const admin = require("firebase-admin");
 // const { onCall } = require("firebase-functions/v2/https");
 const { login, createUser, getUsers, getUserByUid, deleteUserByUid, updateUserByUid, createUsers } = require("./auth");
 
-const { getGroups, createGroup, addMembersToGroup, deleteMembersToGroup } = require("./auth/group");
+const { getGroups, createGroup, addMembersToGroup, deleteGroupMembers, deleteGroup } = require("./auth/group");
 
 admin.initializeApp()
 
@@ -15,5 +15,5 @@ module.exports = {
   login,
   getUsers, getUserByUid, deleteUserByUid, updateUserByUid, createUsers,
 
-  getGroups, createGroup, addMembersToGroup, deleteMembersToGroup
+  getGroups, createGroup, addMembersToGroup,  deleteGroupMembers, deleteGroup
 }
