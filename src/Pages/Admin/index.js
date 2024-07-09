@@ -6,6 +6,7 @@ import Users from "./users/users";
 import Group from "./group";
 import Roles from "./roles";
 import ActivityLog from "./ActivityLog";
+import Assets from "./assets";
 // import UserData from "./usersdata";
 
 export const admin_routes = [
@@ -17,5 +18,6 @@ export const admin_routes = [
     { path: '/admin/activity-log', Component: <ActivityLog />, layout: true },
     { path: '/admin/create-users', Component: <CreateUsers />, layout: false },
     { path: '/admin/reports', Component: <Reports />, layout: false },
+    { path: '/admin/manage-assets', Component: <Assets />, layout: true },
     { path: '/profile', Component: <Profile />, layout: false },
 ]

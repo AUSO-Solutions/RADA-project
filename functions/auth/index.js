@@ -2,7 +2,8 @@
 const admin = require("firebase-admin");
 const logger = require("firebase-functions/logger");
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
-const crypto = require('crypto')
+const crypto = require('crypto');
+const { currentTime } = require("../helpers");
 // const { getAuth, createUserWithEmailAndPassword } = require("firebase/auth");
 
 
@@ -42,7 +43,7 @@ const saveUserInDb = async (data, uid) => {
     let user = data
     const passwordHash = hash(user.password)
     delete user.password
-    const created = Date.now()
+    const created = currentTime
     await db.collection("users").doc(uid).set({ ...user, status: 'offline', uid, passwordHash, created })
     return { user }
 }
