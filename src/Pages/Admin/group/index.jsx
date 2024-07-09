@@ -35,7 +35,7 @@ const Group = () => {
         actions={(data, i) => <TableAction
           actions={[
             // { component: 'View members ', onClick: () => dispatch(openModal({ title: 'Group members', component: <AddMemberstoGroup group={data} /> })) },
-            { component: 'Members ', onClick: () => dispatch(openModal({ title: 'Add members to group', component: <AddMemberstoGroup group={data} /> })) },
+            { component: 'Update group ', onClick: () => dispatch(openModal({ title: 'Update group', component: <AddMemberstoGroup group={data} /> })) },
             { component: 'Delete group', onClick: () => dispatch(openModal({ title: 'Delete Group', component: <ConfirmModal color='red' onProceed={() => deleteGroup(data?.id, () => dispatch(closeModal()))} /> })) },
           ]}
         />} />
