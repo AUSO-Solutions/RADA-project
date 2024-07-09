@@ -130,4 +130,36 @@ const getRole = onCall(async ({ data }) => {
 })
 
 
-module.exports = { createRole, renameRole, deleteRole, getRoles, getRole }
+const assignPermissionToRole = onCall(async (request) => {
+    try{
+        let { data } = request;
+        const { roleId, permissions } = data;
+
+        if (!roleId || (!Array.isArray(permissions) && typeof permissions !== 'string' )) {
+            throw { code: 'invalid-argument', message: 'RoleId and permission are required' };
+        }
+
+        const db = admin.firestore();
+        const roleRef = db.collection('roles').doc(roleId);
+        const roleDoc = await roleRef.get();
+
+        if (!roleDoc.exists) {
+            throw { code: 'not-found', message: 'Role not found' };
+        }
+
+        const currentPermissions = roleDoc.data().permissions || [];
+        const newPermissions = Array.isArray(permissions) ? permissions : [permissions];
+        const updatedPermissions = [...new Set([...currentPermissions, ...newPermissions])];
+
+        await roleRef.update({ permissions: updatedPermissions });
+
+        return { status: 'success', message: 'Permissions assigned successfully', data: { roleId, permissions: updatedPermissions } };
+    } catch (error) {
+        logger.log('error ===> ', error);
+        throw new HttpsError(error?.code || 'unknown', error?.message || 'Failed to assign permissions');
+    }
+    
+})
+
+
+module.exports = { createRole, renameRole, deleteRole, getRoles, getRole, assignPermissionToRole }
