@@ -10,10 +10,12 @@ import TableAction from 'Components/RadaTable/TableAction'
 import AddMemberstoGroup from './AddMemberstoGroup'
 import ConfirmModal from 'Components/Modal/ConfirmModal'
 import deleteGroup from './deleteGroup'
+import { useNavigate } from 'react-router-dom'
 // import { useFetch } from 'hooks/useFetch'
 
 const Groups = () => {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   return (
     <div>
@@ -28,15 +30,28 @@ const Groups = () => {
         columns={[
           { name: 'Group Name', key: 'groupName' },
           { name: 'Date created', key: 'dateCreated' },
-          { name: 'Members', render: (data) => data?.members?.length },
+          {
+            name: 'Members', render: (data) => {
+              const memberslist = data?.members?.map(member => member.name).slice(0, 2).join(',') + "..."
+              if (data?.members?.length) return memberslist
+              return 'No member present'
+            }
+          },
+          {
+            name: 'Assets', render: (data) => {
+              const memberslist = data?.assets?.map(asset => asset.name).slice(0, 2).join(',') + "..."
+              if (data?.assets?.length) return memberslist
+              return 'No asset present'
+            }
+          },
           // { name: 'Status' },
           // { name: 'Action' }
         ]}
         actions={(data, i) => <TableAction
           actions={[
             // { component: 'View members ', onClick: () => dispatch(openModal({ title: 'Group members', component: <AddMemberstoGroup group={data} /> })) },
-            { component: 'Update group ', onClick: () => dispatch(openModal({ title: 'Update group', component: <AddMemberstoGroup group={data} /> })) },
             // { component: 'Update group ', onClick: () => dispatch(openModal({ title: 'Update group', component: <AddMemberstoGroup group={data} /> })) },
+            { component: 'Update group ', onClick: () => navigate(`/admin/groups/${data?.id}`) },
             { component: 'Delete group', onClick: () => dispatch(openModal({ title: 'Delete Group', component: <ConfirmModal color='red' onProceed={() => deleteGroup(data?.id, () => dispatch(closeModal()))} /> })) },
           ]}
         />} />

@@ -20,6 +20,6 @@ export const admin_routes = [
     { path: '/admin/create-users', Component: <CreateUsers />, layout: false },
     { path: '/admin/reports', Component: <Reports />, layout: false },
     { path: '/admin/manage-assets', Component: <Assets />, layout: true },
-    { path: '/admin/group', Component: <Group />, layout: true },
+    { path: '/admin/groups/:groupId', Component: <Group />, layout: true },
     { path: '/profile', Component: <Profile />, layout: false },
 ]

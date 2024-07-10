@@ -116,7 +116,7 @@ const deleteGroupAsset = onCall(async ({ data }) => {
         const res = (await db.collection("groups").doc(groupId).get()).data()
         let groupAssets = res?.assets || []
 
-        await db.collection("groups").doc(groupId).update({ members: groupAssets?.filter(groupAsset => groupAsset !== asset) })
+        await db.collection("groups").doc(groupId).update({ assets: groupAssets?.filter(groupAsset => groupAsset !== asset) })
         return { status: 'success', data: {}, message: 'Asset deleted successfully' }
     } catch (error) {
         logger.log("error => ", error)
@@ -126,16 +126,19 @@ const deleteGroupAsset = onCall(async ({ data }) => {
 })
 
 
-const getGroups = onCall(async ({ groupId }) => {
+const getGroups = onCall(async (request) => {
     const limit = 10
     try {
+        const { groupId } = request.data
         const db = admin.firestore()
         let res = []
+        logger.log(groupId)
         if (groupId) {
-            res = await db.collection('groups').where("id", "==", groupId).get()
-            if (!res[0]) throw { code: 'cancelled', message: 'Group not found' }
+            res = (await db.collection('groups').where("id", "==", groupId).get())
+            logger.log("res => ", res?.docs[0])
+            if (!res?.docs[0]) throw { code: 'cancelled', message: 'Group not found' }
         } else {
-            res = await db.collection('groups').get()
+            res = (await db.collection('groups').get())
         }
 
         let groups = res?.docs.map(doc => doc?.data())
@@ -144,7 +147,7 @@ const getGroups = onCall(async ({ groupId }) => {
         // logger.log('groupMembersFullDetails => ', groupMembersFullDetails)
         for (let groupIndex = 0; groupIndex < groups.length; groupIndex++) {
             const group = groups[groupIndex]
-            const members = group?.members  || []
+            const members = group?.members || []
             const assets = group?.assets || []
             groupMembersFullDetails[groupIndex] = []
             groupAssetsFullDetails[groupIndex] = []
@@ -153,20 +156,21 @@ const getGroups = onCall(async ({ groupId }) => {
                 const member = members[i];
                 const memberDetails = member ? (await db.collection('users').doc(member).get()).data() : {}
                 logger.log('memberDetails => ', memberDetails)
-                groupMembersFullDetails[groupIndex].push({
-                    name: memberDetails?.firstName + " " + memberDetails?.lastName,
-                    email: memberDetails?.email,
-                    uid: memberDetails?.uid,
-                })
+                if (memberDetails?.uid) {
+                    groupMembersFullDetails[groupIndex].push({
+                        name: memberDetails?.firstName + " " + memberDetails?.lastName,
+                        email: memberDetails?.email,
+                        uid: memberDetails?.uid,
+                    })
+                }
             }
             if (assets?.length) for (let i = 0; i < assets?.length; i++) {
                 const asset = assets[i];
                 const assetDetails = asset ? (await db.collection('assets').doc(asset).get()).data() : {}
                 logger.log('assetDetails => ', assetDetails)
-                groupAssetsFullDetails[groupIndex].push({
-                    name: assetDetails?.name,
-                    id: assetDetails?.id,
-                })
+                if (assetDetails?.id) {
+                    groupAssetsFullDetails[groupIndex].push(assetDetails)
+                }
             }
 
         }
@@ -174,8 +178,8 @@ const getGroups = onCall(async ({ groupId }) => {
         if (groupId) {
             result = {
                 ...groups[0],
-                members: groupMembersFullDetails[i],
-                assets: groupAssetsFullDetails[i]
+                members: groupMembersFullDetails[0],
+                assets: groupAssetsFullDetails[0]
             }
         } else {
             result = groups.map((group, i) => ({
@@ -196,4 +200,4 @@ const getGroups = onCall(async ({ groupId }) => {
 })
 
 
-module.exports = { createGroup, addMembersToGroup, getGroups, deleteGroup, deleteGroupMember, assignAssetsToGroup, deleteGroupAsset  }
+module.exports = { createGroup, addMembersToGroup, getGroups, deleteGroup, deleteGroupMember, assignAssetsToGroup, deleteGroupAsset }
