@@ -12,7 +12,7 @@ import ConfirmModal from 'Components/Modal/ConfirmModal'
 import deleteGroup from './deleteGroup'
 // import { useFetch } from 'hooks/useFetch'
 
-const Group = () => {
+const Groups = () => {
   const dispatch = useDispatch()
 
   return (
@@ -36,6 +36,7 @@ const Group = () => {
           actions={[
             // { component: 'View members ', onClick: () => dispatch(openModal({ title: 'Group members', component: <AddMemberstoGroup group={data} /> })) },
             { component: 'Update group ', onClick: () => dispatch(openModal({ title: 'Update group', component: <AddMemberstoGroup group={data} /> })) },
+            // { component: 'Update group ', onClick: () => dispatch(openModal({ title: 'Update group', component: <AddMemberstoGroup group={data} /> })) },
             { component: 'Delete group', onClick: () => dispatch(openModal({ title: 'Delete Group', component: <ConfirmModal color='red' onProceed={() => deleteGroup(data?.id, () => dispatch(closeModal()))} /> })) },
           ]}
         />} />
@@ -43,4 +44,4 @@ const Group = () => {
   )
 }
 
-export default Group
+export default Groups

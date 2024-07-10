@@ -14,8 +14,8 @@ const createAsset = onCall(async (request) => {
         logger.log('data ----', { data })
         const db = admin.firestore()
         const { name, field, well, productionString, reservoir, flowStation, surfaceXcoordinate, surfaceYcoordinate } = data
-        const nameIsTaken = (await db.collection("assets").where("name", "==", name).get()).docs[0].exists
-        if (nameIsTaken) throw { code: "cancelled", message:"The name is taken"}
+        // const nameIsTaken = (await db.collection("assets").where("name", "==", name).get()).docs[0].exists
+        // if (nameIsTaken) throw { code: "cancelled", message:"The name is taken"}
         const id = crypto.randomBytes(8).toString("hex");
         const payload = { id, name, field, well, productionString, reservoir, flowStation, surfaceXcoordinate, surfaceYcoordinate, created: currentTime }
         logger.log('PAYLOAD ----', payload)

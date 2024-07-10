@@ -49,6 +49,28 @@ const addMembersToGroup = onCall(async ({ data }) => {
     }
 
 })
+const assignAssetsToGroup = onCall(async ({ data }) => {
+
+    try {
+        const { groupId, assets } = data
+        if (!groupId) throw { code: 'cancelled', message: 'Group id is missing' }
+        if (!assets.length) throw { code: 'cancelled', message: 'Assets should be an array of users uid\'' }
+        const db = admin.firestore()
+        const res = (await db.collection("groups").doc(groupId).get()).data()
+        logger.log("group => ", res)
+        let groupAssets = res?.assets || []
+        let message = ''
+        assets.forEach(asset => {
+            if (!groupAssets.includes(asset)) groupAssets.push(asset)
+        });
+        await db.collection("groups").doc(groupId).update({ assets: groupAssets })
+        return { status: 'success', data: {}, message: 'Assets added successfully' }
+    } catch (error) {
+        logger.log("error => ", error)
+        throw new HttpsError(error?.code, error?.message)
+    }
+
+})
 const deleteGroup = onCall(async ({ data }) => {
     try {
         const { groupId } = data
@@ -84,23 +106,50 @@ const deleteGroupMember = onCall(async ({ data }) => {
 })
 
 
-const getGroups = onCall(async ({ }) => {
+const deleteGroupAsset = onCall(async ({ data }) => {
+    try {
+        const { groupId, asset } = data
+        if (!groupId) throw { code: 'cancelled', message: 'Group id is missing' }
+        if (!asset) throw { code: 'cancelled', message: 'No asset provided' }
+
+        const db = admin.firestore()
+        const res = (await db.collection("groups").doc(groupId).get()).data()
+        let groupAssets = res?.assets || []
+
+        await db.collection("groups").doc(groupId).update({ members: groupAssets?.filter(groupAsset => groupAsset !== asset) })
+        return { status: 'success', data: {}, message: 'Asset deleted successfully' }
+    } catch (error) {
+        logger.log("error => ", error)
+        throw new HttpsError(error?.code, error?.message)
+    }
+
+})
+
+
+const getGroups = onCall(async ({ groupId }) => {
     const limit = 10
     try {
         const db = admin.firestore()
-        const res = await db.collection('groups').get()
+        let res = []
+        if (groupId) {
+            res = await db.collection('groups').where("id", "==", groupId).get()
+            if (!res[0]) throw { code: 'cancelled', message: 'Group not found' }
+        } else {
+            res = await db.collection('groups').get()
+        }
 
         let groups = res?.docs.map(doc => doc?.data())
-        let groupMembersFullDetails = {}
+        let groupMembersFullDetails = {}, groupAssetsFullDetails = {}
 
         // logger.log('groupMembersFullDetails => ', groupMembersFullDetails)
         for (let groupIndex = 0; groupIndex < groups.length; groupIndex++) {
             const group = groups[groupIndex]
-            const members = group?.members
-            logger.log('group => ', group)
-            logger.log('members => ', members)
+            const members = group?.members  || []
+            const assets = group?.assets || []
             groupMembersFullDetails[groupIndex] = []
-            for (let i = 0; i < members.length; i++) {
+            groupAssetsFullDetails[groupIndex] = []
+
+            if (members?.length) for (let i = 0; i < members?.length; i++) {
                 const member = members[i];
                 const memberDetails = member ? (await db.collection('users').doc(member).get()).data() : {}
                 logger.log('memberDetails => ', memberDetails)
@@ -110,10 +159,35 @@ const getGroups = onCall(async ({ }) => {
                     uid: memberDetails?.uid,
                 })
             }
-            logger.log('groupMembersFullDetails => ', groupMembersFullDetails)
+            if (assets?.length) for (let i = 0; i < assets?.length; i++) {
+                const asset = assets[i];
+                const assetDetails = asset ? (await db.collection('assets').doc(asset).get()).data() : {}
+                logger.log('assetDetails => ', assetDetails)
+                groupAssetsFullDetails[groupIndex].push({
+                    name: assetDetails?.name,
+                    id: assetDetails?.id,
+                })
+            }
 
         }
-        return { status: 'success', data: groups.map((group, i) => ({ ...group, members: groupMembersFullDetails[i] })) }
+        let result = []
+        if (groupId) {
+            result = {
+                ...groups[0],
+                members: groupMembersFullDetails[i],
+                assets: groupAssetsFullDetails[i]
+            }
+        } else {
+            result = groups.map((group, i) => ({
+                ...group,
+                members: groupMembersFullDetails[i],
+                assets: groupAssetsFullDetails[i]
+            }))
+        }
+        return {
+            status: 'success',
+            data: result
+        }
     } catch (error) {
         logger.log('error=>', error)
         return { status: 'failed', error }
@@ -122,4 +196,4 @@ const getGroups = onCall(async ({ }) => {
 })
 
 
-module.exports = { createGroup, addMembersToGroup, getGroups, deleteGroup, deleteGroupMember }
+module.exports = { createGroup, addMembersToGroup, getGroups, deleteGroup, deleteGroupMember, assignAssetsToGroup, deleteGroupAsset  }
