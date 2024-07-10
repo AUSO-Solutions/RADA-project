@@ -66,10 +66,12 @@ const Group = ({ }) => {
             .map(user => ({ label: user?.firstName + " " + user?.lastName, value: user?.uid }))
     }, [group])
     const assetsAddable = useMemo(() => {
-        return assets.map(asset => ({ label: asset?.name + " " + asset?.well, value: asset?.id }))
-        // .filter(asset => !group?.asset
-        //     ?.map(asset => asset?.id)
-        //     ?.includes(asset?.id))
+
+        return assets
+            .filter(asset => !group?.assets
+                ?.map(asset => asset?.id)
+                ?.includes(asset?.id))
+            .map(asset => ({ label: asset?.name + " " + asset?.well, value: asset?.id }))
 
     }, [group])
 
@@ -125,7 +127,7 @@ const Group = ({ }) => {
 
                             </>
                         )
-                    }) : "No members present "
+                    }) : "No assets present "
                 }
 
             </div>
@@ -150,7 +152,7 @@ const Group = ({ }) => {
                 <Input label={'Members'} name='members' type='select' isMulti options={usersAddable} />
 
             </RadaForm>
-<br /> 
+            <br />
 
             <Text weight={'600'} size={'16px'}> Assign asset </Text>
             <RadaForm
@@ -169,7 +171,7 @@ const Group = ({ }) => {
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', width: '600px', gap: '20px' }} >
                 {/* <Text size={'20px'} weight={600}>{group?.groupName}</Text> */}
                 <Input name='groupId' hidden value={group?.id} />
-                <Input label={'Members'} name='assets' type='select' isMulti options={assetsAddable} />
+                <Input label={'Assets'} name='assets' type='select' isMulti options={assetsAddable} />
 
             </RadaForm>
         </Box>

@@ -32,14 +32,14 @@ const Groups = () => {
           { name: 'Date created', key: 'dateCreated' },
           {
             name: 'Members', render: (data) => {
-              const memberslist = data?.members?.map(member => member.name).slice(0, 2).join(',') + "..."
+              const memberslist = data?.members?.map(member => member.name).slice(0, 2).join(', ') + "..."
               if (data?.members?.length) return memberslist
               return 'No member present'
             }
           },
           {
             name: 'Assets', render: (data) => {
-              const memberslist = data?.assets?.map(asset => asset.name).slice(0, 2).join(',') + "..."
+              const memberslist = data?.assets?.map(asset => `${asset.name} ${asset.well}`).slice(0, 2).join(', ') + "..."
               if (data?.assets?.length) return memberslist
               return 'No asset present'
             }
