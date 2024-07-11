@@ -70,7 +70,7 @@ const deleteRole = onCall(async (request) => {
         const role = await roleRef.get();
 
         if (!role.exists) {
-            throw { code: 'not-found', message: 'Role note found' };
+            throw { code: 'not-found', message: 'Role not found' };
         }
 
         await roleRef.delete();
