@@ -43,7 +43,7 @@ const CreateUser = ({ updateUserId = null, defaultValues }) => {
             btnClass={'w-[100%] flex justify-center'}
             url={defaultValues ? 'updateUserByUid' : "createUser"} method={'post'}
             onSuccess={() => {
-                toast.success('Successfully')
+                // toast.success('Successfully')
                 dispatch(closeModal())
             }}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', width: '600px', gap: '20px' }} >

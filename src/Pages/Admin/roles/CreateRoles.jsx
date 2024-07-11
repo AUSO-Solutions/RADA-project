@@ -41,7 +41,7 @@ const CreateRoles = ({ updateUserId = null, defaultValues }) => {
             }}
 
             onSuccess={() => {
-                toast.success('Successfully')
+                // toast.success('Successfully')
                 dispatch(closeModal())
             }}
             className={'!w-[400px]'}

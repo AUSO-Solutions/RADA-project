@@ -1,5 +1,5 @@
 
-import React from 'react'
+import React, { useState } from 'react'
 import CreateRoles from './CreateRoles'
 
 import RadaTable from 'Components/RadaTable'
@@ -11,17 +11,26 @@ import { useDispatch } from 'react-redux'
 
 import TableAction from 'Components/RadaTable/TableAction'
 import ConfirmModal from 'Components/Modal/ConfirmModal'
-
-
-
-
 import { firebaseFunctions } from 'Services'
-import { Button } from 'Components'
-// import { CSVDownload } from 'react-csv
+
+
 
 const Roles = () => {
 
   const dispatch = useDispatch()
+  const [delLoad,setDelLoad] = useState(false)
+  const deleteRole =async(roleId)=>{
+    setDelLoad(true)
+    try {
+      await firebaseFunctions('deleteRole',{roleId})
+      dispatch(closeModal())
+    } catch (error) {
+      
+    }finally{
+      setDelLoad(false)
+    }
+
+  }
 
   return (
     <div>
@@ -46,7 +55,7 @@ const Roles = () => {
         actions={(data, i) => <TableAction
           actions={[
             { component: 'Update role', onClick: () => dispatch(openModal({ title: 'Update role', component: <CreateRoles defaultValues={data} /> })) },
-            // { component: 'Delete user', onClick: () => dispatch(openModal({ title: 'Delete User', component: <ConfirmModal color='red' onProceed={() => deleteUser(data?.uid, () => dispatch(closeModal()))} /> })) },
+            { component: 'Delete role', onClick: () => dispatch(openModal({ title: 'Delete role', component: <ConfirmModal  color='red' loading={delLoad} onProceed={() => deleteRole(data?.id, () => dispatch(closeModal()))} /> })) },
           ]}
         />}/>
     </div>

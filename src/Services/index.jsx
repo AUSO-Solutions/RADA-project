@@ -4,6 +4,7 @@ import axios from 'axios'
 import { project_functions } from 'firebase-config';
 import { httpsCallable } from 'firebase/functions';
 import handleError from './handleError';
+import { toast } from 'react-toastify';
 // import { toast } from 'react-toastify';
 
 const baseURL = process.env.REACT_APP_BASE_URL
@@ -54,6 +55,7 @@ const firebaseFunctions = async (functionName, payload,hideError = false)  => {
     try {
         const call = httpsCallable(project_functions, functionName)
         const res = (await call(payload)).data
+        toast.success(res?.message)
         return res
     } catch (error) {
         // console.log(error)

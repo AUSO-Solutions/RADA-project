@@ -60,6 +60,7 @@ const Users = () => {
           { name: 'Last name', key: 'lastName' },
           { name: 'Email', key: 'email' },
           { name: 'Status', key: 'status' },
+          { name: 'Roles', key: 'roles', render:(data)=> data?.roles?.map(role => role?.roleName)?.join(', ')  || "No roles"},
           // { name: 'Action' }
         ]}
         actions={(data, i) => <TableAction

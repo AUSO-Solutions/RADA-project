@@ -35,7 +35,7 @@ const CreateGroup = ({ }) => {
             method={'post'}
             className={'w-[400px]'}
             onSuccess={() => {
-                toast.success('Successful')
+                // toast.success('Successful')s
                 dispatch(closeModal())
             }}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', width: '600px', gap: '20px' }} >
