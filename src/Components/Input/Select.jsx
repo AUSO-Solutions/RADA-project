@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Select from 'react-select'
 
 
-const RadaSelect = ({ name, onChange, options, isMulti }) => {
+const RadaSelect = ({ name, onChange, options, isMulti , ...rest}) => {
 
 
     const [value, setValue] = useState(isMulti ? [] : '')
@@ -21,7 +21,7 @@ const RadaSelect = ({ name, onChange, options, isMulti }) => {
     return (
         <>
             <input type="hidden" name={name}  value={isMulti ? value?.map(x => x?.value).join('-sal-,-sal-') + "select-array-list" : value.value} />
-            <Select options={options} isMulti={isMulti} onChange={setValue} />
+            <Select options={options} isMulti={isMulti} onChange={setValue} {...rest} />
         </>
     )
 }

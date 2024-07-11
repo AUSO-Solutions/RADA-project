@@ -1,16 +1,12 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { Input, RadaForm } from 'Components'
-// import { login } from 'Services/auth';
 import * as Yup from 'yup';
 import { Stack } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { closeModal } from 'Store/slices/modalSlice';
 import { toast } from 'react-toastify';
+import { useFetch } from 'hooks/useFetch';
 
-
-
-
-/* Function to generate combination of password */
 function generatePass() {
     let pass = '';
     let str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +
@@ -26,15 +22,17 @@ function generatePass() {
     return pass;
 }
 
-// console.log(generatePass())
 
-const CreateUser = ({updateUserId=null, defaultValues}) => {
+const CreateUser = ({ updateUserId = null, defaultValues }) => {
 
-    // console.log(defaultValues)
     const schema = Yup.object().shape({
         email: Yup.string().required(),
         // password: Yup.string().required().min(8),
     })
+    const { data: roles } = useFetch({ firebaseFunction: 'getRoles' })
+    const roleList = useMemo(() => {
+        return roles.map(role => ({ value: role?.id, label: role?.roleName }))
+    }, [roles])
 
     const dispatch = useDispatch()
     return (
@@ -43,18 +41,18 @@ const CreateUser = ({updateUserId=null, defaultValues}) => {
             noToken
             btnText={'Submit'}
             btnClass={'w-[100%] flex justify-center'}
-            url={defaultValues?'updateUserByUid':"createUser"} method={'post'}
+            url={defaultValues ? 'updateUserByUid' : "createUser"} method={'post'}
             onSuccess={() => {
                 toast.success('Successfully')
                 dispatch(closeModal())
             }}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', width: '600px', gap: '20px' }} >
             <Stack direction={'row'} spacing={1}>
-                <Input label={'First Name'} name='firstName' defaultValue={defaultValues?.firstName}  />
-                <Input label={'Last Name'} name='lastName' defaultValue={defaultValues?.lastName}  />
+                <Input label={'First Name'} name='firstName' defaultValue={defaultValues?.firstName} />
+                <Input label={'Last Name'} name='lastName' defaultValue={defaultValues?.lastName} />
             </Stack>
-            <Input label={'Email'} name='email'  defaultValue={defaultValues?.email} />
-            <Input label={'Roles'} name='roles' />
+            <Input label={'Email'} name='email' defaultValue={defaultValues?.email} />
+            <Input label={'Roles'} name='roles' type='select' options={roleList} isMulti defaultValue={defaultValues?.roles?.map(role => ({ value: role?.id, label: role?.roleName }))} />
             {!defaultValues?.email && <Input label={'Password'} name='password' value={generatePass()} />}
             {defaultValues?.email && <Input hidden label={''} name='uid' value={defaultValues?.uid} />}
 

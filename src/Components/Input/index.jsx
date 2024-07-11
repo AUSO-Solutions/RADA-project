@@ -3,6 +3,7 @@ import styles from './input.module.scss'
 import { Box } from '@mui/material';
 import OtpInput from 'react-otp-input';
 import RadaSelect from './Select';
+import CheckInput from './CheckInput';
 
 const OTPInput = (props) => {
     const [otp, setOtp] = useState()
@@ -49,6 +50,7 @@ const Input = ({
                 {...props}
             />}
             {type === 'select' && <RadaSelect {...props} onChange={onChange} />}
+            {/* {type === 'checkbox' && <CheckInput {...props} />} */}
             {defaults.includes(type) && <input
                 type={type}
                 onChange={change}
