@@ -35,21 +35,18 @@ function Navbar() {
             <Box sx={{ width: '30%' }}>
                
             </Box> */}
-            <Typography variant='h6' fontWeight={600} style={{ color: '#000000' }} >RADA ADMIN PORTAL</Typography>
-            <Box className={`${styles.right}`}>
-                <div className={styles.circle} onClick={() => setDrop(true)} > {} </div><BsChevronDown onClick={() => setDrop(true)} />
+            <Typography fontSize={"24px"} fontWeight={600} style={{ color: '#000000' }} >Welcome Hillary</Typography>
+            <Box className={styles.rightContain} >
+                {/* <Box className={`${styles.right}`}>
+
+                </Box> */}
+                <div className={styles.circle} onClick={() => setDrop(true)} > { } </div><BsChevronDown onClick={() => setDrop(true)} />
                 {drop && <ClickAway onClickAway={() => setDrop(false)} showshadow={true}
                 >
                     <div
                         className={`shadow ${styles.dropdown}`}
                     >
-                        {/* <Typography
-                            onClick={() => window.location.assign('/')}
-                            className='font-bold cursor-pointer py-2'>
-                            Home
-                        </Typography> */}
 
-                        {/* <Divider /> */}
                         <Typography className='font-bold cursor-pointer py-1 relative z-[100]'
                             onClick={() => logout_()}
                         >

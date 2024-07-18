@@ -29,7 +29,7 @@ function App() {
                 const path = route.path
                 const Component = layout ? <Layout>{route.Component}</Layout> : route.Component
                 return (
-                  <Route path={path} element={Component} key={path} />
+                  <Route path={path} element={Component}  key={path} />
                 )
               })}
             </Routes>

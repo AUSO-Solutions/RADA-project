@@ -6,7 +6,7 @@ import React from 'react'
 const Header = ({ name, btns = [] }) => {
   return (
     <div className='w-[100%] items-center justify-between px-[25px]  border-b flex h-[70px]'>
-      <Text weight={600}>
+      <Text size={"32px"} weight={500}>
         {name}
       </Text>
       <Stack direction={'row'} spacing={2}>

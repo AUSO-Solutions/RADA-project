@@ -8,6 +8,8 @@ const Text = ({ children, size, color, weight, className, display, align,lH }) =
                 color,
                 fontSize: size,
                 fontWeight: weight,
+
+                fontFamily:'Poppins',
                 display: display || 'inline',
                 textAlign: align || 'left',
                 lineHeight:lH
