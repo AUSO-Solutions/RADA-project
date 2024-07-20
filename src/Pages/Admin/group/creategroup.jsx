@@ -5,14 +5,13 @@ import * as Yup from 'yup';
 
 import { useDispatch } from 'react-redux';
 import { closeModal } from 'Store/slices/modalSlice';
-import { toast } from 'react-toastify';
 import { useUsers } from 'hooks/useUsers';
 
 
 
 // console.log(generatePass())
 
-const CreateGroup = ({ }) => {
+const CreateGroup = () => {
 
     // console.log(defaultValues)
     const schema = Yup.object().shape({

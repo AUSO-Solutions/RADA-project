@@ -1,11 +1,11 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import styles from './navbar.module.scss'
 import { BsChevronDown } from 'react-icons/bs'
 import { Box, Typography } from '@mui/material';
 import ClickAway from '../clickaway';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { logout } from 'Store/slices/auth';
 // import { logOutUser } from "../../store/reducers/user";
 // import ClickAwayListener from 'react-click-away-listener';

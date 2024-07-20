@@ -1,9 +1,9 @@
 import ChangePassword from "./Auth/ChangePassword";
 import ForgotPassword from "./Auth/ForgotPassword";
-import UserLogin from "./Auth/Login";
+// import UserLogin from "./Auth/Login";
 import FieldOperatorCTA from "./Auth/fieldOperatorCTA";
 import Dashboard from "./Dashboard";
-import FDC from "./FieldDataCapture";
+import FDC from "./FieldDataCapture/DailyoOperation";
 import MerData from "./FieldDataCapture/MerData";
 import SurveyData from "./FieldDataCapture/SurveyData";
 import WellTestData from "./FieldDataCapture/WellTestData";

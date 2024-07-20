@@ -4,7 +4,6 @@ import * as Yup from 'yup';
 import { Stack } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { closeModal } from 'Store/slices/modalSlice';
-import { toast } from 'react-toastify';
 import { useFetch } from 'hooks/useFetch';
 
 function generatePass() {

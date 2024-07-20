@@ -9,13 +9,13 @@
     padding: 16px 5px;
 }
 .borderb {
-    border-bottom: 2px solid #99b8a8;
+  border-bottom: 4px solid rgba(0, 163, 255, 1);
 }
 
 .textTab {
-    font-family: 'Palanquin';
+    font-family: 'inter';
     font-style: normal;
-    font-size: 15px;
+    font-size: 18px;
     line-height: 150%;
     text-align: center;
 }
@@ -23,7 +23,7 @@
 .textActive {
     font-weight: 600;
     letter-spacing: 0.1px;
-    color: #0274BD;
+    color: rgba(0, 163, 255, 1);
 }
 
 .textInactive {

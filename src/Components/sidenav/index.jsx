@@ -1,18 +1,11 @@
 import React, { useMemo } from "react";
 import styles from "./sidenav.module.scss";
-// import { ImHome } from "react-icons/im";
-// import { MdSchool } from "react-icons/md";
-// import { AiFillSetting } from "react-icons/ai";
-// import { IoMdCheckmarkCircleOutline } from "react-icons/io";
-// import { FaClock } from "react-icons/fa";
-// import { PiListNumbersFill } from "react-icons/pi";
-import { GrGroup, GrUserAdmin } from "react-icons/gr";
+import { GrGroup } from "react-icons/gr";
 import { useNavigate, useLocation } from "react-router";
 import { Link } from "react-router-dom";
 // import Img152 from '../../Assets/images/newcross152.svg'
-import { useSelector } from "react-redux";
-import { GrNotes } from "react-icons/gr";
-import { FaRegUser } from "react-icons/fa";
+// import { useSelector } from "react-redux";
+
 import { images } from "Assets";
 import Text from "Components/Text";
 import { Bubble, Edit, FolderOpen, Home, User, People,Lock, Book, Driver } from 'iconsax-react';
@@ -23,7 +16,7 @@ import { Bubble, Edit, FolderOpen, Home, User, People,Lock, Book, Driver } from 
 function Sidenav() {
   const navigate = useNavigate();
   const { pathname } = useLocation()
-  const user = useSelector(state => state?.auth?.user)
+  // const user = useSelector(state => state?.auth?.user)
   const sidebar = useMemo(() => {
     const paths_ = pathname.split("/")
     console.log(paths_)
@@ -103,7 +96,7 @@ function Sidenav() {
       },
 
     ]
-  }), [pathname]);
+  }), [sidebar.parent]);
 
 
   return (

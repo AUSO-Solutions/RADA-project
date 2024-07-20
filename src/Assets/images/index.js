@@ -7,5 +7,6 @@ export const images = {
     panocean147: require('./panocean.png'),
     nepl24: require('./nepl.png'),
     newcrossField: require('./newcrossfield.jpg'),
+    setupIcon : require('./setup.png')
 
 }
