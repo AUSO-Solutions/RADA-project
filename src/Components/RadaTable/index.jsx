@@ -42,7 +42,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 
 
-export default function RadaTable({ data = [], columns = [], fn = () => null, actions = () => null, noaction, idKey = "id", searchKey = 'search', firebaseApi = '' }) {
+export default function RadaTable({ data = [], columns = [], noNumbers, fn = () => null, actions = () => null, noaction, idKey = "id", noSearch, searchKey = 'search', firebaseApi = '', headBgColor ='white' }) {
     const updatec = useMemo(() => {
         return fn() ? fn(columns) : columns
     }, [columns, fn])
@@ -63,21 +63,21 @@ export default function RadaTable({ data = [], columns = [], fn = () => null, ac
 
 
     const tableData = useMemo(() => {
-        let result = resFromBackend || data
+        let result = resFromBackend.length? resFromBackend : data
         if (search) result = (result.filter(datum => Object.values(datum).some(field => String(field).toLowerCase().includes(search))))
         return result
     }, [data, search, resFromBackend, ])
 
     return (
         <TableContainer component={'div'} sx={{ overflowX: 'auto' }} className='px-3 w-full'>
-            <TableSearch onChange={(e) => setSearch(e.target.value?.toLowerCase())} />
+            { !noSearch && <TableSearch onChange={(e) => setSearch(e.target.value?.toLowerCase())} />}
             {/* <TableFilter /> */}
-            <Table sx={{ minWidth: 700, bgcolor: 'white' }} className='' aria-label="customized table">
-                <TableHead sx={{ bgcolor: 'white !important', color: 'black' }} className='border-t'>
-                    <TableRow>
-                        <StyledTableCell>S/N</StyledTableCell>
+            <Table  sx={{ minWidth: 700, bgcolor: 'white' }} className='' aria-label="customized table">
+                <TableHead sx={{  "& th": {bgcolor: `${headBgColor} !important`, color: 'black', fontWeight:'bold'} }} className='border-t '>
+                    <TableRow >
+                        { !noNumbers && <StyledTableCell>S/N</StyledTableCell>}
                         {
-                            updatec.map((column, i) => <StyledTableCell key={i} >{column.name}</StyledTableCell>)
+                            updatec.map((column, i) => <StyledTableCell  key={i} >{column.name}</StyledTableCell>)
                         }
                         {!noaction && <StyledTableCell>Action</StyledTableCell>}
                     </TableRow>
@@ -86,7 +86,7 @@ export default function RadaTable({ data = [], columns = [], fn = () => null, ac
                     {tableData.map((row, i) => (
                         <React.Fragment key={i}>
                             <StyledTableRow>
-                                <StyledTableCell align="left">{i + 1} </StyledTableCell>
+                                {!noNumbers && <StyledTableCell align="left">{i + 1} </StyledTableCell>}
                                 {
                                     updatec.map((column, inner_index) => <StyledTableCell key={i + inner_index} align="left">
                                         {column?.render ? column?.render(row) : row[column.key]}
