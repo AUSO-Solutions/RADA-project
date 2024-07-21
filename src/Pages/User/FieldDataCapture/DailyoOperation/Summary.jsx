@@ -5,8 +5,6 @@ import React from 'react'
 
 const Summary = () => {
 
-
-
   return (
     <div>
       <div className='w-full flex flex-row justify-between px-10 mt-3' >
