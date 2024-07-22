@@ -1,0 +1,21 @@
+.body{
+    display: flex;
+    justify-content: space-between;
+    background-color: #FAFAFA;
+    width: 437px;
+    height: 92px;
+    padding: 15px 20px;
+    border-radius: 10px;
+    align-items: center;
+
+    .content{
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        .metering{
+            display: flex;
+            gap: 5px;
+        }
+    }
+}
