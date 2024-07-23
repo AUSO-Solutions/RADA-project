@@ -16,6 +16,8 @@ import { firebaseFunctions } from 'Services'
 import { Button } from 'Components'
 import CreateAsset from './CreateAsset'
 import { toast } from 'react-toastify'
+import { db } from 'firebase-config'
+import { collection } from 'firebase/firestore'
 // import { CSVDownload } from 'react-csv';
 // import { toast } from 'react-toastify'
 
@@ -40,6 +42,8 @@ const Assets = () => {
             setDownloading(false)
         }
     }
+
+
     const [deleteLoading, setDeleteLoading] = useState(false)
 
     const deleteAsset = async (id) => {
@@ -70,7 +74,7 @@ const Assets = () => {
             <RadaTable
                 firebaseApi='getAssets'
                 columns={[
-                    { name: 'OML', key: 'name' },
+                    { name: 'OML', key: 'assetName' },
                     { name: 'Field', key: 'field' },
                     { name: 'Well', key: 'well' },
                     { name: 'Production string', key: 'productionString' },

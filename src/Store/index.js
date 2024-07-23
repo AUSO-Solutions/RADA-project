@@ -4,6 +4,7 @@ import storage from 'redux-persist/lib/storage';
 import apiSlice from './slices/api';
 import authSlice from './slices/auth';
 import modalSlice from './slices/modalSlice';
+import setupSlice from './slices/setupSlice';
 
 const persistConfig = {
   key: 'root',
@@ -16,7 +17,8 @@ const persistConfig = {
 const reducers = combineReducers({
   api: apiSlice,
   auth: authSlice,
-  modal:modalSlice
+  modal:modalSlice,
+  setup:setupSlice
 })
 
 const persistedReducer = persistReducer(persistConfig, reducers);

@@ -10,16 +10,19 @@ const { currentTime } = require("../../helpers");
 const createAsset = onCall(async (request) => {
     try {
         let { data } = request
-
         logger.log('data ----', { data })
         const db = admin.firestore()
         const { name, field, well, productionString, reservoir, flowStation, surfaceXcoordinate, surfaceYcoordinate } = data
-        // const nameIsTaken = (await db.collection("assets").where("name", "==", name).get()).docs[0].exists
-        // if (nameIsTaken) throw { code: "cancelled", message:"The name is taken"}
         const id = crypto.randomBytes(8).toString("hex");
-        const payload = { id, name, field, well, productionString, reservoir, flowStation, surfaceXcoordinate, surfaceYcoordinate, created: currentTime }
+        const payload = { listId: id, assetName: name, field, well, productionString, reservoir, flowStation, surfaceXcoordinate, surfaceYcoordinate, created: currentTime }
+
+        if (!name) {
+            throw { code: 'cancelled', message: 'Please provide asset name' }
+        }
+
+        await db.collection('assets').doc(name).collection("assetList").doc(id).set(payload)
         logger.log('PAYLOAD ----', payload)
-        await db.collection('assets').doc(id).set(payload)
+        // await db.collection('assets').doc(name).set(payload)
         return { status: 'success', message: 'Asset created successfully', data }
 
     } catch (error) {
@@ -27,6 +30,30 @@ const createAsset = onCall(async (request) => {
         throw new HttpsError(error?.code, error?.message)
     }
 });
+// const updateAsset = onCall(async (request) => {
+//     try {
+//         let { data } = request
+
+//         logger.log('data ----', { data })
+//         const db = admin.firestore()
+//         const { name,
+//              field, well, productionString, reservoir, flowStation, surfaceXcoordinate, surfaceYcoordinate 
+//         } = data
+//         const nameIsTaken = (await db.collection("assets").where("name", "==", name).get()).docs[0].exists
+//         if (!nameIsTaken) throw { code: "cancelled", message: "Asset not found!" }
+//         // const id = crypto.randomBytes(8).toString("hex");
+//         const payload = {  name, 
+//             // field, well, productionString, reservoir, flowStation, surfaceXcoordinate, surfaceYcoordinate,
+//              created: currentTime }
+//         logger.log('PAYLOAD ----', payload)
+//         await db.collection('assets').doc(name).set(payload)
+//         return { status: 'success', message: 'Asset created successfully', data }
+
+//     } catch (error) {
+//         logger.log('error ===> ', error)
+//         throw new HttpsError(error?.code, error?.message)
+//     }
+// });
 
 // const createAssets = onCall(async (request) => {
 //     try {
@@ -76,32 +103,56 @@ const createAsset = onCall(async (request) => {
 //         throw new HttpsError(error?.code, error?.message)
 //     }
 // });
-
-
 const getAssets = onCall(async ({ }) => {
     const limit = 10
-
+    logger.log("------")
     try {
         const db = admin.firestore()
-        const res = await db.collection('assets').get()
-        const data = res?.docs?.map(doc => doc.data()) || []
-        return { status: 'success', data }
+        const docs = (await db.collectionGroup('assetList').get()).docs
+        // logger.log("docs =>", docs.map(doc => doc.data()))
+        // let list = []
+        // // for (let i = 0; i < docs.length; i++) {
+        // //     const doc = docs[i];
+        // //     logger.log("asset : => ",doc.data())
+        // //     const assetData = (await doc.ref.collection('assetList').get()).docs.map(doc => doc.data())
+        // //     logger.log({assetData})
+        // //     list.push(assetData)
+        // // }
+
+        return { status: 'success', data: docs.map(doc => doc.data()) }
     } catch (error) {
         logger.log('error=>', error)
         return { status: 'failed', error }
     }
 
 })
-const getAssetById = onCall(async ({ data }) => {
+const getAssetsName = onCall(async ({ }) => {
     const limit = 10
-    const { id } = data
+    logger.log("------")
+    try {
+        const db = admin.firestore()
+        const docs = (await db.collectionGroup('assets').get()).docs
+        const list = docs.map(doc => doc.id)
+      
+        return { status: 'success', data: list}
+    } catch (error) {
+        logger.log('error=>', error)
+        return { status: 'failed', error }
+    }
+
+})
+const getAssetByName = onCall(async ({ data }) => {
+    const limit = 10
+    const { name } = data
 
     try {
-        if (id) {
+        if (name) {
             const db = admin.firestore()
-            const res = await db.collection('assets').doc(id).get()
-            const data = res.data()
+            const docs = (await db.collection('assets').doc(name).collection('assetList').get()).docs
+            const data = docs.map(doc => doc.data())
             return { status: 'success', data }
+        }else{
+            throw { code: 'cancelled', message: 'Please provide asset name' }
         }
     } catch (error) {
         logger.log('error=>', error)
@@ -114,11 +165,11 @@ const updateAssetById = onCall(async (request) => {
     try {
         let { data } = request
         logger.log('data ----', { data })
-        const { assetId } = data
-        const { name, field, well, productionString, reservoir, flowStation, surfaceXcoordinate, surfaceYcoordinate } = data
+        // const { assetId } = data
+        const { name, field, listId, well, productionString, reservoir, flowStation, surfaceXcoordinate, surfaceYcoordinate } = data
         const db = admin.firestore()
-        if (assetId) {
-            await db.collection("assets").doc(assetId).update({ name, field, well, productionString, reservoir, flowStation, surfaceXcoordinate, surfaceYcoordinate })
+        if (name) {
+            await db.collection("assets").doc(name).collection("assetList").doc(listId).update({ field, well, productionString, reservoir, flowStation, surfaceXcoordinate, surfaceYcoordinate })
             return { status: 'success', data, message: 'Asset updated successfully' }
         } else {
             throw { code: 'cancelled', message: 'Error updating Asset.' }
@@ -152,4 +203,4 @@ const deleteAssetById = onCall(async (request) => {
 
 
 
-module.exports = { createAsset, getAssetById, updateAssetById, deleteAssetById, getAssets }
+module.exports = { createAsset, getAssetByName, updateAssetById, deleteAssetById, getAssets, getAssetsName }
