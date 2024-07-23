@@ -1,5 +1,6 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const { onCall } = require('firebase-functions/v1/https');
 admin.initializeApp();
 const db = admin.firestore();
 
@@ -11,36 +12,38 @@ const generateSerialNumbers = (count) => {
     return serialNumbers;
 };
 
-exports.setupVolumeMeasurement = functions.https.onRequest(async (req, res) => {
+const setupVolumeMeasurement = onCall(async (request) => {
     try{
-        const { asset, reportTypes, numberOfFlowStations, numberOfMeters, volumeMeasurementType, creator, created } = req.body;
+        let { data } = request;
+
+        const { asset, reportTypes, numberOfFlowStations, numberOfMeters, volumeMeasurementType, creator, created } = data;
 
         const validAssets = ['OML24', 'OML152', 'OML147'];
         if (!validAssets.includes(asset)) {
-            return res.status(400).send('Invalid asset');
+            return { message: 'Invalid asset'};
         }
 
         const validReportTypes = ['Gross Liquid', 'Net Oil/ Condensate', 'Gas'];
         if (!Array.isArray(reportTypes) || reportTypes.length !== 2 || !reportTypes.every(type => validReportTypes.includes(type))) {
-            return res.status(400).send('Invalid report types');
+            return { message: 'Invalid report types'};
         }
 
         const validVolumeMeasurementTypes = ['Metering', 'Tank Dipping'];
         if (!validVolumeMeasurementTypes.includes(measurementType)) {
-            return res.status(400).send('Invalid measurement type');
+            return { message: 'Invalid measurement type'};
         }
 
 
         if (![2, 3].includes(numberOfFlowStations)) {
-            return res.status(400).send('Invalid number of flow stations');
+            return { message: 'Invalid number of flow stations'};
         }
 
         if (!validVolumeMeasurementTypes.includes(volumeMeasurementType)) {
-            return res.status(400).send('Invalid volume measurement type');
+            return { message: 'Invalid volume measurement type'};
         }
 
         if (!creator || !created) {
-            return res.status(400).send('Creator and created fields are required');
+            return { message: 'Creator and created fields are required'};
         }
 
         const flowStations = [];
@@ -61,10 +64,10 @@ exports.setupVolumeMeasurement = functions.https.onRequest(async (req, res) => {
             creator,
             created
         });
-        return res.status(201).send(`Document created with ID: ${docRef.id}`);
+        return { message: `Document created with ID: ${docRef.id}`};
 
     }catch (error) {
         console.error('Error adding document: ', error);
-        return res.status(500).send('Internal Server Error');
+        return { message: 'Internal Server Error'};
     }
 });
