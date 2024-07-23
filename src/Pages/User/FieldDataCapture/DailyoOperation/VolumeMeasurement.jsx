@@ -71,8 +71,6 @@ const DefineReport = ({ asset, }) => {
 
         </div>)
       }
-
-
     </div>
 
   </>
