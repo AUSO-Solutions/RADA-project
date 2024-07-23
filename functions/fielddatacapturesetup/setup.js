@@ -12,47 +12,43 @@ const generateSerialNumbers = (count) => {
 };
 
 exports.setupVolumeMeasurement = functions.https.onRequest(async (req, res) => {
-    try{
-        const { asset, reportTypes, numberOfFlowStations, numberOfMeters, volumeMeasurementType, creator, created } = req.body;
 
-        const validAssets = ['OML24', 'OML152', 'OML147'];
-        if (!validAssets.includes(asset)) {
-            return res.status(400).send('Invalid asset');
-        }
+    const { asset, reportTypes, numberOfFlowStations, numberOfMeters, volumeMeasurementType, creator, created } = req.body;
 
-        const validReportTypes = ['Gross Liquid', 'Net Oil/ Condensate', 'Gas'];
-        if (!Array.isArray(reportTypes) || reportTypes.length !== 2 || !reportTypes.every(type => validReportTypes.includes(type))) {
-            return res.status(400).send('Invalid report types');
-        }
+    const validAssets = ['OML24', 'OML152', 'OML147'];
+    const validReportTypes = ['Gross Liquid', 'Net Oil/ Condensate', 'Gas'];
+    const validVolumeMeasurementTypes = ['Metering', 'Tank Dipping'];
 
-        const validVolumeMeasurementTypes = ['Metering', 'Tank Dipping'];
-        if (!validVolumeMeasurementTypes.includes(measurementType)) {
-            return res.status(400).send('Invalid measurement type');
-        }
+    if (!validAssets.includes(asset)) {
+        return res.status(400).send('Invalid asset');
+    }
 
+    if (reportTypes.length !== 2 || !reportTypes.every(rt => validReportTypes.includes(rt))) {
+        return res.status(400).send('Invalid report types');
+    }
 
-        if (![2, 3].includes(numberOfFlowStations)) {
-            return res.status(400).send('Invalid number of flow stations');
-        }
+    if (![2, 3].includes(numberOfFlowStations)) {
+        return res.status(400).send('Invalid number of flow stations');
+    }
 
-        if (!validVolumeMeasurementTypes.includes(volumeMeasurementType)) {
-            return res.status(400).send('Invalid volume measurement type');
-        }
+    if (!validVolumeMeasurementTypes.includes(volumeMeasurementType)) {
+        return res.status(400).send('Invalid volume measurement type');
+    }
 
-        if (!creator || !created) {
-            return res.status(400).send('Creator and created fields are required');
-        }
+    if (!creator || !created) {
+        return res.status(400).send('Creator and created fields are required');
+    }
 
-        const flowStations = [];
-        for (let i = 0; i < numberOfFlowStations; i++) {
-            const flowStation = {
-                flowStationName: `Flow Station ${i + 1}`,
-                flowStationId: `FS-${i + 1}`,
-                meters: volumeMeasurementType === 'Metering' ? generateSerialNumbers(numberOfMeters) : []
-            };   
-            flowStations.push(flowStation);
-        }
+    const flowStations = [];
+    for (let i = 0; i < numberOfFlowStations; i++) {
+        flowStations.push({
+            flowStationName: `Flow Station ${i + 1}`,
+            flowStationId: `FS-${i + 1}`,
+            meters: generateSerialNumbers(numberOfMeters)
+        });
+    }
 
+    try {
         const docRef = await db.collection('volumeMeasurements').add({
             asset,
             reportTypes,
@@ -62,8 +58,7 @@ exports.setupVolumeMeasurement = functions.https.onRequest(async (req, res) => {
             created
         });
         return res.status(201).send(`Document created with ID: ${docRef.id}`);
-
-    }catch (error) {
+    } catch (error) {
         console.error('Error adding document: ', error);
         return res.status(500).send('Internal Server Error');
     }
