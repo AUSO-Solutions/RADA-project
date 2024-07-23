@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from 'react'
-import React, { useMemo, useState } from 'react'
 import Setup from './setup'
 import { Input } from 'Components'
 import { useAssetNames } from 'hooks/useAssetNames'
@@ -9,12 +8,6 @@ import CheckInput from 'Components/Input/CheckInput'
 import Text from 'Components/Text'
 import { useAssetByName } from 'hooks/useAssetByName'
 
-import { useAssetNames } from 'hooks/useAssetNames'
-import { useDispatch, useSelector } from 'react-redux'
-import { setSetupData } from 'Store/slices/setupSlice'
-import CheckInput from 'Components/Input/CheckInput'
-import Text from 'Components/Text'
-import { useAssetByName } from 'hooks/useAssetByName'
 
 
 const SelectAsset = () => {
