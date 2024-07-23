@@ -1,0 +1,57 @@
+.container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+
+    label {
+        font-family: Hind;
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 40px;
+        letter-spacing: 0em;
+        text-align: left;
+    }
+
+    input {
+        width: 100%;
+        height: 39px;
+        color: black;
+        padding: 10px;
+        border-radius: 10px;
+        border: .5px grey solid;
+        gap: 10px;
+        font-family: Hind;
+        font-size: 18 px;
+        font-weight: 500;
+        line-height: 40px;
+        letter-spacing: 0em;
+        text-align: left;
+        outline: none;
+        // background-color: grey;
+
+        &::placeholder {
+            font-family: Hind;
+            font-size: 18px;
+            font-weight: 500;
+            line-height: 40px;
+            letter-spacing: 0em;
+            text-align: left;
+        }
+
+
+        &:focus {
+            outline-color: 1.5px solid #0274BD;
+
+        }
+
+        &:hover {
+            box-shadow: 1px 1px 1px #0274BD;
+            border: 1px solid #0274BD;
+        }
+
+
+    }
+
+
+}

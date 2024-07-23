@@ -1,0 +1,14 @@
+.body {
+    background-color: #f5f8fa;
+    width: 250px;
+    height: 120px;
+    gap: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 15px 0px 15px 0px;
+    // box-shadow: 4px 4px #62bff8;
+    border: 2px solid #0274bd;
+    cursor: pointer;
+}

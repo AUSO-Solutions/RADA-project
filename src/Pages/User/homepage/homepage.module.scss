@@ -1,0 +1,25 @@
+.body {
+    width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 2 4px;
+    justify-content: center;
+    align-items: center;
+    // background-color: white;
+
+    .ped {
+        display: flex;
+        flex-direction: column;
+        // gap: 100px;
+        // margin-top: 20px;
+    }
+
+    .comp {
+        // background-color: ;
+        display: flex;
+        // margin-top: 30px;
+        justify-content: center;
+        align-items: center;
+
+    }
+}

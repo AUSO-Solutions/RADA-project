@@ -1,0 +1,52 @@
+.body {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    position: fixed;
+    background-color: #FFFFFF;
+    .content{
+        width: calc(100% - 250px);
+        // display: none;
+    }
+}
+
+.menubutton {
+    display: none;
+
+    @media screen and (max-width:900px) {
+        display: block;
+        position: absolute;
+        z-index: 10;
+        top: 3vh;
+        left: 1vw;
+        cursor: pointer;
+    }
+}
+
+.action {
+    border-bottom: 1px solid #c8dad1;
+    color: #5A189A;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    justify-content: space-between;
+    // width: 100%;
+
+    button {
+        color: black;
+        width: fit-content;
+    }
+}
+
+.layoutChildren {
+    width: auto;
+    height: calc(100vh - 70px - 8vh);
+    overflow-y: auto;
+    // padding: 0 20px;
+
+    @media screen and (max-width:600px) {
+
+        padding: 10px 10px 20px;
+    }
+}
