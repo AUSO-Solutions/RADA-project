@@ -139,7 +139,6 @@ const getAssetsName = onCall(async ({ }) => {
         logger.log('error=>', error)
         return { status: 'failed', error }
     }
-
 })
 const getAssetByName = onCall(async ({ data }) => {
     const limit = 10
@@ -158,7 +157,6 @@ const getAssetByName = onCall(async ({ data }) => {
         logger.log('error=>', error)
         return { status: 'failed', error }
     }
-
 })
 
 const updateAssetById = onCall(async (request) => {

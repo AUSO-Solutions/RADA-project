@@ -17,7 +17,7 @@ const Overview = () => {
     return (
         <div className="bg-[#FAFAFA]" >
 
-            <div className="mx-5 pt-3 flex flex-row  gap-5 " >
+            <div className="pt-3  flex flex-row justify-evenly" >
                 <DashboardCard img={assets} title={"Assets"} num={'100'} />
                 <DashboardCard img={activewells} title={"Active Wells"} num={'1000'} />
                 <DashboardCard img={grossprodoil} title={"Gross Prod"} num={'100000'} />

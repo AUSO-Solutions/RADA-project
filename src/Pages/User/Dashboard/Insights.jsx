@@ -21,7 +21,7 @@ const Insights = () => {
                 <DashboardCard targetVal={'13 MMscf'} img={gasutilized} title={"Gas Utilized"} num={'13 MMscf'} />
             </div>
 
-            <div className="pt-5 flex flex-row flex-wrap gap-3">
+            <div className="pt-5 flex flex-row flex-wrap justify-evenly shadow rounded" style={{rowGap:"12px"}}>
                 <InsightsGraphCard/>
                 <InsightsGraphCard/>
                 <InsightsGraphCard/>

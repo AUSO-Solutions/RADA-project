@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Setup from './setup'
 import { Input } from 'Components'
 import { useAssetNames } from 'hooks/useAssetNames'
@@ -82,6 +82,11 @@ const DefineReport = ({ asset, }) => {
 const NoUnits = () => {
   const measureMenntTypes = ['Metering', 'Tanking Drip']
   const setupData = useSelector(state => state.setup)
+  const { flowStations } = useAssetByName(setupData?.asset)
+  const dispatch = useDispatch()
+  useEffect(() => {
+    dispatch(setSetupData({ name: 'flowStations', value: flowStations }))
+  }, [flowStations])
   return <>
     <div className='flex justify-between !w-[100%]'>
       <Input type='select' placeholder={setupData?.asset} containerClass={'h-[39px] !w-[150px]'} disabled />
@@ -94,8 +99,11 @@ const NoUnits = () => {
         <Text weight={600} size={"16px"}>Volume Measurement Type</Text>
       </div>
       <div className='flex justify-between p-3'>
-        <Input containerClass={'h-[39px] !w-[150px]'} type='number' />
-        <Input containerClass={'h-[39px] !w-[150px]'} type='select' options={measureMenntTypes.map(type => ({ label: type, value: type }))} />
+        <Input containerClass={'h-[39px] !w-[150px]'} type='number' value={flowStations.length} disabled />
+        <Input containerClass={'h-[39px] !w-[150px]'} type='select'
+          defaultValue={{ label: setupData?.measurementType, value: setupData?.measurementType }}
+          onChange={(e) => dispatch(setSetupData({ name: 'measurementType', value: e.value }))}
+          options={measureMenntTypes.map(type => ({ label: type, value: type }))} />
       </div>
     </div>
   </>
@@ -103,26 +111,54 @@ const NoUnits = () => {
 
 const SelectFlowStation = () => {
   const setupData = useSelector(state => state.setup)
-  const { assetData } = useAssetByName(setupData?.asset)
-  console.log(assetData)
-
+  // console.log(setupData?.measurementType)
+  const dispatch = useDispatch()
+  const { flowStations } = useAssetByName(setupData?.asset)
   return <>
-
     <div className='border mt-3 !rounded-[8px]'>
-      <div className='flex justify-between p-3'>
+      <div className='flex justify-between border-b p-3'>
+        <Text weight={600} size={"16px"}>Flow stations</Text>
+        <Text weight={600} size={"16px"}>Number of {setupData?.measurementType === "Metering" ? "Meter(s)" : "Tank(s)"}</Text>
+      </div>
+      {
+        flowStations.map((flowStation, i) => {
+          return (
+            <div className={`flex items-center ${flowStations.length === i + 1 ? "" : "border-b"} justify-between p-3`}>
+              <Text>{flowStation}</Text>
+              {/* <Input type='select' containerClass={'!w-[150px]'} options={assetData?.map(asset => ({ label: `${asset?.flowStation} ${asset?.productionString}`, value: '' }))} /> */}
+              <Input type='number' containerClass={'!w-[150px]'} inputClass={'!text-center'}  onChange={(e) => dispatch(setSetupData({ name: 'measurementTypeNumber', value: e.target.value }))}  />
+            </div>
+          )
+        })
+      }
+    </div>
+  </>
+}
+
+
+const Preview = () => {
+  const setupData = useSelector(state => state.setup)
+  const { flowStations } = useAssetByName(setupData?.asset)
+  // const dispatch = useDispatch()
+  return <>
+    <div className='border mt-3 !rounded-[8px]'>
+      <div className='flex justify-between border-b p-3'>
         <Text weight={600} size={"16px"}>Flow stations</Text>
         <Text weight={600} size={"16px"}>Number of Meters</Text>
       </div>
-      <div className='flex justify-between p-3'>
-        {/* <Text weight={600} size={"16px"}>Flow stations</Text> */}
-        <Input type='select' containerClass={'!w-[150px]'} options={assetData?.map(asset => ({ label: `${asset?.flowStation} ${asset?.productionString}`, value: '' }))} />
-        <Input type='number' containerClass={'!w-[150px]'} />
-
-      </div>
-    </div>
-
-    <div className='flex w-full rounded-[8px]'>
-
+      {
+        flowStations.map((flowStation, i) => {
+          return (
+            <div className={`flex items-center ${flowStations.length === i + 1 ? "" : "border-b"} justify-between p-3`}>
+              <Text>{flowStation}</Text> 
+              <Text>{'flowStation'}</Text>
+              {/* <Input type='select' containerClass={'!w-[150px]'} options={assetData?.map(asset => ({ label: `${asset?.flowStation} ${asset?.productionString}`, value: '' }))} /> */}
+              {/* <Input type='number' containerClass={'!w-[150px]'}  defaultValue={setupData?.measurementTypeNumber}
+              inputClass={'!text-center'}  onChange={(e) => dispatch(setSetupData({ name: 'measurementTypeNumber', value: e.target.value }))} /> */}
+            </div>
+          )
+        })
+      }
     </div>
   </>
 }
@@ -145,13 +181,14 @@ const VolumeMeasurement = () => {
     < >
       <Setup
         title={'Setup Volume Measurement Parameters'}
-        steps={["Select Asset", "Define Report", "No. of Units", "Select Flowstations"]}
+        steps={["Select Asset", "Define Report", "No. of Units", "Select Flowstations", "Preview"]}
         stepComponents={
           [
             <SelectAsset getAsset={(asset) => handleChange('asset', asset)} />,
             <DefineReport asset={formData.asset} />,
             <NoUnits />,
-            <SelectFlowStation />
+            <SelectFlowStation />,
+            <Preview />
           ]
         }
       />
