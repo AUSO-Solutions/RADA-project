@@ -71,3 +71,6 @@ const setupVolumeMeasurement = onCall(async (request) => {
         return { message: 'Internal Server Error'};
     }
 });
+
+
+module.exports = { setupVolumeMeasurement }
