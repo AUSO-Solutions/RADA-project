@@ -46,16 +46,16 @@ const setupVolumeMeasurement = onCall(async (request) => {
             return { message: 'Creator and created fields are required'};
         }
 
-        const flowStations = [];
-        for (let i = 0; i < numberOfFlowStations; i++) {
-            const flowStation = {
-                flowStationName: `Flow Station ${i + 1}`,
-                flowStationId: `FS-${i + 1}`,
-                meters: volumeMeasurementType === 'Metering' ? generateSerialNumbers(numberOfMeters) : []
-            };   
-            flowStations.push(flowStation);
-        }
+    const flowStations = [];
+    for (let i = 0; i < numberOfFlowStations; i++) {
+        flowStations.push({
+            flowStationName: `Flow Station ${i + 1}`,
+            flowStationId: `FS-${i + 1}`,
+            meters: generateSerialNumbers(numberOfMeters)
+        });
+    }
 
+    try {
         const docRef = await db.collection('volumeMeasurements').add({
             asset,
             reportTypes,
