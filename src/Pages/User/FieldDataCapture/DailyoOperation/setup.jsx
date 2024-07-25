@@ -8,10 +8,10 @@ import { useDispatch } from 'react-redux'
 import { openModal } from 'Store/slices/modalSlice'
 
 
-const Setup = ({ title, steps = [], onBack, onNext, stepComponents = [] }) => {
+const Setup = ({ title, steps = [], onBack, onNext, stepComponents = [], onSave = () => null }) => {
     const SetupModal = ({ }) => {
         const [activeStep, setActiveStep] = useState(0)
-       
+
         const back = () => {
             setActiveStep(prev => {
                 if (prev !== 0) return prev - 1
@@ -20,9 +20,13 @@ const Setup = ({ title, steps = [], onBack, onNext, stepComponents = [] }) => {
         }
         const next = () => {
             setActiveStep(prev => {
-                if (prev !== steps?.length-1) return prev + 1
+                if (prev !== steps?.length - 1) return prev + 1
                 return steps.length - 1
             })
+            if (activeStep === steps.length - 1) {
+                console.log('first')
+                onSave()
+            }
         }
 
         return (
@@ -39,7 +43,7 @@ const Setup = ({ title, steps = [], onBack, onNext, stepComponents = [] }) => {
                         Back
                     </Button>
                     <Button width={'177px'} height={'55px'} onClick={next} >
-                        Next
+                        {activeStep === steps.length - 1 ? "Save" : "Next"}
                     </Button>
                 </Box>
 

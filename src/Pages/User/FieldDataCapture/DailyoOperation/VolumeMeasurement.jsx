@@ -28,7 +28,6 @@ const DefineReport = ({ asset, }) => {
   const timeFrames = ["Daily", "Weekly", "Monthly"]
   const reportTypes = useMemo(() => {
     return [
-      // { value: 'All', label: 'Select Report Type' },
       { value: 'Gross Liquid', label: 'Gross Liquid' },
       { value: 'Net Oil/ Condensate', label: 'Net Oil/ Condensate' },
       { value: 'Gas', label: 'Gas' }
@@ -57,11 +56,9 @@ const DefineReport = ({ asset, }) => {
         defaultValue={{ label: setupData?.timeFrame, value: setupData?.timeFrame }}
         onChange={(e) => dispatch(setSetupData({ name: 'timeFrame', value: e.value }))}
         options={timeFrames?.map(timeFrame => ({ value: timeFrame, label: timeFrame }))} />
-
     </div>
 
     <div key={setupData?.reportTypes?.length} className='flex flex-col mt-[24px] rounded-[8px] gap-[24px] border'>
-
       <div className='flex border-b px-3'>
         <CheckInput defaultChecked={setupData?.reportTypes?.length === reportTypes.length} onChange={(e) => checkAll(e)} label={'Select Report Type'} />
 
@@ -69,18 +66,15 @@ const DefineReport = ({ asset, }) => {
       {
         reportTypes.map(repoortType => <div className='flex border-b px-3'>
           <CheckInput defaultChecked={setupData?.reportTypes?.includes(repoortType.value)} onChange={(e) => handleCheck(repoortType.value, e)} label={repoortType.label} />
-
         </div>)
       }
-
-
     </div>
 
   </>
 }
 
 const NoUnits = () => {
-  const measureMenntTypes = ['Metering', 'Tanking Drip']
+  const measureMenntTypes = ['Metering', 'Tank Dipping']
   const setupData = useSelector(state => state.setup)
   const { flowStations } = useAssetByName(setupData?.asset)
   const dispatch = useDispatch()
@@ -111,7 +105,6 @@ const NoUnits = () => {
 
 const SelectFlowStation = () => {
   const setupData = useSelector(state => state.setup)
-  // console.log(setupData?.measurementType)
   const dispatch = useDispatch()
   const { flowStations } = useAssetByName(setupData?.asset)
   return <>
@@ -125,8 +118,12 @@ const SelectFlowStation = () => {
           return (
             <div className={`flex items-center ${flowStations.length === i + 1 ? "" : "border-b"} justify-between p-3`}>
               <Text>{flowStation}</Text>
-              {/* <Input type='select' containerClass={'!w-[150px]'} options={assetData?.map(asset => ({ label: `${asset?.flowStation} ${asset?.productionString}`, value: '' }))} /> */}
-              <Input type='number' containerClass={'!w-[150px]'} inputClass={'!text-center'}  onChange={(e) => dispatch(setSetupData({ name: 'measurementTypeNumber', value: e.target.value }))}  />
+              <Input type='number' containerClass={'!w-[150px]'} inputClass={'!text-center'}
+                defaultValue={setupData?.measurementTypeNumber[flowStation]}
+                onChange={(e) => dispatch(setSetupData({
+                  name: 'measurementTypeNumber',
+                  value: { ...setupData?.measurementTypeNumber, [flowStation]: e.target.value }
+                }))} />
             </div>
           )
         })
@@ -139,7 +136,6 @@ const SelectFlowStation = () => {
 const Preview = () => {
   const setupData = useSelector(state => state.setup)
   const { flowStations } = useAssetByName(setupData?.asset)
-  // const dispatch = useDispatch()
   return <>
     <div className='border mt-3 !rounded-[8px]'>
       <div className='flex justify-between border-b p-3'>
@@ -150,11 +146,8 @@ const Preview = () => {
         flowStations.map((flowStation, i) => {
           return (
             <div className={`flex items-center ${flowStations.length === i + 1 ? "" : "border-b"} justify-between p-3`}>
-              <Text>{flowStation}</Text> 
-              <Text>{'flowStation'}</Text>
-              {/* <Input type='select' containerClass={'!w-[150px]'} options={assetData?.map(asset => ({ label: `${asset?.flowStation} ${asset?.productionString}`, value: '' }))} /> */}
-              {/* <Input type='number' containerClass={'!w-[150px]'}  defaultValue={setupData?.measurementTypeNumber}
-              inputClass={'!text-center'}  onChange={(e) => dispatch(setSetupData({ name: 'measurementTypeNumber', value: e.target.value }))} /> */}
+              <Text>{flowStation}</Text>
+              <Text className={'text-center'}>{setupData?.measurementTypeNumber[flowStation]}</Text>
             </div>
           )
         })
@@ -165,6 +158,7 @@ const Preview = () => {
 
 
 const VolumeMeasurement = () => {
+  const setupData = useSelector(state => state.setup)
   const [formData, setFormData] = useState({
     asset: "",
     timeFrame: "",
@@ -177,6 +171,11 @@ const VolumeMeasurement = () => {
     setFormData(prev => ({ ...prev, [name]: value }))
 
   }
+
+  const save = async () => {
+    console.log(setupData)
+  }
+
   return (
     < >
       <Setup
@@ -191,6 +190,7 @@ const VolumeMeasurement = () => {
             <Preview />
           ]
         }
+        onSave={save}
       />
     </>
   )
