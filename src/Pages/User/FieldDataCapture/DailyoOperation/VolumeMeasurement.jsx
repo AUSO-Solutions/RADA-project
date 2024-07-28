@@ -8,8 +8,6 @@ import CheckInput from 'Components/Input/CheckInput'
 import Text from 'Components/Text'
 import { useAssetByName } from 'hooks/useAssetByName'
 
-
-
 const SelectAsset = () => {
   const { assetNames } = useAssetNames()
   const setupData = useSelector(state => state.setup)
