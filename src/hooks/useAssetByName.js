@@ -3,23 +3,21 @@ import { useFetch } from "./useFetch"
 
 export const useAssetByName = (name) => {
     const { data } = useFetch({ firebaseFunction: 'getAssetByName', payload: { name } })
-    // console.log({data})
+
     const [assetData, setAssetData] = useState([])
     const [items, setItems] = useState({
         flowStations: [],
         wells: []
     })
     useEffect(() => {
-        // const names = data
-        // console.log(names)
         const set = new Set(data)
-        setAssetData(Array.from(set))
-        const flowStations = Array.from(new Set(assetData?.map(datum => datum?.flowStation)))
-        // console.log({flowStations})
-        setItems({...items, flowStations})
-    }, [data,name])
+        const uniques = (Array.from(set))
+        const flowStations = Array.from(new Set(uniques?.map(datum => datum?.flowStation)))
+        setAssetData(uniques)
+        setItems(prev => ({ ...prev, flowStations }))
+    }, [data, name])
 
     return {
-        assetData,...items
+        assetData, ...items
     }
 }

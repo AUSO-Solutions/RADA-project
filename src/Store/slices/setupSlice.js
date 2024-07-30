@@ -2,11 +2,13 @@ import { createSlice } from '@reduxjs/toolkit';
 
 export const setupSlice = createSlice({
     name: 'setup',
-    initialState: { },
+    initialState: {},
     reducers: {
         setSetupData: (state, { payload }) => {
-            // console.log(payload)
-          if(payload?.value !== undefined)  state[payload.name] = payload.value
+            if (payload?.value !== undefined) {
+                console.log(payload)
+                state[payload.name] = payload.value
+            }
         }
 
     }
