@@ -1,26 +1,81 @@
-
 const admin = require("firebase-admin");
 // const { getFirestore } = require("firebase-admin/firestore");
 // const logger = require("firebase-functions/logger");
 // const { onCall } = require("firebase-functions/v2/https");
-const { login, createUser, getUsers, getUserByUid, deleteUserByUid, updateUserByUid, createUsers } = require("./admin/auth");
+const {
+  login,
+  createUser,
+  getUsers,
+  getUserByUid,
+  deleteUserByUid,
+  updateUserByUid,
+  createUsers,
+} = require("./admin/auth");
 
-const { getGroups, createGroup, addMembersToGroup, deleteGroupMember, deleteGroup, deleteGroupAsset, assignAssetsToGroup } = require("./admin/auth/group");
-const { createAsset, getAssetByName, updateAssetById, deleteAssetById, getAssets, getAssetsName  } = require('./admin/assets')
-const  { createRole, updateRole, deleteRole, getRoles, getRole, assignPermissionToRole } = require('./admin/rolesandpermissions')
+const {
+  getGroups,
+  createGroup,
+  addMembersToGroup,
+  deleteGroupMember,
+  deleteGroup,
+  deleteGroupAsset,
+  assignAssetsToGroup,
+} = require("./admin/auth/group");
+const {
+  createAsset,
+  getAssetByName,
+  updateAssetById,
+  deleteAssetById,
+  getAssets,
+  getAssetsName,
+  getAssets2,
+} = require("./admin/assets");
+const {
+  createRole,
+  updateRole,
+  deleteRole,
+  getRoles,
+  getRole,
+  assignPermissionToRole,
+} = require("./admin/rolesandpermissions");
 
-admin.initializeApp()
+admin.initializeApp();
 
 const firestore = admin.firestore();
 firestore.settings({ ignoreUndefinedProperties: true });
 
-
 module.exports = {
-  createUser, login, getUsers, getUserByUid, deleteUserByUid, updateUserByUid, createUsers,
+  createUser,
+  login,
+  getUsers,
+  getUserByUid,
+  deleteUserByUid,
+  updateUserByUid,
+  createUsers,
 
-  createGroup, addMembersToGroup, getGroups, deleteGroup, deleteGroupMember, assignAssetsToGroup, deleteGroupAsset,
+  createGroup,
+  addMembersToGroup,
+  getGroups,
+  deleteGroup,
+  deleteGroupMember,
+  assignAssetsToGroup,
+  deleteGroupAsset,
 
-  createAsset, getAssetByName, updateAssetById, deleteAssetById, getAssets, getAssetsName ,
+  createAsset,
+  getAssetByName,
+  updateAssetById,
+  deleteAssetById,
+  getAssets,
+  getAssetsName,
+  getAssets2,
 
-  createRole, updateRole, deleteRole, getRoles, getRole, assignPermissionToRole
-}
+  createRole,
+  updateRole,
+  deleteRole,
+  getRoles,
+  getRole,
+  assignPermissionToRole,
+};
+
+// https://us-central1-ped-application-4d196.cloudfunctions.net/getAssetByName
+// https://us-central1-ped-application-4d196.cloudfunctions.net/${callableName}
