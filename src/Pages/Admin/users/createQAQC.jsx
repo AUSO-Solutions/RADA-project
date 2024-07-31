@@ -5,7 +5,7 @@ import * as Yup from 'yup';
 import React from 'react'
 
 import { useSelector } from 'react-redux';
-import { asset_types } from 'util/assetType';
+import { asset_types } from 'utils/assetType';
 
 const CreateQAQC = () => {
 
