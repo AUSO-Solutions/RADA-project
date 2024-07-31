@@ -8,6 +8,7 @@ import CheckInput from 'Components/Input/CheckInput'
 import { useAssetByName } from 'hooks/useAssetByName'
 import Text from 'Components/Text'
 import { FaCheck } from 'react-icons/fa'
+import OilGasAccountingTable from './OilGasAccountingTable'
  
 
 
@@ -109,11 +110,28 @@ const Preview = () => {
 }
 
 const OilGasAccounting = () => {
+
+  const [setupDone, setSetupDone] = useState(false)
+  const dispatch = useDispatch()
+
+  const save = async () => {
+    const setupData = store.getState().setup
+    console.log(setupData)
+    dispatch(closeModal())
+    setSetupDone(true)
+
+    // await firebaseFunctions("")
+  }
+
   const handleChange = () => {
 
   }
   return (
     <>
+    {
+    setupDone ?
+    <OilGasAccountingTable />
+    :
       <Setup
         title={'Setup Oil & Gas Accounting Parameters'}
         steps={["Select Well Test Data", "Define Report", "Preview"]}
@@ -121,7 +139,11 @@ const OilGasAccounting = () => {
         stepComponents={[
           <SelectAsset getAsset={(asset) => handleChange('asset', asset)} />,
           <DefineReport />,<Preview  />
-        ]} />
+        ]} 
+        
+        onSave={save}
+        />
+      }
     </>
   )
 }
