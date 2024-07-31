@@ -135,7 +135,7 @@ const SelectFlowStation = () => {
             <div className={`flex items-center ${flowStations.length === i + 1 ? "" : "border-b"} justify-between p-3`}>
               <Text>{flowStation}</Text>
               <Input type='number' containerClass={'!w-[150px]'} inputClass={'!text-center'}
-                defaultValue={setupData?.measurementTypeNumber[flowStation]}
+                defaultValue={setupData?.measurementTypeNumber?.[flowStation]}
                 onChange={(e) => dispatch(setSetupData({
                   name: 'measurementTypeNumber',
                   value: { ...setupData?.measurementTypeNumber, [flowStation]: e.target.value }
