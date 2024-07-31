@@ -12,7 +12,10 @@ const RadioSelect = ({ list = [], onChange = () => null, }) => {
                         style={{ backgroundColor: 'rgba(250, 250, 250, 1)', height: '40px' }}
                         className='text-center py-1 flex items-center justify-center gap-2 cursor-pointer  px-3'
                         onClick={
-                            () => setSelected(item)
+                            () => {
+                                setSelected(item)
+                                onChange(item)
+                            }
                         }
                     >
                         {selected === item ? <FaRegDotCircle size={20} color='rgba(0, 163, 255, 1)' /> : <FaRegCircle color='grey' size={20} />
