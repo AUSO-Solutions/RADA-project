@@ -55,6 +55,9 @@ export default function VolumeMeasurementTable() {
           netTarget: field === "netTarget" ? measurementTypeValue : 0,
           bsw: field === "bsw" ? measurementTypeValue : 0,
           gross: field === "gross" ? measurementTypeValue : 0,
+        },
+        totals: {
+          
         }
       }
     })
