@@ -28,7 +28,7 @@ const tabs = [
 const FDC = () => {
   const [tab, setTab] = useState(0)
   return (
-    <div className='h-full'>
+    <div className='h-[100%] '>
       <Header
         name={'Daily Production/Operation Report'}
       />
