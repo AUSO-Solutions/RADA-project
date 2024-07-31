@@ -12,6 +12,7 @@ import { Switch } from '@mui/material';
 import RadaSwitch from 'Components/Input/RadaSwitch';
 import RadaDatePicker from 'Components/Input/RadaDatePicker';
 import { sum } from 'utils';
+import { Button } from 'Components';
 
 
 const TableInput = (props) => {
@@ -25,8 +26,15 @@ export default function VolumeMeasurementTable() {
   }, [])
   // console.log(setup)
   const [tableValues, setTableValues] = React.useState({})
+  const [totals, setTotals] = React.useState({
+    netProductionTotal: 0,
+    netTargetTotal: 0,
+    bswTotal: 0,
+    grossTotal: 0,
+  })
 
-  const handleChange = ({ flowStation, field, measurementTypeValue, measurementTypeIndex }) => {
+  const handleChange = ({ flowStation, field, measurementTypeValue, measurementTypeIndex, flowStationField }) => {
+    //careful, to also have the value updated before calculated
     setTableValues(prev => {
       const prevFlowStation = prev?.[flowStation]
       const prevFlowStationList = prevFlowStation?.list
@@ -35,36 +43,56 @@ export default function VolumeMeasurementTable() {
       const initialBbls = field === "initialBbls" ? measurementTypeValue : (prevFlowStationListIndexValues?.initialBbls || 0)
       const deductionFinalBbls = field === "deductionFinalBbls" ? measurementTypeValue : (prevFlowStationListIndexValues?.deductionFinalBbls || 0)
       const deductionInitialBbls = field === "deductionInitialBbls" ? measurementTypeValue : (prevFlowStationListIndexValues?.deductionInitialBbls || 0)
-      const netProduction = finalBbls - initialBbls
-      const deductionNetProduction = deductionFinalBbls - deductionInitialBbls
-      // const subTotal = 0
+      const netProduction = Math.abs(parseFloat(finalBbls) - parseFloat(initialBbls))
+      const deductionNetProduction = Math.abs(parseFloat(deductionFinalBbls) - parseFloat(deductionInitialBbls))
+      // console.log(measurementTypeIndex, isNaN(measurementTypeIndex))
+      const isNum = typeof measurementTypeIndex === 'number'
+      const updatedList = isNum ? {
+        ...prevFlowStationList,
+        [measurementTypeIndex]: {
+          ...prevFlowStationListIndexValues,
+          [field]: measurementTypeValue,
+          netProduction,
+          deductionNetProduction
+        }
+      } : prevFlowStationList
+
+
+      const updatedFlowStation = {
+        ...prevFlowStation,
+        list: updatedList,
+        ['subTotal']: sum(Object.values(updatedList || {}).map(value => value.netProduction)) - sum(Object.values(updatedList || {}).map(value => value.deductionNetProduction)),
+        netTarget: field === "netTarget" ? parseFloat(measurementTypeValue) : prevFlowStation?.netTarget,
+        bsw: field === "bsw" ? parseFloat(measurementTypeValue) : prevFlowStation?.bsw,
+        gross: field === "gross" ? parseFloat(measurementTypeValue) : prevFlowStation?.gross
+      }
+      // console.log((updatedFlowStation))
       return {
         ...prev,
-        [flowStation]: {
-          ...prevFlowStation,
-          list: {
-            ...prevFlowStationList,
-            [measurementTypeIndex]: {
-              ...prevFlowStationListIndexValues,
-              [field]: measurementTypeValue,
-              netProduction,
-              deductionNetProduction
-            }
-          },
-          ['subTotal']: sum(Object.values(prevFlowStationList || {}).map(value => value.netProduction)) - sum(Object.values(prevFlowStationList || {}).map(value => value.deductionNetProduction)),
-          netTarget: field === "netTarget" ? measurementTypeValue : 0,
-          bsw: field === "bsw" ? measurementTypeValue : 0,
-          gross: field === "gross" ? measurementTypeValue : 0,
-        },
-        totals: {
-          
-        }
+        [flowStation]: updatedFlowStation,
       }
     })
 
   }
+  React.useEffect(() => {
+    const values = (Object.values(tableValues))
+    // console.log(values)
+    const calcs = {
+      netProductionTotal: sum(Object.values(values || {}).map(item => item?.subTotal || 0)),
+      netTargetTotal: sum(Object.values(values || {}).map(item => item?.netTarget || 0)),
+      bswTotal: sum(Object.values(values || {}).map(item => item?.bsw || 0)),
+      grossTotal: sum(Object.values(values || {}).map(item => item?.gross || 0)),
+    }
+    setTotals(calcs)
+  }, [tableValues])
+
+  const save = () => {
+    // const flowStationsData = tableValues
+    console.log({ totals , tableValues})
+
+  }
   return (
-    < div className='px-3'>
+    < div className='px-3 '>
       <div className='flex justify-between items-center'>
         <div className='flex gap-4 items-center'>
           <RadioSelect list={setup?.reportTypes} /> <RadaSwitch label="Edit Table" labelPlacement="left" />
@@ -142,7 +170,7 @@ export default function VolumeMeasurementTable() {
                     <TableRow key={flowStation}>
                       <TableCell sx={{ bgcolor: 'rgba(178, 181, 182, 0.2)' }} align="left" className='pl-5 !bg-[rgba(178, 181, 182, 0.2)]' colSpan={3}><div className='pl-[30px]'> Sub total</div></TableCell>
                       <TableCell sx={{ bgcolor: 'rgba(178, 181, 182, 0.2)' }} align="center">
-                        {sum(Object.values(tableValues?.[flowStation]?.list || {})?.map(item => item?.netProduction)) - sum(Object.values(tableValues?.[flowStation]?.list || {})?.map(item => item?.deductionNetProduction))}
+                        {tableValues?.[flowStation]?.subTotal || 0}
                       </TableCell>
                       <TableCell align="center"><TableInput onChange={(e) => handleChange({ flowStation, field: 'netTarget', measurementTypeValue: e.target.value, measurementTypeIndex: null })} /></TableCell>
                       <TableCell align="center"><TableInput onChange={(e) => handleChange({ flowStation, field: 'bsw', measurementTypeValue: e.target.value, measurementTypeIndex: null })} /></TableCell>
@@ -158,15 +186,18 @@ export default function VolumeMeasurementTable() {
           <TableBody>
             <TableRow >
               <TableCell align="left" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} className='bg-[rgba(0, 163, 255, 0.3)]' colSpan={6}>{"Total Net Production"}</TableCell>
-              <TableCell align="center" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} >bbls</TableCell>
-              <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>bbls</TableCell>
-              <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>%</TableCell>
-              <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>bbls</TableCell>
+              <TableCell align="center" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} >{totals?.netProductionTotal}</TableCell>
+              <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{totals?.netTargetTotal}</TableCell>
+              <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{totals?.bswTotal}</TableCell>
+              <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{totals?.grossTotal}</TableCell>
             </TableRow>
           </TableBody>
 
         </Table>
       </TableContainer>
+      <div className='justify-end flex my-2'>
+        <Button className={'my-3'} onClick={save} width={150}>Save</Button>
+      </div>
     </div>
   );
 }
