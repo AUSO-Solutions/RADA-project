@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import Setup from './setup'
 import { useAssetNames } from 'hooks/useAssetNames'
 import { useDispatch, useSelector } from 'react-redux'
@@ -9,6 +9,8 @@ import { useAssetByName } from 'hooks/useAssetByName'
 import Text from 'Components/Text'
 import { FaCheck } from 'react-icons/fa'
 import OilGasAccountingTable from './OilGasAccountingTable'
+import { store } from 'Store'
+import { closeModal } from 'Store/slices/modalSlice'
  
 
 
@@ -119,8 +121,6 @@ const OilGasAccounting = () => {
     console.log(setupData)
     dispatch(closeModal())
     setSetupDone(true)
-
-    // await firebaseFunctions("")
   }
 
   const handleChange = () => {
