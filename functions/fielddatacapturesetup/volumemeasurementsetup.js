@@ -18,13 +18,14 @@ const setupVolumeMeasurement = onCall(async (request) => {
 
         const { asset, reportTypes, flowStations, measurementTypeNumber, timeFrame, measurementType } = data;
 
-        const validAssets = ['OML24', 'OML152', 'OML147'];
+        // const validAssets = ['OML24', 'OML152', 'OML147' ];
+        const oml = await db.collection("olms").where("name", "==", asset).get()
         if (!validAssets.includes(asset)) {
             return { message: 'Invalid asset', code: 'cancelled' };
         }
 
         const validReportTypes = ['Gross Liquid', 'Net Oil/ Condensate', 'Gas'];
-        if (!Array.isArray(reportTypes) || reportTypes.length !== 2 || !reportTypes.every(type => validReportTypes.includes(type))) {
+        if (!Array.isArray(reportTypes) || reportTypes.length != 2 || !reportTypes.every(type => validReportTypes.includes(type))) {
             return { message: 'Invalid report types', code: 'cancelled' };
         }
 
