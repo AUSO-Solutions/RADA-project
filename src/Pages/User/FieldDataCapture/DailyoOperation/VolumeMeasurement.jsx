@@ -7,6 +7,22 @@ import { setSetupData } from 'Store/slices/setupSlice'
 import CheckInput from 'Components/Input/CheckInput'
 import Text from 'Components/Text'
 import { useAssetByName } from 'hooks/useAssetByName'
+import { store } from 'Store'
+import { firebaseFunctions } from 'Services'
+import VolumeMeasurementTable from './VolumeMeasurementTable'
+import { closeModal } from 'Store/slices/modalSlice'
+
+
+const SelectedReportTypes = ({ list = [] }) => {
+  const setupData = useSelector(state => state.setup)
+
+  return <div className='rounded flex border my-3 justify-evenly !w-[100%]'>
+    {setupData?.reportTypes?.map((item, i) => {
+      const isEven = i % 2 === 0
+      return <div style={{ backgroundColor:isEven ?'rgba(218, 225, 229, 1)':'rgba(243, 244, 246, .9)', height:'40px'}} className='text-center py-1 flex items-center justify-center !w-[100%] px-3'> {item} </div>
+    })}
+  </div>
+}
 
 const SelectAsset = () => {
   const { assetNames } = useAssetNames()
@@ -77,8 +93,9 @@ const NoUnits = () => {
   const { flowStations } = useAssetByName(setupData?.asset)
   const dispatch = useDispatch()
   useEffect(() => {
-    dispatch(setSetupData({ name: 'flowStations', value: flowStations }))
-  }, [flowStations])
+    console.log(flowStations, setupData?.asset)
+    if (flowStations.length) dispatch(setSetupData({ name: 'flowStations', value: flowStations }))
+  }, [flowStations, setupData?.asset])
   return <>
     <div className='flex justify-between !w-[100%]'>
       <Input type='select' placeholder={setupData?.asset} containerClass={'h-[39px] !w-[150px]'} disabled />
@@ -98,6 +115,7 @@ const NoUnits = () => {
           options={measureMenntTypes.map(type => ({ label: type, value: type }))} />
       </div>
     </div>
+    <SelectedReportTypes />
   </>
 }
 
@@ -117,7 +135,7 @@ const SelectFlowStation = () => {
             <div className={`flex items-center ${flowStations.length === i + 1 ? "" : "border-b"} justify-between p-3`}>
               <Text>{flowStation}</Text>
               <Input type='number' containerClass={'!w-[150px]'} inputClass={'!text-center'}
-                defaultValue={setupData?.measurementTypeNumber[flowStation]}
+                defaultValue={setupData?.measurementTypeNumber?.[flowStation]}
                 onChange={(e) => dispatch(setSetupData({
                   name: 'measurementTypeNumber',
                   value: { ...setupData?.measurementTypeNumber, [flowStation]: e.target.value }
@@ -127,6 +145,8 @@ const SelectFlowStation = () => {
         })
       }
     </div>
+
+    <SelectedReportTypes />
   </>
 }
 
@@ -156,40 +176,45 @@ const Preview = () => {
 
 
 const VolumeMeasurement = () => {
-  const setupData = useSelector(state => state.setup)
-  const [formData, setFormData] = useState({
-    asset: "",
-    timeFrame: "",
-    flowStations: [
-
-    ],
-    reportTypes: ['']
-  })
-  const handleChange = (name, value) => {
-    setFormData(prev => ({ ...prev, [name]: value }))
-
-  }
+  // const setupData = useSelector(state => state.setup)
+  // const [formData, setFormData] = useState({
+  //   asset: "",
+  //   timeFrame: "",
+  //   flowStations: [],
+  //   reportTypes: ['']
+  // })
+  const [setupDone, setSetupDone] = useState(false)
+  const dispatch = useDispatch()
 
   const save = async () => {
+    const setupData = store.getState().setup
     console.log(setupData)
+    dispatch(closeModal())
+    setSetupDone(true)
+
+    // await firebaseFunctions("")
   }
 
   return (
     < >
-      <Setup
-        title={'Setup Volume Measurement Parameters'}
-        steps={["Select Asset", "Define Report", "No. of Units", "Select Flowstations", "Preview"]}
-        stepComponents={
-          [
-            <SelectAsset getAsset={(asset) => handleChange('asset', asset)} />,
-            <DefineReport asset={formData.asset} />,
-            <NoUnits />,
-            <SelectFlowStation />,
-            <Preview />
-          ]
-        }
-        onSave={save}
-      />
+      {
+        setupDone ?
+          <VolumeMeasurementTable />
+          : <Setup
+            title={'Setup Volume Measurement Parameters'}
+            steps={["Select Asset", "Define Report", "No. of Units", "Select Flowstations", "Preview"]}
+            stepComponents={
+              [
+                <SelectAsset />,
+                <DefineReport />,
+                <NoUnits />,
+                <SelectFlowStation />,
+                <Preview />
+              ]
+            }
+            onSave={save}
+          />
+      }
     </>
   )
 }

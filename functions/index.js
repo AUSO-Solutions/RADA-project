@@ -21,6 +21,7 @@ const {
   deleteGroupAsset,
   assignAssetsToGroup,
 } = require("./admin/auth/group");
+
 const {
   createAsset,
   getAssetByName,
@@ -30,6 +31,7 @@ const {
   getAssetsName,
   getAssets2,
 } = require("./admin/assets");
+
 const {
   createRole,
   updateRole,
@@ -38,6 +40,10 @@ const {
   getRole,
   assignPermissionToRole,
 } = require("./admin/rolesandpermissions");
+
+const {
+  setupVolumeMeasurement,
+} = require("./fielddatacapturesetup/volumemeasurementsetup");
 
 admin.initializeApp();
 
@@ -75,7 +81,6 @@ module.exports = {
   getRoles,
   getRole,
   assignPermissionToRole,
-};
 
-// https://us-central1-ped-application-4d196.cloudfunctions.net/getAssetByName
-// https://us-central1-ped-application-4d196.cloudfunctions.net/${callableName}
+  setupVolumeMeasurement,
+};

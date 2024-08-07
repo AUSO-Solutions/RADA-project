@@ -5,7 +5,7 @@ import handleError from 'Services/handleError'
 import { closeModal } from 'Store/slices/modalSlice'
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import cvsToJson from 'util/cvsToJson'
+import cvsToJson from 'utils/cvsToJson'
 
 
 const ImportUsers = () => {
