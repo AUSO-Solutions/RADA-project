@@ -19,7 +19,7 @@ const getOMLIDOrCreate = async (name) => {
 
     // Create new OML
     if (name.substring(3) !== "OML") {
-      throw new Error("Invalid OML provided");
+      throw new Error({ code: "Cancelled", message: "Invalid OML provided" });
     }
 
     const id = generateRandomID();
@@ -34,7 +34,10 @@ const getOMLIDOrCreate = async (name) => {
 const getFieldIDOrCreate = async (fieldName, omlName) => {
   try {
     if (!fieldName || !omlName) {
-      throw new Error("Missing field or oml name");
+      throw new Error({
+        code: "Cancelled",
+        message: "Missing field or oml name",
+      });
     }
 
     // Fetch the ID if the field exists
@@ -59,7 +62,10 @@ const getFieldIDOrCreate = async (fieldName, omlName) => {
 const getReservoirIDOrCreate = async (reservoirName, fieldName) => {
   try {
     if (!reservoirName || !fieldName) {
-      throw new Error("Missing field or reservoir name");
+      throw new Error({
+        code: "Cancelled",
+        message: "Missing field or reservoir name",
+      });
     }
 
     // Fetch the ID if the reservoir already exists
@@ -89,7 +95,10 @@ const getWellIDOrCreate = async (
 ) => {
   try {
     if (!wellName || !fieldName || !surfaceXCoordinate || !surfaceYCoordinate) {
-      throw new Error("Missing well, field, or surface coordinates");
+      throw new Error({
+        code: "Cancelled",
+        message: "Missing well, field, or surface coordinates",
+      });
     }
 
     // Fetch the ID if the field exists

@@ -30,6 +30,7 @@ const {
   getAssets,
   getAssetsName,
   getAssets2,
+  createAsset2,
 } = require("./admin/assets");
 
 const {
@@ -68,6 +69,7 @@ module.exports = {
   deleteGroupAsset,
 
   createAsset,
+  createAsset2,
   getAssetByName,
   updateAssetById,
   deleteAssetById,

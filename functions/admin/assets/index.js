@@ -236,4 +236,5 @@ module.exports = {
   getAssets,
   getAssetsName,
   getAssets2,
+  createAsset2,
 };
