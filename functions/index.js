@@ -46,6 +46,11 @@ const {
   setupVolumeMeasurement,
 } = require("./fielddatacapturesetup/volumemeasurementsetup");
 
+const {
+  captureOilOrCondensate,
+  captureGas,
+} = require("./fielddatacapturesetup/volume.measurement");
+
 admin.initializeApp();
 
 const firestore = admin.firestore();
@@ -85,4 +90,7 @@ module.exports = {
   assignPermissionToRole,
 
   setupVolumeMeasurement,
+
+  captureOilOrCondensate,
+  captureGas,
 };
