@@ -49,6 +49,10 @@ const {
 const {
   captureOilOrCondensate,
   captureGas,
+  updateOilOrCondensate,
+  getOilOrCondensateVolumeByID,
+  getOilOrCondensateVolumesByAsset,
+  deleteOilOrCondensateVolumeByID,
 } = require("./fielddatacapturesetup/volume.measurement");
 
 admin.initializeApp();
@@ -93,4 +97,8 @@ module.exports = {
 
   captureOilOrCondensate,
   captureGas,
+  updateOilOrCondensate,
+  getOilOrCondensateVolumeByID,
+  getOilOrCondensateVolumesByAsset,
+  deleteOilOrCondensateVolumeByID,
 };
