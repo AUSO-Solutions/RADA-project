@@ -94,7 +94,7 @@ const NoUnits = () => {
   const dispatch = useDispatch()
   console.log(setupData, 'jj')
   useEffect(() => {
-    if (flowStations.length && setupData?.flowStations?.length) {
+    if (flowStations.length) {
       dispatch(setSetupData({
         name: 'flowStations',
         value: flowStations.map((flowStation, i) => ({ ...setupData?.flowStations?.[i], name: flowStation }))
@@ -145,6 +145,7 @@ const SelectFlowStation = () => {
   const dispatch = useDispatch()
   const { flowStations } = useAssetByName(setupData?.asset)
   const updateFlowstation = (e, i) => {
+    if (setupData?.flowStations?.length) {
     let numberOfUnits = e.target.value
     let prevFlowstations = [...setupData?.flowStations]
     prevFlowstations[i] = { ...prevFlowstations[i], numberOfUnits }
@@ -153,7 +154,7 @@ const SelectFlowStation = () => {
         name: 'flowStations',
         value: prevFlowstations
       }))
-    }
+    }}
   }
   return <>
     <div className='border mt-3 !rounded-[8px]'>
@@ -162,10 +163,10 @@ const SelectFlowStation = () => {
         <Text weight={600} size={"16px"}>Number of Meter(s) / Tank(s)</Text>
       </div>
       {
-        flowStations.map((flowStation, i) => {
+      setupData?.  flowStations?.map((flowStation, i) => {
           return (
-            <div className={`flex items-center ${flowStations.length === i + 1 ? "" : "border-b"} justify-between p-3`}>
-              <Text>{flowStation}</Text>
+            <div className={`flex items-center ${setupData?.flowStations.length === i + 1 ? "" : "border-b"} justify-between p-3`}>
+              <Text>{flowStation?.name}</Text>
               <Input type='number' containerClass={'!w-[150px]'} inputClass={'!text-center'}
                 defaultValue={setupData?.flowStations?.[i].numberOfUnits}
                 onChange={(e) => updateFlowstation(e, i)} />
