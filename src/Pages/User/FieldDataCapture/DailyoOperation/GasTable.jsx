@@ -93,12 +93,12 @@ export default function GasTable() {
   }
   return (
     < div className='px-3 '>
-      <div className='flex justify-between items-center'>
+      {/* <div className='flex justify-between items-center'>
         <div className='flex gap-4 items-center'>
           <RadioSelect list={setup?.reportTypes} /> <RadaSwitch label="Edit Table" labelPlacement="left" />
         </div>
         <RadaDatePicker />
-      </div>
+      </div> */}
       <TableContainer className={`m-auto border ${tableStyles.borderedMuiTable}`}>
         <Table sx={{ minWidth: 700 }} >
           <TableHead >
@@ -107,7 +107,7 @@ export default function GasTable() {
                 Flow stations
               </TableCell>
               <TableCell align="center" colSpan={3} >
-                {setup.measurementType === "Metering" ? "Meter" : "Tank"} Readings
+                Gas Readings
               </TableCell>
               <TableCell align="center">Net Production</TableCell>
               <TableCell align="center">Net Target</TableCell>
