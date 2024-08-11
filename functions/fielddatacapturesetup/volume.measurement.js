@@ -10,7 +10,7 @@ const {
 
 const db = admin.firestore();
 
-const captureOilOrCondensate = onCall(async (request) => {
+const captureOilOrCondensateVolume = onCall(async (request) => {
   try {
     let { data } = request;
     logger.log("data ----", { data });
@@ -40,7 +40,7 @@ const captureOilOrCondensate = onCall(async (request) => {
   }
 });
 
-const updateOilOrCondensate = onCall(async (request) => {
+const updateOilOrCondensateVolume = onCall(async (request) => {
   try {
     let { data } = request;
     logger.log("data ----", { data });
@@ -67,7 +67,7 @@ const updateOilOrCondensate = onCall(async (request) => {
       data: flowstations,
     };
 
-    await db.collections("volumes").doc(id).set(dbData);
+    await db.collections("liquidVolumes").doc(id).set(dbData);
     return id;
   } catch (error) {
     logger.log("error ===> ", error);
@@ -91,7 +91,7 @@ const getOilOrCondensateVolumeByID = onCall(async (request) => {
   }
 });
 
-const getOilOrCondensateVolumesByAsset = onCall(async (request) => {
+const getOilOrCondensateVolumeByAsset = onCall(async (request) => {
   const { assetName } = request;
 
   try {
@@ -127,8 +127,7 @@ const deleteOilOrCondensateVolumeByID = onCall(async (request) => {
   }
 });
 
-const captureGas = onCall(async (request) => {
-  // TODO: Refactor for Gas Capture
+const captureGasVolume = onCall(async (request) => {
   try {
     let { data } = request;
     logger.log("data ----", { data });
@@ -146,12 +145,99 @@ const captureGas = onCall(async (request) => {
     const dbData = {
       date,
       asset,
+      fluidType: "gas",
+      data: flowstations,
+    };
+
+    await db.collections("gasVolumes").doc(id).set(dbData);
+    return id;
+  } catch (error) {
+    logger.log("error ===> ", error);
+    throw new HttpsError(error?.code, error?.message);
+  }
+});
+
+const updateGasVolume = onCall(async (request) => {
+  try {
+    let { data } = request;
+    logger.log("data ----", { data });
+    const { id, date, asset, flowstations } = data;
+    if (!id || !date || !asset || !flowstations) {
+      throw new Error({
+        code: "cancelled",
+        message: "Missing required fields",
+      });
+    }
+
+    // Check out that the record exists
+    const record = await db.collection("GasVolumes").doc(id).get();
+    if (!record.exists) {
+      throw new Error({ code: "not-found", message: "Record not found" });
+    }
+
+    validateGasFlowstationData(flowstations);
+
+    const dbData = {
+      date,
+      asset,
       fluidType: "oilOrCondensate",
       data: flowstations,
     };
 
-    await db.collections("volumes").doc(id).set(dbData);
+    await db.collections("gasVolumes").doc(id).set(dbData);
     return id;
+  } catch (error) {
+    logger.log("error ===> ", error);
+    throw new HttpsError(error?.code, error?.message);
+  }
+});
+
+const getGasVolumeByID = onCall(async (request) => {
+  const { id } = request;
+
+  try {
+    const record = await db.collection("gasVolumes").doc(id).get();
+    if (!record.exists) {
+      throw new Error({ code: "not-found", message: "Record not found" });
+    }
+
+    return { status: "success", data: record };
+  } catch (error) {
+    logger.log("error ===> ", error);
+    throw new HttpsError(error?.code, error?.message);
+  }
+});
+
+const getGasVolumeByAsset = onCall(async (request) => {
+  const { assetName } = request;
+
+  try {
+    const records = await db
+      .collection("gasVolumes")
+      .where("name", "==", assetName)
+      .get()
+      .docs();
+
+    return { status: "success", data: records.map((doc) => doc.data()) };
+  } catch (error) {
+    logger.log("error ===> ", error);
+    throw new HttpsError(error?.code, error?.message);
+  }
+});
+
+const deleteGasVolumeByID = onCall(async (request) => {
+  try {
+    const { data } = request;
+    const { id } = data;
+    if (!id) {
+      throw new Error({
+        code: "cancelled",
+        message: "Missing volume Id",
+      });
+    }
+
+    await db.collections("gasVolumes").doc(id).delete();
+    return { status: "success", message: "Volume deleted successfully" };
   } catch (error) {
     logger.log("error ===> ", error);
     throw new HttpsError(error?.code, error?.message);
@@ -236,22 +322,16 @@ const demoGas = {
   flowstations: [
     {
       name: "Flowstation 1",
-      subtotal: {
-        gross: 1500,
-        bsw: 50,
-        netProduction: 750,
-        netTarget: 750,
-      },
-      meters: [
+      totalGasProduced: 2223,
+      gasTypes: [
         {
-          serialNumber: "SN-001",
+          type: "flaredGas",
+          meterNumber: "SN-001",
           meterFactor: 1,
           initialReading: 1000,
           finalReading: 1500,
-          gross: 500,
-          bsw: 50,
-          netProduction: 250,
-          netTarget: 250,
+          isMetered: true,
+          total: 50,
         },
         {
           serialNumber: "SN-002",
@@ -299,13 +379,17 @@ const demoGas = {
   ],
 };
 
-console.log({demo, demoGas})
+console.log({ demo, demoGas });
 
 module.exports = {
-  captureOilOrCondensate,
-  captureGas,
-  updateOilOrCondensate,
+  captureOilOrCondensateVolume,
+  captureGasVolume,
+  updateOilOrCondensateVolume,
   getOilOrCondensateVolumeByID,
-  getOilOrCondensateVolumesByAsset,
+  getOilOrCondensateVolumeByAsset,
   deleteOilOrCondensateVolumeByID,
+  updateGasVolume,
+  getGasVolumeByAsset,
+  getGasVolumeByID,
+  deleteGasVolumeByID,
 };
