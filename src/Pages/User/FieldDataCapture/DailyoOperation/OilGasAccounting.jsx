@@ -1,9 +1,9 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Setup from './setup'
 import { useAssetNames } from 'hooks/useAssetNames'
 import { useDispatch, useSelector } from 'react-redux'
 import { Input } from 'Components'
-import { setSetupData } from 'Store/slices/setupSlice'
+import { clearSetup, setSetupData } from 'Store/slices/setupSlice'
 import CheckInput from 'Components/Input/CheckInput'
 import { useAssetByName } from 'hooks/useAssetByName'
 import Text from 'Components/Text'
@@ -11,7 +11,7 @@ import { FaCheck } from 'react-icons/fa'
 import OilGasAccountingTable from './OilGasAccountingTable'
 import { store } from 'Store'
 import { closeModal } from 'Store/slices/modalSlice'
- 
+
 
 
 
@@ -113,6 +113,9 @@ const Preview = () => {
 
 const OilGasAccounting = () => {
 
+  useEffect(() => {
+    dispatch(clearSetup({}))
+  }, [])
   const [setupDone, setSetupDone] = useState(false)
   const dispatch = useDispatch()
 
@@ -128,21 +131,21 @@ const OilGasAccounting = () => {
   }
   return (
     <>
-    {
-    setupDone ?
-    <OilGasAccountingTable />
-    :
-      <Setup
-        title={'Setup Oil & Gas Accounting Parameters'}
-        steps={["Select Well Test Data", "Define Report", "Preview"]}
+      {
+        setupDone ?
+          <OilGasAccountingTable />
+          :
+          <Setup
+            title={'Setup Oil & Gas Accounting Parameters'}
+            steps={["Select Well Test Data", "Define Report", "Preview"]}
 
-        stepComponents={[
-          <SelectAsset getAsset={(asset) => handleChange('asset', asset)} />,
-          <DefineReport />,<Preview  />
-        ]} 
-        
-        onSave={save}
-        />
+            stepComponents={[
+              <SelectAsset getAsset={(asset) => handleChange('asset', asset)} />,
+              <DefineReport />, <Preview />
+            ]}
+
+            onSave={save}
+          />
       }
     </>
   )

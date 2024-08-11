@@ -6,9 +6,9 @@ const admin = require("firebase-admin");
 const { login, createUser, getUsers, getUserByUid, deleteUserByUid, updateUserByUid, createUsers } = require("./admin/auth");
 
 const { getGroups, createGroup, addMembersToGroup, deleteGroupMember, deleteGroup, deleteGroupAsset, assignAssetsToGroup } = require("./admin/auth/group");
-const { createAsset, getAssetByName, updateAssetById, deleteAssetById, getAssets, getAssetsName  } = require('./admin/assets')
-const  { createRole, updateRole, deleteRole, getRoles, getRole, assignPermissionToRole } = require('./admin/rolesandpermissions');
-const { setupVolumeMeasurement } = require("./fielddatacapturesetup/volumemeasurementsetup");
+const { createAsset, getAssetByName, updateAssetById, deleteAssetById, getAssets, getAssetsName } = require('./admin/assets')
+const { createRole, updateRole, deleteRole, getRoles, getRole, assignPermissionToRole } = require('./admin/rolesandpermissions');
+const { setupVolumeMeasurement, getSetups } = require("./fielddatacapturesetup/volumemeasurementsetup");
 
 admin.initializeApp()
 
@@ -21,9 +21,9 @@ module.exports = {
 
   createGroup, addMembersToGroup, getGroups, deleteGroup, deleteGroupMember, assignAssetsToGroup, deleteGroupAsset,
 
-  createAsset, getAssetByName, updateAssetById, deleteAssetById, getAssets, getAssetsName ,
+  createAsset, getAssetByName, updateAssetById, deleteAssetById, getAssets, getAssetsName,
 
   createRole, updateRole, deleteRole, getRoles, getRole, assignPermissionToRole,
 
-  setupVolumeMeasurement
+  setupVolumeMeasurement, getSetups
 }

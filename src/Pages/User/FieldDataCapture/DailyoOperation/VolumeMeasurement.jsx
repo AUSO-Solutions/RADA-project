@@ -3,7 +3,7 @@ import Setup from './setup'
 import { Input } from 'Components'
 import { useAssetNames } from 'hooks/useAssetNames'
 import { useDispatch, useSelector } from 'react-redux'
-import { setSetupData } from 'Store/slices/setupSlice'
+import { clearSetup, setSetupData } from 'Store/slices/setupSlice'
 import CheckInput from 'Components/Input/CheckInput'
 import Text from 'Components/Text'
 import { useAssetByName } from 'hooks/useAssetByName'
@@ -15,6 +15,7 @@ import RadioSelect from './RadioSelect'
 import RadaSwitch from 'Components/Input/RadaSwitch'
 import RadaDatePicker from 'Components/Input/RadaDatePicker'
 import GasTable from './GasTable'
+import { toast } from 'react-toastify'
 
 
 const SelectedReportTypes = ({ list = [] }) => {
@@ -151,15 +152,16 @@ const SelectFlowStation = () => {
   const { flowStations } = useAssetByName(setupData?.asset)
   const updateFlowstation = (e, i) => {
     if (setupData?.flowStations?.length) {
-    let numberOfUnits = e.target.value
-    let prevFlowstations = [...setupData?.flowStations]
-    prevFlowstations[i] = { ...prevFlowstations[i], numberOfUnits }
-    if (numberOfUnits) {
-      dispatch(setSetupData({
-        name: 'flowStations',
-        value: prevFlowstations
-      }))
-    }}
+      let numberOfUnits = e.target.value
+      let prevFlowstations = [...setupData?.flowStations]
+      prevFlowstations[i] = { ...prevFlowstations[i], numberOfUnits }
+      if (numberOfUnits) {
+        dispatch(setSetupData({
+          name: 'flowStations',
+          value: prevFlowstations
+        }))
+      }
+    }
   }
   return <>
     <div className='border mt-3 !rounded-[8px]'>
@@ -168,7 +170,7 @@ const SelectFlowStation = () => {
         <Text weight={600} size={"16px"}>Number of Meter(s) / Tank(s)</Text>
       </div>
       {
-      setupData?.  flowStations?.map((flowStation, i) => {
+        setupData?.flowStations?.map((flowStation, i) => {
           return (
             <div className={`flex items-center ${setupData?.flowStations.length === i + 1 ? "" : "border-b"} justify-between p-3`}>
               <Text>{flowStation?.name}</Text>
@@ -213,33 +215,39 @@ const Preview = () => {
 
 
 const VolumeMeasurement = () => {
-  // const setupData = useSelector(state => state.setup)
-  // const [formData, setFormData] = useState({
-  //   asset: "",
-  //   timeFrame: "",
-  //   flowStations: [],
-  //   reportTypes: ['']
-  // })
-  const [setupDone, setSetupDone] = useState(false)
-  const dispatch = useDispatch()
 
+  const [setupTable, setSetupTable] = useState(false)
+  const dispatch = useDispatch()
+  const [loading, setLoading] = useState(false)
   const save = async () => {
+   try {
+    setLoading(true)
     const setupData = store.getState().setup
-    console.log(setupData)
+    // console.log(setupData)
+    await firebaseFunctions('setupVolumeMeasurement', { ...setupData })
     dispatch(closeModal())
-    setSetupDone(true)
+    setSetupTable(true)
+   } catch (error) {
+toast.error(error?.message)
+   }
+   finally{
+    setLoading(false)
+   }
 
     // await firebaseFunctions("")
   }
   const setupData = useSelector(state => state.setup)
-  console.log(setupData?.reportTypes)
+  // console.log(setupData?.reportTypes)
 
-  const [currReport,setCurrReport] = useState(setupData?.reportTypes[0])
+  const [currReport, setCurrReport] = useState(setupData?.reportTypes?.[0])
+  useEffect(() => {
+    dispatch(clearSetup({}))
+  }, [])
 
   return (
     < >
       {
-        setupDone ?
+        setupTable ?
           <>
             <div className='flex justify-between items-center'>
               <div className='flex gap-4 items-center'>
@@ -257,6 +265,9 @@ const VolumeMeasurement = () => {
           : <Setup
             title={'Setup Volume Measurement Parameters'}
             steps={["Select Asset", "Define Report", "No. of Units", "Select Flowstations", "Preview"]}
+            type={'volumeMeasurement'}
+            rightBtnLoading={loading}
+            onSetWholeSetup={()=>setSetupTable(true)}
             stepComponents={
               [
                 <SelectAsset />,

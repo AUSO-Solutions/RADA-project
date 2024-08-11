@@ -25,14 +25,14 @@ const setupVolumeMeasurement = onCall(async (request) => {
 
         const { asset, reportTypes, flowStations, timeFrame } = data;
 
-        const validAssets = ['OML24', 'OML152', 'OML147'];
+        const validAssets = ['OML 24', 'OML 155', 'OML 147'];
         if (!validAssets.includes(asset)) {
             return { message: 'Invalid asset', code: 'cancelled' };
         }
 
         const validReportTypes = ['Gross Liquid', 'Net Oil/ Condensate', 'Gas'];
         if (!Array.isArray(reportTypes) || reportTypes.length !== 2 || !reportTypes.every(type => validReportTypes.includes(type))) {
-            return { message: 'Invalid report types', code: 'cancelled' };
+            throw { message: 'Invalid report types', code: 'cancelled' };
         }
 
         // const validVolumeMeasurementTypes = ['Metering', 'Tank Dipping'];
@@ -60,7 +60,7 @@ const setupVolumeMeasurement = onCall(async (request) => {
         //         meters: generateSerialNumbers(numberOfMeters)
         //     });
         // }
-        const id = generateSerialNumbers(6)
+        const id = crypto.randomBytes(8).toString("hex");
         const db = admin.firestore();
 
         const docRef = await db.collection('setups').doc('volumeMeasurement').collection("setupList").doc(id).set({
@@ -70,7 +70,7 @@ const setupVolumeMeasurement = onCall(async (request) => {
             timeFrame, id
         });
 
-        return { message: `Document created with ID: ${docRef.id}` };
+        return { message: `Document created` };
 
     } catch (error) {
         console.error('Error adding document: ', error);
@@ -79,5 +79,13 @@ const setupVolumeMeasurement = onCall(async (request) => {
     }
 });
 
+const getSetups = onCall(async (request) => {
+    const { data } = request
+    const setupType = data?.setupType
+    const db = admin.firestore();
+    const res = await db.collection('setups').doc(setupType).collection('setupList').get()
+    return { message: "Successful ", data : res.docs.map(doc => doc.data())}
+})
 
-module.exports = { setupVolumeMeasurement }
+
+module.exports = { setupVolumeMeasurement , getSetups }
