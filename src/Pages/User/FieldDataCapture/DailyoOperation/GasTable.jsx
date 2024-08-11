@@ -104,28 +104,29 @@ export default function GasTable() {
           <TableHead >
             <TableRow sx={{ bgcolor: `rgba(239, 239, 239, 1) !important`, color: 'black', fontWeight: 'bold  !important' }}>
               <TableCell align="left" colSpan={3} >
-                Flow stations
+                Flow stations 
               </TableCell>
-              <TableCell align="center" colSpan={3} >
+              <TableCell align="center" colSpan={6} >
                 Gas Readings
               </TableCell>
-              <TableCell align="center">Net Production</TableCell>
+              {/* <TableCell align="center">Net Production</TableCell>
               <TableCell align="center">Net Target</TableCell>
-              <TableCell align="center">BS&W</TableCell>
-              <TableCell align="center">Gross</TableCell>
+              <TableCell align="center">BS&W</TableCell> */}
+              <TableCell align="center">Total</TableCell>
             </TableRow>
             <TableRow>
 
               <TableCell align="left" colSpan={3} >
                 Input Values for each flow station
               </TableCell>
-              <TableCell align="center">{setup.measurementType === "Metering" ? "Meter" : "Tank"} Name</TableCell>
+              <TableCell align="center">Property</TableCell>
+              <TableCell align="center">Meter Name</TableCell>
               <TableCell align="center">Initial (bbls)</TableCell>
               <TableCell align="center">Final (bbls)</TableCell>
               <TableCell align="center">bbls</TableCell>
               <TableCell align="center">bbls</TableCell>
               <TableCell align="center">%</TableCell>
-              <TableCell align="center">bbls</TableCell>
+              {/* <TableCell align="center">bbls</TableCell> */}
             </TableRow>
           </TableHead>
           {
@@ -140,6 +141,7 @@ export default function GasTable() {
                       new Array(parseInt(numberOfUnits)).fill(0).map(
                         (meter, i) => <>
                           <TableRow>
+                            <TableCell>--</TableCell>
                             <TableCell align="center">
                               <TableInput
                                 onChange={(e) => handleChange({ flowStation, field: 'serialNumber', measurementTypeValue: e.target.value, measurementTypeIndex: i })}

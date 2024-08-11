@@ -234,6 +234,8 @@ const VolumeMeasurement = () => {
   const setupData = useSelector(state => state.setup)
   console.log(setupData?.reportTypes)
 
+  const [currReport,setCurrReport] = useState(setupData?.reportTypes[0])
+
   return (
     < >
       {
@@ -241,12 +243,12 @@ const VolumeMeasurement = () => {
           <>
             <div className='flex justify-between items-center'>
               <div className='flex gap-4 items-center'>
-                <RadioSelect list={setupData?.reportTypes} /> <RadaSwitch label="Edit Table" labelPlacement="left" />
+                <RadioSelect onChange={setCurrReport} list={setupData?.reportTypes} /> <RadaSwitch label="Edit Table" labelPlacement="left" />
               </div>
               <RadaDatePicker />
             </div>
             {
-              setupData?.reportTypes === 'Gas' ? <GasTable /> :
+              currReport === 'Gas' ? <GasTable /> :
 
                 <VolumeMeasurementTable />
             }
