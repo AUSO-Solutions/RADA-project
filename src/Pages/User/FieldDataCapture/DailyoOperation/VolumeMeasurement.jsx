@@ -96,23 +96,26 @@ const NoUnits = () => {
   const setupData = useSelector(state => state.setup)
   const { flowStations } = useAssetByName(setupData?.asset)
   const dispatch = useDispatch()
+  console.log(setupData, 'jj')
   useEffect(() => {
-    if (flowStations.length) {
+    if (flowStations.length && setupData?.flowStations?.length) {
       dispatch(setSetupData({
         name: 'flowStations',
-        value: flowStations.map((flowStation, i) => ({ ...setupData.flowStations[i], name: flowStation }))
+        value: flowStations.map((flowStation, i) => ({ ...setupData?.flowStations?.[i], name: flowStation }))
       }))
     }
   }, [flowStations])
   const updateFlowstation = (e, i) => {
-    let measurementType = e.value
-    let prevFlowstations = [...setupData?.flowStations]
-    prevFlowstations[i] = { ...prevFlowstations[i], measurementType }
-    if (measurementType) {
-      dispatch(setSetupData({
-        name: 'flowStations',
-        value: prevFlowstations
-      }))
+    if (setupData?.flowStations?.length) {
+      let measurementType = e.value
+      let prevFlowstations = [...setupData?.flowStations]
+      prevFlowstations[i] = { ...prevFlowstations[i], measurementType }
+      if (measurementType) {
+        dispatch(setSetupData({
+          name: 'flowStations',
+          value: prevFlowstations
+        }))
+      }
     }
   }
   return <>
@@ -130,11 +133,10 @@ const NoUnits = () => {
         flowStations.map((flowStation, i) => (<div className='flex justify-between p-3'>
           <Input containerClass={'h-[39px] !w-[fit-content]'} type='text' value={flowStation} disabled />
           <Input containerClass={'h-[39px] !w-[150px]'} type='select'
-            defaultValue={{ label: setupData?.flowStations[i].measurementType, value: setupData?.flowStations[i].measurementType }}
+            defaultValue={{ label: setupData?.flowStations?.[i]?.measurementType, value: setupData?.flowStations?.[i]?.measurementType }}
             onChange={e => updateFlowstation(e, i)}
             options={measureMenntTypes.map(type => ({ label: type, value: type }))} />
 
-          {setupData?.flowStations[i].measurementType}
         </div>))
       }
     </div>
