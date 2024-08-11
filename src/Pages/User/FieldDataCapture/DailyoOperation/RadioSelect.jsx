@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { FaRegCircle, FaRegDotCircle } from 'react-icons/fa'
 
-const RadioSelect = ({ list = [], onChange = () => null, }) => {
-    const [selected, setSelected] = useState(null)
+const RadioSelect = ({ list = [], onChange = () => null, defaultValue="" }) => {
+    const [selected, setSelected] = useState(defaultValue)
     return (
         <div className='rounded flex border my-3 justify-evenly !w-[fit-content]'>
             {list?.map((item, i) => {

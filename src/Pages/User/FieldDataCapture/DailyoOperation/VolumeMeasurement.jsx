@@ -16,6 +16,7 @@ import RadaSwitch from 'Components/Input/RadaSwitch'
 import RadaDatePicker from 'Components/Input/RadaDatePicker'
 import GasTable from './GasTable'
 import { toast } from 'react-toastify'
+import { colors } from 'Assets'
 
 
 const SelectedReportTypes = ({ list = [] }) => {
@@ -220,19 +221,19 @@ const VolumeMeasurement = () => {
   const dispatch = useDispatch()
   const [loading, setLoading] = useState(false)
   const save = async () => {
-   try {
-    setLoading(true)
-    const setupData = store.getState().setup
-    // console.log(setupData)
-    await firebaseFunctions('setupVolumeMeasurement', { ...setupData })
-    dispatch(closeModal())
-    setSetupTable(true)
-   } catch (error) {
-toast.error(error?.message)
-   }
-   finally{
-    setLoading(false)
-   }
+    try {
+      setLoading(true)
+      const setupData = store.getState().setup
+      // console.log(setupData)
+      await firebaseFunctions('setupVolumeMeasurement', { ...setupData })
+      dispatch(closeModal())
+      setSetupTable(true)
+    } catch (error) {
+      toast.error(error?.message)
+    }
+    finally {
+      setLoading(false)
+    }
 
     // await firebaseFunctions("")
   }
@@ -249,16 +250,19 @@ toast.error(error?.message)
       {
         setupTable ?
           <>
-            <div className='flex justify-between items-center'>
+            <div className='flex justify-between my-2 px-2 items-center'>
               <div className='flex gap-4 items-center'>
-                <RadioSelect onChange={setCurrReport} list={setupData?.reportTypes} /> <RadaSwitch label="Edit Table" labelPlacement="left" />
+                <RadioSelect onChange={setCurrReport} defaultValue={setupData?.reportTypes?.[0]} list={setupData?.reportTypes} /> <RadaSwitch label="Edit Table" labelPlacement="left" />
               </div>
-              <RadaDatePicker />
+              <div className='flex items-center gap-2 '>
+                <Text className={'cursor-pointer'} onClick={()=> setSetupTable(false)} color={colors.rada_blue}>View setups</Text>
+                <RadaDatePicker />
+              </div>
             </div>
             {
               currReport === 'Gas' ? <GasTable /> :
 
-                <VolumeMeasurementTable />
+                <VolumeMeasurementTable currReport={currReport} />
             }
 
           </>
@@ -267,7 +271,7 @@ toast.error(error?.message)
             steps={["Select Asset", "Define Report", "No. of Units", "Select Flowstations", "Preview"]}
             type={'volumeMeasurement'}
             rightBtnLoading={loading}
-            onSetWholeSetup={()=>setSetupTable(true)}
+            onSetWholeSetup={() => setSetupTable(true)}
             stepComponents={
               [
                 <SelectAsset />,
