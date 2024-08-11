@@ -3,7 +3,7 @@ import Text from 'Components/Text'
 import React from 'react'
 import { useSelector } from 'react-redux'
 // import { setSetupData } from 'Store/slices/setupSlice'
-import { updateFlowstationReading } from './helper'
+import { updateFlowstation, updateFlowstationReading } from './helper'
 import { Button } from 'Components'
 import { firebaseFunctions } from 'Services'
 import { store } from 'Store'
@@ -33,7 +33,7 @@ const VolumeSettings = ({ onClickOut = () => null }) => {
 
         <div className='flex justify-between'>
           <Text weight={600} size={18}>  Table Settings</Text>
-          <Close />
+          <Close onClick={onClickOut} />
         </div> <br />  <br />
         <Text weight={600} size={14} color={'rgba(78, 78, 78, 0.5)'}>  Manage Meters</Text>
         <br />
@@ -49,30 +49,37 @@ const VolumeSettings = ({ onClickOut = () => null }) => {
               <Text size={14} className={'w-[30%] flex items-center'}>  {flowStation?.name}</Text>
               <Text size={14} className={'w-[30%] flex flex-col !text-center'}>
                 {
-                  new Array(parseInt(flowStation?.numberOfUnits)).fill(0).map((meter, readingIndex) => (
-                    <div>
-                      <input className='border outline-none px-2 w-[98px] h-[30px] rounded my-1'
-                        // value={flowStation?.serialNumber}
-                        // onChange={(e) => updateFlowstation(flowStationIndex, 'serialNumber', e.target.value)}
-
-
-                        value={flowStation?.readings?.[readingIndex]?.serialNumber}
-                        onChange={(e) => updateFlowstationReading(flowStationIndex, readingIndex, 'serialNumber', e.target.value)}
-                      />
-                    </div>
-                  ))
+                    new Array(parseInt(flowStation?.numberOfUnits)).fill(0).map((meter, readingIndex) => (
+                      <div>
+                        <input className='border outline-none px-2 w-[98px] h-[30px] rounded my-1'
+                          value={flowStation?.readings?.[readingIndex]?.serialNumber}
+                          onChange={(e) => updateFlowstationReading(flowStationIndex, readingIndex, 'serialNumber', e.target.value)}
+                        />
+                      </div>
+                    )) 
+                }
+                {
+                   flowStation?.measurementType === 'Tank Dipping' && "Deduction"
                 }
               </Text>
               <Text size={14} className={'w-[30%] !text-right'}>
                 {
-                  new Array(parseInt(flowStation?.numberOfUnits)).fill(0).map((meter, readingIndex) => (
-                    <div>
-                      <input type='number'
-                        value={flowStation?.readings?.[readingIndex]?.meterFactor}
-                        onChange={(e) => updateFlowstationReading(flowStationIndex, readingIndex, 'meterFactor', e.target.value)}
-                        min={1} className='border outline-none text-center px-2 w-[98px] h-[30px] my-1' />
-                    </div>
-                  ))
+                   
+                    new Array(parseInt(flowStation?.numberOfUnits)).fill(0).map((meter, readingIndex) => (
+                      <div>
+                        <input type='number'
+                        disabled={flowStation?.measurementType === 'Tank Dipping'}
+                          value={flowStation?.measurementType === 'Metering' ? flowStation?.readings?.[readingIndex]?.meterFactor : 1}
+                          onChange={(e) => updateFlowstationReading(flowStationIndex, readingIndex, 'meterFactor', e.target.value)}
+                          min={1} className='border outline-none text-center px-2 w-[98px] h-[30px] my-1' />
+                      </div>
+                    )) 
+                }
+                {
+                   flowStation?.measurementType === 'Tank Dipping' &&  <input type='number'
+                   value={flowStation?.deductionMeterFactor}
+                   onChange={(e) => updateFlowstation(flowStationIndex, 'deductionMeterFactor', e.target.value)}
+                   min={1} className='border outline-none text-center px-2 w-[98px] h-[30px] my-1' />
                 }
               </Text>
             </Box>
