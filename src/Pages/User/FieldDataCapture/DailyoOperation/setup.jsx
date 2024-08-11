@@ -34,7 +34,7 @@ const Setup = ({ title, steps = [], onBack, onNext, stepComponents = [], onSave 
                 <Text weight={500} size={"24px"}>{title}</Text>
                 <br /> <br />
                 <RadaStepper steps={steps} activeStep={activeStep} />
-                <Box component={'div'} my={3} width={'100%'} height={'50% !important'} >
+                <Box component={'div'} my={3} width={'100%'} minHeight={'50% !important'} >
                     {stepComponents && stepComponents[activeStep]}
                 </Box>
 
