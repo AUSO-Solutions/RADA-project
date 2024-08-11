@@ -130,20 +130,20 @@ export default function VolumeMeasurementTable() {
           </TableHead>
           {
             setup?.flowStations?.map(
-              (flowStation) => {
+              ({flowStation,name, numberOfUnits, measurementType }) => {
                 return (
                   <TableBody>
                     <TableRow key={flowStation}>
-                      <TableCell align="left" rowSpan={parseInt(setup?.measurementTypeNumber[flowStation]) + (setup.measurementType === "Metering" ? 2 : 3 * 2)} colSpan={3}>{flowStation}</TableCell>
+                      <TableCell align="left" rowSpan={parseInt(numberOfUnits) + (measurementType === "Metering" ? 2 : 3 * 2)} colSpan={3}>{name}</TableCell>
                     </TableRow>
                     {
-                      new Array(parseInt(setup?.measurementTypeNumber[flowStation])).fill(0).map(
+                      new Array(parseInt(numberOfUnits)).fill(0).map(
                         (meter, i) => <>
                           <TableRow>
                             <TableCell align="center">
                               <TableInput
                                 onChange={(e) => handleChange({ flowStation, field: 'serialNumber', measurementTypeValue: e.target.value, measurementTypeIndex: i })}
-                                defaultValue={(setup.measurementType === "Metering" ? "Meter" : "Tank") + (i + 1)}
+                                defaultValue={(measurementType === "Metering" ? "Meter" : "Tank") + (i + 1)}
                               />
                             </TableCell>
                             <TableCell align="center"><TableInput onChange={(e) => handleChange({ flowStation, field: 'initialBbls', measurementTypeValue: e.target.value, measurementTypeIndex: i })} /></TableCell>
@@ -154,7 +154,7 @@ export default function VolumeMeasurementTable() {
                             <TableCell align="center">-</TableCell>
                           </TableRow>
                           {
-                            setup.measurementType === "Tank Dipping" && <TableRow>
+                            measurementType === "Tank Dipping" && <TableRow>
                               <TableCell align="center">Deduction</TableCell>
                               <TableCell align="center"><TableInput onChange={(e) => handleChange({ flowStation, field: 'deductionInitialBbls', measurementTypeValue: e.target.value, measurementTypeIndex: i })} /></TableCell>
                               <TableCell align="center"><TableInput onChange={(e) => handleChange({ flowStation, field: 'deductionFinalBbls', measurementTypeValue: e.target.value, measurementTypeIndex: i })} /></TableCell>

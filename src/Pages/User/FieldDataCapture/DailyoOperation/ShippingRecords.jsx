@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import Setup from './setup'
 // import { useAssetNames } from 'hooks/useAssetNames'
 import { useDispatch, useSelector } from 'react-redux'
@@ -6,6 +6,7 @@ import { Input } from 'Components'
 import { setSetupData } from 'Store/slices/setupSlice'
 import { useAssetByName } from 'hooks/useAssetByName'
 import Text from 'Components/Text'
+import CheckInput from 'Components/Input/CheckInput'
 
 const NoUnits = () => {
   const measureMenntTypes = ['Metering', 'Tank Dipping']

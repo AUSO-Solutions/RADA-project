@@ -8,15 +8,16 @@ const RadaSelect = ({ name, onChange, options, isMulti , ...rest}) => {
     const [value, setValue] = useState(isMulti ? [] : '')
 
     useEffect(() => {
+        // console.log({value}) 
         if (isMulti) { 
             const _c = value?.map(x => x?.value)
             console.log(_c)
             onChange(_c)
          }
         else { onChange(value) }
-    }, [value, onChange])
+    }, [value])
 
-    //
+    //value, onChange
 
     return (
         <>
