@@ -11,10 +11,14 @@ import { store } from 'Store'
 import { firebaseFunctions } from 'Services'
 import VolumeMeasurementTable from './VolumeMeasurementTable'
 import { closeModal } from 'Store/slices/modalSlice'
+import RadioSelect from './RadioSelect'
+import RadaSwitch from 'Components/Input/RadaSwitch'
+import RadaDatePicker from 'Components/Input/RadaDatePicker'
 
 
 const SelectedReportTypes = ({ list = [] }) => {
   const setupData = useSelector(state => state.setup)
+  console.log(setupData.reportTypes)
 
   return <div className='rounded flex border my-3 justify-evenly !w-[100%]'>
     {setupData?.reportTypes?.map((item, i) => {
@@ -226,12 +230,22 @@ const VolumeMeasurement = () => {
 
     // await firebaseFunctions("")
   }
+  const setupData = useSelector(state => state.setup)
+  console.log(setupData?.reportTypes)
 
   return (
     < >
       {
         setupDone ?
-          <VolumeMeasurementTable />
+          <>
+            <div className='flex justify-between items-center'>
+              <div className='flex gap-4 items-center'>
+                <RadioSelect list={setupData?.reportTypes} /> <RadaSwitch label="Edit Table" labelPlacement="left" />
+              </div>
+              <RadaDatePicker />
+            </div>
+            <VolumeMeasurementTable />
+          </>
           : <Setup
             title={'Setup Volume Measurement Parameters'}
             steps={["Select Asset", "Define Report", "No. of Units", "Select Flowstations", "Preview"]}
