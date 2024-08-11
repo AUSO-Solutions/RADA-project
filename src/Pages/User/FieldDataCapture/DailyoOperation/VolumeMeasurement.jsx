@@ -14,6 +14,7 @@ import { closeModal } from 'Store/slices/modalSlice'
 import RadioSelect from './RadioSelect'
 import RadaSwitch from 'Components/Input/RadaSwitch'
 import RadaDatePicker from 'Components/Input/RadaDatePicker'
+import GasTable from './GasTable'
 
 
 const SelectedReportTypes = ({ list = [] }) => {
@@ -195,7 +196,7 @@ const Preview = () => {
         <Text weight={600} className='w-1/3 !text-right' size={"16px"}>Number of Meters/Tanks</Text>
       </div>
       {
-        setupData?.flowStations.map((flowStation, i) => {
+        setupData?.flowStations?.map((flowStation, i) => {
           return (
             <div className={`flex items-center ${flowStations.length === i + 1 ? "" : "border-b"} justify-between p-3`}>
               <Text className={'w-1/3 '}>{flowStation?.name}</Text>
@@ -243,7 +244,12 @@ const VolumeMeasurement = () => {
               </div>
               <RadaDatePicker />
             </div>
-            <VolumeMeasurementTable />
+            {
+              setupData?.reportTypes === 'Gas' ? <GasTable /> :
+
+                <VolumeMeasurementTable />
+            }
+
           </>
           : <Setup
             title={'Setup Volume Measurement Parameters'}

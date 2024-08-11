@@ -93,12 +93,12 @@ export default function VolumeMeasurementTable() {
   }
   return (
     < div className='px-3 '>
-      <div className='flex justify-between items-center'>
+      {/* <div className='flex justify-between items-center'>
         <div className='flex gap-4 items-center'>
           <RadioSelect list={setup?.reportTypes} /> <RadaSwitch label="Edit Table" labelPlacement="left" />
         </div>
         <RadaDatePicker />
-      </div>
+      </div> */}
       <TableContainer className={`m-auto border ${tableStyles.borderedMuiTable}`}>
         <Table sx={{ minWidth: 700 }} >
           <TableHead >
