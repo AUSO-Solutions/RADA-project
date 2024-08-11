@@ -11,10 +11,14 @@ import { store } from 'Store'
 import { firebaseFunctions } from 'Services'
 import VolumeMeasurementTable from './VolumeMeasurementTable'
 import { closeModal } from 'Store/slices/modalSlice'
+import RadioSelect from './RadioSelect'
+import RadaSwitch from 'Components/Input/RadaSwitch'
+import RadaDatePicker from 'Components/Input/RadaDatePicker'
 
 
 const SelectedReportTypes = ({ list = [] }) => {
   const setupData = useSelector(state => state.setup)
+  console.log(setupData.reportTypes)
 
   return <div className='rounded flex border my-3 justify-evenly !w-[100%]'>
     {setupData?.reportTypes?.map((item, i) => {
@@ -184,8 +188,8 @@ const Preview = () => {
   return <>
     <div className='border mt-3 !rounded-[8px]'>
       <div className='flex justify-between border-b p-3'>
-        <Text weight={600}className='w-1/3' size={"16px"}>Flow stations</Text>
-        <Text weight={600} className={'!text-center w-1/3' } size={"16px"}>Type</Text>
+        <Text weight={600} className='w-1/3' size={"16px"}>Flow stations</Text>
+        <Text weight={600} className={'!text-center w-1/3'} size={"16px"}>Type</Text>
         <Text weight={600} className='w-1/3 !text-right' size={"16px"}>Number of Meters/Tanks</Text>
       </div>
       {
@@ -223,12 +227,22 @@ const VolumeMeasurement = () => {
 
     // await firebaseFunctions("")
   }
+  const setupData = useSelector(state => state.setup)
+  console.log(setupData?.reportTypes)
 
   return (
     < >
       {
         setupDone ?
-          <VolumeMeasurementTable />
+          <>
+            <div className='flex justify-between items-center'>
+              <div className='flex gap-4 items-center'>
+                <RadioSelect list={setupData?.reportTypes} /> <RadaSwitch label="Edit Table" labelPlacement="left" />
+              </div>
+              <RadaDatePicker />
+            </div>
+            <VolumeMeasurementTable />
+          </>
           : <Setup
             title={'Setup Volume Measurement Parameters'}
             steps={["Select Asset", "Define Report", "No. of Units", "Select Flowstations", "Preview"]}
