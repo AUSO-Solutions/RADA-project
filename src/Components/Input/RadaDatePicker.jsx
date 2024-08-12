@@ -8,7 +8,7 @@ export default function RadaDatePicker({onChange}) {
   return (
     <LocalizationProvider  dateAdapter={AdapterDayjs}>
       <DemoContainer components={['DatePicker']}>
-        <DatePicker sx={{p:0}} label="Select Date" onChange={onChange} />
+        <DatePicker sx={{p:0, height:'50px'}} label="Select Date" onChange={onChange} />
       </DemoContainer>
     </LocalizationProvider>
   );

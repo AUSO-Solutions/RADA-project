@@ -1,7 +1,7 @@
 import { Typography } from '@mui/material'
 import React from 'react'
 
-const Text = ({ children, size, color, weight, className, display, align,lH }) => {
+const Text = ({ children, size, color, weight, className, display, align,lH, onClick=()=>null }) => {
     return (
         <Typography
             sx={{
@@ -15,6 +15,7 @@ const Text = ({ children, size, color, weight, className, display, align,lH }) =
                 lineHeight:lH
             }}
             className={className}
+            onClick={onClick}
         >
             {children}
         </Typography>

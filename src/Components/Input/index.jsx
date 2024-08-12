@@ -3,7 +3,7 @@ import styles from './input.module.scss'
 import { Box } from '@mui/material';
 import OtpInput from 'react-otp-input';
 import RadaSelect from './Select';
-import CheckInput from './CheckInput';
+// import CheckInput from './CheckInput';
 
 const OTPInput = (props) => {
     const [otp, setOtp] = useState()

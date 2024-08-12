@@ -7,7 +7,7 @@ import CreateGroup from './creategroup'
 import { useDispatch } from 'react-redux'
 import { closeModal, openModal } from 'Store/slices/modalSlice'
 import TableAction from 'Components/RadaTable/TableAction'
-import AddMemberstoGroup from './AddMemberstoGroup'
+
 import ConfirmModal from 'Components/Modal/ConfirmModal'
 import deleteGroup from './deleteGroup'
 import { useNavigate } from 'react-router-dom'

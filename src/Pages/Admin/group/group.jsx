@@ -1,28 +1,28 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Input, RadaForm } from 'Components'
-import * as Yup from 'yup';
+// import * as Yup from 'yup';
 import { useDispatch } from 'react-redux';
 import { closeModal } from 'Store/slices/modalSlice';
 import { toast } from 'react-toastify';
 import { useUsers } from 'hooks/useUsers';
 import Text from 'Components/Text';
 import { Box, Divider } from '@mui/material';
-import { IoCloseCircle, IoLogoClosedCaptioning } from 'react-icons/io5';
+import { IoCloseCircle,  } from 'react-icons/io5';
 import { firebaseFunctions } from 'Services';
 import { useParams } from 'react-router-dom';
 import { useFetch } from 'hooks/useFetch';
 
 
 
-const Group = ({ }) => {
+const Group = () => {
     const { groupId } = useParams()
 
     const { data: group } = useFetch({ firebaseFunction: 'getGroups', payload: { groupId } })
 
     console.log(groupId, group)
-    const schema = Yup.object().shape({
-        groupName: Yup.string().required(),
-    })
+    // const schema = Yup.object().shape({
+    //     groupName: Yup.string().required(),
+    // })
     const { users } = useUsers()
     const { data: assets } = useFetch({ firebaseFunction: 'getAssets' })
     const [deleteLoading, setDeleteLoading] = useState(false)
@@ -64,7 +64,7 @@ const Group = ({ }) => {
                 ?.map(member => member?.uid)
                 ?.includes(user?.uid))
             .map(user => ({ label: user?.firstName + " " + user?.lastName, value: user?.uid }))
-    }, [group])
+    }, [group,users])
     const assetsAddable = useMemo(() => {
 
         return assets
@@ -73,7 +73,7 @@ const Group = ({ }) => {
                 ?.includes(asset?.id))
             .map(asset => ({ label: asset?.name + " " + asset?.well, value: asset?.id }))
 
-    }, [group])
+    }, [group,assets])
 
 
     const [members, setMembers] = useState(group?.members)

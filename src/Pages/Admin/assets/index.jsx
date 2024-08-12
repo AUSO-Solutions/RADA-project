@@ -10,38 +10,33 @@ import TableAction from 'Components/RadaTable/TableAction'
 import ConfirmModal from 'Components/Modal/ConfirmModal'
 // import { deleteUser } from './deleteUser'
 // import ImportUsers from './importUsers'
-import { downloadTemplate } from '../users/downloadTemplate'
+// import { downloadTemplate } from '../users/downloadTemplate'
 
 import { firebaseFunctions } from 'Services'
-import { Button } from 'Components'
+
 import CreateAsset from './CreateAsset'
 import { toast } from 'react-toastify'
-import { db } from 'firebase-config'
-import { collection } from 'firebase/firestore'
-// import { CSVDownload } from 'react-csv';
-// import { toast } from 'react-toastify'
-
 
 const Assets = () => {
     const dispatch = useDispatch()
-    const [downloadLoading, setDownloading] = useState(false)
-    const [usersToDownloading] = useState([])
+    // const [downloadLoading, setDownloading] = useState(false)
+    // const [usersToDownloading] = useState([])
 
-    const downloadUser = async () => {
-        setDownloading(true)
-        if (downloadLoading) return;
-        try {
-            const users = await firebaseFunctions("getUsers")
-            let list = users?.data?.map(user => ({ firstName: user?.firstName, lastName: user?.lastName, email: user?.email, })) || []
-            list.unshift({ "firstName": "firstName", "lastName": "lastName", "email": "email" })
-            // setUsertoDownload(users?.data?.map(user => ({ firstName: user?.firstName, lastName: user?.lastName,  email: user?.email, })))
-            downloadTemplate(list)
-        } catch (error) {
+    // const downloadUser = async () => {
+    //     setDownloading(true)
+    //     if (downloadLoading) return;
+    //     try {
+    //         const users = await firebaseFunctions("getUsers")
+    //         let list = users?.data?.map(user => ({ firstName: user?.firstName, lastName: user?.lastName, email: user?.email, })) || []
+    //         list.unshift({ "firstName": "firstName", "lastName": "lastName", "email": "email" })
+    //         // setUsertoDownload(users?.data?.map(user => ({ firstName: user?.firstName, lastName: user?.lastName,  email: user?.email, })))
+    //         downloadTemplate(list)
+    //     } catch (error) {
 
-        } finally {
-            setDownloading(false)
-        }
-    }
+    //     } finally {
+    //         setDownloading(false)
+    //     }
+    // }
 
 
     const [deleteLoading, setDeleteLoading] = useState(false)
