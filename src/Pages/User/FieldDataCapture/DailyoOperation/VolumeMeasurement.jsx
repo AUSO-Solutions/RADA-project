@@ -17,6 +17,8 @@ import RadaDatePicker from 'Components/Input/RadaDatePicker'
 import GasTable from './GasTable'
 import { toast } from 'react-toastify'
 import { colors } from 'Assets'
+import { MdOutlineSettings } from "react-icons/md";
+import VolumeSettings from './VolumeSettings'
 
 
 const SelectedReportTypes = ({ list = [] }) => {
@@ -53,7 +55,7 @@ const DefineReport = ({ asset, }) => {
       { value: 'Net Oil/ Condensate', label: 'Net Oil/ Condensate' },
       { value: 'Gas', label: 'Gas' }
     ]
-  }, [setupData?.reportTypes])
+  }, [])
   const handleCheck = (name, event) => {
     const checked = event.target.checked
     let selectedReportTypes = setupData?.reportTypes || []
@@ -107,7 +109,7 @@ const NoUnits = () => {
         value: flowStations.map((flowStation, i) => ({ ...setupData?.flowStations?.[i], name: flowStation }))
       }))
     }
-  }, [flowStations])
+  }, [flowStations,dispatch,setupData?.flowStations])
   const updateFlowstation = (e, i) => {
     if (setupData?.flowStations?.length) {
       let measurementType = e.value
@@ -150,7 +152,7 @@ const NoUnits = () => {
 const SelectFlowStation = () => {
   const setupData = useSelector(state => state.setup)
   const dispatch = useDispatch()
-  const { flowStations } = useAssetByName(setupData?.asset)
+  // const { flowStations } = useAssetByName(setupData?.asset)
   const updateFlowstation = (e, i) => {
     if (setupData?.flowStations?.length) {
       let numberOfUnits = e.target.value
@@ -220,6 +222,7 @@ const VolumeMeasurement = () => {
   const [setupTable, setSetupTable] = useState(false)
   const dispatch = useDispatch()
   const [loading, setLoading] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
   const save = async () => {
     try {
       setLoading(true)
@@ -243,7 +246,7 @@ const VolumeMeasurement = () => {
   const [currReport, setCurrReport] = useState(setupData?.reportTypes?.[0])
   useEffect(() => {
     dispatch(clearSetup({}))
-  }, [])
+  }, [dispatch])
 
   return (
     < >
@@ -257,8 +260,12 @@ const VolumeMeasurement = () => {
               <div className='flex items-center gap-2 '>
                 <Text className={'cursor-pointer'} onClick={()=> setSetupTable(false)} color={colors.rada_blue}>View setups</Text>
                 <RadaDatePicker />
+                <div onClick={()=>setShowSettings(true)} style={{borderColor:'rgba(0, 163, 255, 1)'}} className='border cursor-pointer px-3 py-1 rounded-[8px]'>
+                <MdOutlineSettings color='rgba(0, 163, 255, 1)' />
+                </div>
               </div>
             </div>
+           {showSettings && <VolumeSettings />}
             {
               currReport === 'Gas' ? <GasTable /> :
 

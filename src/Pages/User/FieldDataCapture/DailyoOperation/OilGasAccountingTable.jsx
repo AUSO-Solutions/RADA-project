@@ -8,15 +8,14 @@ import TableRow from '@mui/material/TableRow';
 import { store } from 'Store';
 import tableStyles from './table.module.scss'
 import RadioSelect from './RadioSelect';
-import { Switch } from '@mui/material';
 import RadaSwitch from 'Components/Input/RadaSwitch';
 import RadaDatePicker from 'Components/Input/RadaDatePicker';
-import { sum } from 'utils';
+// import { sum } from 'utils';
 
 
-const TableInput = (props) => {
-    return <input className='p-1 text-center w-[70px] border outline-none' {...props} />
-}
+// const TableInput = (props) => {
+//     return <input className='p-1 text-center w-[70px] border outline-none' {...props} />
+// }
 
 export default function OilGasAccountingTable() {
     const setup = React.useMemo(() => {

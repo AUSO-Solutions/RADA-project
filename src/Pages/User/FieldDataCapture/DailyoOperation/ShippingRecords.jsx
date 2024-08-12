@@ -15,7 +15,7 @@ const NoUnits = () => {
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(setSetupData({ name: 'flowStations', value: flowStations }))
-  }, [flowStations])
+  }, [flowStations,dispatch])
   return <>
     <div className='flex justify-between !w-[100%]'>
       <Input type='select' placeholder={setupData?.asset} containerClass={'h-[39px] !w-[150px]'} disabled />
@@ -48,7 +48,7 @@ const DefineReport = ({ asset, }) => {
       { value: 'Net Oil/ Condensate', label: 'Net Oil/ Condensate' },
       { value: 'Gas', label: 'Gas' }
     ]
-  }, [setupData?.reportTypes])
+  }, [])
   const handleCheck = (name, event) => {
     const checked = event.target.checked
     let selectedReportTypes = setupData?.reportTypes || []

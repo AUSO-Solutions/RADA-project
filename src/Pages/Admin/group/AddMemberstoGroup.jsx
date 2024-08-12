@@ -1,21 +1,21 @@
 import React, { useMemo, useState } from 'react'
 import { Input, RadaForm } from 'Components'
-import * as Yup from 'yup';
+
 import { useDispatch } from 'react-redux';
 import { closeModal } from 'Store/slices/modalSlice';
 import { toast } from 'react-toastify';
 import { useUsers } from 'hooks/useUsers';
 import Text from 'Components/Text';
 import { Divider } from '@mui/material';
-import { IoCloseCircle, IoLogoClosedCaptioning } from 'react-icons/io5';
+import { IoCloseCircle } from 'react-icons/io5';
 import { firebaseFunctions } from 'Services';
 
 
 
 const AddMemberstoGroup = ({ group }) => {
-    const schema = Yup.object().shape({
-        groupName: Yup.string().required(),
-    })
+    // const schema = Yup.object().shape({
+    //     groupName: Yup.string().required(),
+    // })
     const { users } = useUsers()
     const [deleteLoading, setDeleteLoading] = useState(false)
 

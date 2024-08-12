@@ -11,7 +11,7 @@ import { setWholeSetup } from 'Store/slices/setupSlice'
 
 
 const Setup = ({ title, steps = [], onBack, onNext, stepComponents = [], onSave = () => null, type , rightLoading, onSetWholeSetup}) => {
-    const   SetupModal = ({ }) => {
+    const   SetupModal = () => {
         const [activeStep, setActiveStep] = useState(0)
 
 

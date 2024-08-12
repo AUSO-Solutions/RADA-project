@@ -12,7 +12,7 @@ import { useMemo } from 'react';
 // import TableFilter from 'Pages/Admin/usersdata/TableFilter';
 // import { RadaForm } from 'Components';
 import TableSearch from './TableSearch';
-import { apiRequest, firebaseFunctions } from 'Services';
+import { firebaseFunctions } from 'Services';
 import { useSelector } from 'react-redux';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({

@@ -20,8 +20,8 @@ const RadaForm = ({
 
     const [loading, setLoading] = useState(false)
     const callApi = async (payload) => {
-        let params = {}
-        if (method === 'get' && payload) params = { ...payload }
+        // let params = {}
+        // if (method === 'get' && payload) {params = { ...payload }}
         setLoading(true)
         try {
             let final_payload = modifyPayload(payload) || payload

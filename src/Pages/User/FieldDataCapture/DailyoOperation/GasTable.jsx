@@ -7,10 +7,10 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { store } from 'Store';
 import tableStyles from './table.module.scss'
-import RadioSelect from './RadioSelect';
-import { Switch } from '@mui/material';
-import RadaSwitch from 'Components/Input/RadaSwitch';
-import RadaDatePicker from 'Components/Input/RadaDatePicker';
+// import RadioSelect from './RadioSelect';
+// import { Switch } from '@mui/material';
+// import RadaSwitch from 'Components/Input/RadaSwitch';
+// import RadaDatePicker from 'Components/Input/RadaDatePicker';
 import { sum } from 'utils';
 import { Button } from 'Components';
 
@@ -61,7 +61,7 @@ export default function GasTable() {
       const updatedFlowStation = {
         ...prevFlowStation,
         list: updatedList,
-        ['subTotal']: sum(Object.values(updatedList || {}).map(value => value.netProduction)) - sum(Object.values(updatedList || {}).map(value => value.deductionNetProduction)),
+      subTotal: sum(Object.values(updatedList || {}).map(value => value.netProduction)) - sum(Object.values(updatedList || {}).map(value => value.deductionNetProduction)),
         netTarget: field === "netTarget" ? parseFloat(measurementTypeValue) : prevFlowStation?.netTarget,
         bsw: field === "bsw" ? parseFloat(measurementTypeValue) : prevFlowStation?.bsw,
         gross: field === "gross" ? parseFloat(measurementTypeValue) : prevFlowStation?.gross
