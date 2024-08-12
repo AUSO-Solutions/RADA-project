@@ -2,9 +2,10 @@ const admin = require("firebase-admin");
 const logger = require("firebase-functions/logger");
 const { currentTime, generateRandomID } = require("../../helpers");
 
-const db = admin.firestore();
+
 
 const getOMLIDOrCreate = async (name) => {
+  const db = admin.firestore();
   name = name.toUpperCase();
 
   try {
@@ -32,6 +33,7 @@ const getOMLIDOrCreate = async (name) => {
 };
 
 const getFieldIDOrCreate = async (fieldName, omlName) => {
+  const db = admin.firestore();
   try {
     if (!fieldName || !omlName) {
       throw new Error({
@@ -60,6 +62,7 @@ const getFieldIDOrCreate = async (fieldName, omlName) => {
 };
 
 const getReservoirIDOrCreate = async (reservoirName, fieldName) => {
+  const db = admin.firestore();
   try {
     if (!reservoirName || !fieldName) {
       throw new Error({
@@ -80,7 +83,7 @@ const getReservoirIDOrCreate = async (reservoirName, fieldName) => {
     const id = generateRandomID();
     const fieldId = await getFieldIDOrCreate();
     const data = { id, fieldId, name: reservoirName };
-    await await db.collection("reserviors").doc(id).set(data);
+     await db.collection("reserviors").doc(id).set(data);
     return id;
   } catch (error) {
     logger.log("error ===> ", error);
@@ -128,6 +131,7 @@ const getWellIDOrCreate = async (
 };
 
 const getFlowstationIDOrCreate = async (name) => {
+  const db = admin.firestore();
   try {
     // Fetch the ID if the OML exists
     const existingId = (
@@ -156,6 +160,7 @@ const createDrainagePoint = async (
   oml
 ) => {
   try {
+    const db = admin.firestore();
     const drainagePointExists = (
       await db
         .collection("drainagePoints")
@@ -186,6 +191,7 @@ const createDrainagePoint = async (
 
 const getWellData = async (wellId) => {
   try {
+    const db = admin.firestore();
     if (!wellId) {
       throw new Error("Well ID is missing");
     }
@@ -203,6 +209,7 @@ const getWellData = async (wellId) => {
 
 const getReservoirData = async (reservoirId) => {
   try {
+    const db = admin.firestore();
     if (!reservoirId) {
       throw new Error("Well ID is missing");
     }
@@ -223,6 +230,7 @@ const getReservoirData = async (reservoirId) => {
 
 const getFieldData = async (fieldId) => {
   try {
+    const db = admin.firestore();
     if (!fieldId) {
       throw new Error("Field ID is missing");
     }
@@ -240,6 +248,7 @@ const getFieldData = async (fieldId) => {
 
 const getOMLData = async (omlId) => {
   try {
+    const db = admin.firestore();
     if (!omlId) {
       throw new Error("OML ID is missing");
     }
@@ -257,6 +266,7 @@ const getOMLData = async (omlId) => {
 
 const getFlowstationData = async (flowstationId) => {
   try {
+    const db = admin.firestore();
     if (!flowstationId) {
       throw new Error("Flowstation ID is missing");
     }
@@ -275,7 +285,7 @@ const getFlowstationData = async (flowstationId) => {
   }
 };
 
-export {
+module.exports = {
   getFieldIDOrCreate,
   getFlowstationIDOrCreate,
   getReservoirIDOrCreate,
