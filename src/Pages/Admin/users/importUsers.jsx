@@ -1,4 +1,4 @@
-import { Button } from 'Components'
+
 import ConfirmModal from 'Components/Modal/ConfirmModal'
 import { firebaseFunctions } from 'Services'
 import handleError from 'Services/handleError'

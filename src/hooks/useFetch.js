@@ -19,7 +19,7 @@ export const useFetch = ({ firebaseFunction = '', payload = {} }) => {
             }
         }
         getData()
-    }, [firebaseFunctions])
+    }, [firebaseFunction,payload])
 
     return {
         data,

@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Input } from 'Components'
 import { clearSetup, setSetupData } from 'Store/slices/setupSlice'
 import CheckInput from 'Components/Input/CheckInput'
-import { useAssetByName } from 'hooks/useAssetByName'
+// import { useAssetByName } from 'hooks/useAssetByName'
 import Text from 'Components/Text'
 import { FaCheck } from 'react-icons/fa'
 import OilGasAccountingTable from './OilGasAccountingTable'
@@ -31,7 +31,7 @@ const SelectAsset = () => {
 const DefineReport = ({ asset, }) => {
   const dispatch = useDispatch()
   const setupData = useSelector(state => state.setup)
-  const timeFrames = ["Daily", "Weekly", "Monthly"]
+  // const timeFrames = ["Daily", "Weekly", "Monthly"]
   const reportTypes = useMemo(() => {
     return [
       { value: 'Pressures', label: 'Pressures' },
@@ -39,7 +39,7 @@ const DefineReport = ({ asset, }) => {
       { value: 'Choke', label: 'Choke' },
       { value: 'Closed-In Tubing Head Pressure', label: 'Closed-In Tubing Head Pressure' },
     ]
-  }, [setupData?.reportTypes])
+  }, [])
   const handleCheck = (name, event) => {
     const checked = event.target.checked
     let selectedReportTypes = setupData?.reportTypes || []
@@ -80,7 +80,7 @@ const DefineReport = ({ asset, }) => {
   </>
 }
 const Preview = () => {
-  const setupData = useSelector(state => state.setup)
+  // const setupData = useSelector(state => state.setup)
   // const { flowStations } = useAssetByName(setupData?.asset)
   const reportTypes = useMemo(() => {
     return [
@@ -89,7 +89,7 @@ const Preview = () => {
       { value: 'Choke', label: 'Choke' },
       { value: 'Closed-In Tubing Head Pressure', label: 'Closed-In Tubing Head Pressure' },
     ]
-  }, [setupData?.reportTypes])
+  }, [])
   return <>
     <div className='border flex gap-4 flex-col mt-3 !rounded-[8px]'>
       <div className='flex gap-3 border-b p-3'>
@@ -112,12 +112,12 @@ const Preview = () => {
 }
 
 const OilGasAccounting = () => {
-
+const dispatch  = useDispatch()
   useEffect(() => {
     dispatch(clearSetup({}))
-  }, [])
+  }, [dispatch])
   const [setupDone, setSetupDone] = useState(false)
-  const dispatch = useDispatch()
+
 
   const save = async () => {
     const setupData = store.getState().setup

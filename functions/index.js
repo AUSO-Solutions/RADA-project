@@ -8,7 +8,7 @@ const { login, createUser, getUsers, getUserByUid, deleteUserByUid, updateUserBy
 const { getGroups, createGroup, addMembersToGroup, deleteGroupMember, deleteGroup, deleteGroupAsset, assignAssetsToGroup } = require("./admin/auth/group");
 const { createAsset, getAssetByName, updateAssetById, deleteAssetById, getAssets, getAssetsName } = require('./admin/assets')
 const { createRole, updateRole, deleteRole, getRoles, getRole, assignPermissionToRole } = require('./admin/rolesandpermissions');
-const { setupVolumeMeasurement, getSetups } = require("./fielddatacapturesetup/volumemeasurementsetup");
+const { setupVolumeMeasurement, getSetups, updateVolumeMeasurement } = require("./fielddatacapturesetup/volumemeasurementsetup");
 
 admin.initializeApp()
 
@@ -25,5 +25,5 @@ module.exports = {
 
   createRole, updateRole, deleteRole, getRoles, getRole, assignPermissionToRole,
 
-  setupVolumeMeasurement, getSetups
+  setupVolumeMeasurement, getSetups, updateVolumeMeasurement
 }

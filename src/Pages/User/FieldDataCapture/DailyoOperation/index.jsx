@@ -2,7 +2,7 @@ import Header from 'Components/header'
 import React, { useState } from 'react'
 import Tab from 'Components/tab'
 import Summary from './Summary'
-import VolumeMeasurement from './VolumeMeasurement'
+import VolumeMeasurement from './VolumeMeasurement/VolumeMeasurement'
 import OilGasAccounting from './OilGasAccounting'
 import ShippingRecords from './ShippingRecords'
 
