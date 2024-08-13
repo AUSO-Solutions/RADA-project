@@ -13,7 +13,7 @@ const {
 } = require("./helpers");
 // const { getAuth, createUserWithEmailAndPassword } = require("firebase/auth");
 
-const db = admin.firestore();
+;
 
 const createAsset = onCall(async (request) => {
   try {
@@ -65,6 +65,7 @@ const createAsset = onCall(async (request) => {
 
 const createAsset2 = onCall(async (request) => {
   try {
+
     let { data } = request;
     logger.log("data ----", { data });
     const {
@@ -109,6 +110,7 @@ const createAsset2 = onCall(async (request) => {
 
 const getAssets2 = onCall(async () => {
   try {
+    const db = admin.firestore()
     const drainagePointDocs = await db.collection("drainagePoints").get().docs;
     return {
       status: "success",

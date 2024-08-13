@@ -36,31 +36,6 @@ const setupVolumeMeasurement = onCall(async (request) => {
             return { message: 'Invalid report types', code: 'cancelled' };
         }
 
-        // const validVolumeMeasurementTypes = ['Metering', 'Tank Dipping'];
-        // if (!validVolumeMeasurementTypes.includes(measurementType)) {
-        //     return { message: 'Invalid measurement type', code: 'cancelled' };
-        // }
-
-        // if (![2, 3].includes(numberOfFlowStations)) {
-        //     return { message: 'Invalid number of flow stations', code: 'cancelled' };
-        // }
-
-        // if (!validVolumeMeasurementTypes.includes(measurementType)) {
-        //     return { message: 'Invalid volume measurement type', code: 'cancelled' };
-        // }
-
-        // if (|| !created) {
-        //     return { message: 'Creator and created fields are required', code: 'cancelled' };
-        // }
-
-        // const flowStations = [];
-        // for (let i = 0; i < numberOfFlowStations; i++) {
-        //     flowStations.push({
-        //         flowStationName: `Flow Station ${i + 1}`,
-        //         flowStationId: `FS-${i + 1}`,
-        //         meters: generateSerialNumbers(numberOfMeters)
-        //     });
-        // }
         const id = crypto.randomBytes(8).toString("hex");
         const db = admin.firestore();
 
@@ -80,13 +55,43 @@ const setupVolumeMeasurement = onCall(async (request) => {
     }
 });
 
+const updateVolumeMeasurement = onCall(async (request) => {
+
+    try {
+        let { data } = request;
+     
+
+        const { reportTypes, flowStations, timeFrame, id } = data;
+        if(!id){
+            throw { message: 'Provide a setup id', code: 'cancelled' };
+        }
+        const validReportTypes = ['Gross Liquid', 'Net Oil/ Condensate', 'Gas'];
+        if (!Array.isArray(reportTypes) || reportTypes.length !== 2 || !reportTypes.every(type => validReportTypes.includes(type))) {
+            throw { message: 'Invalid report types', code: 'cancelled' };
+        }
+        const db = admin.firestore();
+        await db.collection('setups').doc('volumeMeasurement').collection("setupList").doc(id).update({
+            reportTypes,
+            flowStations,
+            timeFrame
+        });
+
+        return { message: `Document update` };
+
+    } catch (error) {
+        console.error('Error adding document: ', error);
+        // return { message: 'Internal Server Error' };
+        throw new HttpsError(error)
+    }
+});
+
 const getSetups = onCall(async (request) => {
     const { data } = request
     const setupType = data?.setupType
     const db = admin.firestore();
     const res = await db.collection('setups').doc(setupType).collection('setupList').get()
-    return { message: "Successful ", data : res.docs.map(doc => doc.data())}
+    return { message: "Successful ", data: res.docs.map(doc => doc.data()) }
 })
 
 
-module.exports = { setupVolumeMeasurement , getSetups }
+module.exports = { setupVolumeMeasurement, getSetups, updateVolumeMeasurement }

@@ -6,6 +6,6 @@ exports.currentTime = {
   time: Date.now(),
 };
 
-export const generateRandomID = (len = 8) => {
+exports.generateRandomID = (len = 8) => {
   return crypto.randomBytes(len).toString("hex");
 };
