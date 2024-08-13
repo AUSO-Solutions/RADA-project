@@ -31,6 +31,11 @@ export default function GasTable({ currReport }) {
     grossTotal: 0,
   })
   const gasTypes = ["Gas Flared USM", "Fuel Gas", "Export Gas"]
+  const gasTypesColors = {
+    "Gas":"white",
+    "Fuel Gas":"lightgrey",
+    "Export Gas":"grey"
+  }
 
   const handleChange = ({ flowStation, field, value, readingIndex, flowStationField, gasType }) => {
     // console.log({ flowStation, field, value, readingIndex, flowStationField })
@@ -156,7 +161,7 @@ export default function GasTable({ currReport }) {
                           const finalBbls = tableValues?.[name]?.list?.[readingIndex]?.finalBbls
                           const netProduction = tableValues?.[name]?.list?.[readingIndex]?.netProduction
                           return <>
-                            {gasTypes.map(item => <TableRow>
+                            {gasTypes.map(item => <TableRow sx={{bgcolor:gasTypesColors[item]}}>
                               <TableCell align="center">
                                 {item}
                               </TableCell>
