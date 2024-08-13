@@ -14,12 +14,13 @@ import { closeModal } from 'Store/slices/modalSlice'
 import RadioSelect from '../RadioSelect'
 import RadaSwitch from 'Components/Input/RadaSwitch'
 import RadaDatePicker from 'Components/Input/RadaDatePicker'
-import GasTable from './GasTable'
+// import GasTable from './GasTable'
 import { toast } from 'react-toastify'
 import { colors } from 'Assets'
 import { MdOutlineSettings } from "react-icons/md";
 import VolumeSettings from './VolumeSettings'
 import { updateFlowstation } from './helper'
+import GasTable from './GasTable'
 
 
 const SelectedReportTypes = ({ list = [] }) => {
