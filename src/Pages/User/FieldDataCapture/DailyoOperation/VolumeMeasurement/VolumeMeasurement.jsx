@@ -251,6 +251,9 @@ const VolumeMeasurement = () => {
   useEffect(() => {
     dispatch(clearSetup({}))
   }, [dispatch])
+  useEffect(()=>{
+    setCurrReport(setupData?.reportTypes?.[0])
+  },[setupData?.reportTypes,setupTable])
 
   return (
     < >
@@ -270,6 +273,7 @@ const VolumeMeasurement = () => {
               </div>
             </div>
            {showSettings && <VolumeSettings onClickOut={()=>setShowSettings(false)} />}
+
             {
               currReport === 'Gas' ? <GasTable /> :
 
