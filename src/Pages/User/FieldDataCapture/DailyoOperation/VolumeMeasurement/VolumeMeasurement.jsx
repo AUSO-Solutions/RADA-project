@@ -249,6 +249,7 @@ const VolumeMeasurement = () => {
   // console.log(setupData?.reportTypes)
 
   const [currReport, setCurrReport] = useState(setupData?.reportTypes?.[0])
+  const [date,setDate]  = useState()
   useEffect(() => {
     dispatch(clearSetup({}))
   }, [dispatch])
@@ -267,7 +268,7 @@ const VolumeMeasurement = () => {
               </div>
               <div className='flex items-center gap-2 '>
                 <Text className={'cursor-pointer'} onClick={()=> setSetupTable(false)} color={colors.rada_blue}>View setups</Text>
-                <RadaDatePicker />
+                <RadaDatePicker onChange={setDate} />
                 <div onClick={()=>setShowSettings(true)} style={{borderColor:'rgba(0, 163, 255, 1)'}} className='border cursor-pointer px-3 py-1 rounded-[8px]'>
                 <MdOutlineSettings color='rgba(0, 163, 255, 1)' />
                 </div>
@@ -278,7 +279,7 @@ const VolumeMeasurement = () => {
             {
               currReport === 'Gas' ? <GasTable /> :
 
-                <VolumeMeasurementTable currReport={currReport} />
+                <VolumeMeasurementTable currReport={currReport} date={date} />
             }
 
           </>

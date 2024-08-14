@@ -13,13 +13,13 @@ import { updateFlowstationReading } from './helper';
 
 
 const TableInput = (props) => {
-  return <input className='p-1 text-center w-[70px] border outline-none' {...props} />
+  return <input className='p-1 text-center w-[70px] border outline-none' required {...props} />
 }
 
-export default function VolumeMeasurementTable({ currReport }) {
-//  const isGas = currReport === "Gas"
- const isNet = currReport === "Net Oil/ Condensate"
- const isGross = currReport === 'Gross Liquid'
+export default function VolumeMeasurementTable({ currReport, date }) {
+  //  const isGas = currReport === "Gas"
+  const isNet = currReport === "Net Oil/ Condensate"
+  const isGross = currReport === 'Gross Liquid'
 
   const setup = React.useMemo(() => store.getState().setup, [])
 
@@ -35,58 +35,61 @@ export default function VolumeMeasurementTable({ currReport }) {
     // console.log({ flowStation, field, value, readingIndex, flowStationField })
     //careful, to also have the value updated before calculated
     const flowStationSetup = setup?.flowStations?.find(({ name }) => name === flowStation)
-    // console.log(flowStationSetup)
-    const meterFactor = flowStationSetup?.measurementType === "Metering" ? parseInt(flowStationSetup?.readings?.[readingIndex]?.meterFactor || 0) : 1
+    console.log(setup)
+    const meterFactor = flowStationSetup?.measurementType === "Metering" ? parseInt(flowStationSetup?.readings?.[readingIndex]?.meterFactor || 1) : 1
     const deductionMeterFactor = parseInt(flowStationSetup?.deductionMeterFactor || 1)
 
     setTableValues(prev => {
       const prevFlowStation = prev?.[flowStation]
-      const prevFlowStationList = prevFlowStation?.list
-      const prevFlowStationListIndexValues = prevFlowStation?.list?.[readingIndex]
-      const finalBbls = field === "finalBbls" ? value : (prevFlowStationListIndexValues?.finalBbls || 0)
-      const initialBbls = field === "initialBbls" ? value : (prevFlowStationListIndexValues?.initialBbls || 0)
-      const deductionFinalBbls = flowStationField === "deductionFinalBbls" ? value : (prevFlowStation?.deductionFinalBbls || 0)
-      const deductionInitialBbls = flowStationField === "deductionInitialBbls" ? value : (prevFlowStation?.deductionInitialBbls || 0)
-      const difference = Math.abs(parseFloat(finalBbls) - parseFloat(initialBbls))
-      const deductionDiference =  Math.abs(parseFloat(deductionFinalBbls || 0) - parseFloat(deductionInitialBbls || 0)) 
+      const prevFlowStationList = prevFlowStation?.meters
+      const prevFlowStationListIndexValues = prevFlowStation?.meters?.[readingIndex]
+      const finalReading = field === "finalReading" ? value : (prevFlowStationListIndexValues?.finalReading || 0)
+      const initialReading = field === "initialReading" ? value : (prevFlowStationListIndexValues?.initialReading || 0)
+      const deductionFinalReading = flowStationField === "deductionFinalReading" ? value : (prevFlowStation?.deductionFinalReading || 0)
+      const deductionInitialReading = flowStationField === "deductionInitialReading" ? value : (prevFlowStation?.deductionInitialReading || 0)
+      const difference = Math.abs(parseFloat(finalReading) - parseFloat(initialReading))
+      const deductionDiference = Math.abs(parseFloat(deductionFinalReading || 0) - parseFloat(deductionInitialReading || 0))
       const netProduction = difference * parseInt(meterFactor || 0)
       const deductionTotal = deductionDiference * parseInt(deductionMeterFactor || 0)
-      console.log({deductionFinalBbls,deductionInitialBbls, deductionDiference,deductionMeterFactor})
+      // console.log({deductionFinalReading,deductionInitialReading, deductionDiference,deductionMeterFactor})
       const gross = difference * parseInt(meterFactor || 0)
       const isNum = typeof readingIndex === 'number'
-      let updatedList = prevFlowStationList
+      let updatedMeters = prevFlowStationList
       if (field && isNum) {
-        updatedList = isNum ? {
+        updatedMeters = isNum ? {
           ...prevFlowStationList,
           [readingIndex]: {
             ...prevFlowStationListIndexValues,
             [field]: value,
             netProduction,
-            gross
+            gross,
+            serialNumber: flowStationSetup?.readings?.[readingIndex]?.serialNumber,
+            reportType: currReport
           }
         } : prevFlowStationList
       }
+      let deduction = {
+        initialReading: deductionInitialReading,
+        finalReading: deductionFinalReading,
+        meterFactor,
+        netProduction: deductionDiference
+      }
       let updatedFlowStation = {
         ...prevFlowStation,
-        list: updatedList,
+        meters: updatedMeters,
         deductionTotal,
-        subTotal: sum(Object.values(updatedList || {}).map(value => value.netProduction)) + deductionTotal,
-
+        subTotal: sum(Object.values(updatedMeters || {}).map(value => value.netProduction)) + deductionTotal,
+        reportType: currReport
       }
       if (flowStationField) {
         updatedFlowStation = {
-          // ...prevFlowStation,
-          // list: updatedList,
-          // subTotal: sum(Object.values(updatedList || {}).map(value => value.netProduction)),
-          // netTarget: field === "netTarget" ? parseFloat(value) : prevFlowStation?.netTarget,
-          // bsw: field === "bsw" ? parseFloat(value) : prevFlowStation?.bsw,
-          // gross: field === "gross" ? parseFloat(value) : prevFlowStation?.gross,
           ...updatedFlowStation,
-          [flowStationField]: parseFloat(value)
+          [flowStationField]: parseFloat(value),
+          deduction
+
         }
       }
-
-      console.log(({ updatedFlowStation }))
+      console.log({updatedFlowStation})
       return {
         ...prev,
         [flowStation]: updatedFlowStation,
@@ -106,13 +109,29 @@ export default function VolumeMeasurementTable({ currReport }) {
     setTotals(calcs)
   }, [tableValues])
 
-  const save = () => {
-    // const flowStationsData = tableValues
-    console.log({ totals, tableValues })
+  const save = async (e) => {
+    e.preventDefault()
+    const flowStations = Object.entries(tableValues).map(value => ({
+      name: value[0],
+      ...value[1]
+    }))
+
+
+    const payload = {
+      flowStations,
+      date,
+      asset: setup?.asset,
+      setupId: setup?.id,
+      timeFrame: setup?.timeFrame,
+      reportType: currReport,
+
+      ...totals
+    }
+    console.log(payload)
 
   }
   return (
-    < div className='px-3 '>
+    < form className='px-3 ' onSubmit={save} >
       <TableContainer className={`m-auto border ${tableStyles.borderedMuiTable}`}>
         <Table sx={{ minWidth: 700 }} >
           <TableHead >
@@ -150,7 +169,7 @@ export default function VolumeMeasurementTable({ currReport }) {
                     <TableRow key={name}>
                       <TableCell align="left" rowSpan={parseInt(numberOfUnits) + (measurementType === "Metering" ? 2 : 3)} colSpan={3}>
                         {name} ({measurementType})
-                        </TableCell>
+                      </TableCell>
                     </TableRow>
                     {
                       new Array(parseInt(numberOfUnits)).fill(0).map(
@@ -163,12 +182,12 @@ export default function VolumeMeasurementTable({ currReport }) {
                                 onChange={(e) => updateFlowstationReading(flowStationIndex, readingIndex, 'serialNumber', e.target.value)}
                               />
                             </TableCell>
-                            <TableCell align="center"><TableInput onChange={(e) => handleChange({ flowStation: name, field: 'initialBbls', value: e.target.value, readingIndex: readingIndex })} /></TableCell>
-                            <TableCell align="center"><TableInput onChange={(e) => handleChange({ flowStation: name, field: 'finalBbls', value: e.target.value, readingIndex: readingIndex })} /></TableCell>
-                            <TableCell align="center"> { isNet ? tableValues?.[name]?.list?.[readingIndex]?.netProduction : "-"} </TableCell>
+                            <TableCell align="center"><TableInput onChange={(e) => handleChange({ flowStation: name, field: 'initialReading', value: e.target.value, readingIndex: readingIndex })} /></TableCell>
+                            <TableCell align="center"><TableInput onChange={(e) => handleChange({ flowStation: name, field: 'finalReading', value: e.target.value, readingIndex: readingIndex })} /></TableCell>
+                            <TableCell align="center"> {isNet ? tableValues?.[name]?.meters?.[readingIndex]?.netProduction : "-"} </TableCell>
                             <TableCell align="center">-</TableCell>
                             <TableCell align="center">-</TableCell>
-                            <TableCell align="center">{isGross? tableValues?.[name]?.list?.[readingIndex]?.gross : "-"}</TableCell>
+                            <TableCell align="center">{isGross ? tableValues?.[name]?.meters?.[readingIndex]?.gross : "-"}</TableCell>
                           </TableRow>
                         </>
                       )
@@ -178,35 +197,34 @@ export default function VolumeMeasurementTable({ currReport }) {
                         <TableCell align="center">Deduction</TableCell>
                         <TableCell align="center">
                           <TableInput
-                            onChange={(e) => handleChange({ flowStation: name, flowStationField: 'deductionInitialBbls', value: e.target.value, readingIndex: null })}
+                            onChange={(e) => handleChange({ flowStation: name, flowStationField: 'deductionInitialReading', value: e.target.value, readingIndex: null })}
                           />
                         </TableCell>
                         <TableCell align="center">
                           <TableInput
-                            onChange={(e) => handleChange({ flowStation: name, flowStationField: 'deductionFinalBbls', value: e.target.value, readingIndex: null })}
+                            onChange={(e) => handleChange({ flowStation: name, flowStationField: 'deductionFinalReading', value: e.target.value, readingIndex: null })}
                           />
                         </TableCell>
                         <TableCell align="center">
-                          {/* {((tableValues?.[name]?.deductionFinalBbls || 0) - (tableValues?.[name]?.deductionInitialBbls || 0)) * parseInt(rest?.deductionMeterFactor || 0)} */}
-                          {/* == */}
-                          {isNet? tableValues?.[name]?.deductionTotal : "-"}
+
+                          {isNet ? tableValues?.[name]?.deductionTotal : "-"}
 
                         </TableCell>
                         <TableCell align="center">-</TableCell>
                         <TableCell align="center">-</TableCell>
-                        <TableCell align="center">{isGross? tableValues?.[name]?.deductionTotal : "-"}</TableCell>
+                        <TableCell align="center">{isGross ? tableValues?.[name]?.deductionTotal : "-"}</TableCell>
                       </TableRow>}
 
                     <TableRow key={name}>
                       <TableCell sx={{ bgcolor: 'rgba(178, 181, 182, 0.2)' }} align="left" className='pl-5 !bg-[rgba(178, 181, 182, 0.2)]' colSpan={3}><div className='pl-[30px]'> Sub total</div></TableCell>
                       <TableCell sx={{ bgcolor: 'rgba(178, 181, 182, 0.2)' }} align="center">
-                        {isNet ? (tableValues?.[name]?.subTotal || 0 ): "-"} 
+                        {isNet ? (tableValues?.[name]?.subTotal || 0) : "-"}
                       </TableCell>
                       <TableCell align="center"><TableInput onChange={(e) => handleChange({ flowStation: name, flowStationField: 'netTarget', value: e.target.value, readingIndex: null })} /></TableCell>
                       <TableCell align="center"><TableInput onChange={(e) => handleChange({ flowStation: name, flowStationField: 'bsw', value: e.target.value, readingIndex: null })} /></TableCell>
                       <TableCell align="center">
                         {/* <TableInput onChange={(e) => handleChange({ flowStation: name, field: 'gross', value: e.target.value, readingIndex: null })} /> */}
-                        {isGross ? (tableValues?.[name]?.subTotal || 0 ): "-"}
+                        {isGross ? (tableValues?.[name]?.subTotal || 0) : "-"}
                       </TableCell>
                     </TableRow>
 
@@ -219,18 +237,18 @@ export default function VolumeMeasurementTable({ currReport }) {
           <TableBody>
             <TableRow >
               <TableCell align="left" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} className='bg-[rgba(0, 163, 255, 0.3)]' colSpan={6}>{"Total Net Production"}</TableCell>
-              <TableCell align="center" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} >{isNet?totals?.netProductionTotal:"-"}</TableCell>
+              <TableCell align="center" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} >{isNet ? totals?.netProductionTotal : "-"}</TableCell>
               <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{totals?.netTargetTotal}</TableCell>
               <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{totals?.bswTotal}</TableCell>
-              <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{isGross? totals?.grossTotal : "-"}</TableCell>
+              <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{isGross ? totals?.grossTotal : "-"}</TableCell>
             </TableRow>
           </TableBody>
 
         </Table>
       </TableContainer>
       <div className='justify-end flex my-2'>
-        <Button className={'my-3'} onClick={save} width={150}>Save</Button>
+        <Button className={'my-3'} type='submit' width={150}>Save</Button>
       </div>
-    </div>
+    </form>
   );
 }
