@@ -10,8 +10,8 @@ import { openModal } from 'Store/slices/modalSlice'
 import { setWholeSetup } from 'Store/slices/setupSlice'
 
 
-const Setup = ({ title, steps = [], onBack, onNext, stepComponents = [], onSave = () => null, type , rightLoading, onSetWholeSetup}) => {
-    const   SetupModal = () => {
+const Setup = ({ title, steps = [], onBack, onNext, stepComponents = [], onSave = () => null, type, rightLoading, onSetWholeSetup }) => {
+    const SetupModal = () => {
         const [activeStep, setActiveStep] = useState(0)
 
 
@@ -59,9 +59,14 @@ const Setup = ({ title, steps = [], onBack, onNext, stepComponents = [], onSave 
     const [setups, setSetups] = useState([])
     useEffect(() => {
         const getSetup = async () => {
-            const data = await firebaseFunctions('getSetups', { setupType: type })
-            console.log(data)
-            if (data?.data?.length) setSetups(data?.data)
+            try {
+                if (!type) return;
+                const data = await firebaseFunctions('getSetups', { setupType: type })
+                console.log(data)
+                if (data?.data?.length) setSetups(data?.data)
+            } catch (error) {
+
+            }
         }
         getSetup()
     }, [type])
@@ -75,22 +80,22 @@ const Setup = ({ title, steps = [], onBack, onNext, stepComponents = [], onSave 
                         {
                             setups?.map(setup =>
                             (
-                                <div className='border my-1 rounded w-[200px] p-2 cursor-pointer' onClick={()=> {
+                                <div className='border my-1 rounded w-[200px] p-2 cursor-pointer' onClick={() => {
                                     dispatch(setWholeSetup(setup))
                                     onSetWholeSetup()
-                                    
+
                                 }}>
                                     {setup?.asset} {setup?.id}
-                                </div> 
+                                </div>
                             )
                             )
                         }
                     </div>
 
                     <Button onClick={() => dispatch(openModal({
-                            title: '',
-                            component: <SetupModal/>
-                        }))}>
+                        title: '',
+                        component: <SetupModal />
+                    }))}>
                         Create new setup
                     </Button>
                 </div>
@@ -107,7 +112,7 @@ const Setup = ({ title, steps = [], onBack, onNext, stepComponents = [], onSave 
                         </Text>
                         <Button onClick={() => dispatch(openModal({
                             title: '',
-                            component: <SetupModal/>
+                            component: <SetupModal />
                         }))}>
                             Setup Parameters
                         </Button>

@@ -32,15 +32,14 @@ export default function VolumeMeasurementTable({ currReport }) {
   })
 
   const handleChange = ({ flowStation, field, value, readingIndex, flowStationField }) => {
-    console.log({ flowStation, field, value, readingIndex, flowStationField })
+    // console.log({ flowStation, field, value, readingIndex, flowStationField })
     //careful, to also have the value updated before calculated
     const flowStationSetup = setup?.flowStations?.find(({ name }) => name === flowStation)
-    console.log(flowStationSetup)
+    // console.log(flowStationSetup)
     const meterFactor = flowStationSetup?.measurementType === "Metering" ? parseInt(flowStationSetup?.readings?.[readingIndex]?.meterFactor || 0) : 1
     const deductionMeterFactor = parseInt(flowStationSetup?.deductionMeterFactor || 1)
 
     setTableValues(prev => {
-
       const prevFlowStation = prev?.[flowStation]
       const prevFlowStationList = prevFlowStation?.list
       const prevFlowStationListIndexValues = prevFlowStation?.list?.[readingIndex]
@@ -201,7 +200,7 @@ export default function VolumeMeasurementTable({ currReport }) {
                     <TableRow key={name}>
                       <TableCell sx={{ bgcolor: 'rgba(178, 181, 182, 0.2)' }} align="left" className='pl-5 !bg-[rgba(178, 181, 182, 0.2)]' colSpan={3}><div className='pl-[30px]'> Sub total</div></TableCell>
                       <TableCell sx={{ bgcolor: 'rgba(178, 181, 182, 0.2)' }} align="center">
-                        {isNet ? (tableValues?.[name]?.subTotal || 0 ): "-"}
+                        {isNet ? (tableValues?.[name]?.subTotal || 0 ): "-"} 
                       </TableCell>
                       <TableCell align="center"><TableInput onChange={(e) => handleChange({ flowStation: name, flowStationField: 'netTarget', value: e.target.value, readingIndex: null })} /></TableCell>
                       <TableCell align="center"><TableInput onChange={(e) => handleChange({ flowStation: name, flowStationField: 'bsw', value: e.target.value, readingIndex: null })} /></TableCell>
