@@ -123,7 +123,7 @@ export default function GasTable({ currReport , date}) {
       ...totals
     }
     console.log(payload)
-
+    toast.success("Successful")
   }
   return (
     < form className='px-3 ' onSubmit={save} >
