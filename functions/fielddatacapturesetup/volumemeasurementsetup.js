@@ -31,9 +31,9 @@ const setupVolumeMeasurement = onCall(async (request) => {
         }
 
         const validReportTypes = ['Gross Liquid', 'Net Oil/ Condensate', 'Gas'];
-        if (!Array.isArray(reportTypes) || reportTypes.length !== 2 || !reportTypes.every(type => validReportTypes.includes(type))) {
-            throw { message: 'Invalid report types', code: 'cancelled' };
-        }
+        // if (!Array.isArray(reportTypes) || reportTypes.length !== 2 || !reportTypes.every(type => validReportTypes.includes(type))) {
+        //     throw { message: 'Invalid report types', code: 'cancelled' };
+        // }
 
         const id = crypto.randomBytes(8).toString("hex");
         const db = admin.firestore();
