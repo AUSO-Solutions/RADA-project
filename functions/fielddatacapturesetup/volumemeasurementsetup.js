@@ -25,9 +25,9 @@ const setupVolumeMeasurement = onCall(async (request) => {
 
         const { asset, reportTypes, flowStations, timeFrame } = data;
 
-        const validAssets = ['OML 24', 'OML 155', 'OML 147'];
+        const validAssets = ['OML 24', 'OML 155', 'OML 147', "OML 45"];
         if (!validAssets.includes(asset)) {
-            return { message: 'Invalid asset', code: 'cancelled' };
+            throw { message: 'Invalid asset', code: 'cancelled' };
         }
 
         const validReportTypes = ['Gross Liquid', 'Net Oil/ Condensate', 'Gas'];

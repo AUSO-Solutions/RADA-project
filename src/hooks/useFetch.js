@@ -11,6 +11,7 @@ export const useFetch = ({ firebaseFunction = '', payload = {} }) => {
             try {
                 const res = await firebaseFunctions(firebaseFunction, payload)
                 setData(res?.data)
+                console.log("-------")
 
             } catch (error) {
 
@@ -19,7 +20,8 @@ export const useFetch = ({ firebaseFunction = '', payload = {} }) => {
             }
         }
         getData()
-    }, [firebaseFunction,payload])
+        // eslint-disable-next-line
+    }, [])
 
     return {
         data,
