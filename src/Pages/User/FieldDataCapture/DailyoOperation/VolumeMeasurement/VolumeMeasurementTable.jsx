@@ -10,6 +10,7 @@ import tableStyles from '../table.module.scss'
 import { sum } from 'utils';
 import { Button } from 'Components';
 import { updateFlowstationReading } from './helper';
+import { toast } from 'react-toastify';
 
 
 const TableInput = (props) => {
@@ -115,8 +116,6 @@ export default function VolumeMeasurementTable({ currReport, date }) {
       name: value[0],
       ...value[1]
     }))
-
-
     const payload = {
       flowStations,
       date,
@@ -128,6 +127,8 @@ export default function VolumeMeasurementTable({ currReport, date }) {
       ...totals
     }
     console.log(payload)
+
+    toast.success("Successful")
 
   }
   return (
