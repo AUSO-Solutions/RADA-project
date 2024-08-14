@@ -85,7 +85,7 @@ const DefineReport = ({ asset, }) => {
 
     <div key={setupData?.reportTypes?.length} className='flex flex-col mt-[24px] rounded-[8px] gap-[24px] border'>
       <div className='flex border-b px-3'>
-        <CheckInput defaultChecked={setupData?.reportTypes?.length === reportTypes.length} onChange={(e) => checkAll(e)} label={'Select Report Type'} />
+        <CheckInput defaultChecked={setupData?.reportTypes?.length === reportTypes.length} onChange={(e) => checkAll(e)} label={'Select All'} />
 
       </div>
       {
@@ -103,7 +103,6 @@ const NoUnits = () => {
   const setupData = useSelector(state => state.setup)
   const { flowStations } = useAssetByName(setupData?.asset)
   const dispatch = useDispatch()
-  console.log(setupData, 'jj')
   useEffect(() => {
     if (flowStations.length) {
       dispatch(setSetupData({
@@ -111,20 +110,8 @@ const NoUnits = () => {
         value: flowStations.map((flowStation, i) => ({ ...setupData?.flowStations?.[i], name: flowStation }))
       }))
     }
-  }, [flowStations,dispatch,setupData?.flowStations])
-  // const updateFlowstation = (e, i) => {
-  //   if (setupData?.flowStations?.length) {
-  //     let measurementType = e.value
-  //     let prevFlowstations = [...setupData?.flowStations]
-  //     prevFlowstations[i] = { ...prevFlowstations[i], measurementType }
-  //     if (measurementType) {
-  //       dispatch(setSetupData({
-  //         name: 'flowStations',
-  //         value: prevFlowstations
-  //       }))
-  //     }
-  //   }
-  // }
+    // eslint-disable-next-line
+  }, [flowStations])
   return <>
     <div className='flex justify-between !w-[100%]'>
       <Input type='select' placeholder={setupData?.asset} containerClass={'h-[39px] !w-[150px]'} disabled />
@@ -141,7 +128,6 @@ const NoUnits = () => {
           <Input containerClass={'h-[39px] !w-[fit-content]'} type='text' value={flowStation} disabled />
           <Input containerClass={'h-[39px] !w-[150px]'} type='select'
             defaultValue={{ label: setupData?.flowStations?.[i]?.measurementType, value: setupData?.flowStations?.[i]?.measurementType }}
-            // onChange={e => updateFlowstation(e, i)}
             onChange={(e) => updateFlowstation(i, 'measurementType', e.value)}
             options={measureMenntTypes.map(type => ({ label: type, value: type }))} />
 
@@ -183,8 +169,8 @@ const SelectFlowStation = () => {
               <Input type='number' containerClass={'!w-[150px]'} inputClass={'!text-center'}
                 defaultValue={setupData?.flowStations?.[i].numberOfUnits}
                 // onChange={(e) => updateFlowstation(e, i)} 
-                onChange={(e) => updateFlowstation(i,"numberOfUnits",e.target.value)}
-                />
+                onChange={(e) => updateFlowstation(i, "numberOfUnits", e.target.value)}
+              />
             </div>
           )
         })
@@ -249,13 +235,13 @@ const VolumeMeasurement = () => {
   // console.log(setupData?.reportTypes)
 
   const [currReport, setCurrReport] = useState(setupData?.reportTypes?.[0])
-  const [date,setDate]  = useState()
+  const [date, setDate] = useState()
   useEffect(() => {
     dispatch(clearSetup({}))
   }, [dispatch])
-  useEffect(()=>{
+  useEffect(() => {
     setCurrReport(setupData?.reportTypes?.[0])
-  },[setupData?.reportTypes,setupTable])
+  }, [setupData?.reportTypes, setupTable])
 
   return (
     < >
@@ -267,14 +253,14 @@ const VolumeMeasurement = () => {
                 <RadioSelect onChange={setCurrReport} defaultValue={setupData?.reportTypes?.[0]} list={setupData?.reportTypes} /> <RadaSwitch label="Edit Table" labelPlacement="left" />
               </div>
               <div className='flex items-center gap-2 '>
-                <Text className={'cursor-pointer'} onClick={()=> setSetupTable(false)} color={colors.rada_blue}>View setups</Text>
+                <Text className={'cursor-pointer'} onClick={() => setSetupTable(false)} color={colors.rada_blue}>View setups</Text>
                 <RadaDatePicker onChange={setDate} />
-                <div onClick={()=>setShowSettings(true)} style={{borderColor:'rgba(0, 163, 255, 1)'}} className='border cursor-pointer px-3 py-1 rounded-[8px]'>
-                <MdOutlineSettings color='rgba(0, 163, 255, 1)' />
+                <div onClick={() => setShowSettings(true)} style={{ borderColor: 'rgba(0, 163, 255, 1)' }} className='border cursor-pointer px-3 py-1 rounded-[8px]'>
+                  <MdOutlineSettings color='rgba(0, 163, 255, 1)' />
                 </div>
               </div>
             </div>
-           {showSettings && <VolumeSettings onClickOut={()=>setShowSettings(false)} />}
+            {showSettings && <VolumeSettings onClickOut={() => setShowSettings(false)} />}
 
             {
               currReport === 'Gas' ? <GasTable /> :

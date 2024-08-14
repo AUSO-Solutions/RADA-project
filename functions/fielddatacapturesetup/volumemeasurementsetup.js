@@ -25,16 +25,15 @@ const setupVolumeMeasurement = onCall(async (request) => {
 
         const { asset, reportTypes, flowStations, timeFrame } = data;
 
-        // const validAssets = ['OML24', 'OML152', 'OML147' ];
-        const oml = await db.collection("olms").where("name", "==", asset).get()
-        if (!oml.includes(asset)) {
-            return { message: 'Invalid asset', code: 'cancelled' };
+        const validAssets = ['OML 24', 'OML 155', 'OML 147', "OML 45"];
+        if (!validAssets.includes(asset)) {
+            throw { message: 'Invalid asset', code: 'cancelled' };
         }
 
         const validReportTypes = ['Gross Liquid', 'Net Oil/ Condensate', 'Gas'];
-        if (!Array.isArray(reportTypes) || reportTypes.length !== 2 || !reportTypes.every(type => validReportTypes.includes(type))) {
-            return { message: 'Invalid report types', code: 'cancelled' };
-        }
+        // if (!Array.isArray(reportTypes) || reportTypes.length !== 2 || !reportTypes.every(type => validReportTypes.includes(type))) {
+        //     throw { message: 'Invalid report types', code: 'cancelled' };
+        // }
 
         const id = crypto.randomBytes(8).toString("hex");
         const db = admin.firestore();
