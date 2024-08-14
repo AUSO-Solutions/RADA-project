@@ -76,7 +76,7 @@ const Setup = ({ title, steps = [], onBack, onNext, stepComponents = [], onSave 
                 <div className='p-3'>
                     <Text size={24}> Volume measurement setups </Text> <br />
 
-                    <div className='my-3'>
+                    <div className='my-3 flex flex-wrap gap-3'>
                         {
                             setups?.map(setup =>
                             (

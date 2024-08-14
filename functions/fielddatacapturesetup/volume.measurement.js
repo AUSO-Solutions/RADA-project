@@ -1,20 +1,21 @@
 const admin = require("firebase-admin");
 const logger = require("firebase-functions/logger");
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
-const { generateRandomID } = require("../../helpers");
+// const { generateRandomID } = require("../../helpers");
 
 const {
   validateGasFlowstationData,
   validateLiquidFlowstationData,
-} = require("./helpers");
+} = require("./helpers"); 
+const { generateRandomID } = require("../helpers");
 
-const db = admin.firestore();
+
 
 const captureOilOrCondensate = onCall(async (request) => {
   try {
     let { data } = request;
     logger.log("data ----", { data });
-    const { date, asset, flowstations } = data;
+    const { date, asset, flowstations, fluidType } = data;
     if (!date || !asset || !flowstations) {
       throw new Error({
         code: "cancelled",
@@ -26,12 +27,13 @@ const captureOilOrCondensate = onCall(async (request) => {
 
     const id = generateRandomID();
     const dbData = {
+      id,
       date,
       asset,
-      fluidType: "oilOrCondensate",
+      fluidType,
       data: flowstations,
     };
-
+    const db = admin.firestore();
     await db.collections("liquidVolumes").doc(id).set(dbData);
     return id;
   } catch (error) {
@@ -53,6 +55,7 @@ const updateOilOrCondensate = onCall(async (request) => {
     }
 
     // Check out that the record exists
+    const db = admin.firestore();
     const record = await db.collection("liquidVolumes").doc(id).get();
     if (!record.exists) {
       throw new Error({ code: "not-found", message: "Record not found" });
@@ -79,6 +82,7 @@ const getOilOrCondensateVolumeByID = onCall(async (request) => {
   const { id } = request;
 
   try {
+    const db = admin.firestore();
     const record = await db.collection("liquidVolumes").doc(id).get();
     if (!record.exists) {
       throw new Error({ code: "not-found", message: "Record not found" });
@@ -95,6 +99,7 @@ const getOilOrCondensateVolumesByAsset = onCall(async (request) => {
   const { assetName } = request;
 
   try {
+    const db = admin.firestore();
     const records = await db
       .collection("liquidVolumes")
       .where("name", "==", assetName)
@@ -118,7 +123,7 @@ const deleteOilOrCondensateVolumeByID = onCall(async (request) => {
         message: "Missing volume Id",
       });
     }
-
+    const db = admin.firestore();
     await db.collections("liquidVolumes").doc(id).delete();
     return { status: "success", message: "Volume deleted successfully" };
   } catch (error) {
@@ -149,7 +154,7 @@ const captureGas = onCall(async (request) => {
       fluidType: "oilOrCondensate",
       data: flowstations,
     };
-
+    const db = admin.firestore();
     await db.collections("volumes").doc(id).set(dbData);
     return id;
   } catch (error) {
