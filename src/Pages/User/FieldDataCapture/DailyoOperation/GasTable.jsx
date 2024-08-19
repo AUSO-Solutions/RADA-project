@@ -133,33 +133,33 @@ export default function GasTable() {
                                 return (
                                     <TableBody>
                                         <TableRow key={flowStation}>
-                                            <TableCell align="left" rowSpan={parseInt(numberOfUnits) + (measurementType === "Metering" ? 3*3 : 3 * 2)} colSpan={2}>{name}</TableCell>
+                                            <TableCell align="left" rowSpan={parseInt(numberOfUnits) + (measurementType === "Metering" ? 3 * 3 : 3 * 2)} colSpan={2}>{name}</TableCell>
                                         </TableRow>
                                         {
                                             new Array(parseInt(numberOfUnits)).fill(0).map(
                                                 (meter, i) => <>
-                                                <TableRow>
-                                                    <TableCell  >
-                                                        <Text>Gas Flared USM</Text>
-                                                        {/* <Text>Fuel Gas</Text> */}
-                                                    </TableCell>
-                                                    <TableCell align="center">
-                                                        <TableInput
-                                                            onChange={(e) => handleChange({ flowStation, field: 'serialNumber', measurementTypeValue: e.target.value, measurementTypeIndex: i })}
-                                                            defaultValue={(measurementType === "Metering" ? "Meter" : "Tank") + (i + 1)}
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell align="center"><TableInput onChange={(e) => handleChange({ flowStation, field: 'initialBbls', measurementTypeValue: e.target.value, measurementTypeIndex: i })} />
+                                                    <TableRow>
+                                                        <TableCell  >
+                                                            <Text>Gas Flared USM</Text>
+                                                            {/* <Text>Fuel Gas</Text> */}
+                                                        </TableCell>
+                                                        <TableCell align="center">
+                                                            <TableInput
+                                                                onChange={(e) => handleChange({ flowStation, field: 'serialNumber', measurementTypeValue: e.target.value, measurementTypeIndex: i })}
+                                                                defaultValue={(measurementType === "Metering" ? "Meter" : "Tank") + (i + 1)}
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell align="center"><TableInput onChange={(e) => handleChange({ flowStation, field: 'initialBbls', measurementTypeValue: e.target.value, measurementTypeIndex: i })} />
 
-                                                    </TableCell>
-                                                    <TableCell align="center"><TableInput onChange={(e) => handleChange({ flowStation, field: 'finalBbls', measurementTypeValue: e.target.value, measurementTypeIndex: i })} />
+                                                        </TableCell>
+                                                        <TableCell align="center"><TableInput onChange={(e) => handleChange({ flowStation, field: 'finalBbls', measurementTypeValue: e.target.value, measurementTypeIndex: i })} />
 
-                                                    </TableCell>
-                                                    {/* <TableCell align="center"> {tableValues?.[flowStation]?.list?.[i]?.netProduction} </TableCell> */}
-                                                    <TableCell colSpan={2} align="center">-</TableCell>
-                                                    {/* <TableCell align="center">-</TableCell>
+                                                        </TableCell>
+                                                        {/* <TableCell align="center"> {tableValues?.[flowStation]?.list?.[i]?.netProduction} </TableCell> */}
+                                                        <TableCell colSpan={2} align="center">-</TableCell>
+                                                        {/* <TableCell align="center">-</TableCell>
                                                     <TableCell align="center">-</TableCell> */}
-                                                </TableRow>
+                                                    </TableRow>
                                                     <TableRow>
                                                         <TableCell  >
                                                             <Text>Flared Gas</Text>
@@ -242,7 +242,7 @@ export default function GasTable() {
                     <TableBody>
                         <TableRow >
                             <TableCell align="left" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} className='bg-[rgba(0, 163, 255, 0.3)]' colSpan={6}>{"Total Net Production"}</TableCell>
-                            <TableCell  align="center" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} >{totals?.netProductionTotal}</TableCell>
+                            <TableCell align="center" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} >{totals?.netProductionTotal}</TableCell>
                             {/* <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{totals?.netTargetTotal}</TableCell>
                             <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{totals?.bswTotal}</TableCell> */}
                             {/* <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{totals?.grossTotal}</TableCell> */}

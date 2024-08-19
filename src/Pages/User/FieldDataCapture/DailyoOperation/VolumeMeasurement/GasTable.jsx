@@ -158,14 +158,12 @@ export default function GasTable({ currReport , date}) {
                 return (
                   <TableBody>
                     <TableRow key={name}>
-                      <TableCell align="left" rowSpan={3 * (readings?.length + 1)} colSpan={3}>
+                      <TableCell align="left" rowSpan={3 * numberOfUnits + 2} colSpan={3}>
                         {name}
                       </TableCell>
                     </TableRow>
 
-                    {
-                      // ["Gas Flared USM","Fuel Gas","Export Gas"].map(item => )
-                    }
+              
                     {
                       new Array(parseInt(numberOfUnits)).fill(0).map(
                         (meter, readingIndex) => {
