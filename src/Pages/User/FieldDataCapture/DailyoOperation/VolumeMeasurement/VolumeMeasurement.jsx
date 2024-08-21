@@ -182,7 +182,7 @@ const SelectFlowStation = () => {
             setupData?.fluidType === 'Gas' ?
               <>
                 <div className={`${setupData?.flowStations.length === i + 1 ? "" : "border-b"}`}>
-                  <Text weight={600} className={'pl-3'}>{flowStation?.name} (Meter {i + 1}) </Text>
+                  <Text weight={600} className={'pl-3'}>{flowStation?.name} </Text>
                   {/* <hr className='px-5' /> */}
                   {
                     new Array(parseInt(flowStation?.numberOfUnits)).fill(0)
