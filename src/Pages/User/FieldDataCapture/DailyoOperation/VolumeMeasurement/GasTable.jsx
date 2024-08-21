@@ -210,10 +210,10 @@ export default function GasTable({ currReport, date }) {
                                 {gasType ?
                                   (netProduction || 0)
                                   :
-                                  <TableInput value={netProduction || 0}
+                                  <TableInput value={netProduction}
                                     disabled={gasType}
                                     //  required={gasType === item || !gasType}
-                                    onChange={(e) => handleChange({ flowStation: name, field: 'finalBbls', value: e.target.value, readingIndex: readingIndex })} />
+                                    onChange={(e) => handleChange({ flowStation: name, field: 'netProduction', value: e.target.value, readingIndex: readingIndex })} />
                                 } </TableCell>
                             </TableRow>
                           </>
