@@ -49,7 +49,6 @@ const createAsset = onCall(async (request) => {
     }
 
     await db
-      .collection("assets")
       .doc(name)
       .collection("assetList")
       .doc(id)

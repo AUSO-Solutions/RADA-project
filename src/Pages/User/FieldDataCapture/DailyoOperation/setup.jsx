@@ -41,7 +41,7 @@ const Setup = ({ title, steps = [], onBack, onNext, stepComponents = [], onSave 
                     {stepComponents && stepComponents[activeStep]}
                 </Box>
 
-                <Box component={'div'} display={'flex'} justifyContent={'space-between'} width={'100%'}>
+                <Box component={'div'} display={'flex'} justifyContent={'space-between'} width={'100%'} mb={4}>
                     <Button bgcolor={'white'} onClick={back} color={colors.rada_blue} style={{ border: `1px solid ${colors.rada_blue} ` }} width={'177px'} height={'55px'}>
                         Back
                     </Button>
@@ -62,7 +62,7 @@ const Setup = ({ title, steps = [], onBack, onNext, stepComponents = [], onSave 
             try {
                 if (!type) return;
                 const data = await firebaseFunctions('getSetups', { setupType: type })
-                console.log(data)
+                // console.log(data)
                 if (data?.data?.length) setSetups(data?.data)
             } catch (error) {
 

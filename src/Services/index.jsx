@@ -5,7 +5,6 @@ import { project_functions } from 'firebase-config';
 import { httpsCallable } from 'firebase/functions';
 import handleError from './handleError';
 import { toast } from 'react-toastify';
-// import { toast } from 'react-toastify';
 
 const baseURL = process.env.REACT_APP_BASE_URL
 const baseFirebaseUrl = process.env.REACT_APP_FIREBASE_URL

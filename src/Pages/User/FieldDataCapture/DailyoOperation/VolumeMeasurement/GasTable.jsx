@@ -9,7 +9,7 @@ import { store } from 'Store';
 import tableStyles from '../table.module.scss'
 import { sum } from 'utils';
 import { Button } from 'Components';
-import { updateFlowstationReading } from './helper';
+// import { updateFlowstationReading } from './helper';
 import { toast } from 'react-toastify';
 
 
@@ -17,7 +17,7 @@ const TableInput = (props) => {
   return <input className='p-1 text-center w-[70px] border outline-none' {...props} />
 }
 
-export default function GasTable({ currReport , date}) {
+export default function GasTable({ currReport, date }) {
   //  const isGas = currReport === "Gas"
   // const isNet = currReport === "Net Oil/ Condensate"
   //  const isGross = currReport === 'Gross Liquid'
@@ -51,8 +51,10 @@ export default function GasTable({ currReport , date}) {
       const finalBbls = field === "finalBbls" ? value : (prevFlowStationListIndexValues?.finalBbls || 0)
       const initialBbls = field === "initialBbls" ? value : (prevFlowStationListIndexValues?.initialBbls || 0)
       const difference = Math.abs(parseFloat(finalBbls) - parseFloat(initialBbls))
-      const netProduction = difference * parseInt(meterFactor || 0)
-
+      let netProduction = difference * parseInt(meterFactor || 0)
+      // console.log(flowStationSetup?.readings?.[readingIndex]?.gasType)
+      if (!flowStationSetup?.readings?.[readingIndex]?.gasType) netProduction = (field === "netProduction" ? value : (prevFlowStationListIndexValues?.netProduction || 0))
+      // console.log({ netProduction }, difference * parseInt(meterFactor || 0))
       // const gross = difference * parseInt(meterFactor || 0)
       const isNum = typeof readingIndex === 'number'
       let updatedMeters = prevFlowStationList
@@ -69,7 +71,7 @@ export default function GasTable({ currReport , date}) {
             netProduction,
             gasType,
 
-            serialNumber:flowStationSetup?.readings?.[readingIndex]?.serialNumber
+            serialNumber: flowStationSetup?.readings?.[readingIndex]?.serialNumber
             // [gasType]: parseInt(value)
             // gross
           }
@@ -116,11 +118,11 @@ export default function GasTable({ currReport , date}) {
 
     const payload = {
       flowStations,
-      asset:setup?.asset,
-      setupId:setup?.id,
-      timeFrame:setup?.timeFrame,
+      asset: setup?.asset,
+      setupId: setup?.id,
+      timeFrame: setup?.timeFrame,
       date,
-      reportType:"Gas",
+      reportType: "Gas",
       ...totals
     }
     console.log(payload)
@@ -158,16 +160,17 @@ export default function GasTable({ currReport , date}) {
                 return (
                   <TableBody>
                     <TableRow key={name}>
-                      <TableCell align="left" rowSpan={3 * numberOfUnits + 2} colSpan={3}>
+                      <TableCell align="left" rowSpan={4 * numberOfUnits + 2} colSpan={3}>
                         {name}
                       </TableCell>
                     </TableRow>
 
-              
+
                     {
                       new Array(parseInt(numberOfUnits)).fill(0).map(
                         (meter, readingIndex) => {
-                          const gasType = tableValues?.[name]?.meters?.[readingIndex]?.gasType
+                          const gasType = setup?.flowStations?.[flowStationIndex]?.readings?.[readingIndex]?.gasType
+                          const gasTypeLabel = setup?.flowStations?.[flowStationIndex]?.readings?.[readingIndex]?.gasTypeLabel
                           const initialBbls = tableValues?.[name]?.meters?.[readingIndex]?.initialBbls
                           const finalBbls = tableValues?.[name]?.meters?.[readingIndex]?.finalBbls
                           const netProduction = tableValues?.[name]?.meters?.[readingIndex]?.netProduction
@@ -179,34 +182,51 @@ export default function GasTable({ currReport , date}) {
                               <TableCell align="center">
                                 {/* {tableValues?.[name]?.meters?.[readingIndex]?.gasType} */}
                                 <TableInput
-                                  value={readings?.[readingIndex]?.serialNumber} required={gasType === item || !gasType}
-                                  onChange={(e) => updateFlowstationReading(flowStationIndex, readingIndex, 'serialNumber', e.target.value)}
+                                  value={gasTypeLabel === item ? readings?.[readingIndex]?.serialNumber : "-"}
+                                  disabled={gasTypeLabel !== item || !gasType}
+                                //  required={gasType === item || !gasType}
+                                // onChange={(e) => updateFlowstationReading(flowStationIndex, readingIndex, 'serialNumber', e.target.value)}
                                 />
                               </TableCell>
 
                               <TableCell align="center">
-                                <TableInput value={gasType === item ? initialBbls : ""} required={gasType === item || !gasType}
+                                <TableInput value={gasTypeLabel === item ? initialBbls : ""}
+                                  disabled={gasTypeLabel !== item || !gasType}
+                                  //  required={gasType === item || !gasType}
                                   onChange={(e) => handleChange({ flowStation: name, field: 'initialBbls', value: e.target.value, readingIndex: readingIndex, gasType: item })} />
                               </TableCell>
                               <TableCell align="center">
-                                <TableInput value={gasType === item ? finalBbls : ""} required={gasType === item || !gasType}
+                                <TableInput value={gasTypeLabel === item ? finalBbls : ""}
+                                  disabled={gasTypeLabel !== item || !gasType}
+                                  //  required={gasType === item || !gasType}
                                   onChange={(e) => handleChange({ flowStation: name, field: 'finalBbls', value: e.target.value, readingIndex: readingIndex, gasType: item })} />
                               </TableCell>
                               <TableCell align="center" colSpan={2}> {gasType === item ? netProduction : 0} </TableCell>
 
                             </TableRow>)}
-
+                            <TableRow key={name}>
+                              <TableCell sx={{ bgcolor: '#8080807a' }} align="left" className='pl-5 !bg-[#8080807a]' colSpan={4}><div > Total Gas Production</div></TableCell>
+                              <TableCell sx={{ bgcolor: '#8080807a' }} align="center">
+                                {gasType ?
+                                  (netProduction || 0)
+                                  :
+                                  <TableInput value={netProduction || 0}
+                                    disabled={gasType}
+                                    //  required={gasType === item || !gasType}
+                                    onChange={(e) => handleChange({ flowStation: name, field: 'finalBbls', value: e.target.value, readingIndex: readingIndex })} />
+                                } </TableCell>
+                            </TableRow>
                           </>
                         }
                       )
                     }
 
-                    <TableRow key={name}>
+                    {/* <TableRow key={name}>
                       <TableCell sx={{ bgcolor: '#8080807a' }} align="left" className='pl-5 !bg-[#8080807a]' colSpan={4}><div > Total Gas Production</div></TableCell>
                       <TableCell sx={{ bgcolor: '#8080807a' }} align="center">
                         {(tableValues?.[name]?.subTotal || 0)}
                       </TableCell>
-                    </TableRow>
+                    </TableRow> */}
 
 
                   </TableBody>

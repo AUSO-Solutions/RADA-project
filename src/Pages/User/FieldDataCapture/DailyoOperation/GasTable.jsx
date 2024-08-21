@@ -133,10 +133,10 @@ export default function GasTable() {
                                 return (
                                     <TableBody>
                                         <TableRow key={flowStation}>
-                                            <TableCell align="left" rowSpan={parseInt(numberOfUnits) + (measurementType === "Metering" ? 3 * 3 : 3 * 2)} colSpan={2}>{name}</TableCell>
+                                            <TableCell align="left" rowSpan={parseInt(1) + ( 3 * 2)} colSpan={2}>{name}</TableCell>
                                         </TableRow>
                                         {
-                                            new Array(parseInt(numberOfUnits)).fill(0).map(
+                                            new Array(parseInt(1)).fill(0).map(
                                                 (meter, i) => <>
                                                     <TableRow>
                                                         <TableCell  >
