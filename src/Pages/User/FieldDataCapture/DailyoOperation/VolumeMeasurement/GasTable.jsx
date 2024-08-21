@@ -201,7 +201,7 @@ export default function GasTable({ currReport, date }) {
                                   //  required={gasType === item || !gasType}
                                   onChange={(e) => handleChange({ flowStation: name, field: 'finalBbls', value: e.target.value, readingIndex: readingIndex, gasType: item })} />
                               </TableCell>
-                              <TableCell align="center" colSpan={2}> {gasType === item ? netProduction : 0} </TableCell>
+                              <TableCell align="center" colSpan={2}> {gasTypeLabel === item ? netProduction : 0} </TableCell>
 
                             </TableRow>)}
                             <TableRow key={name}>
