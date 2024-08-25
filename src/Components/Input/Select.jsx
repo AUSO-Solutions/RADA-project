@@ -25,8 +25,8 @@ const RadaSelect = ({ name, onChange, options, isMulti ,...rest }) => {
 
     return (
         <>
-            <input type="hidden" name={name} value={isMulti ? value?.map(x => x?.value).join('-sal-,-sal-') + "select-array-list" : value ? value?.value : {}} />
-            <Select options={options} isMulti={isMulti} onChange={setValue} isDisabled={rest.disabled} {...rest}
+            <input required={rest?.required} type='text' hidden name={name} value={isMulti ? value?.map(x => x?.value).join('-sal-,-sal-') + "select-array-list" : value ? value?.value : ""} />
+            <Select options={options} isMulti={isMulti} onChange={setValue} isDisabled={rest.disabled} {...rest} required
                 styles={{
                     control: (baseStyles) => ({ ...baseStyles, borderRadius: '12px' }),
                     // container: (baseStyles) => ({ ...baseStyles, height: 'auto', padding: 0, }),

@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
 import { FaRegCircle, FaRegDotCircle } from 'react-icons/fa'
 
-const RadioSelect = ({ list = [], onChange = () => null, defaultValue="" }) => {
+const RadioSelect = ({ list = [], onChange = () => null, defaultValue="", required }) => {
     const [selected, setSelected] = useState(defaultValue)
     return (
         <div className='rounded flex border my-3 justify-evenly !w-[fit-content]'>
+            <input type="text" value={selected} hidden  required={required}/>
             {list?.map((item, i) => {
                 // const isEven = i % 2 === 0
                 return (

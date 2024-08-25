@@ -49,40 +49,38 @@ const VolumeSettings = ({ onClickOut = () => null }) => {
               <Text size={14} className={'w-[30%] flex items-center'}>  {flowStation?.name}</Text>
               <Text size={14} className={'w-[30%] flex flex-col !text-center'}>
                 {
-                    new Array(parseInt(flowStation?.numberOfUnits)).fill(0).map((meter, readingIndex) => (
-                 
-                        <input className='border text-center outline-none px-2 w-[98px] h-[30px] rounded my-1'
-                          value={flowStation?.readings?.[readingIndex]?.serialNumber}
-                          onChange={(e) => updateFlowstationReading(flowStationIndex, readingIndex, 'serialNumber', e.target.value)}
-                        />
-               
-                    )) 
+                  new Array(parseInt(flowStation?.numberOfUnits)).fill(0).map((meter, readingIndex) => (
+
+                    <input className='border text-center outline-none px-2 w-[98px] h-[30px] rounded my-1'
+                      value={flowStation?.readings?.[readingIndex]?.serialNumber}
+                      onChange={(e) => updateFlowstationReading(flowStationIndex, readingIndex, 'serialNumber', e.target.value)}
+                    />
+
+                  ))
                 }
                 {
-                   flowStation?.measurementType === 'Tank Dipping' &&   <input className='border text-center outline-none px-2 w-[98px] h-[30px] rounded my-1'
-                   value={"Deduction"} disabled
+                  flowStation?.measurementType === 'Tank Dipping' && <input className='border text-center outline-none px-2 w-[98px] h-[30px] rounded my-1'
+                    value={"Deduction"} disabled
                   //  onChange={(e) => updateFlowstationReading(flowStationIndex, readingIndex, 'serialNumber', e.target.value)}
-                 />
+                  />
                 }
               </Text>
               <Text size={14} className={'w-[30%] !text-right'}>
                 {
-                   
-                    new Array(parseInt(flowStation?.numberOfUnits)).fill(0).map((meter, readingIndex) => (
-                     
-                        <input type='number'
-                        disabled={flowStation?.measurementType === 'Tank Dipping'}
-                          value={flowStation?.measurementType === 'Metering' ? flowStation?.readings?.[readingIndex]?.meterFactor : 1}
-                          onChange={(e) => updateFlowstationReading(flowStationIndex, readingIndex, 'meterFactor', e.target.value)}
-                          min={1} className='border text-center outline-none px-2 w-[98px] h-[30px] my-1' />
-                
-                    )) 
+                  new Array(parseInt(flowStation?.numberOfUnits)).fill(0).map((meter, readingIndex) => (
+                 <> {flowStation?.readings?.[readingIndex]?.meterFactor} <input type='number'
+                      disabled={flowStation?.measurementType === 'Tank Dipping'}
+                      defaultValue={flowStation?.measurementType === 'Metering' ? flowStation?.readings?.[readingIndex]?.meterFactor : 1}
+                      onChange={(e) => updateFlowstationReading(flowStationIndex, readingIndex, 'meterFactor', e.target.value)}
+                      min={1} className='border text-center outline-none px-2 w-[98px] h-[30px] my-1' /></> 
+
+                  ))
                 }
                 {
-                   flowStation?.measurementType === 'Tank Dipping' &&  <input type='number'
-                   value={flowStation?.deductionMeterFactor}
-                   onChange={(e) => updateFlowstation(flowStationIndex, 'deductionMeterFactor', e.target.value)}
-                   min={1} className='border outline-none text-center px-2 w-[98px] h-[30px] my-1' />
+                  flowStation?.measurementType === 'Tank Dipping' && <input type='number'
+                    value={flowStation?.deductionMeterFactor}
+                    onChange={(e) => updateFlowstation(flowStationIndex, 'deductionMeterFactor', e.target.value)}
+                    min={1} className='border outline-none text-center px-2 w-[98px] h-[30px] my-1' />
                 }
               </Text>
             </Box>

@@ -50,7 +50,7 @@ const SelectAsset = () => {
 
   return <>
     <Input defaultValue={{ label: setupData?.asset, value: setupData?.asset }}
-      label={'Assets'} type='select'
+      label={'Assets'} type='select' required
       options={assetNames?.map(assetName => ({ value: assetName, label: assetName }))}
       onChange={(e) => dispatch(setSetupData({ name: 'asset', value: e.value }))} />
 
@@ -96,7 +96,7 @@ const DefineReport = ({ asset, }) => {
   return <>
     <div className='flex justify-between !w-[100%]'>
       <Input type='select' placeholder={setupData?.asset} containerClass={'h-[39px] !w-[150px]'} defaultValue={asset} disabled />
-      <Input type='select' placeholder="Daily" containerClass={'h-[39px] !w-[150px]'}
+      <Input type='select' placeholder="Daily" containerClass={'h-[39px] !w-[150px]'} required
         defaultValue={{ label: setupData?.timeFrame, value: setupData?.timeFrame }}
         onChange={(e) => dispatch(setSetupData({ name: 'timeFrame', value: e.value }))}
         options={timeFrames?.map(timeFrame => ({ value: timeFrame, label: timeFrame }))} />
@@ -104,12 +104,12 @@ const DefineReport = ({ asset, }) => {
 
     <div key={setupData?.reportTypes?.length} className='flex flex-col mt-[24px] rounded-[8px] gap-[24px] border'>
       <div className='flex border-b px-3'>
-        <CheckInput defaultChecked={setupData?.reportTypes?.length === reportTypes.length} onChange={(e) => checkAll(e)} label={'Select All'} />
+        <CheckInput  defaultChecked={setupData?.reportTypes?.length === reportTypes.length} onChange={(e) => checkAll(e)} label={'Select All'} />
 
       </div>
       {
         reportTypes.map(repoortType => <div className='flex border-b px-3'>
-          <CheckInput defaultChecked={setupData?.reportTypes?.includes(repoortType.value)} onChange={(e) => handleCheck(repoortType.value, e)} label={repoortType.label} />
+          <CheckInput required={!setupData?.reportTypes?.length} defaultChecked={setupData?.reportTypes?.includes(repoortType.value)} onChange={(e) => handleCheck(repoortType.value, e)} label={repoortType.label} />
         </div>)
       }
     </div>
@@ -154,8 +154,8 @@ const SelectMeasurementType = () => {
               onChange={(e) => updateFlowstation(i, 'measurementType', e.value)}
               disabled={setupData?.fluidType === 'Gas'}
               options={measureMenntTypes.map(type => ({ label: type, value: type }))} />
-            <Input type='number' containerClass={'!w-[150px]'} inputClass={'!text-center'}
-              defaultValue={setupData?.flowStations?.[i].numberOfUnits} max={setupData?.fluidType === 'Gas' ? 3 : 10}
+            <Input type='number' containerClass={'!w-[150px]'} inputClass={'!text-center'} required
+              defaultValue={setupData?.flowStations?.[i].numberOfUnits} min={1} max={setupData?.fluidType === 'Gas' ? 3 : 10}
               onChange={(e) => updateFlowstation(i, "numberOfUnits", e.target.value)}
             />
           </div>)
@@ -187,11 +187,11 @@ const SelectFlowStation = () => {
                     <Text>{flowStation?.name} (Meter {readingIndex + 1})</Text>
                     <Input containerClass={'!w-[150px]'}
                       defaultValue={flowStation?.readings?.[readingIndex]?.serialNumber}
-                      value={flowStation?.readings?.[readingIndex]?.serialNumber}
+                      value={flowStation?.readings?.[readingIndex]?.serialNumber} required
                       onChange={(e) => updateFlowstationReading(i, readingIndex, 'serialNumber', e.target.value?.toUpperCase())}
                     />
                     <Input containerClass={'!w-[150px]'}
-                      type='select'
+                      type='select' required
                        options={gasTypes.filter(gasType => !flowStation?.readings?.map(reading => reading?.gasType).includes(gasType.value))}
                       defaultValue={gasTypes.find(gasType => flowStation?.readings?.[readingIndex]?.gasType === gasType.value)} isClearable
                       value={gasTypes.find(gasType => flowStation?.readings?.[readingIndex]?.gasType === gasType.value)}

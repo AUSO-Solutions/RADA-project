@@ -6,7 +6,7 @@ const CheckInput = ({ name, onChange, label, ...rest }) => {
     return (
         <>
             {/* <input type="checkbox" name="" id="" /> */}
-            <FormControlLabel control={<Checkbox  checkedIcon={<TickSquare />}  name={name} onChange={onChange} {...rest} />} label={label} />
+            <FormControlLabel control={<Checkbox  checkedIcon={<TickSquare />} required={rest?.required}  name={name} onChange={onChange} {...rest} />} label={label} />
         </>
     )
 }
