@@ -24,7 +24,7 @@ import GasTable from './GasTable'
 
 
 
-const gasTypes = ["Gas Flared USM", "Fuel Gas", "Export Gas"].map(type => ({ label: type, key: camelize(type) }))
+const gasTypes = ["Gas Flared USM", "Fuel Gas", "Export Gas"].map(type => ({ label: type, value: camelize(type) }))
 
 
 const SelectedReportTypes = ({ list = [] }) => {
@@ -155,7 +155,7 @@ const SelectMeasurementType = () => {
               disabled={setupData?.fluidType === 'Gas'}
               options={measureMenntTypes.map(type => ({ label: type, value: type }))} />
             <Input type='number' containerClass={'!w-[150px]'} inputClass={'!text-center'}
-              defaultValue={setupData?.flowStations?.[i].numberOfUnits}
+              defaultValue={setupData?.flowStations?.[i].numberOfUnits} max={setupData?.fluidType === 'Gas' ? 3 : 10}
               onChange={(e) => updateFlowstation(i, "numberOfUnits", e.target.value)}
             />
           </div>)
@@ -175,39 +175,30 @@ const SelectFlowStation = () => {
       <div className='flex justify-between border-b p-3'>
         <Text weight={600} size={"16px"}>Flow stations</Text>
         <Text weight={600} size={"16px"}> Meter/Tank name</Text>
+        {setupData?.fluidType === 'Gas' && <Text weight={600} size={"16px"}> Gas Type</Text>}
       </div>
       {
         setupData?.flowStations?.map((flowStation, i) => {
           return (
             setupData?.fluidType === 'Gas' ?
               <>
-                <div className={`${setupData?.flowStations.length === i + 1 ? "" : "border-b"}`}>
-                  <Text weight={600} className={'pl-3'}>{flowStation?.name} </Text>
-                  {/* <hr className='px-5' /> */}
-                  {
-                    new Array(parseInt(flowStation?.numberOfUnits)).fill(0)
-                      .map((reading, readingIndex) => (
-                        <>
-                          {gasTypes?.map((gasType) => (
-                            <div className={`flex items-center justify-between my-1 px-3`} >
-                              <Text>{gasType.label}</Text>
-                              <Input containerClass={'!w-[150px]'}
-                                value={flowStation?.readings?.[readingIndex]?.gasType === gasType.key ? flowStation?.readings?.[readingIndex]?.serialNumber : ""}
-                                onChange={(e) => {
-                                  updateFlowstationReading(i, readingIndex, 'serialNumber', e.target.value?.toUpperCase())
-                                  updateFlowstationReading(i, readingIndex, 'gasType', gasType.key)
-                                  updateFlowstationReading(i, readingIndex, 'gasTypeLabel', gasType.label)
-                                }}
-                              />
-                            </div>
-
-                          ))}
-                          <hr />
-                        </>
-                      ))
-                  }
-                </div>
-                <hr />
+                {
+                  new Array(parseInt(flowStation?.numberOfUnits)).fill(0).map((reading, readingIndex) => <div className={`flex items-center ${setupData?.flowStations.length === i + 1 ? "" : "border-b"} justify-between p-3`}>
+                    <Text>{flowStation?.name} (Meter {readingIndex + 1})</Text>
+                    <Input containerClass={'!w-[150px]'}
+                      defaultValue={flowStation?.readings?.[readingIndex]?.serialNumber}
+                      value={flowStation?.readings?.[readingIndex]?.serialNumber}
+                      onChange={(e) => updateFlowstationReading(i, readingIndex, 'serialNumber', e.target.value?.toUpperCase())}
+                    />
+                    <Input containerClass={'!w-[150px]'}
+                      type='select'
+                       options={gasTypes.filter(gasType => !flowStation?.readings?.map(reading => reading?.gasType).includes(gasType.value))}
+                      defaultValue={gasTypes.find(gasType => flowStation?.readings?.[readingIndex]?.gasType === gasType.value)} isClearable
+                      value={gasTypes.find(gasType => flowStation?.readings?.[readingIndex]?.gasType === gasType.value)}
+                      onChange={(e) => updateFlowstationReading(i, readingIndex, 'gasType', e?.value)}
+                    />
+                  </div>)
+                }
               </>
               :
               new Array(parseInt(flowStation?.numberOfUnits)).fill(0).map((reading, readingIndex) => <div className={`flex items-center ${setupData?.flowStations.length === i + 1 ? "" : "border-b"} justify-between p-3`}>
@@ -232,7 +223,7 @@ const Preview = () => {
   const setupData = useSelector(state => state.setup)
   // const { flowStations } = useAssetByName(setupData?.asset)
   return <>
-    <div className='border mt-3 !rounded-[8px]'>
+    <div className='border mt-3 !rounded-[8px] w-full'>
       <div className='flex justify-between border-b p-3'>
         <Text weight={600} className='w-1/3' size={"16px"}>Flow stations</Text>
         {<Text weight={600} className={'!text-center w-1/3'} size={"16px"}>Type</Text>}
@@ -243,40 +234,19 @@ const Preview = () => {
           return (
             setupData?.fluidType === 'Gas'
               ?
-              //  <div className='pl-3'>
-              //   <Text weight={600}>{flowStation?.name}</Text>
-              //   {
-              //     gasTypes.map(gasType => (
-              //       <div className={`flex items-center ${flowStations.length === i + 1 ? "" : "border-b"} justify-between p-3`}>
-              //         <Text className={'w-1/3 '}>{gasType.label}</Text>
-              //         {/* <Text className={'w-1/3   !text-center'}>Metering</Text> */}
-              //         <Text className='w-1/3 text-left !text-right'>{flowStation?.[gasType.key] || "N/A"}</Text>
-              //       </div>
-              //     ))
-              //   }
-              // </div>
-              <div className={`${setupData?.flowStations.length === i + 1 ? "" : "border-b"}`}>
-                {/* <Text weight={600} className={'pl-3'}>{flowStation?.name} (Meter {i + 1}) </Text>
-                <Text weight={600} className={'pl-3'}>{flowStation?.name} (Meter {i + 1}) </Text>
-                <Text weight={600} className={'pl-3'}>{flowStation?.name} (Meter {i + 1}) </Text> */}
-                {/* <hr className='px-5' /> */}
+              <div className={` ${setupData?.flowStations.length === i + 1 ? "" : "border-b border-black"}`}>
+               
                 {
                   new Array(parseInt(flowStation?.numberOfUnits)).fill(0)
                     .map((reading, readingIndex) => (
                       <>
                         {/* {gasTypes?.map((gasType) => ( */}
-                        <div className={`flex items-center justify-between my-1 p-3`} >
+                        <div className={`flex w-[100%] items-center justify-between my-1 p-3`} >
 
-                          <Text className={'pl-3'}>{flowStation?.name} (Meter {readingIndex + 1}) </Text>
-                          <Text>{flowStation?.readings?.[readingIndex]?.gasTypeLabel}</Text>
-                          <Text>{flowStation?.readings?.[readingIndex]?.serialNumber}</Text>
-                          {/* <Input containerClass={'!w-[150px]'}
-                            value={flowStation?.readings?.[readingIndex]?.gasType === gasType.key ? flowStation?.readings?.[readingIndex]?.serialNumber : ""}
-                            onChange={(e) => {
-                              updateFlowstationReading(i, readingIndex, 'serialNumber', e.target.value?.toUpperCase())
-                              updateFlowstationReading(i, readingIndex, 'gasType', gasType.key)
-                            }}
-                          /> */}
+                          <Text className={'pl-3 w-[33%] '}>{flowStation?.name} (Meter {readingIndex + 1}) </Text>
+                          <Text display={'block'} className={'w-[33%] !text-center'}>{flowStation?.readings?.[readingIndex]?.gasType}</Text>
+                          <Text display={'block'} className={'w-[33%] !text-right'}>{flowStation?.readings?.[readingIndex]?.serialNumber}</Text>
+                        
                         </div>
 
                         {/* ))} */}
@@ -286,19 +256,12 @@ const Preview = () => {
                 }
               </div>
               :
-              // <div className={`flex items-center ${flowStations.length === i + 1 ? "" : "border-b"} justify-between p-3`}>
-              //   <Text className={'w-1/3 '}>{flowStation?.name} (Meter ${}) </Text>
-              //   <Text className={'w-1/3   !text-center'}>{flowStation?.measurementType}</Text>
-              //   <Text className='w-1/3 text-left !text-right'>{flowStation?.numberOfUnits}</Text>
-              // </div>
 
               new Array(parseInt(flowStation?.numberOfUnits)).fill(0).map((reading, readingIndex) => <div className={`flex items-center ${setupData?.flowStations.length === i + 1 ? "" : "border-b"} justify-between p-3`}>
                 <Text>{flowStation?.name} (Meter {readingIndex + 1})</Text>
                 <Text> {flowStation?.measurementType} </Text>
                 <Text>{flowStation?.readings?.[readingIndex]?.serialNumber}</Text>
               </div>)
-
-
           )
         })
       }
@@ -364,7 +327,7 @@ const VolumeMeasurement = () => {
               </div>
             </div>
             {showSettings && <VolumeSettings onClickOut={() => setShowSettings(false)} />}
-        
+
             {
               currReport ? (currReport === 'Gas' ? <GasTable /> : <VolumeMeasurementTable currReport={currReport} date={date} />) : ""
             }
