@@ -24,16 +24,15 @@ const setupVolumeMeasurement = onCall(async (request) => {
         let { data } = request;
 
         const { asset, reportTypes, flowStations, timeFrame } = data;
-
         const validAssets = ['OML 24', 'OML 155', 'OML 147', "OML 45"];
         if (!validAssets.includes(asset)) {
             throw { message: 'Invalid asset', code: 'cancelled' };
         }
 
         const validReportTypes = ['Gross Liquid', 'Net Oil/ Condensate', 'Gas'];
-        // if (!Array.isArray(reportTypes) || reportTypes.length !== 2 || !reportTypes.every(type => validReportTypes.includes(type))) {
-        //     throw { message: 'Invalid report types', code: 'cancelled' };
-        // }
+        if (!Array.isArray(reportTypes) ||  !reportTypes.filter(reportType => validReportTypes.includes(reportType)).length) {
+            throw { message: 'Invalid report types', code: 'cancelled' };
+        }
 
         const id = crypto.randomBytes(8).toString("hex");
         const db = admin.firestore();
@@ -58,14 +57,14 @@ const updateVolumeMeasurement = onCall(async (request) => {
 
     try {
         let { data } = request;
-     
+
 
         const { reportTypes, flowStations, timeFrame, id } = data;
-        if(!id){
+        if (!id) {
             throw { message: 'Provide a setup id', code: 'cancelled' };
         }
         const validReportTypes = ['Gross Liquid', 'Net Oil/ Condensate', 'Gas'];
-        if (!Array.isArray(reportTypes) || reportTypes.length !== 2 || !reportTypes.every(type => validReportTypes.includes(type))) {
+        if (!Array.isArray(reportTypes) || !reportTypes.filter(reportType => validReportTypes.includes(reportType)).length) {
             throw { message: 'Invalid report types', code: 'cancelled' };
         }
         const db = admin.firestore();
