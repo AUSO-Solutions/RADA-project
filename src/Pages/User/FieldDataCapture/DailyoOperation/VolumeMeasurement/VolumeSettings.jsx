@@ -68,9 +68,9 @@ const VolumeSettings = ({ onClickOut = () => null }) => {
               <Text size={14} className={'w-[30%] !text-right'}>
                 {
                   new Array(parseInt(flowStation?.numberOfUnits)).fill(0).map((meter, readingIndex) => (
-                 <> {flowStation?.readings?.[readingIndex]?.meterFactor} <input type='number'
+                 <> <input type='number'
                       disabled={flowStation?.measurementType === 'Tank Dipping'}
-                      defaultValue={flowStation?.measurementType === 'Metering' ? flowStation?.readings?.[readingIndex]?.meterFactor : 1}
+                      defaultValue={flowStation?.measurementType === 'Metering'  || !flowStation?.measurementType  ? (flowStation?.readings?.[readingIndex]?.meterFactor || 1) : 1}
                       onChange={(e) => updateFlowstationReading(flowStationIndex, readingIndex, 'meterFactor', e.target.value)}
                       min={1} className='border text-center outline-none px-2 w-[98px] h-[30px] my-1' /></> 
 
