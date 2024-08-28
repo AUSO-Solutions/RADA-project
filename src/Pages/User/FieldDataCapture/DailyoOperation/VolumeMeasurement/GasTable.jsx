@@ -22,6 +22,7 @@ export default function GasTable({ currReport, date }) {
   //  const isGas = currReport === "Gas"
   // const isNet = currReport === "Net Oil/ Condensate"
   //  const isGross = currReport === 'Gross Liquid'
+  const roundUp = (num) => Math.round(num * 100) / 100
 
   const setup = React.useMemo(() => store.getState().setup, [])
 
@@ -41,10 +42,10 @@ export default function GasTable({ currReport, date }) {
   // }
 
   const handleChange = ({ flowStation, field, value, readingIndex, flowStationField, gasType }) => {
-    console.log({ flowStation, field, value, readingIndex, flowStationField, gasType })
+    // console.log({ flowStation, field, value, readingIndex, flowStationField, gasType })
     //careful, to also have the value updated before calculated
     const flowStationSetup = setup?.flowStations?.find(({ name }) => name === flowStation)
-    const meterFactor = flowStationSetup?.measurementType === "Metering" ? parseFloat(flowStationSetup?.readings?.[readingIndex]?.meterFactor || 0) : 1
+    const meterFactor = flowStationSetup?.measurementType === "Metering" ? parseFloat(flowStationSetup?.readings?.[readingIndex]?.meterFactor || 1) : 1
 
     setTableValues(prev => {
       const prevFlowStation = prev?.[flowStation]
@@ -52,11 +53,12 @@ export default function GasTable({ currReport, date }) {
       const prevFlowStationListIndexValues = prevFlowStation?.meters?.[readingIndex]
       const finalBbls = field === "finalBbls" ? value : (prevFlowStationListIndexValues?.finalBbls || 0)
       const initialBbls = field === "initialBbls" ? value : (prevFlowStationListIndexValues?.initialBbls || 0)
-      const difference = Math.abs(parseFloat(finalBbls) - parseFloat(initialBbls))
+      const difference = roundUp(Math.abs(parseFloat(finalBbls) - parseFloat(initialBbls)))
+      console.log({ difference })
       let meterTotal = prevFlowStationListIndexValues?.meterTotal
       // meterTotal = (field === "meterTotal" ? value : (|| 0))
       if (field === "meterTotal") { meterTotal = value } else { meterTotal = difference * parseFloat(meterFactor || 0) }
-      // console.log({ finalBbls, initialBbls })
+      console.log({ finalBbls, initialBbls, meterTotal })
 
       const isNum = typeof readingIndex === 'number'
       let updatedMeters = prevFlowStationList

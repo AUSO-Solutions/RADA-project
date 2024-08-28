@@ -38,16 +38,16 @@ export default function VolumeMeasurementTable({ currReport, date }) {
     bswTotal: 0,
     grossTotal: 0,
   })
+  const roundUp = (num) => Math.round(num * 100) / 100
 
   const handleChange = ({ flowStation, field, value, readingIndex, flowStationField }) => {
     // console.log({ flowStation, field, value, readingIndex, flowStationField })
     //careful, to also have the value updated before calculated
     const setup = store.getState().setup
     const flowStationSetup = setup?.flowStations?.find(({ name }) => name === flowStation)
-    console.log(setup)
+    // console.log(setup)
     const meterFactor = parseFloat(flowStationSetup?.readings?.[readingIndex]?.meterFactor || 1)
     const deductionMeterFactor = parseFloat(flowStationSetup?.deductionMeterFactor || 1)
-    const roundUp = (num) => Math.round(num * 100) / 100
 
     setTableValues(prev => {
       const prevFlowStation = prev?.[flowStation]
@@ -119,6 +119,25 @@ export default function VolumeMeasurementTable({ currReport, date }) {
     }
     setTotals(calcs)
   }, [tableValues])
+
+  React.useEffect(() => {
+    // console.log(tableValues)
+    setup?.flowStations.forEach((flowStation, flowStationIndex) => {
+      const readings = flowStation?.readings || []
+      readings.forEach((reading, readingIndex) => {
+        const finalReading = parseFloat(tableValues?.[flowStation?.name]?.meters[readingIndex]?.finalReading) || 0
+        const initialReading = parseFloat(tableValues?.[flowStation?.name]?.meters[readingIndex]?.initialReading) || 0
+        const deductionInitialReading = parseFloat(tableValues?.[flowStation?.name]?.meters[readingIndex]?.deductionInitialReading) || 0
+        const deductionFinalReading = parseFloat(tableValues?.[flowStation?.name]?.meters[readingIndex]?.deductionFinalReading) || 0
+        const isNum = (num)=> !isNaN(num)
+        if (isNum(initialReading) || isNum(finalReading)) handleChange({ flowStation: flowStation?.name, field: 'finalReading', value: finalReading, readingIndex })
+        if (isNum(deductionInitialReading) || isNum(deductionFinalReading)) handleChange({ flowStation: flowStation?.name, field: 'deductionFinalReading', value: deductionFinalReading, readingIndex })
+    
+      });
+
+    });
+// eslint-disable-next-line
+  }, [setup])
 
   const save = async (e) => {
 

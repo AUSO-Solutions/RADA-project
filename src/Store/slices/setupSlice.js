@@ -8,7 +8,7 @@ export const setupSlice = createSlice({
     reducers: {
         setSetupData: (state, { payload }) => {
             if (payload?.value !== undefined) {
-                console.log(payload)
+                // console.log(payload)
                 state[payload.name] = payload.value
             }
         },

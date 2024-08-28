@@ -379,13 +379,13 @@ const VolumeMeasurement = () => {
               </div>
               <div className='flex items-center gap-2 '>
                 <Text className={'cursor-pointer'} onClick={() => setSetupTable(false)} color={colors.rada_blue}>View setups</Text>
-                <RadaDatePicker onChange={setDate} />
+                <RadaDatePicker onChange={setDate}  />
                 <div onClick={() => setShowSettings(true)} style={{ borderColor: 'rgba(0, 163, 255, 1)' }} className='border cursor-pointer px-3 py-1 rounded-[8px]'>
                   <MdOutlineSettings color='rgba(0, 163, 255, 1)' />
                 </div>
               </div>
             </div>
-            {showSettings && <VolumeSettings onClickOut={() => setShowSettings(false)} />}
+            {showSettings && <VolumeSettings onClickOut={() => setShowSettings(false)}/>}
 
             {
               currReport ? (currReport === 'Gas' ? <GasTable /> : <VolumeMeasurementTable currReport={currReport} date={date} />) : ""
