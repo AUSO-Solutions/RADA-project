@@ -187,7 +187,7 @@ const SelectFlowStation = () => {
               <>
                 {
                   new Array(parseInt(flowStation?.numberOfUnits)).fill(0).map((reading, readingIndex) => <div className={`flex items-center ${setupData?.flowStations.length === i + 1 ? "" : "border-b"} justify-between p-3`}>
-                    <Text>{flowStation?.name} (Meter {readingIndex + 1})</Text>
+                    <Text>{flowStation?.name} ({!flowStation?.measurementType || flowStation?.measurementType === 'metering' ? "Meter" : "Tank"} {readingIndex + 1}){flowStation?.measurementType } </Text>
                     <Input containerClass={'!w-[150px]'}
                       defaultValue={flowStation?.readings?.[readingIndex]?.serialNumber}
                       value={flowStation?.readings?.[readingIndex]?.serialNumber} required
@@ -272,7 +272,7 @@ const Preview = () => {
   </>
 }
 
-const Existing = ({onSelect=()=>null}) => {
+const Existing = ({ onSelect = () => null }) => {
   const dispatch = useDispatch()
 
   // const setups = useSelector(state => state.setup)
@@ -281,7 +281,7 @@ const Existing = ({onSelect=()=>null}) => {
     const getSetup = async () => {
       try {
         const data = await firebaseFunctions('getSetups', { setupType: "volumeMeasurement" })
-        
+
         // console.log(data)
         if (data?.data?.length) setSetups(data?.data)
       } catch (error) {
@@ -314,10 +314,10 @@ const Existing = ({onSelect=()=>null}) => {
           { name: "Time frame", key: "timeFrame" },
 
           { name: "Fluid types ", render: (data) => data?.reportTypes?.join(', ') },
-          { name: "Date ", render: (data) => dayjs(data?.createTime?._seconds ).format("MMM DD. hh:mm a")},
+          { name: "Date ", render: (data) => data?.created ? dayjs(data?.created).format("MMM DD. hh:mm a") : "--" },
           {
             name: "View", render: (data) => <><BsChevronRight className='cursor-pointer'
-              onClick={() => { dispatch(setWholeSetup(data));  onSelect(data) }} /></>
+              onClick={() => { dispatch(setWholeSetup(data)); onSelect(data) }} /></>
           },
 
         ]} noaction noSearch />
@@ -396,7 +396,7 @@ const VolumeMeasurement = () => {
             title={'Setup Volume Measurement Parameters'}
             steps={["Select Asset", "Define Report", "Measurement Type", "Select Flowstations", "Preview"]}
             // type={'volumeMeasurement'}
-            existing={<Existing onSelect={()=>setSetupTable(true)}/>}
+            existing={<Existing onSelect={() => setSetupTable(true)} />}
             rightBtnLoading={loading}
             // onSetWholeSetup={}
             stepComponents={

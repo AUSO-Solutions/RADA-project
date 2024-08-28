@@ -3,30 +3,52 @@ import Text from 'Components/Text'
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 // import { setSetupData } from 'Store/slices/setupSlice'
-import { updateFlowstation, updateFlowstationReading } from './helper'
+// import { updateFlowstation, updateFlowstationReading } from './helper'
 import { Button } from 'Components'
 import { firebaseFunctions } from 'Services'
-import { store } from 'Store'
+// import { store } from 'Store'
 import { Close } from '@mui/icons-material'
 import { setWholeSetup } from 'Store/slices/setupSlice'
 import { toast } from 'react-toastify'
 
-const VolumeSettings = ({ onClickOut = () => null }) => {
+const VolumeSettings = ({ onClickOut = () => null, onComplete = () => null }) => {
   const setupData = useSelector(state => state.setup)
   const dispatch = useDispatch()
   const [loading, setLoading] = useState(false)
-  console.log(setupData)
+
+
+  const deepCloneOfSetupData = JSON.parse(JSON.stringify(setupData))
+  const [updatingFlowstation, setUpdatingFlowstation] = useState(deepCloneOfSetupData)
+
+
+  const handleReadingChange = (flowStationIndex, readingIndex, field, value) => {
+    setUpdatingFlowstation(prev => {
+      let updating = { ...prev }
+      updating.flowStations[flowStationIndex].readings[readingIndex][field] = parseFloat(value)
+      return updating
+    })
+  }
+
+  const handleFlowstationChange = (flowStationIndex, field, value) => {
+    setUpdatingFlowstation(prev => {
+      let updating = { ...prev }
+      updating.flowStations[flowStationIndex][field] = parseFloat(value)
+      return updating
+    })
+  }
 
 
   const save = async () => {
     setLoading(true)
     try {
+      // console.log(updatingFlowstation)
+      // const _setupData = store.getState().setup
+      await firebaseFunctions('updateVolumeMeasurement', { ...updatingFlowstation })
+      // console.log(_setupData)
+      dispatch(setWholeSetup(updatingFlowstation))
 
-      const _setupData = store.getState().setup
-      await firebaseFunctions('updateVolumeMeasurement', { ..._setupData })
-      console.log(_setupData)
-      dispatch(setWholeSetup(_setupData))
       toast.success("Updates saved")
+      onClickOut()
     } catch (error) {
 
       console.log(error)
@@ -54,7 +76,7 @@ const VolumeSettings = ({ onClickOut = () => null }) => {
         </Box>
         {
 
-          setupData?.flowStations?.map((flowStation, flowStationIndex) => (
+          updatingFlowstation?.flowStations?.map((flowStation, flowStationIndex) => (
             <Box className=' flex justify-between py-3 items-center border-b border-b-grey' >
               <Text size={14} className={'w-[30%] flex items-center'}>  {flowStation?.name}</Text>
               <Text size={14} className={'w-[30%] flex flex-col !text-center'}>
@@ -63,7 +85,7 @@ const VolumeSettings = ({ onClickOut = () => null }) => {
 
                     <input className='border text-center outline-none px-2 w-[98px] h-[30px] rounded my-1'
                       value={flowStation?.readings?.[readingIndex]?.serialNumber}
-                      onChange={(e) => updateFlowstationReading(flowStationIndex, readingIndex, 'serialNumber', e.target.value)}
+                      onChange={(e) => handleReadingChange(flowStationIndex, readingIndex, 'serialNumber', e.target.value)}
                     />
 
                   ))
@@ -71,7 +93,6 @@ const VolumeSettings = ({ onClickOut = () => null }) => {
                 {
                   flowStation?.measurementType === 'Tank Dipping' && <input className='border text-center outline-none px-2 w-[98px] h-[30px] rounded my-1'
                     value={"Deduction"} disabled
-                  //  onChange={(e) => updateFlowstationReading(flowStationIndex, readingIndex, 'serialNumber', e.target.value)}
                   />
                 }
               </Text>
@@ -81,7 +102,7 @@ const VolumeSettings = ({ onClickOut = () => null }) => {
                     <> <input type='number'
                       disabled={flowStation?.measurementType === 'Tank Dipping'}
                       defaultValue={flowStation?.measurementType === 'Metering' || !flowStation?.measurementType ? (flowStation?.readings?.[readingIndex]?.meterFactor || 1) : 1}
-                      onChange={(e) => updateFlowstationReading(flowStationIndex, readingIndex, 'meterFactor', e.target.value)}
+                      onChange={(e) => handleReadingChange(flowStationIndex, readingIndex, 'meterFactor', e.target.value)}
                       min={1} className='border text-center outline-none px-2 w-[98px] h-[30px] my-1' /></>
 
                   ))
@@ -89,7 +110,7 @@ const VolumeSettings = ({ onClickOut = () => null }) => {
                 {
                   flowStation?.measurementType === 'Tank Dipping' && <input type='number'
                     value={flowStation?.deductionMeterFactor}
-                    onChange={(e) => updateFlowstation(flowStationIndex, 'deductionMeterFactor', e.target.value)}
+                    onChange={(e) => handleFlowstationChange(flowStationIndex, 'deductionMeterFactor', e.target.value)}
                     min={1} className='border outline-none text-center px-2 w-[98px] h-[30px] my-1' />
                 }
               </Text>
