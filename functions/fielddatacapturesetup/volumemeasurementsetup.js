@@ -74,7 +74,30 @@ const updateVolumeMeasurement = onCall(async (request) => {
             timeFrame
         });
 
-        return { message: `Document update` };
+        return { message: `Setup updated` };
+
+    } catch (error) {
+        console.error('Error adding document: ', error);
+        // return { message: 'Internal Server Error' };
+        throw new HttpsError(error)
+    }
+});
+
+const deleteVolumeMeasurementSetuo = onCall(async (request) => {
+
+    try {
+        let { data } = request;
+
+
+        const { id } = data;
+        if (!id) {
+            throw { message: 'Provide a setup id', code: 'cancelled' };
+        }
+    
+        const db = admin.firestore();
+        await db.collection('setups').doc('volumeMeasurement').collection("setupList").doc(id).delete()
+
+        return { message: `Setup deleted` };
 
     } catch (error) {
         console.error('Error adding document: ', error);
@@ -88,7 +111,7 @@ const getSetups = onCall(async (request) => {
     const setupType = data?.setupType
     const db = admin.firestore();
     const res = await db.collection('setups').doc(setupType).collection('setupList').get()
-    return { message: "Successful ", data: res.docs.sort((a,b) => b.creatgiteTime - a.createTime).map(doc => ({ ...doc.data(), createTime: doc.createTime })) }
+    return { message: "Successful ", data: res.docs.sort((a, b) => b.created - a.created).map(doc => ({ ...doc.data() })) }
 })
 
 
