@@ -5,13 +5,13 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { store } from 'Store';
 import tableStyles from '../table.module.scss'
 import { sum } from 'utils';
 import { Button } from 'Components';
 // import { updateFlowstationReading } from './helper';
 import { toast } from 'react-toastify';
 import { camelize } from './helper';
+import { useSelector } from 'react-redux';
 
 
 const TableInput = (props) => {
@@ -24,7 +24,7 @@ export default function GasTable({ currReport, date }) {
   //  const isGross = currReport === 'Gross Liquid'
   const roundUp = (num) => Math.round(num * 100) / 100
 
-  const setup = React.useMemo(() => store.getState().setup, [])
+  const setup = useSelector(state => state.setup)
 
   const [tableValues, setTableValues] = React.useState({})
   const [totals, setTotals] = React.useState({
@@ -45,7 +45,7 @@ export default function GasTable({ currReport, date }) {
     // console.log({ flowStation, field, value, readingIndex, flowStationField, gasType })
     //careful, to also have the value updated before calculated
     const flowStationSetup = setup?.flowStations?.find(({ name }) => name === flowStation)
-    const meterFactor = flowStationSetup?.measurementType === "Metering" ? parseFloat(flowStationSetup?.readings?.[readingIndex]?.meterFactor || 1) : 1
+    const meterFactor =  parseFloat(flowStationSetup?.readings?.[readingIndex]?.meterFactor || 1)
 
     setTableValues(prev => {
       const prevFlowStation = prev?.[flowStation]
@@ -54,11 +54,11 @@ export default function GasTable({ currReport, date }) {
       const finalBbls = field === "finalBbls" ? value : (prevFlowStationListIndexValues?.finalBbls || 0)
       const initialBbls = field === "initialBbls" ? value : (prevFlowStationListIndexValues?.initialBbls || 0)
       const difference = roundUp(Math.abs(parseFloat(finalBbls) - parseFloat(initialBbls)))
-      console.log({ difference })
+      console.log({ difference, meterFactor })
       let meterTotal = prevFlowStationListIndexValues?.meterTotal
       // meterTotal = (field === "meterTotal" ? value : (|| 0))
       if (field === "meterTotal") { meterTotal = value } else { meterTotal = difference * parseFloat(meterFactor || 0) }
-      console.log({ finalBbls, initialBbls, meterTotal })
+      // console.log({ finalBbls, initialBbls, meterTotal })
 
       const isNum = typeof readingIndex === 'number'
       let updatedMeters = prevFlowStationList
@@ -106,6 +106,26 @@ export default function GasTable({ currReport, date }) {
     }
     setTotals(calcs)
   }, [tableValues])
+
+  React.useEffect(() => {
+    console.log('----')
+    setup?.flowStations.forEach((flowStation, flowStationIndex) => {
+      const readings = flowStation?.readings || []
+      readings.forEach((reading, readingIndex) => {
+        const finalReading = parseFloat(tableValues?.[flowStation?.name]?.meters[readingIndex]?.finalReading) || 0
+        const initialReading = parseFloat(tableValues?.[flowStation?.name]?.meters[readingIndex]?.initialReading) || 0
+        // const deductionInitialReading = parseFloat(tableValues?.[flowStation?.name]?.meters[readingIndex]?.deductionInitialReading) || 0
+        // const deductionFinalReading = parseFloat(tableValues?.[flowStation?.name]?.meters[readingIndex]?.deductionFinalReading) || 0
+        const isNum = (num) => !isNaN(num)
+        if (isNum(initialReading) || isNum(finalReading)) handleChange({ flowStation: flowStation?.name, field: 'finalReading', value: finalReading, readingIndex })
+        // if (isNum(deductionInitialReading) || isNum(deductionFinalReading)) handleChange({ flowStation: flowStation?.name, field: 'deductionFinalReading', value: deductionFinalReading, readingIndex })
+
+      });
+
+    });
+    // eslint-disable-next-line
+  }, [setup])
+
 
   const save = (e) => {
     e.preventDefault()

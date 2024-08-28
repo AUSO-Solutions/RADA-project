@@ -129,14 +129,14 @@ export default function VolumeMeasurementTable({ currReport, date }) {
         const initialReading = parseFloat(tableValues?.[flowStation?.name]?.meters[readingIndex]?.initialReading) || 0
         const deductionInitialReading = parseFloat(tableValues?.[flowStation?.name]?.meters[readingIndex]?.deductionInitialReading) || 0
         const deductionFinalReading = parseFloat(tableValues?.[flowStation?.name]?.meters[readingIndex]?.deductionFinalReading) || 0
-        const isNum = (num)=> !isNaN(num)
+        const isNum = (num) => !isNaN(num)
         if (isNum(initialReading) || isNum(finalReading)) handleChange({ flowStation: flowStation?.name, field: 'finalReading', value: finalReading, readingIndex })
         if (isNum(deductionInitialReading) || isNum(deductionFinalReading)) handleChange({ flowStation: flowStation?.name, field: 'deductionFinalReading', value: deductionFinalReading, readingIndex })
-    
+
       });
 
     });
-// eslint-disable-next-line
+    // eslint-disable-next-line
   }, [setup])
 
   const save = async (e) => {
