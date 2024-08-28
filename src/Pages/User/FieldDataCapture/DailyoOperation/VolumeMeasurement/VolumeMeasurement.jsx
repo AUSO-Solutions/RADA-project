@@ -3,7 +3,7 @@ import Setup from '../setup'
 import { Input } from 'Components'
 import { useAssetNames } from 'hooks/useAssetNames'
 import { useDispatch, useSelector } from 'react-redux'
-import { clearSetup, setSetupData } from 'Store/slices/setupSlice'
+import { clearSetup, setSetupData, setWholeSetup } from 'Store/slices/setupSlice'
 import CheckInput from 'Components/Input/CheckInput'
 import Text from 'Components/Text'
 import { useAssetByName } from 'hooks/useAssetByName'
@@ -21,6 +21,8 @@ import { MdOutlineSettings } from "react-icons/md";
 import VolumeSettings from './VolumeSettings'
 import { camelize, updateFlowstation, updateFlowstationReading } from './helper'
 import GasTable from './GasTable'
+import RadaTable from 'Components/RadaTable'
+import { BsChevronRight } from 'react-icons/bs'
 
 
 
@@ -104,7 +106,7 @@ const DefineReport = ({ asset, }) => {
 
     <div key={setupData?.reportTypes?.length} className='flex flex-col mt-[24px] rounded-[8px] gap-[24px] border'>
       <div className='flex border-b px-3'>
-        <CheckInput  defaultChecked={setupData?.reportTypes?.length === reportTypes.length} onChange={(e) => checkAll(e)} label={'Select All'} />
+        <CheckInput defaultChecked={setupData?.reportTypes?.length === reportTypes.length} onChange={(e) => checkAll(e)} label={'Select All'} />
 
       </div>
       {
@@ -192,7 +194,7 @@ const SelectFlowStation = () => {
                     />
                     <Input containerClass={'!w-[150px]'}
                       type='select' required
-                       options={gasTypes.filter(gasType => !flowStation?.readings?.map(reading => reading?.gasType).includes(gasType.value))}
+                      options={gasTypes.filter(gasType => !flowStation?.readings?.map(reading => reading?.gasType).includes(gasType.value))}
                       defaultValue={gasTypes.find(gasType => flowStation?.readings?.[readingIndex]?.gasType === gasType.value)} isClearable
                       value={gasTypes.find(gasType => flowStation?.readings?.[readingIndex]?.gasType === gasType.value)}
                       onChange={(e) => updateFlowstationReading(i, readingIndex, 'gasType', e?.value)}
@@ -235,7 +237,7 @@ const Preview = () => {
             setupData?.fluidType === 'Gas'
               ?
               <div className={` ${setupData?.flowStations.length === i + 1 ? "" : "border-b border-black"}`}>
-               
+
                 {
                   new Array(parseInt(flowStation?.numberOfUnits)).fill(0)
                     .map((reading, readingIndex) => (
@@ -246,7 +248,7 @@ const Preview = () => {
                           <Text className={'pl-3 w-[33%] '}>{flowStation?.name} (Meter {readingIndex + 1}) </Text>
                           <Text display={'block'} className={'w-[33%] !text-center'}>{flowStation?.readings?.[readingIndex]?.gasType}</Text>
                           <Text display={'block'} className={'w-[33%] !text-right'}>{flowStation?.readings?.[readingIndex]?.serialNumber}</Text>
-                        
+
                         </div>
 
                         {/* ))} */}
@@ -267,6 +269,61 @@ const Preview = () => {
       }
     </div>
   </>
+}
+
+const Existing = ({onSelect=()=>null}) => {
+  const dispatch = useDispatch()
+
+  // const setups = useSelector(state => state.setup)
+  const [setups, setSetups] = useState([])
+  useEffect(() => {
+    const getSetup = async () => {
+      try {
+        const data = await firebaseFunctions('getSetups', { setupType: "volumeMeasurement" })
+        
+        // console.log(data)
+        if (data?.data?.length) setSetups(data?.data)
+      } catch (error) {
+
+      }
+    }
+    getSetup()
+  }, [])
+  return (
+    <div className='p-3'>
+      <Text size={24}> Volume measurement setups </Text> <br />
+
+      <div className='my-3 flex flex-wrap gap-3'>
+        {/* {
+          setups?.map(setup =>
+          (
+            <div className='border my-1 rounded w-[200px] p-2 cursor-pointer' onClick={() => {
+              dispatch(setWholeSetup(setup))
+              // onSetWholeSetup()
+
+            }}>
+              {setup?.asset} {setup?.id}
+
+            </div>
+          )
+          )
+        } */}
+        <RadaTable data={setups} columns={[
+          { name: "Asset", key: "asset" },
+          { name: "Time frame", key: "timeFrame" },
+
+          { name: "Fluid types ", render: (data) => data?.reportTypes?.join(', ') },
+          {
+            name: "View", render: (data) => <><BsChevronRight className='cursor-pointer'
+              onClick={() => { dispatch(setWholeSetup(data));  onSelect(data) }} /></>
+          },
+
+        ]} noaction noSearch />
+      </div>
+
+
+    </div>
+  )
 }
 
 
@@ -336,9 +393,10 @@ const VolumeMeasurement = () => {
           : <Setup
             title={'Setup Volume Measurement Parameters'}
             steps={["Select Asset", "Define Report", "Measurement Type", "Select Flowstations", "Preview"]}
-            type={'volumeMeasurement'}
+            // type={'volumeMeasurement'}
+            existing={<Existing onSelect={()=>setSetupTable(true)}/>}
             rightBtnLoading={loading}
-            onSetWholeSetup={() => setSetupTable(true)}
+            // onSetWholeSetup={}
             stepComponents={
               [
                 <SelectAsset />,

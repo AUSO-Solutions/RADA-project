@@ -3,14 +3,13 @@ import { colors, images } from 'Assets'
 import { Button } from 'Components'
 import RadaStepper from 'Components/Stepper'
 import Text from 'Components/Text'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { firebaseFunctions } from 'Services'
+// import { firebaseFunctions } from 'Services'
 import { openModal } from 'Store/slices/modalSlice'
-import { setWholeSetup } from 'Store/slices/setupSlice'
 
 
-const Setup = ({ title, steps = [], onBack, onNext, stepComponents = [], onSave = () => null, type, rightLoading, onSetWholeSetup }) => {
+const Setup = ({ title, steps = [], onBack, onNext, stepComponents = [], onSave = () => null, type, rightLoading, onSetWholeSetup, existing }) => {
     const SetupModal = () => {
         const [activeStep, setActiveStep] = useState(0)
 
@@ -57,55 +56,21 @@ const Setup = ({ title, steps = [], onBack, onNext, stepComponents = [], onSave 
 
     }
     const dispatch = useDispatch()
-    const [setups, setSetups] = useState([])
-    useEffect(() => {
-        const getSetup = async () => {
-            try {
-                if (!type) return;
-                const data = await firebaseFunctions('getSetups', { setupType: type })
-                // console.log(data)
-                if (data?.data?.length) setSetups(data?.data)
-            } catch (error) {
 
-            }
-        }
-        getSetup()
-    }, [type])
     return (<>
         {
-            setups?.length ?
-                <div className='p-3'>
-                    <Text size={24}> Volume measurement setups </Text> <br />
-
-                    <div className='my-3 flex flex-wrap gap-3'>
-                        {
-                            setups?.map(setup =>
-                            (
-                                <div className='border my-1 rounded w-[200px] p-2 cursor-pointer' onClick={() => {
-                                    dispatch(setWholeSetup(setup))
-                                    onSetWholeSetup()
-
-                                }}>
-                                    {setup?.asset} {setup?.id}
-                                </div>
-                            )
-                            )
-                        }
-                    </div>
-
-                    <Button onClick={() => dispatch(openModal({
+            existing ?
+                <>
+                    {existing}
+                    <Button className={'ml-5'} onClick={() => dispatch(openModal({
                         title: '',
                         component: <SetupModal />
                     }))}>
                         Create new setup
                     </Button>
-                </div>
+                </>
                 :
                 <div className='w-[100%] !h-[100%] flex items-center justify-center'>
-
-
-
-
                     <div className='flex flex-col gap-3 items-center text-center justify-center'>
                         <img src={images.setupIcon} width={158} alt="setup icon" />
                         <Text className={'text-center'}>

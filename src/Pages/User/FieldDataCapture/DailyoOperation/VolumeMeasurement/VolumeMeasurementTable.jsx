@@ -43,7 +43,7 @@ export default function VolumeMeasurementTable({ currReport, date }) {
     //careful, to also have the value updated before calculated
     const flowStationSetup = setup?.flowStations?.find(({ name }) => name === flowStation)
     console.log(setup)
-    const meterFactor = flowStationSetup?.measurementType === "Metering" ? parseFloat(flowStationSetup?.readings?.[readingIndex]?.meterFactor || 1) : 1
+    const meterFactor = parseFloat(flowStationSetup?.readings?.[readingIndex]?.meterFactor || 1)
     const deductionMeterFactor = parseFloat(flowStationSetup?.deductionMeterFactor || 1)
 
     setTableValues(prev => {
@@ -60,6 +60,7 @@ export default function VolumeMeasurementTable({ currReport, date }) {
       const deductionTotal = (deductionDiference * parseFloat(deductionMeterFactor || 0))
       // console.log({deductionFinalReading,deductionInitialReading, deductionDiference,deductionMeterFactor})
       const gross = (difference * parseFloat(meterFactor || 0))
+      console.log({meterFactor})
       const isNum = typeof readingIndex === 'number'
       let updatedMeters = prevFlowStationList
       if (field && isNum) {
@@ -180,7 +181,7 @@ export default function VolumeMeasurementTable({ currReport, date }) {
                   <TableBody>
                     <TableRow key={name}>
                       <TableCell align="left" rowSpan={parseFloat(numberOfUnits) + (measurementType === "Metering" ? 2 : 3)} colSpan={3}>
-                        {name} ({measurementType})
+                        {name} ({measurementType || "Metering"})
                       </TableCell>
                     </TableRow>
                     {
