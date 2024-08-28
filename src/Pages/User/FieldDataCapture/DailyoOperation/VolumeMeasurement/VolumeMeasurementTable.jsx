@@ -45,6 +45,7 @@ export default function VolumeMeasurementTable({ currReport, date }) {
     console.log(setup)
     const meterFactor = parseFloat(flowStationSetup?.readings?.[readingIndex]?.meterFactor || 1)
     const deductionMeterFactor = parseFloat(flowStationSetup?.deductionMeterFactor || 1)
+    const roundUp = (num) => Math.round(num * 100) / 100
 
     setTableValues(prev => {
       const prevFlowStation = prev?.[flowStation]
@@ -54,13 +55,13 @@ export default function VolumeMeasurementTable({ currReport, date }) {
       const initialReading = field === "initialReading" ? value : (prevFlowStationListIndexValues?.initialReading || 0)
       const deductionFinalReading = flowStationField === "deductionFinalReading" ? value : (prevFlowStation?.deductionFinalReading || 0)
       const deductionInitialReading = flowStationField === "deductionInitialReading" ? value : (prevFlowStation?.deductionInitialReading || 0)
-      const difference = (Math.abs(parseFloat(finalReading) - parseFloat(initialReading)))
-      const deductionDiference = (Math.abs(parseFloat(deductionFinalReading || 0) - parseFloat(deductionInitialReading || 0)))
+      const difference = roundUp((Math.abs(parseFloat(finalReading).toFixed(2) - parseFloat(initialReading).toFixed(2))))
+      const deductionDiference = roundUp((Math.abs(parseFloat(deductionFinalReading || 0) - parseFloat(deductionInitialReading || 0))))
       const netProduction = (difference * parseFloat(meterFactor || 0))
       const deductionTotal = (deductionDiference * parseFloat(deductionMeterFactor || 0))
       // console.log({deductionFinalReading,deductionInitialReading, deductionDiference,deductionMeterFactor})
       const gross = (difference * parseFloat(meterFactor || 0))
-      console.log({meterFactor})
+      console.log({ meterFactor, difference }, parseFloat(finalReading).toFixed(2), parseFloat(initialReading).toFixed(2))
       const isNum = typeof readingIndex === 'number'
       let updatedMeters = prevFlowStationList
       if (field && isNum) {
@@ -140,8 +141,8 @@ export default function VolumeMeasurementTable({ currReport, date }) {
   }
   const calculatedGrossOrnNet = (subTotal, bsw) => {
     const result = (subTotal / (1 - (0.01 * bsw))).toFixed(3)
-    if(isNaN(result)) return 0
-    return  result
+    if (isNaN(result)) return 0
+    return result
   }
   return (
     < form className='px-3 ' onSubmit={save} >
@@ -250,10 +251,10 @@ export default function VolumeMeasurementTable({ currReport, date }) {
           <TableBody>
             <TableRow >
               <TableCell align="left" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} className='bg-[rgba(0, 163, 255, 0.3)]' colSpan={6}>{"Total Net Production"}</TableCell>
-              <TableCell align="center" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} >{isNet ? totals?.netProductionTotal : "-"}</TableCell>
+              <TableCell align="center" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} >{isNet ? totals?.netProductionTotal : calculatedGrossOrnNet(totals?.netProductionTotal, totals?.bswTotal)}</TableCell>
               <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{totals?.netTargetTotal}</TableCell>
               <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{totals?.bswTotal}</TableCell>
-              <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{isGross ? totals?.grossTotal : "-"}</TableCell>
+              <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{isGross ? totals?.grossTotal : calculatedGrossOrnNet(totals?.grossTotal, totals?.bswTotal)}</TableCell>
             </TableRow>
           </TableBody>
 

@@ -23,6 +23,7 @@ import { camelize, updateFlowstation, updateFlowstationReading } from './helper'
 import GasTable from './GasTable'
 import RadaTable from 'Components/RadaTable'
 import { BsChevronRight } from 'react-icons/bs'
+import dayjs from 'dayjs'
 
 
 
@@ -313,6 +314,7 @@ const Existing = ({onSelect=()=>null}) => {
           { name: "Time frame", key: "timeFrame" },
 
           { name: "Fluid types ", render: (data) => data?.reportTypes?.join(', ') },
+          { name: "Date ", render: (data) => dayjs(data?.createTime?._seconds ).format("MMM DD. hh:mm a")},
           {
             name: "View", render: (data) => <><BsChevronRight className='cursor-pointer'
               onClick={() => { dispatch(setWholeSetup(data));  onSelect(data) }} /></>
