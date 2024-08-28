@@ -30,7 +30,7 @@ const setupVolumeMeasurement = onCall(async (request) => {
         }
 
         const validReportTypes = ['Gross Liquid', 'Net Oil/ Condensate', 'Gas'];
-        if (!Array.isArray(reportTypes) ||  !reportTypes.filter(reportType => validReportTypes.includes(reportType)).length) {
+        if (!Array.isArray(reportTypes) || !reportTypes.filter(reportType => validReportTypes.includes(reportType)).length) {
             throw { message: 'Invalid report types', code: 'cancelled' };
         }
 
@@ -41,7 +41,7 @@ const setupVolumeMeasurement = onCall(async (request) => {
             asset,
             reportTypes,
             flowStations,
-            timeFrame, id
+            timeFrame, id, created: Date.now()
         });
 
         return { message: `Document created` };
@@ -88,7 +88,7 @@ const getSetups = onCall(async (request) => {
     const setupType = data?.setupType
     const db = admin.firestore();
     const res = await db.collection('setups').doc(setupType).collection('setupList').get()
-    return { message: "Successful ", data: res.docs.map(doc => doc.data()) }
+    return { message: "Successful ", data: res.docs.sort((a,b) => b.creatgiteTime - a.createTime).map(doc => ({ ...doc.data(), createTime: doc.createTime })) }
 })
 
 

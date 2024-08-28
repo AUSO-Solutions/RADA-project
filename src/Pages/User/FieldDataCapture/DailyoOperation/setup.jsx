@@ -3,9 +3,9 @@ import { colors, images } from 'Assets'
 import { Button } from 'Components'
 import RadaStepper from 'Components/Stepper'
 import Text from 'Components/Text'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { firebaseFunctions } from 'Services'
+// import { firebaseFunctions } from 'Services'
 import { openModal } from 'Store/slices/modalSlice'
 
 
@@ -62,7 +62,7 @@ const Setup = ({ title, steps = [], onBack, onNext, stepComponents = [], onSave 
             existing ?
                 <>
                     {existing}
-                    <Button onClick={() => dispatch(openModal({
+                    <Button className={'ml-5'} onClick={() => dispatch(openModal({
                         title: '',
                         component: <SetupModal />
                     }))}>

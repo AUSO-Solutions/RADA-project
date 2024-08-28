@@ -271,7 +271,7 @@ const Preview = () => {
   </>
 }
 
-const Existing = () => {
+const Existing = ({onSelect=()=>null}) => {
   const dispatch = useDispatch()
 
   // const setups = useSelector(state => state.setup)
@@ -280,6 +280,7 @@ const Existing = () => {
     const getSetup = async () => {
       try {
         const data = await firebaseFunctions('getSetups', { setupType: "volumeMeasurement" })
+        
         // console.log(data)
         if (data?.data?.length) setSetups(data?.data)
       } catch (error) {
@@ -308,13 +309,16 @@ const Existing = () => {
           )
         } */}
         <RadaTable data={setups} columns={[
-          { name: "Asset",key:"asset" },
-          { name: "Time frame",key:"timeFrame" },
+          { name: "Asset", key: "asset" },
+          { name: "Time frame", key: "timeFrame" },
 
-          { name: "Fluid types ",render:(data)=>data?.reportTypes?.join(', ') },
-          { name: "View",render:(data)=><><BsChevronRight className='cursor-pointer' onClick={()=>dispatch(setWholeSetup(data))} /></> },
-          
-        ]} noaction noSearch/>
+          { name: "Fluid types ", render: (data) => data?.reportTypes?.join(', ') },
+          {
+            name: "View", render: (data) => <><BsChevronRight className='cursor-pointer'
+              onClick={() => { dispatch(setWholeSetup(data));  onSelect(data) }} /></>
+          },
+
+        ]} noaction noSearch />
       </div>
 
 
@@ -390,9 +394,9 @@ const VolumeMeasurement = () => {
             title={'Setup Volume Measurement Parameters'}
             steps={["Select Asset", "Define Report", "Measurement Type", "Select Flowstations", "Preview"]}
             // type={'volumeMeasurement'}
-            existing={<Existing />}
+            existing={<Existing onSelect={()=>setSetupTable(true)}/>}
             rightBtnLoading={loading}
-            onSetWholeSetup={() => setSetupTable(true)}
+            // onSetWholeSetup={}
             stepComponents={
               [
                 <SelectAsset />,
