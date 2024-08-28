@@ -314,7 +314,7 @@ const Existing = ({onSelect=()=>null}) => {
           { name: "Time frame", key: "timeFrame" },
 
           { name: "Fluid types ", render: (data) => data?.reportTypes?.join(', ') },
-          { name: "Date ", render: (data) => dayjs(data?.createTime?._seconds ).format("MMM DD. hh:mm a")},
+          { name: "Date ", render: (data) =>data?.created ? dayjs(data?.created ).format("MMM DD. hh:mm a"): "--"},
           {
             name: "View", render: (data) => <><BsChevronRight className='cursor-pointer'
               onClick={() => { dispatch(setWholeSetup(data));  onSelect(data) }} /></>
