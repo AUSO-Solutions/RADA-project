@@ -11,6 +11,7 @@ import { sum } from 'utils';
 import { Button } from 'Components';
 import { updateFlowstationReading } from './helper';
 import { toast } from 'react-toastify';
+import { useSelector } from 'react-redux';
 
 
 const TableInput = (props) => {
@@ -28,7 +29,7 @@ export default function VolumeMeasurementTable({ currReport, date }) {
   const isNet = currReport === "Net Oil/ Condensate"
   const isGross = currReport === 'Gross Liquid'
 
-  const setup = React.useMemo(() => store.getState().setup, [])
+  const setup = useSelector(state => state.setup)
 
   const [tableValues, setTableValues] = React.useState({})
   const [totals, setTotals] = React.useState({
@@ -41,6 +42,7 @@ export default function VolumeMeasurementTable({ currReport, date }) {
   const handleChange = ({ flowStation, field, value, readingIndex, flowStationField }) => {
     // console.log({ flowStation, field, value, readingIndex, flowStationField })
     //careful, to also have the value updated before calculated
+    const setup = store.getState().setup
     const flowStationSetup = setup?.flowStations?.find(({ name }) => name === flowStation)
     console.log(setup)
     const meterFactor = parseFloat(flowStationSetup?.readings?.[readingIndex]?.meterFactor || 1)
@@ -119,7 +121,9 @@ export default function VolumeMeasurementTable({ currReport, date }) {
   }, [tableValues])
 
   const save = async (e) => {
+
     e.preventDefault()
+    const setup = store.getState().setup
     const flowStations = Object.entries(tableValues).map(value => ({
       name: value[0],
       ...value[1]
@@ -137,10 +141,12 @@ export default function VolumeMeasurementTable({ currReport, date }) {
     console.log(payload)
 
     toast.success("Successful")
-
   }
-  const calculatedGrossOrnNet = (subTotal, bsw) => {
-    const result = (subTotal / (1 - (0.01 * bsw))).toFixed(3)
+
+  const calculatedGrossOrnNet = (subTotal, bsw, type = 'net') => {
+    let result = (subTotal / (1 - (0.01 * bsw))).toFixed(3)
+    if (type === 'gross') result = (subTotal * (1 - (0.01 * bsw))).toFixed(3)
+
     if (isNaN(result)) return 0
     return result
   }
@@ -232,13 +238,13 @@ export default function VolumeMeasurementTable({ currReport, date }) {
                     <TableRow key={name}>
                       <TableCell sx={{ bgcolor: 'rgba(178, 181, 182, 0.2)' }} align="left" className='pl-5 !bg-[rgba(178, 181, 182, 0.2)]' colSpan={3}><div className='pl-[30px]'> Sub total</div></TableCell>
                       <TableCell sx={{ bgcolor: 'rgba(178, 181, 182, 0.2)' }} align="center">
-                        {isNet ? (tableValues?.[name]?.subTotal || 0) : calculatedGrossOrnNet(tableValues?.[name]?.subTotal, tableValues?.[name]?.bsw)}
+                        {isNet ? (tableValues?.[name]?.subTotal || 0) : calculatedGrossOrnNet(tableValues?.[name]?.subTotal, tableValues?.[name]?.bsw, 'net')}
                       </TableCell>
                       <TableCell align="center"><TableInput type='number' onChange={(e) => handleChange({ flowStation: name, flowStationField: 'netTarget', value: e.target.value, readingIndex: null })} /></TableCell>
                       <TableCell align="center"><TableInput type='number' onChange={(e) => handleChange({ flowStation: name, flowStationField: 'bsw', value: e.target.value, readingIndex: null })} /></TableCell>
                       <TableCell align="center">
                         {/* <TableInput onChange={(e) => handleChange({ flowStation: name, field: 'gross', value: e.target.value, readingIndex: null })} /> */}
-                        {isGross ? (tableValues?.[name]?.subTotal || 0) : calculatedGrossOrnNet(tableValues?.[name]?.subTotal, tableValues?.[name]?.bsw)}
+                        {isGross ? (tableValues?.[name]?.subTotal || 0) : calculatedGrossOrnNet(tableValues?.[name]?.subTotal, tableValues?.[name]?.bsw, 'gross')}
                       </TableCell>
                     </TableRow>
 
@@ -251,10 +257,10 @@ export default function VolumeMeasurementTable({ currReport, date }) {
           <TableBody>
             <TableRow >
               <TableCell align="left" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} className='bg-[rgba(0, 163, 255, 0.3)]' colSpan={6}>{"Total Net Production"}</TableCell>
-              <TableCell align="center" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} >{isNet ? totals?.netProductionTotal : calculatedGrossOrnNet(totals?.netProductionTotal, totals?.bswTotal)}</TableCell>
+              <TableCell align="center" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} >{isNet ? totals?.netProductionTotal : calculatedGrossOrnNet(totals?.netProductionTotal, totals?.bswTotal, 'net')}</TableCell>
               <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{totals?.netTargetTotal}</TableCell>
               <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{totals?.bswTotal}</TableCell>
-              <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{isGross ? totals?.grossTotal : calculatedGrossOrnNet(totals?.grossTotal, totals?.bswTotal)}</TableCell>
+              <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{isGross ? totals?.grossTotal : calculatedGrossOrnNet(totals?.grossTotal, totals?.bswTotal, 'gross')}</TableCell>
             </TableRow>
           </TableBody>
 

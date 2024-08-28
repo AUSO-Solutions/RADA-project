@@ -1,27 +1,37 @@
 import { Box } from '@mui/material'
 import Text from 'Components/Text'
-import React from 'react'
-import { useSelector } from 'react-redux'
+import React, { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 // import { setSetupData } from 'Store/slices/setupSlice'
 import { updateFlowstation, updateFlowstationReading } from './helper'
 import { Button } from 'Components'
 import { firebaseFunctions } from 'Services'
 import { store } from 'Store'
 import { Close } from '@mui/icons-material'
+import { setWholeSetup } from 'Store/slices/setupSlice'
+import { toast } from 'react-toastify'
 
 const VolumeSettings = ({ onClickOut = () => null }) => {
   const setupData = useSelector(state => state.setup)
+  const dispatch = useDispatch()
+  const [loading, setLoading] = useState(false)
   console.log(setupData)
 
 
   const save = async () => {
+    setLoading(true)
     try {
 
       const _setupData = store.getState().setup
       await firebaseFunctions('updateVolumeMeasurement', { ..._setupData })
+      console.log(_setupData)
+      dispatch(setWholeSetup(_setupData))
+      toast.success("Updates saved")
     } catch (error) {
 
       console.log(error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -68,11 +78,11 @@ const VolumeSettings = ({ onClickOut = () => null }) => {
               <Text size={14} className={'w-[30%] !text-right'}>
                 {
                   new Array(parseInt(flowStation?.numberOfUnits)).fill(0).map((meter, readingIndex) => (
-                 <> <input type='number'
+                    <> <input type='number'
                       disabled={flowStation?.measurementType === 'Tank Dipping'}
-                      defaultValue={flowStation?.measurementType === 'Metering'  || !flowStation?.measurementType  ? (flowStation?.readings?.[readingIndex]?.meterFactor || 1) : 1}
+                      defaultValue={flowStation?.measurementType === 'Metering' || !flowStation?.measurementType ? (flowStation?.readings?.[readingIndex]?.meterFactor || 1) : 1}
                       onChange={(e) => updateFlowstationReading(flowStationIndex, readingIndex, 'meterFactor', e.target.value)}
-                      min={1} className='border text-center outline-none px-2 w-[98px] h-[30px] my-1' /></> 
+                      min={1} className='border text-center outline-none px-2 w-[98px] h-[30px] my-1' /></>
 
                   ))
                 }
@@ -87,7 +97,7 @@ const VolumeSettings = ({ onClickOut = () => null }) => {
           ))
         }
 
-        <Button className={'w-[200px] mx-auto mt-5 '} onClick={save}>
+        <Button className={'w-[200px] mx-auto mt-5 '} onClick={save} loading={loading}>
           Save
         </Button>
       </div>
