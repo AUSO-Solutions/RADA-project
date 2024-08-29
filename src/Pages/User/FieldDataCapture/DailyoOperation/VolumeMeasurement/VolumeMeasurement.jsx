@@ -171,7 +171,7 @@ const SelectMeasurementType = () => {
 
 const SelectFlowStation = () => {
   const setupData = useSelector(state => state.setup)
-  // console.log(setupData)
+  console.log(setupData)
 
   return <>
     <div className='border mt-3 !rounded-[8px]'>
@@ -187,7 +187,7 @@ const SelectFlowStation = () => {
               <>
                 {
                   new Array(parseInt(flowStation?.numberOfUnits)).fill(0).map((reading, readingIndex) => <div className={`flex items-center ${setupData?.flowStations.length === i + 1 ? "" : "border-b"} justify-between p-3`}>
-                    <Text>{flowStation?.name} ({!flowStation?.measurementType || flowStation?.measurementType === 'metering' ? "Meter" : "Tank"} {readingIndex + 1}){flowStation?.measurementType } </Text>
+                    <Text>{flowStation?.name}  (Meter {readingIndex + 1})</Text>
                     <Input containerClass={'!w-[150px]'}
                       defaultValue={flowStation?.readings?.[readingIndex]?.serialNumber}
                       value={flowStation?.readings?.[readingIndex]?.serialNumber} required
@@ -205,7 +205,7 @@ const SelectFlowStation = () => {
               </>
               :
               new Array(parseInt(flowStation?.numberOfUnits)).fill(0).map((reading, readingIndex) => <div className={`flex items-center ${setupData?.flowStations.length === i + 1 ? "" : "border-b"} justify-between p-3`}>
-                <Text>{flowStation?.name} (Meter {readingIndex + 1})</Text>
+                <Text>{flowStation?.name} ({!flowStation?.measurementType || flowStation?.measurementType === 'Metering' ? "Meter" : "Tank"} {readingIndex + 1})</Text>
                 <Input containerClass={'!w-[150px]'}
                   defaultValue={flowStation?.readings?.[readingIndex]?.serialNumber}
                   value={flowStation?.readings?.[readingIndex]?.serialNumber}
