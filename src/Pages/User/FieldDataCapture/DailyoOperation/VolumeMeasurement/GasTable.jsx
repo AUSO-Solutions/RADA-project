@@ -42,10 +42,10 @@ export default function GasTable({ currReport, date }) {
   // }
 
   const handleChange = ({ flowStation, field, value, readingIndex, flowStationField, gasType }) => {
-    // console.log({ flowStation, field, value, readingIndex, flowStationField, gasType })
+    console.log({ flowStation, field, value, readingIndex, flowStationField, gasType })
     //careful, to also have the value updated before calculated
     const flowStationSetup = setup?.flowStations?.find(({ name }) => name === flowStation)
-    const meterFactor =  parseFloat(flowStationSetup?.readings?.[readingIndex]?.meterFactor || 1)
+    const meterFactor = parseFloat(flowStationSetup?.readings?.[readingIndex]?.meterFactor || 1)
 
     setTableValues(prev => {
       const prevFlowStation = prev?.[flowStation]
@@ -58,7 +58,7 @@ export default function GasTable({ currReport, date }) {
       let meterTotal = prevFlowStationListIndexValues?.meterTotal
       // meterTotal = (field === "meterTotal" ? value : (|| 0))
       if (field === "meterTotal") { meterTotal = value } else { meterTotal = difference * parseFloat(meterFactor || 0) }
-      // console.log({ finalBbls, initialBbls, meterTotal })
+      console.log({ finalBbls, initialBbls, meterTotal })
 
       const isNum = typeof readingIndex === 'number'
       let updatedMeters = prevFlowStationList
@@ -183,9 +183,15 @@ export default function GasTable({ currReport, date }) {
                     </TableRow>
                     <>
                       {gasTypes.map((gasType, i) => {
+                        // let usedIndexs = []
                         const readingAtIndex = readings?.find(reading => reading?.gasType === gasType.value)
                         let readingIndex = readings?.findIndex(reading => reading?.gasType === gasType.value)
-                        if (readingIndex === -1 || !readingIndex) readingIndex = i
+                        if (readingIndex === -1 ) readingIndex = i + readings?.length
+                        if (!readings) readingIndex = i
+                        // usedIndexs.push(readingIndex)
+                        // console.log({usedIndexs})
+                        // usedIndexs.push(readingIndex)
+                        // console.log(readings,readingIndex,i)
 
                         const initialBbls = tableValues?.[name]?.meters?.[readingIndex]?.initialBbls
                         const finalBbls = tableValues?.[name]?.meters?.[readingIndex]?.finalBbls
@@ -195,10 +201,11 @@ export default function GasTable({ currReport, date }) {
                             {gasType.label}
                           </TableCell>
                           <TableCell align="center">
-                            {readingAtIndex?.serialNumber}
+                            {readingAtIndex?.serialNumber} {readingIndex}
                           </TableCell>
 
                           <TableCell align="center">
+
                             <TableInput value={readingAtIndex ? initialBbls : "-"}
                               disabled={!readingAtIndex} type={'number'}
                               onChange={(e) => handleChange({ flowStation: name, field: 'initialBbls', value: e.target.value, readingIndex, gasType: gasType.value })} />
@@ -210,7 +217,6 @@ export default function GasTable({ currReport, date }) {
                           </TableCell>
                           <TableCell align="center" colSpan={2}>
                             {readingAtIndex ? meterTotal :
-
                               <TableInput
                                 disabled={readingAtIndex} type={'number'}
                                 onChange={(e) => handleChange({ flowStation: name, field: `meterTotal`, value: e.target.value, readingIndex, gasType: gasType.value })} />}
