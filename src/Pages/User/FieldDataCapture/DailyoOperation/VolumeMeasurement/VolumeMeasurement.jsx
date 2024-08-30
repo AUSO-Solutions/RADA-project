@@ -228,9 +228,9 @@ const Preview = () => {
   return <>
     <div className='border mt-3 !rounded-[8px] w-full'>
       <div className='flex justify-between border-b p-3'>
-        <Text weight={600} className='w-1/3' size={"16px"}>Flow stations</Text>
-        {<Text weight={600} className={'!text-center w-1/3'} size={"16px"}>Type</Text>}
-        <Text weight={600} className='w-1/3 !text-right' size={"16px"}>Serial Number</Text>
+        <Text weight={600} className='w-[33%]' size={"16px"}>Flow stations</Text>
+        {<Text weight={600} className={'!text-center w-[33%]'} size={"16px"}>Type</Text>}
+        <Text weight={600} className='w-[33%] !text-right' size={"16px"}>Serial Number</Text>
       </div>
       {
         setupData?.flowStations?.map((flowStation, i) => {
@@ -261,9 +261,9 @@ const Preview = () => {
               :
 
               new Array(parseInt(flowStation?.numberOfUnits)).fill(0).map((reading, readingIndex) => <div className={`flex items-center ${setupData?.flowStations.length === i + 1 ? "" : "border-b"} justify-between p-3`}>
-                <Text>{flowStation?.name} (Meter {readingIndex + 1})</Text>
-                <Text> {flowStation?.measurementType} </Text>
-                <Text>{flowStation?.readings?.[readingIndex]?.serialNumber}</Text>
+                <Text className={'w-[33%]'}>{flowStation?.name} ({!flowStation?.measurementType || flowStation?.measurementType === 'Metering' ? "Meter" : "Tank"} {readingIndex + 1})</Text>
+                <Text className={'w-[33%]'}> {flowStation?.measurementType} </Text>
+                <Text className={'w-[33%]'}>{flowStation?.readings?.[readingIndex]?.serialNumber}</Text>
               </div>)
           )
         })
@@ -341,7 +341,7 @@ const VolumeMeasurement = () => {
       const setupData = store.getState().setup
       // console.log(setupData)
       const data = await firebaseFunctions('setupVolumeMeasurement', { ...setupData })
-      
+
       dispatch(setWholeSetup(data))
       dispatch(closeModal())
       setSetupTable(true)
