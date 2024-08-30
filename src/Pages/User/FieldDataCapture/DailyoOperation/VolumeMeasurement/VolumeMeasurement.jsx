@@ -260,10 +260,10 @@ const Preview = () => {
               </div>
               :
 
-              new Array(parseInt(flowStation?.numberOfUnits)).fill(0).map((reading, readingIndex) => <div className={`flex items-center ${setupData?.flowStations.length === i + 1 ? "" : "border-b"} justify-between p-3`}>
-                <Text className={'w-[33%]'}>{flowStation?.name} ({!flowStation?.measurementType || flowStation?.measurementType === 'Metering' ? "Meter" : "Tank"} {readingIndex + 1})</Text>
-                <Text className={'w-[33%]'}> {flowStation?.measurementType} </Text>
-                <Text className={'w-[33%]'}>{flowStation?.readings?.[readingIndex]?.serialNumber}</Text>
+              new Array(parseInt(flowStation?.numberOfUnits)).fill(0).map((reading, readingIndex) => <div className={`flex items-center ${setupData?.flowStations.length === i + 1 ? "" : "border-b"} justify-between !w-[100%] p-3`}>
+                <Text className={'!w-[33%] '} display={'block'}>{flowStation?.name} ({!flowStation?.measurementType || flowStation?.measurementType === 'Metering' ? "Meter" : "Tank"} {readingIndex + 1})</Text>
+                <Text className={'!w-[33%]   !text-center'} display={'block'}> {flowStation?.measurementType} </Text>
+                <Text className={'!w-[33%]   !text-right'} display={'block'}>{flowStation?.readings?.[readingIndex]?.serialNumber}</Text>
               </div>)
           )
         })
@@ -340,7 +340,8 @@ const VolumeMeasurement = () => {
       setLoading(true)
       const setupData = store.getState().setup
       // console.log(setupData)
-      const data = await firebaseFunctions('setupVolumeMeasurement', { ...setupData })
+      const {data} = await firebaseFunctions('setupVolumeMeasurement', { ...setupData })
+      console.log({data},'----')
 
       dispatch(setWholeSetup(data))
       dispatch(closeModal())
