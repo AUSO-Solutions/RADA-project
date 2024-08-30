@@ -14,15 +14,19 @@ import { camelize } from './helper';
 import { useSelector } from 'react-redux';
 
 
-const TableInput = (props) => {
-  return <input className='p-1 text-center w-[70px] border outline-none' {...props} />
+const TableInput = ({ type = '', ...props }) => {
+  // if(type == =)
+
+  return <input className='p-1 text-center w-[70px] border outline-none' step="any" type={type} {...props} />
 }
 
 export default function GasTable({ currReport, date }) {
   //  const isGas = currReport === "Gas"
   // const isNet = currReport === "Net Oil/ Condensate"
   //  const isGross = currReport === 'Gross Liquid'
-  const roundUp = (num) => Math.round(num * 100) / 100
+  const roundUp = (num, places = 2) =>{
+   return Math.round(num * 10000) / 10000
+  }
 
   const setup = useSelector(state => state.setup)
 
@@ -42,10 +46,10 @@ export default function GasTable({ currReport, date }) {
   // }
 
   const handleChange = ({ flowStation, field, value, readingIndex, flowStationField, gasType }) => {
-    console.log({ flowStation, field, value, readingIndex, flowStationField, gasType })
+    // console.log({ flowStation, field, value, readingIndex, flowStationField, gasType })
     //careful, to also have the value updated before calculated
     const flowStationSetup = setup?.flowStations?.find(({ name }) => name === flowStation)
-    const meterFactor = parseFloat(flowStationSetup?.readings?.[readingIndex]?.meterFactor || 1)
+    const meterFactor = parseFloat(flowStationSetup?.readings?.[readingIndex]?.meterFactor || 1).toFixed(5)
 
     setTableValues(prev => {
       const prevFlowStation = prev?.[flowStation]
@@ -54,11 +58,11 @@ export default function GasTable({ currReport, date }) {
       const finalBbls = field === "finalBbls" ? value : (prevFlowStationListIndexValues?.finalBbls || 0)
       const initialBbls = field === "initialBbls" ? value : (prevFlowStationListIndexValues?.initialBbls || 0)
       const difference = roundUp(Math.abs(parseFloat(finalBbls) - parseFloat(initialBbls)))
-      console.log({ difference, meterFactor })
+      // console.log({ difference, meterFactor })
       let meterTotal = prevFlowStationListIndexValues?.meterTotal
       // meterTotal = (field === "meterTotal" ? value : (|| 0))
-      if (field === "meterTotal") { meterTotal = value } else { meterTotal = difference * parseFloat(meterFactor || 0) }
-      console.log({ finalBbls, initialBbls, meterTotal })
+      if (field === "meterTotal") { meterTotal = parseFloat(value)} else { meterTotal = (difference * parseFloat(meterFactor || 0).toFixed(5)) }
+      // console.log({ finalBbls, initialBbls, meterTotal })
 
       const isNum = typeof readingIndex === 'number'
       let updatedMeters = prevFlowStationList
@@ -80,7 +84,7 @@ export default function GasTable({ currReport, date }) {
       let updatedFlowStation = {
         ...prevFlowStation,
         meters: updatedMeters,
-        subTotal: sum(Object.values(updatedMeters || {}).map(value => value.meterTotal)),
+        subTotal: sum(Object.values(updatedMeters || {}).map(value => value.meterTotal)).toFixed(5),
       }
       if (flowStationField) {
         updatedFlowStation = {
@@ -102,7 +106,7 @@ export default function GasTable({ currReport, date }) {
     const values = (Object.values(tableValues))
     // console.log(values)
     const calcs = {
-      netProductionTotal: sum(Object.values(values || {}).map(item => item?.subTotal || 0)),
+      netProductionTotal: sum(Object.values(values || {}).map(item => item?.subTotal || 0)).toFixed(5),
     }
     setTotals(calcs)
   }, [tableValues])
@@ -186,7 +190,7 @@ export default function GasTable({ currReport, date }) {
                         // let usedIndexs = []
                         const readingAtIndex = readings?.find(reading => reading?.gasType === gasType.value)
                         let readingIndex = readings?.findIndex(reading => reading?.gasType === gasType.value)
-                        if (readingIndex === -1 ) readingIndex = i + readings?.length
+                        if (readingIndex === -1) readingIndex = i + readings?.length
                         if (!readings) readingIndex = i
                         // usedIndexs.push(readingIndex)
                         // console.log({usedIndexs})
@@ -201,7 +205,7 @@ export default function GasTable({ currReport, date }) {
                             {gasType.label}
                           </TableCell>
                           <TableCell align="center">
-                            {readingAtIndex?.serialNumber} {readingIndex}
+                            {readingAtIndex?.serialNumber}
                           </TableCell>
 
                           <TableCell align="center">
