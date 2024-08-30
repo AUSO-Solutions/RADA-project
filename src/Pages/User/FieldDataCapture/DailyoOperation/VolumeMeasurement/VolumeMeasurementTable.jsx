@@ -38,7 +38,7 @@ export default function VolumeMeasurementTable({ currReport, date }) {
     bswTotal: 0,
     grossTotal: 0,
   })
-  const roundUp = (num) => Math.round(num * 100) / 100
+  // const roundUp = (num) => Math.round(num * 100000) / 100000
 
   const handleChange = ({ flowStation, field, value, readingIndex, flowStationField }) => {
     // console.log({ flowStation, field, value, readingIndex, flowStationField })
@@ -53,17 +53,18 @@ export default function VolumeMeasurementTable({ currReport, date }) {
       const prevFlowStation = prev?.[flowStation]
       const prevFlowStationList = prevFlowStation?.meters
       const prevFlowStationListIndexValues = prevFlowStation?.meters?.[readingIndex]
-      const finalReading = field === "finalReading" ? value : (prevFlowStationListIndexValues?.finalReading || 0)
-      const initialReading = field === "initialReading" ? value : (prevFlowStationListIndexValues?.initialReading || 0)
+      const finalReading = field === "finalReading" ? value : parseFloat(prevFlowStationListIndexValues?.finalReading || 0)
+      const initialReading = field === "initialReading" ? value : parseFloat(prevFlowStationListIndexValues?.initialReading || 0)
       const deductionFinalReading = flowStationField === "deductionFinalReading" ? value : (prevFlowStation?.deductionFinalReading || 0)
       const deductionInitialReading = flowStationField === "deductionInitialReading" ? value : (prevFlowStation?.deductionInitialReading || 0)
-      const difference = roundUp((Math.abs(parseFloat(finalReading).toFixed(2) - parseFloat(initialReading).toFixed(2))))
-      const deductionDiference = roundUp((Math.abs(parseFloat(deductionFinalReading || 0) - parseFloat(deductionInitialReading || 0))))
+      const difference = ((Math.abs(parseFloat(finalReading) - parseFloat(initialReading))))
+
+      const deductionDiference = ((Math.abs(parseFloat(deductionFinalReading || 0) - parseFloat(deductionInitialReading || 0))))
       const netProduction = (difference * parseFloat(meterFactor || 0))
       const deductionTotal = (deductionDiference * parseFloat(deductionMeterFactor || 0))
       // console.log({deductionFinalReading,deductionInitialReading, deductionDiference,deductionMeterFactor})
-      const gross = (difference * parseFloat(meterFactor || 0))
-      console.log({ meterFactor, difference }, parseFloat(finalReading).toFixed(2), parseFloat(initialReading).toFixed(2))
+      const gross = (difference.toFixed(5) * parseFloat(meterFactor || 0).toFixed(5) )
+      // console.log({ meterFactor, difference }, parseFloat(finalReading).toFixed(5), parseFloat(initialReading).toFixed(5))
       const isNum = typeof readingIndex === 'number'
       let updatedMeters = prevFlowStationList
       if (field && isNum) {
@@ -89,7 +90,7 @@ export default function VolumeMeasurementTable({ currReport, date }) {
         ...prevFlowStation,
         meters: updatedMeters,
         deductionTotal,
-        subTotal: sum(Object.values(updatedMeters || {}).map(value => value.netProduction)) + deductionTotal,
+        subTotal: sum(Object.values(updatedMeters || {}).map(value => parseFloat(value.netProduction)) + parseFloat(deductionTotal)?.toFixed(5)),
         reportType: currReport
       }
       if (flowStationField) {
