@@ -340,7 +340,9 @@ const VolumeMeasurement = () => {
       setLoading(true)
       const setupData = store.getState().setup
       // console.log(setupData)
-      await firebaseFunctions('setupVolumeMeasurement', { ...setupData })
+      const data = await firebaseFunctions('setupVolumeMeasurement', { ...setupData })
+      
+      dispatch(setWholeSetup(data))
       dispatch(closeModal())
       setSetupTable(true)
     } catch (error) {
