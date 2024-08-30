@@ -36,15 +36,16 @@ const setupVolumeMeasurement = onCall(async (request) => {
 
         const id = crypto.randomBytes(8).toString("hex");
         const db = admin.firestore();
-
-        const docRef = await db.collection('setups').doc('volumeMeasurement').collection("setupList").doc(id).set({
+        const payload = {
             asset,
             reportTypes,
             flowStations,
             timeFrame, id, created: Date.now()
-        });
+        }
+        
+         await db.collection('setups').doc('volumeMeasurement').collection("setupList").doc(id).set(payload);
 
-        return { message: `Document created` };
+        return { message: `Document created`, data:payload };
 
     } catch (error) {
         console.error('Error adding document: ', error);
@@ -93,7 +94,7 @@ const deleteVolumeMeasurementSetuo = onCall(async (request) => {
         if (!id) {
             throw { message: 'Provide a setup id', code: 'cancelled' };
         }
-    
+
         const db = admin.firestore();
         await db.collection('setups').doc('volumeMeasurement').collection("setupList").doc(id).delete()
 
