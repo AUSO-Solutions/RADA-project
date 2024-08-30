@@ -16,11 +16,11 @@ import { useSelector } from 'react-redux';
 
 const TableInput = (props) => {
   return <input className='p-1 text-center w-[70px] border outline-none' required {...props}
-  //  onKeyPress={(e) => {
-  //   if (!/[0-9]/.test(e.key) && props.type === 'number') {
-  //     e.preventDefault();
-  //   }
-  // }}
+    // onKeyPress={(e) => {
+    //   if (!/[0-9]/.test(e.key) && props.type === 'number') {
+    //     e.preventDefault();
+    //   }
+    // }}
   />
 }
 
@@ -63,7 +63,7 @@ export default function VolumeMeasurementTable({ currReport, date }) {
       const netProduction = (difference * parseFloat(meterFactor || 0))
       const deductionTotal = (deductionDiference * parseFloat(deductionMeterFactor || 0))
       // console.log({deductionFinalReading,deductionInitialReading, deductionDiference,deductionMeterFactor})
-      const gross = (difference.toFixed(5) * parseFloat(meterFactor || 0).toFixed(5) )
+      const gross = (difference.toFixed(5) * parseFloat(meterFactor || 0).toFixed(5))
       // console.log({ meterFactor, difference }, parseFloat(finalReading).toFixed(5), parseFloat(initialReading).toFixed(5))
       const isNum = typeof readingIndex === 'number'
       let updatedMeters = prevFlowStationList
@@ -86,11 +86,14 @@ export default function VolumeMeasurementTable({ currReport, date }) {
         meterFactor,
         netProduction: deductionDiference
       }
+
+      const subTotal = parseFloat(sum(Object.values(updatedMeters || {}).map(value => parseFloat(value.netProduction)))) + parseFloat(deductionTotal.toFixed(5) || 0)
+      console.log(parseFloat(sum(Object.values(updatedMeters || {}).map(value => parseFloat(value.netProduction)))) , parseFloat(deductionTotal || 0)?.toFixed(5))
       let updatedFlowStation = {
         ...prevFlowStation,
         meters: updatedMeters,
         deductionTotal,
-        subTotal: sum(Object.values(updatedMeters || {}).map(value => parseFloat(value.netProduction)) + parseFloat(deductionTotal)?.toFixed(5)),
+        subTotal,
         reportType: currReport
       }
       if (flowStationField) {
@@ -158,7 +161,7 @@ export default function VolumeMeasurementTable({ currReport, date }) {
 
       ...totals
     }
-    console.log(payload)
+    console.log(JSON.stringify(payload))
 
     toast.success("Successful")
   }
