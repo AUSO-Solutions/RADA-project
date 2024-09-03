@@ -1,9 +1,10 @@
 import React from 'react'
+import WellTestDataTable from './WellTestDataTable'
 
 const WellTestData = () => {
   return (
     <div>
-      <>hiiii</>
+      <WellTestDataTable/>
 
     </div>
   )
