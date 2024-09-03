@@ -19,7 +19,7 @@ function Sidenav() {
   // const user = useSelector(state => state?.auth?.user)
   const sidebar = useMemo(() => {
     const paths_ = pathname.split("/")
-    console.log(paths_)
+    // console.log(paths_)
     return { module: paths_[1], parent: paths_[2], child: paths_[3]?.toLowerCase() }
   }, [pathname])
   const paths = useMemo(() => ({

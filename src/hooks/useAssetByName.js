@@ -15,7 +15,8 @@ export const useAssetByName = (name) => {
         const flowStations = Array.from(new Set(uniques?.map(datum => datum?.flowStation)))
         setAssetData(uniques)
         setItems(prev => ({ ...prev, flowStations }))
-    }, [data, name])
+        // eslint-disable-next-line 
+    }, [name])
 
     return {
         assetData, ...items

@@ -3,13 +3,13 @@ import { colors, images } from 'Assets'
 import { Button } from 'Components'
 import RadaStepper from 'Components/Stepper'
 import Text from 'Components/Text'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { openModal } from 'Store/slices/modalSlice'
 
 
 const Setup = ({ title, steps = [], onBack, onNext, stepComponents = [], onSave = () => null }) => {
-    const SetupModal = ({ }) => {
+    const SetupModal = () => {
         const [activeStep, setActiveStep] = useState(0)
 
         const back = () => {

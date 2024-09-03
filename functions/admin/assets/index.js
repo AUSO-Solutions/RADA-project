@@ -48,7 +48,7 @@ const createAsset = onCall(async (request) => {
       throw { code: "cancelled", message: "Please provide asset name" };
     }
 
-    await db
+    await db.collection('assets')
       .doc(name)
       .collection("assetList")
       .doc(id)
@@ -121,7 +121,7 @@ const getAssets2 = onCall(async () => {
   }
 });
 
-const getAssets = onCall(async ({}) => {
+const getAssets = onCall(async ({ }) => {
   const limit = 10;
   logger.log("------");
   try {
@@ -134,7 +134,7 @@ const getAssets = onCall(async ({}) => {
     return { status: "failed", error };
   }
 });
-const getAssetsName = onCall(async ({}) => {
+const getAssetsName = onCall(async ({ }) => {
   const limit = 10;
   logger.log("------");
   try {

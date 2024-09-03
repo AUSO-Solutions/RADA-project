@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 
 
 const CreateAsset = ({ updateUserId = null, defaultValues }) => {
-
+    console.log({ defaultValues })
     // console.log(defaultValues)
     const schema = Yup.object().shape({
         // email: Yup.string().required(),
@@ -31,7 +31,7 @@ const CreateAsset = ({ updateUserId = null, defaultValues }) => {
             }}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', width: '600px', gap: '20px' }} >
             <Stack direction={'row'} spacing={1}>
-                <Input label={'OML'} name='name' defaultValue={defaultValues?.name} />
+                <Input label={'OML'} name='name' defaultValue={defaultValues?.assetName} />
                 <Input label={'Field'} name='field' defaultValue={defaultValues?.field} />
             </Stack>
             <Stack direction={'row'} spacing={1}>
@@ -45,8 +45,8 @@ const CreateAsset = ({ updateUserId = null, defaultValues }) => {
             <Stack direction={'row'} spacing={1}>
                 <Input label={'Surface X Coordinates'} name='surfaceXcoordinate' defaultValue={defaultValues?.surfaceXcoordinate} />
                 <Input label={'Surface Y Coordinates'} name='surfaceYcoordinate' defaultValue={defaultValues?.surfaceYcoordinate} />
-
             </Stack>
+            {defaultValues && <Input hidden name={'listId'} value={defaultValues?.listId} />}
 
 
 
