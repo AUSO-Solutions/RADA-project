@@ -33,7 +33,7 @@ const RadaSelect = ({ name, onChange, options, isMulti, ...rest }) => {
                 else {
                     onChange(e)
                 }
-            }} isDisabled={rest.disabled} {...rest} required
+            }} isDisabled={rest.disabled} {...rest}
                 styles={{
                     control: (baseStyles) => ({ ...baseStyles, borderRadius: '12px' }),
                     // container: (baseStyles) => ({ ...baseStyles, height: 'auto', padding: 0, }),

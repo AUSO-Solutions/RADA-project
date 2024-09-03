@@ -18,7 +18,8 @@ const Setup = ({ title, steps = [], onBack, onNext, stepComponents = [], onSave 
                 return 0
             })
         }
-        const next = () => {
+        const next = (e) => {
+            e.preventDefault()
             setActiveStep(prev => {
                 if (prev !== steps?.length - 1) return prev + 1
                 return steps.length - 1
@@ -30,7 +31,7 @@ const Setup = ({ title, steps = [], onBack, onNext, stepComponents = [], onSave 
         }
 
         return (
-            <Box component={'div'} width={'700px'} height={'700px'} borderRadius={8} bgcolor={'white'}>
+            <Box component={'form'} width={'700px'} height={'700px'} onSubmit={next} borderRadius={8} bgcolor={'white'}>
                 <Text weight={500} size={"24px"}>{title}</Text>
                 <br /> <br />
                 <RadaStepper steps={steps} activeStep={activeStep} />
@@ -42,7 +43,7 @@ const Setup = ({ title, steps = [], onBack, onNext, stepComponents = [], onSave 
                     <Button bgcolor={'white'} onClick={back} color={colors.rada_blue} style={{ border: `1px solid ${colors.rada_blue} ` }} width={'177px'} height={'55px'}>
                         Back
                     </Button>
-                    <Button width={'177px'} height={'55px'} onClick={next} >
+                    <Button width={'177px'} height={'55px'} type='submit'>
                         {activeStep === steps.length - 1 ? "Save" : "Next"}
                     </Button>
                 </Box>
