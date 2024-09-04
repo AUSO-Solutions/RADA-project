@@ -85,7 +85,7 @@ const DefineSchedule = () => {
     return <>
         <div className='flex justify-between !w-[100%]'>
             <Input type='select' placeholder={setupData?.asset} containerClass={'h-[39px] !w-[150px]'} disabled />
-            <Input type='date' placeholder="Daily" containerClass={'h-[39px] !w-[150px]'}
+            <Input type='month' placeholder="Daily" containerClass={'h-[39px] !w-[150px]'}
                 defaultValue={setupData?.date }
                 onChange={(e) => dispatch(setSetupData({ name: 'date', value: e.value }))} />
         </div>
@@ -188,10 +188,10 @@ const Preview = () => {
     return <>
         <div className='flex justify-between !w-[100%]'>
             <Input type='select' placeholder={setupData?.asset} containerClass={'h-[39px] !w-[150px]'} disabled />
-            <Input type='select' placeholder="Daily" containerClass={'h-[39px] !w-[150px]'}
+            {/* <Input type='select' placeholder="Daily" containerClass={'h-[39px] !w-[150px]'}
                 defaultValue={{ label: setupData?.timeFrame, value: setupData?.timeFrame }}
                 onChange={(e) => dispatch(setSetupData({ name: 'timeFrame', value: e.value }))}
-                options={timeFrames?.map(timeFrame => ({ value: timeFrame, label: timeFrame }))} />
+                options={timeFrames?.map(timeFrame => ({ value: timeFrame, label: timeFrame }))} /> */}
         </div>
 
         <div key={setupData?.reportTypes?.length} className={styles.tableContainer}>
