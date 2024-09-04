@@ -66,7 +66,8 @@ export default function ScheduleTable() {
                     <TableBody>
 
                         {
-                            Object.values(wellTest?.wellsData || {})?.map((well, i) => {
+                            Object.values(wellTest?.wellsData || {})
+                            .sort((a,b)=>((b?.isSelected?1:0)  - (a?.isSelected?1:0)))?.map((well, i) => {
                                 return <TableRow>
                                     <TableCell align="center">
                                         {i + 1}
@@ -81,11 +82,11 @@ export default function ScheduleTable() {
                                     <TableCell align="center">
                                         {well?.chokeSize}
                                     </TableCell>
-                                    <TableCell bgcolor={well?.isSelected? '#A7EF6F' :"#FF5252"} align="center">YES</TableCell>
-                                    <TableCell align="center">{well?.startDate}</TableCell>
-                                    <TableCell align="center">{well?.endDate}</TableCell>
-                                    <TableCell align="center">{well?.stabilizatonDuration}</TableCell>
-                                    <TableCell align="center">{well?.duration}</TableCell>
+                                    <TableCell bgcolor={well?.isSelected ? '#A7EF6F' : "#FF5252"} align="center">{well?.isSelected ? 'YES' : 'NO'}</TableCell>
+                                    <TableCell align="center">{well?.isSelected ? well?.startDate : '-'}</TableCell>
+                                    <TableCell align="center">{well?.isSelected ? well?.endDate : '-'}</TableCell>
+                                    <TableCell align="center">{well?.isSelected ? well?.stabilizatonDuration : '-'}</TableCell>
+                                    <TableCell align="center">{well?.isSelected ? well?.duration : '-'}</TableCell>
                                     <TableCell colSpan={3} align="center">
                                         <textarea className='border rounded px-2 py-1' />
                                     </TableCell>
