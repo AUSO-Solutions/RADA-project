@@ -53,7 +53,7 @@ export default function WellTestDataTable() {
                     </div>
                 </div>
             </div>
-            <TableContainer className={`m-auto border ${tableStyles.borderedMuiTable}`}>
+            <TableContainer className={`m-auto border  pr-5 ${tableStyles.borderedMuiTable}`}>
                 <Table sx={{ minWidth: 700 }} >
                     <TableHead >
                         <TableRow sx={{ bgcolor: `rgba(239, 239, 239, 1) !important`, color: 'black', fontWeight: 'bold  !important' }}>
@@ -83,7 +83,7 @@ export default function WellTestDataTable() {
                             <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Static Pressure</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Orifice Plate Size</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Sand</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Remark</TableCell>
+                            <TableCell style={{ fontWeight: '600',height:'100%' }} align="center" colSpan={3} >Remark</TableCell>
 
                         </TableRow>
                         <TableRow>
@@ -111,6 +111,7 @@ export default function WellTestDataTable() {
                             <TableCell style={{ fontWeight: '600' }} align="center">(Psia)</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center">(Inches)</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center">(pptb)</TableCell>
+                            <TableCell style={{ fontWeight: '600' }} align="center"></TableCell>
 
                         </TableRow>
                     </TableHead>
@@ -159,7 +160,7 @@ export default function WellTestDataTable() {
                                     <TableCell align="center">    <TableInput /></TableCell>
                                     <TableCell align="center">    <TableInput /></TableCell>
                                     <TableCell align="center">    <TableInput /></TableCell>
-                                    <TableCell align="center">    <TableInput /></TableCell>
+                                    <TableCell align="center" colSpan={3}>    <TableInput className='w-full outline-none border p-2' /></TableCell>
                                 </TableRow>
                             })
                         }

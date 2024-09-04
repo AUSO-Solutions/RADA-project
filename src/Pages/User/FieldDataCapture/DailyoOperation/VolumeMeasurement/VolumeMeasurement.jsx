@@ -143,7 +143,7 @@ const SelectMeasurementType = () => {
     <div className='flex flex-col mt-[24px] rounded-[8px] gap-[14px]'>
       <div className='flex border-b justify-between p-3'>
         <Text weight={600} size={"16px"}>Flow Station</Text>
-        <Text weight={600} size={"16px"}>Volume Measurement Type---</Text>
+        <Text weight={600} size={"16px"}>Volume Measurement Type</Text>
         <Text weight={600} size={"16px"}>No of units</Text>
       </div>
       {
@@ -262,7 +262,7 @@ const Preview = () => {
 
               new Array(parseInt(flowStation?.numberOfUnits)).fill(0).map((reading, readingIndex) => <div className={`flex items-center ${setupData?.flowStations.length === i + 1 ? "" : "border-b"} justify-between !w-[100%] p-3`}>
                 <Text className={'!w-[33%] '} display={'block'}>{flowStation?.name} ({!flowStation?.measurementType || flowStation?.measurementType === 'Metering' ? "Meter" : "Tank"} {readingIndex + 1})</Text>
-                <Text className={'!w-[33%]   !text-center'} display={'block'}> {flowStation?.measurementType} </Text>
+                <Text className={'!w-[33%]   !text-center'} display={'block'}> {!flowStation?.measurementType || flowStation?.measurementType === 'Metering' ? "Metering" : flowStation?.measurementType} </Text>
                 <Text className={'!w-[33%]   !text-right'} display={'block'}>{flowStation?.readings?.[readingIndex]?.serialNumber}</Text>
               </div>)
           )

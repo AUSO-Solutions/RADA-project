@@ -4,13 +4,16 @@
     // tr{
     //     display: flex;
     // }
+    background-color: red;
+    overflow: hidden;
     th,
+    
     td {
         border: .1px solid rgba(186, 186, 186, 1) !important;
         // width: 70px;
         // // max-width: 150px;
         // display: flex;
-        // background-color: red;
+     
     }
 
     // .MuiTableCell-head {
