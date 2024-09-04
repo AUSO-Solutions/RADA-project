@@ -133,7 +133,7 @@ const DefineSchedule = () => {
                                     <td>
                                         <Input type='select' placeholder={"Select"} required={col?.isSelected}
                                             name="fluidType" onChange={handleFluidTypeChange} defaultValue={{ label: col?.fluidType, value: col?.fluidType }}
-                                            options={[{ label: 'Oil & Gas', value: 'Oil & Gas' }, { label: 'Gross Liquid', value: 'Gross Liquid' }]} />
+                                            options={[{ label: 'Oil', value: 'Oil' }, { label: 'Gas', value: 'Gas' }]} />
                                     </td>
                                     <td>
                                         <input required={col?.isSelected} type="number" className={styles.inputBox} defaultValue={col?.noOfChokes} name="noOfChokes" onChange={handleWellChanges} />

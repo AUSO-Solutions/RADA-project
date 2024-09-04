@@ -12,7 +12,7 @@ import { ArrowBack } from '@mui/icons-material';
 import Text from 'Components/Text';
 import { Button } from 'Components';
 import { ArrowDown2, Setting2 } from 'iconsax-react';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useFetch } from 'hooks/useFetch';
 // import styles from './welltest.module.scss'
 
@@ -38,10 +38,10 @@ export default function WellTestDataTable() {
         < div className='px-3'>
             <div className='flex justify-between items-center'>
                 <div className='flex gap-4 items-center'>
-                    <div className='flex flex-row gap-2 bg-[#EFEFEF] px-4 py-1 rounded-md' >
+                    <Link to='/users/fdc/well-test-data/' className='flex flex-row gap-2 bg-[#EFEFEF] px-4 py-1 rounded-md' >
                         <ArrowBack />
                         <Text>Files</Text>
-                    </div>
+                    </Link>
                     <RadaSwitch label="Edit Table" labelPlacement="left" />
                 </div>
                 <div className='flex justify-end py-2 items-center gap-3'>

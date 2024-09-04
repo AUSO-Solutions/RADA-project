@@ -66,7 +66,7 @@ export default function ScheduleTable() {
                     <TableBody>
 
                         {
-                            Object.values(wellTest?.wellsData || {})?.filter(item => item?.isSelected)?.map((well, i) => {
+                            Object.values(wellTest?.wellsData || {})?.map((well, i) => {
                                 return <TableRow>
                                     <TableCell align="center">
                                         {i + 1}
@@ -81,7 +81,7 @@ export default function ScheduleTable() {
                                     <TableCell align="center">
                                         {well?.chokeSize}
                                     </TableCell>
-                                    <TableCell bgcolor='#A7EF6F' align="center">YES</TableCell>
+                                    <TableCell bgcolor={well?.isSelected? '#A7EF6F' :"#FF5252"} align="center">YES</TableCell>
                                     <TableCell align="center">{well?.startDate}</TableCell>
                                     <TableCell align="center">{well?.endDate}</TableCell>
                                     <TableCell align="center">{well?.stabilizatonDuration}</TableCell>
