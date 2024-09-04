@@ -14,7 +14,7 @@ import { closeModal } from 'Store/slices/modalSlice'
 import RadioSelect from '../RadioSelect'
 
 import { toast } from 'react-toastify'
-import {  images } from 'Assets'
+import { images } from 'Assets'
 
 import { camelize, updateFlowstation, updateFlowstationReading } from './helper'
 
@@ -314,7 +314,7 @@ const VolumeMeasurement = () => {
   const dispatch = useDispatch()
   const [loading, setLoading] = useState(false)
   // const [showSettings, setShowSettings] = useState(false)
-  const navigate =  useNavigate()
+  const navigate = useNavigate()
   const save = async () => {
     try {
       setLoading(true)
@@ -325,7 +325,8 @@ const VolumeMeasurement = () => {
 
       dispatch(setWholeSetup(data))
       dispatch(closeModal())
-      navigate(`/users/fdc/daily/volume-measurement-table?id=${data?.id}`)
+      if (setupData?.reportTypes?.[0] === 'Gas') navigate(`/users/fdc/daily/gas-table?id=${data?.id}`)
+      else { navigate(`/users/fdc/daily/volume-measurement-table?id=${data?.id}`) }
       // setSetupTable(true)
     } catch (error) {
       toast.error(error?.message)
