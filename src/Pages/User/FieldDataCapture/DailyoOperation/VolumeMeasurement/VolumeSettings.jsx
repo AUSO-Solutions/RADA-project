@@ -12,6 +12,9 @@ import { setWholeSetup } from 'Store/slices/setupSlice'
 import { toast } from 'react-toastify'
 
 const VolumeSettings = ({ onClickOut = () => null, onComplete = () => null }) => {
+
+
+  
   const setupData = useSelector(state => state.setup)
   const dispatch = useDispatch()
   const [loading, setLoading] = useState(false)
@@ -43,12 +46,13 @@ const VolumeSettings = ({ onClickOut = () => null, onComplete = () => null }) =>
     try {
       // console.log(updatingFlowstation)
       // const _setupData = store.getState().setup
-      await firebaseFunctions('updateVolumeMeasurement', { ...updatingFlowstation })
+      await firebaseFunctions('updateSetup', { ...updatingFlowstation, setupType:'volumeMeasurement' })
       // console.log(_setupData)
       dispatch(setWholeSetup(updatingFlowstation))
-
+      onComplete(updatingFlowstation)
       toast.success("Updates saved")
       onClickOut()
+
     } catch (error) {
 
       console.log(error)

@@ -11,7 +11,18 @@ import { Button } from 'Components';
 // import { updateFlowstationReading } from './helper';
 import { toast } from 'react-toastify';
 import { camelize } from './helper';
-import { useSelector } from 'react-redux';
+
+import { useLocation } from 'react-router-dom';
+import RadioSelect from '../RadioSelect';
+import RadaDatePicker from 'Components/Input/RadaDatePicker';
+import { MdOutlineSettings } from 'react-icons/md';
+import Text from 'Components/Text';
+import RadaSwitch from 'Components/Input/RadaSwitch';
+import VolumeSettings from './VolumeSettings';
+import { colors } from 'Assets';
+import { useFetch } from 'hooks/useFetch';
+import { setWholeSetup } from 'Store/slices/setupSlice';
+import { useDispatch } from 'react-redux';
 
 
 const TableInput = ({ type = '', ...props }) => {
@@ -20,15 +31,24 @@ const TableInput = ({ type = '', ...props }) => {
   return <input className='p-1 text-center w-[70px] border outline-none' step="any" type={type} {...props} />
 }
 
-export default function GasTable({ currReport, date }) {
-  //  const isGas = currReport === "Gas"
-  // const isNet = currReport === "Net Oil/ Condensate"
-  //  const isGross = currReport === 'Gross Liquid'
-  const roundUp = (num, places = 2) =>{
-   return Math.round(num * 10000) / 10000
+export default function GasTable() {
+  const { search } = useLocation()
+  const dispatch = useDispatch()
+  const [setup, setSetup] = React.useState({})
+  const [showSettings, setShowSettings] = React.useState(false)
+  const [date, setDate] = React.useState()
+  const id = React.useMemo(() => new URLSearchParams(search).get('id'), [search])
+  const { data: res } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'volumeMeasurement', id } })
+  React.useEffect(() => { setSetup(res) }, [res])
+  React.useEffect(() => {
+    dispatch(setWholeSetup(setup))
+  }, [setup,dispatch])
+
+  const roundUp = (num, places = 2) => {
+    return Math.round(num * 10000) / 10000
   }
 
-  const setup = useSelector(state => state.setup)
+  // const setup = useSelector(state => state.setup)
 
   const [tableValues, setTableValues] = React.useState({})
   const [totals, setTotals] = React.useState({
@@ -61,7 +81,7 @@ export default function GasTable({ currReport, date }) {
       // console.log({ difference, meterFactor })
       let meterTotal = prevFlowStationListIndexValues?.meterTotal
       // meterTotal = (field === "meterTotal" ? value : (|| 0))
-      if (field === "meterTotal") { meterTotal = parseFloat(value)} else { meterTotal = (difference * parseFloat(meterFactor || 0).toFixed(5)) }
+      if (field === "meterTotal") { meterTotal = parseFloat(value) } else { meterTotal = (difference * parseFloat(meterFactor || 0).toFixed(5)) }
       // console.log({ finalBbls, initialBbls, meterTotal })
 
       const isNum = typeof readingIndex === 'number'
@@ -113,7 +133,7 @@ export default function GasTable({ currReport, date }) {
 
   React.useEffect(() => {
     console.log('----')
-    setup?.flowStations.forEach((flowStation, flowStationIndex) => {
+    setup?.flowStations?.forEach((flowStation, flowStationIndex) => {
       const readings = flowStation?.readings || []
       readings.forEach((reading, readingIndex) => {
         const finalReading = parseFloat(tableValues?.[flowStation?.name]?.meters[readingIndex]?.finalReading) || 0
@@ -150,111 +170,126 @@ export default function GasTable({ currReport, date }) {
     toast.success("Successful")
   }
   return (
-    < form className='px-3 ' onSubmit={save} >
-      <TableContainer className={`m-auto border ${tableStyles.borderedMuiTable}`}>
-        <Table sx={{ minWidth: 700 }} >
-          <TableHead >
-            <TableRow sx={{ bgcolor: `rgba(239, 239, 239, 1) !important`, color: 'black', fontWeight: 'bold  !important' }}>
-              <TableCell align="left" colSpan={3} >
-                Flow stations
-              </TableCell>
-              <TableCell align="center" colSpan={4} >
-                Gas Readings
-              </TableCell>
-              <TableCell align="center" colSpan={4}>Total</TableCell>
-            </TableRow>
-            <TableRow>
 
-              <TableCell align="left" colSpan={3} >
-                Input Values for each flow station
-              </TableCell>
-              <TableCell align="center"> Property</TableCell>
-              <TableCell align="center"> Meter Name</TableCell>
-              <TableCell align="center">Initial (bbls)</TableCell>
-              <TableCell align="center">Final (bbls)</TableCell>
-              <TableCell align="center" colSpan={2}>mmscf</TableCell>
-            </TableRow>
-          </TableHead>
-          {
-            setup?.flowStations?.map(
-              ({ name, numberOfUnits, measurementType, readings, ...rest }, flowStationIndex) => {
-                return (
-                  <TableBody>
-                    <TableRow key={name}>
-                      <TableCell align="left" rowSpan={4 * numberOfUnits + 2} colSpan={3}>
-                        {name}
-                      </TableCell>
-                    </TableRow>
-                    <>
-                      {gasTypes.map((gasType, i) => {
-                        // let usedIndexs = []
-                        const readingAtIndex = readings?.find(reading => reading?.gasType === gasType.value)
-                        let readingIndex = readings?.findIndex(reading => reading?.gasType === gasType.value)
-                        if (readingIndex === -1) readingIndex = i + readings?.length
-                        if (!readings) readingIndex = i
-                        // usedIndexs.push(readingIndex)
-                        // console.log({usedIndexs})
-                        // usedIndexs.push(readingIndex)
-                        // console.log(readings,readingIndex,i)
+    <> <div className='flex justify-between my-2 px-2 items-center'>
+      <div className='flex gap-4 items-center'>
+        <RadioSelect defaultValue={setup?.reportTypes?.[0]} list={setup?.reportTypes} /> <RadaSwitch label="Edit Table" labelPlacement="left" />
+      </div>
+      <div className='flex items-center gap-2 '>
+        <Text className={'cursor-pointer'} color={colors.rada_blue}>View setups</Text>
+        <RadaDatePicker onChange={setDate} />
+        <div onClick={() => setShowSettings(true)} style={{ borderColor: 'rgba(0, 163, 255, 1)' }} className='border cursor-pointer px-3 py-1 rounded-[8px]'>
+          <MdOutlineSettings color='rgba(0, 163, 255, 1)' />
+        </div>
+      </div>
+    </div>
+      {showSettings && <VolumeSettings onClickOut={() => setShowSettings(false)} onComplete={setSetup} />}
 
-                        const initialBbls = tableValues?.[name]?.meters?.[readingIndex]?.initialBbls
-                        const finalBbls = tableValues?.[name]?.meters?.[readingIndex]?.finalBbls
-                        const meterTotal = tableValues?.[name]?.meters?.[readingIndex]?.meterTotal
-                        return (<TableRow  >
-                          <TableCell align="center">
-                            {gasType.label}
-                          </TableCell>
-                          <TableCell align="center">
-                            {readingAtIndex?.serialNumber}
-                          </TableCell>
+      < form className='px-3 ' onSubmit={save} >
+        <TableContainer className={`m-auto border ${tableStyles.borderedMuiTable}`}>
+          <Table sx={{ minWidth: 700 }} >
+            <TableHead >
+              <TableRow sx={{ bgcolor: `rgba(239, 239, 239, 1) !important`, color: 'black', fontWeight: 'bold  !important' }}>
+                <TableCell align="left" colSpan={3} >
+                  Flow stations
+                </TableCell>
+                <TableCell align="center" colSpan={4} >
+                  Gas Readings
+                </TableCell>
+                <TableCell align="center" colSpan={4}>Total</TableCell>
+              </TableRow>
+              <TableRow>
 
-                          <TableCell align="center">
-
-                            <TableInput value={readingAtIndex ? initialBbls : "-"}
-                              disabled={!readingAtIndex} type={'number'}
-                              onChange={(e) => handleChange({ flowStation: name, field: 'initialBbls', value: e.target.value, readingIndex, gasType: gasType.value })} />
-                          </TableCell>
-                          <TableCell align="center">
-                            <TableInput value={readingAtIndex ? finalBbls : "-"}
-                              disabled={!readingAtIndex} type={'number'}
-                              onChange={(e) => handleChange({ flowStation: name, field: 'finalBbls', value: e.target.value, readingIndex, gasType: gasType.value })} />
-                          </TableCell>
-                          <TableCell align="center" colSpan={2}>
-                            {readingAtIndex ? meterTotal :
-                              <TableInput
-                                disabled={readingAtIndex} type={'number'}
-                                onChange={(e) => handleChange({ flowStation: name, field: `meterTotal`, value: e.target.value, readingIndex, gasType: gasType.value })} />}
-                          </TableCell>
-
-                        </TableRow>)
-                      }
-                      )}
+                <TableCell align="left" colSpan={3} >
+                  Input Values for each flow station
+                </TableCell>
+                <TableCell align="center"> Property</TableCell>
+                <TableCell align="center"> Meter Name</TableCell>
+                <TableCell align="center">Initial (bbls)</TableCell>
+                <TableCell align="center">Final (bbls)</TableCell>
+                <TableCell align="center" colSpan={2}>mmscf</TableCell>
+              </TableRow>
+            </TableHead>
+            {
+              setup?.flowStations?.map(
+                ({ name, numberOfUnits, measurementType, readings, ...rest }, flowStationIndex) => {
+                  return (
+                    <TableBody>
                       <TableRow key={name}>
-                        <TableCell sx={{ bgcolor: '#8080807a' }} align="left" className='pl-5 !bg-[#8080807a]' colSpan={4}><div > Total Gas Produced</div></TableCell>
-                        <TableCell sx={{ bgcolor: '#8080807a' }} align="center">{(tableValues?.[name]?.subTotal || 0)}
-
+                        <TableCell align="left" rowSpan={4 * numberOfUnits + 2} colSpan={3}>
+                          {name}
                         </TableCell>
                       </TableRow>
-                    </>
+                      <>
+                        {gasTypes.map((gasType, i) => {
+                          // let usedIndexs = []
+                          const readingAtIndex = readings?.find(reading => reading?.gasType === gasType.value)
+                          let readingIndex = readings?.findIndex(reading => reading?.gasType === gasType.value)
+                          if (readingIndex === -1) readingIndex = i + readings?.length
+                          if (!readings) readingIndex = i
+                          // usedIndexs.push(readingIndex)
+                          // console.log({usedIndexs})
+                          // usedIndexs.push(readingIndex)
+                          // console.log(readings,readingIndex,i)
+
+                          const initialBbls = tableValues?.[name]?.meters?.[readingIndex]?.initialBbls
+                          const finalBbls = tableValues?.[name]?.meters?.[readingIndex]?.finalBbls
+                          const meterTotal = tableValues?.[name]?.meters?.[readingIndex]?.meterTotal
+                          return (<TableRow  >
+                            <TableCell align="center">
+                              {gasType.label}
+                            </TableCell>
+                            <TableCell align="center">
+                              {readingAtIndex?.serialNumber}
+                            </TableCell>
+
+                            <TableCell align="center">
+
+                              <TableInput value={readingAtIndex ? initialBbls : "-"}
+                                disabled={!readingAtIndex} type={'number'}
+                                onChange={(e) => handleChange({ flowStation: name, field: 'initialBbls', value: e.target.value, readingIndex, gasType: gasType.value })} />
+                            </TableCell>
+                            <TableCell align="center">
+                              <TableInput value={readingAtIndex ? finalBbls : "-"}
+                                disabled={!readingAtIndex} type={'number'}
+                                onChange={(e) => handleChange({ flowStation: name, field: 'finalBbls', value: e.target.value, readingIndex, gasType: gasType.value })} />
+                            </TableCell>
+                            <TableCell align="center" colSpan={2}>
+                              {readingAtIndex ? meterTotal :
+                                <TableInput
+                                  disabled={readingAtIndex} type={'number'}
+                                  onChange={(e) => handleChange({ flowStation: name, field: `meterTotal`, value: e.target.value, readingIndex, gasType: gasType.value })} />}
+                            </TableCell>
+
+                          </TableRow>)
+                        }
+                        )}
+                        <TableRow key={name}>
+                          <TableCell sx={{ bgcolor: '#8080807a' }} align="left" className='pl-5 !bg-[#8080807a]' colSpan={4}><div > Total Gas Produced</div></TableCell>
+                          <TableCell sx={{ bgcolor: '#8080807a' }} align="center">{(tableValues?.[name]?.subTotal || 0)}
+
+                          </TableCell>
+                        </TableRow>
+                      </>
 
 
-                  </TableBody>
-                )
-              }
-            )
-          }
-          <TableBody>
-            <TableRow >
-              <TableCell align="left" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} className='bg-[rgba(0, 163, 255, 0.3)]' colSpan={7}>{"Total Gas Production"}</TableCell>
-              <TableCell align="center" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} >{totals?.netProductionTotal}</TableCell>
-            </TableRow>
-          </TableBody>
+                    </TableBody>
+                  )
+                }
+              )
+            }
+            <TableBody>
+              <TableRow >
+                <TableCell align="left" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} className='bg-[rgba(0, 163, 255, 0.3)]' colSpan={7}>{"Total Gas Production"}</TableCell>
+                <TableCell align="center" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} >{totals?.netProductionTotal}</TableCell>
+              </TableRow>
+            </TableBody>
 
-        </Table>
-      </TableContainer>
-      <div className='justify-end flex my-2'>
-        <Button className={'my-3'} type='submit' width={150}>Save</Button>
-      </div>
-    </form>
+          </Table>
+        </TableContainer>
+        <div className='justify-end flex my-2'>
+          <Button className={'my-3'} type='submit' width={150}>Save</Button>
+        </div>
+      </form></>
   );
 }

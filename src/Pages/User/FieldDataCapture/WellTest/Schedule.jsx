@@ -1,14 +1,20 @@
 
-import Setup from "./setup"
 import { useDispatch, useSelector } from "react-redux"
 import { useAssetNames } from "hooks/useAssetNames"
-import { setSetupData } from "Store/slices/setupSlice"
+import { clearSetup, setSetupData, setWholeSetup } from "Store/slices/setupSlice"
 import CheckInput from "Components/Input/CheckInput"
 import { Input } from "Components"
-import { useCallback, useMemo } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import styles from './welltest.module.scss'
 import { useFetch } from "hooks/useFetch"
 import Text from "Components/Text"
+import { closeModal } from "Store/slices/modalSlice"
+import { store } from "Store"
+import { firebaseFunctions } from "Services"
+import { toast } from "react-toastify"
+import Setup from "Partials/setup"
+import { images } from "Assets"
+import { Link } from "react-router-dom"
 
 
 
@@ -25,8 +31,9 @@ const genList = (assets, name) => {
 }
 
 const SelectAsset = () => {
+
     const setupData = useSelector(state => state.setup)
-    // console.log(setupData)
+    console.log(setupData)
     const { data: assets } = useFetch({ firebaseFunction: 'getAssets' })
     const assetData = useMemo(() => genList(assets, setupData?.asset), [assets, setupData?.asset])
     const { assetNames } = useAssetNames()
@@ -42,15 +49,15 @@ const SelectAsset = () => {
 
 
     return <>
-        <Input defaultValue={{ label: setupData?.asset, value: setupData?.asset }}
+        <Input required defaultValue={{ label: setupData?.asset, value: setupData?.asset }}
             label={'Assets'} type='select' options={assetNames?.map(assetName => ({ value: assetName, label: assetName }))}
             onChange={onSelectAsset}
         />
-        <Input key={setupData?.asset + 'fields'} defaultValue={{ label: setupData?.field, value: setupData?.field }}
+        <Input key={setupData?.asset + 'fields'} required defaultValue={{ label: setupData?.field, value: setupData?.field }}
             label={'Field'} type='select' options={assetData.fields}
             onChange={(e) => dispatch(setSetupData({ name: 'field', value: e?.value }))}
         />
-        <Input key={setupData?.asset + "prodString"} defaultValue={setupData?.productionStrings?.map(createOpt)}
+        <Input key={setupData?.asset + "prodString"} required defaultValue={setupData?.productionStrings?.map(createOpt)}
             label={'Production String'} type='select' options={assetData.productionStrings} isMulti
             onChange={(e) => dispatch(setSetupData({ name: 'productionStrings', value: e }))}
         />
@@ -63,7 +70,7 @@ const DefineSchedule = () => {
 
     const { data: assets } = useFetch({ firebaseFunction: 'getAssets' })
     const assetData = useMemo(() => genList(assets, setupData?.asset), [assets, setupData?.asset])
-    const timeFrames = ["Daily", "Weekly", "Monthly"]
+    // const timeFrames = ["Daily", "Weekly", "Monthly"]
 
     // const [wellsChanges, setWellChanges] = useState([])
 
@@ -78,10 +85,9 @@ const DefineSchedule = () => {
     return <>
         <div className='flex justify-between !w-[100%]'>
             <Input type='select' placeholder={setupData?.asset} containerClass={'h-[39px] !w-[150px]'} disabled />
-            <Input type='select' placeholder="Daily" containerClass={'h-[39px] !w-[150px]'}
-                defaultValue={{ label: setupData?.timeFrame, value: setupData?.timeFrame }}
-                onChange={(e) => dispatch(setSetupData({ name: 'timeFrame', value: e.value }))}
-                options={timeFrames?.map(timeFrame => ({ value: timeFrame, label: timeFrame }))} />
+            <Input type='date' placeholder="Daily" containerClass={'h-[39px] !w-[150px]'}
+                defaultValue={setupData?.date }
+                onChange={(e) => dispatch(setSetupData({ name: 'date', value: e.value }))} />
         </div>
 
         <div key={setupData?.reportTypes?.length} className={styles.tableContainer}>
@@ -267,11 +273,57 @@ const SaveAs = () => {
         </div>
     )
 }
+const Exists = () => {
+    // const setupData = useSelector(state => state.setup)
+    // const dispatch = useDispatch()
+    const { data } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "wellTestSchedule" } })
+    const [menuViewed, setMenuViewed] = useState(null)
+    const viewMenu = (i) => {
+        setMenuViewed(prev => {
+            if(prev === i) return null
+            return i
+        })
+    }
+    return (
+        <div className=" flex flex-wrap gap-4 m-5 ">
+            {data?.map((datum,i) => <div  onClick={()=>viewMenu(i)} className="w-[250px] relative shadow rounded-[8px] px-3 flex items-center gap-3">
+                <img src={images.file} alt="" width={100} />   <Text size={18}> {datum?.title}</Text>
+               {
+                menuViewed === i &&  <div className="absolute w-[100px] shadow !z-[100] flex flex-col gap-2 px-2 right-[-50px] border rounded shadow bottom-[-30px] bg-[white]">
+                <Link to={`/users/fdc/well-test-data/schedule-table?id=${datum?.id}`} >Remark</Link>
+                <Link to={`/users/fdc/well-test-data/well-test-table?id=${datum?.id}`} >Well test </Link>
+                <div>Delete</div>
+            </div>
+               }
+            </div>)}
+        </div>
+    )
+}
 
 const Schedule = () => {
     // const setupData = useSelector(state => state.setup)
-    const save = () => {
+    const [loading, setLoading] = useState(false)
+    const dispatch = useDispatch()
+    useEffect(() => {
+        dispatch(clearSetup())
+    }, [dispatch])
+    const save = async () => {
+        try {
+            setLoading(true)
+            const setupData = store.getState().setup
+            // console.log(setupData)
+            const { data } = await firebaseFunctions('createSetup', { ...setupData, setupType: 'wellTestSchedule' })
+            console.log({ data }, '----')
 
+            dispatch(setWholeSetup(data))
+            dispatch(closeModal())
+            // setSetupTable(true)
+        } catch (error) {
+            toast.error(error?.message)
+        }
+        finally {
+            setLoading(false)
+        }
     }
     return (
         <>
@@ -280,6 +332,8 @@ const Schedule = () => {
                     title={'Setup Well Test Schedule'}
                     steps={["Select Asset", "Define Schedule", "Preview", "Save As"]}
                     onSave={save}
+                    rightLoading={loading}
+                    existing={<Exists />}
                     stepComponents={[
                         <SelectAsset />,
                         <DefineSchedule />,

@@ -1,8 +1,10 @@
+import IPSCTable from "./IPSCTable"
+
 const IPSC = () => {
 
     return (
         <>
-            hollla
+            <IPSCTable/>
         </>
     )
 

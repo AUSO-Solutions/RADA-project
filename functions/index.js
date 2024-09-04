@@ -8,8 +8,9 @@ const { login, createUser, getUsers, getUserByUid, deleteUserByUid, updateUserBy
 const { getGroups, createGroup, addMembersToGroup, deleteGroupMember, deleteGroup, deleteGroupAsset, assignAssetsToGroup } = require("./admin/auth/group");
 const { createAsset, getAssetByName, updateAssetById, deleteAssetById, getAssets, getAssetsName } = require('./admin/assets')
 const { createRole, updateRole, deleteRole, getRoles, getRole, assignPermissionToRole } = require('./admin/rolesandpermissions');
-const { setupVolumeMeasurement, getSetups, updateVolumeMeasurement } = require("./fielddatacapturesetup/volumemeasurementsetup");
+const { createSetup, deleteSetup, getSetups, updateSetup, getSetup } = require("./fielddatacapturesetup/volumemeasurementsetup");
 const { captureOilOrCondensate, captureGas, updateOilOrCondensate, getOilOrCondensateVolumeByID, deleteOilOrCondensateVolumeByID, getOilOrCondensateVolumesByAsset } = require("./fielddatacapturesetup/volume.measurement");
+// const { setupWellTestData, getSetups, updateWellTestData, deleteWellTestDataSetup } = require('./fielddatacapturesetup/welltestsetup')
 
 admin.initializeApp()
 
@@ -26,7 +27,9 @@ module.exports = {
 
   createRole, updateRole, deleteRole, getRoles, getRole, assignPermissionToRole,
 
-  setupVolumeMeasurement, getSetups, updateVolumeMeasurement,
+  createSetup, deleteSetup, getSetups, updateSetup, getSetup,
+
+  // setupWellTestData, getSetups, updateWellTestData, deleteWellTestDataSetup,
 
   captureOilOrCondensate,
   captureGas,

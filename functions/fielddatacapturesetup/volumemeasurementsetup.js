@@ -10,69 +10,61 @@ const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const crypto = require('crypto');
 // const { currentTime } = require("../../helpers"); 
 
-const generateSerialNumbers = (count) => {
-    const serialNumbers = [];
-    for (let i = 0; i < count; i++) {
-        serialNumbers.push(`SN-${Math.random().toString(36).substring(2, 9)}`);
-    }
-    return serialNumbers;
-};
+// const generateSerialNumbers = (count) => {
+//     const serialNumbers = [];
+//     for (let i = 0; i < count; i++) {
+//         serialNumbers.push(`SN-${Math.random().toString(36).substring(2, 9)}`);
+//     }
+//     return serialNumbers;
+// };
 
-const setupVolumeMeasurement = onCall(async (request) => {
+const createSetup = onCall(async (request) => {
 
     try {
         let { data } = request;
 
-        const { asset, reportTypes, flowStations, timeFrame } = data;
+        const { asset, setupType, ...rest } = data;
         const validAssets = ['OML 24', 'OML 155', 'OML 147', "OML 45"];
         if (!validAssets.includes(asset)) {
             throw { message: 'Invalid asset', code: 'cancelled' };
-        }
-
-        const validReportTypes = ['Gross Liquid', 'Net Oil/ Condensate', 'Gas'];
-        if (!Array.isArray(reportTypes) || !reportTypes.filter(reportType => validReportTypes.includes(reportType)).length) {
-            throw { message: 'Invalid report types', code: 'cancelled' };
         }
 
         const id = crypto.randomBytes(8).toString("hex");
         const db = admin.firestore();
         const payload = {
             asset,
-            reportTypes,
-            flowStations,
-            timeFrame, id, created: Date.now()
+            id,
+            created: Date.now(),
+            ...rest
         }
-        
-         await db.collection('setups').doc('volumeMeasurement').collection("setupList").doc(id).set(payload);
 
-        return { message: `Document created`, data:payload };
+        await db.collection('setups').doc(setupType).collection("setupList").doc(id).set(payload);
+
+        return { message: `Document created`, data: payload };
 
     } catch (error) {
         console.error('Error adding document: ', error);
-        // return { message: 'Internal Server Error' };
         throw new HttpsError(error)
     }
 });
 
-const updateVolumeMeasurement = onCall(async (request) => {
+const updateSetup = onCall(async (request) => {
 
     try {
         let { data } = request;
 
-
-        const { reportTypes, flowStations, timeFrame, id } = data;
+        const { id, setupType, ...rest } = data;
         if (!id) {
             throw { message: 'Provide a setup id', code: 'cancelled' };
         }
-        const validReportTypes = ['Gross Liquid', 'Net Oil/ Condensate', 'Gas'];
-        if (!Array.isArray(reportTypes) || !reportTypes.filter(reportType => validReportTypes.includes(reportType)).length) {
-            throw { message: 'Invalid report types', code: 'cancelled' };
-        }
+        // const validReportTypes = ['Gross Liquid', 'Net Oil/ Condensate', 'Gas'];
+        // if (!Array.isArray(reportTypes) || !reportTypes.filter(reportType => validReportTypes.includes(reportType)).length) {
+        //     throw { message: 'Invalid report types', code: 'cancelled' };
+        // }
         const db = admin.firestore();
-        await db.collection('setups').doc('volumeMeasurement').collection("setupList").doc(id).update({
-            reportTypes,
-            flowStations,
-            timeFrame
+        await db.collection('setups').doc(setupType).collection("setupList").doc(id).update({
+
+            ...rest
         });
 
         return { message: `Setup updated` };
@@ -84,19 +76,19 @@ const updateVolumeMeasurement = onCall(async (request) => {
     }
 });
 
-const deleteVolumeMeasurementSetuo = onCall(async (request) => {
+const deleteSetup = onCall(async (request) => {
 
     try {
         let { data } = request;
 
 
-        const { id } = data;
+        const { id, setupType } = data;
         if (!id) {
             throw { message: 'Provide a setup id', code: 'cancelled' };
         }
 
         const db = admin.firestore();
-        await db.collection('setups').doc('volumeMeasurement').collection("setupList").doc(id).delete()
+        await db.collection('setups').doc(setupType).collection("setupList").doc(id).delete()
 
         return { message: `Setup deleted` };
 
@@ -114,6 +106,13 @@ const getSetups = onCall(async (request) => {
     const res = await db.collection('setups').doc(setupType).collection('setupList').get()
     return { message: "Successful ", data: res.docs.sort((a, b) => b.created - a.created).map(doc => ({ ...doc.data() })) }
 })
+const getSetup = onCall(async (request) => {
+    const { data } = request
+    const { setupType, id } = data
+    const db = admin.firestore();
+    const res = await db.collection('setups').doc(setupType).collection('setupList').doc(id).get()
+    return { message: "Successful ", data: res?.data() }
+})
 
 
-module.exports = { setupVolumeMeasurement, getSetups, updateVolumeMeasurement }
+module.exports = { createSetup, getSetups, updateSetup, getSetup, deleteSetup }

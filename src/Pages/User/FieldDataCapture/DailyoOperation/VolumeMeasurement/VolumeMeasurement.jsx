@@ -9,21 +9,20 @@ import Text from 'Components/Text'
 import { useAssetByName } from 'hooks/useAssetByName'
 import { store } from 'Store'
 import { firebaseFunctions } from 'Services'
-import VolumeMeasurementTable from './VolumeMeasurementTable'
+
 import { closeModal } from 'Store/slices/modalSlice'
 import RadioSelect from '../RadioSelect'
-import RadaSwitch from 'Components/Input/RadaSwitch'
-import RadaDatePicker from 'Components/Input/RadaDatePicker'
-// import GasTable from './GasTable'
+
 import { toast } from 'react-toastify'
-import { colors } from 'Assets'
-import { MdOutlineSettings } from "react-icons/md";
-import VolumeSettings from './VolumeSettings'
+import {  images } from 'Assets'
+
 import { camelize, updateFlowstation, updateFlowstationReading } from './helper'
-import GasTable from './GasTable'
-import RadaTable from 'Components/RadaTable'
-import { BsChevronRight } from 'react-icons/bs'
-import dayjs from 'dayjs'
+
+// import RadaTable from 'Components/RadaTable'
+// import { BsChevronRight } from 'react-icons/bs'
+// import dayjs from 'dayjs'
+import { useFetch } from 'hooks/useFetch'
+import { Link, useNavigate } from 'react-router-dom'
 
 
 
@@ -124,6 +123,7 @@ const SelectMeasurementType = () => {
   const measureMenntTypes = ['Metering', 'Tank Dipping']
   const setupData = useSelector(state => state.setup)
   const { flowStations } = useAssetByName(setupData?.asset)
+  console.log(flowStations, setupData?.asset)
   const dispatch = useDispatch()
   useEffect(() => {
     if (flowStations.length) {
@@ -143,7 +143,7 @@ const SelectMeasurementType = () => {
     <div className='flex flex-col mt-[24px] rounded-[8px] gap-[14px]'>
       <div className='flex border-b justify-between p-3'>
         <Text weight={600} size={"16px"}>Flow Station</Text>
-        <Text weight={600} size={"16px"}>Volume Measurement Type</Text>
+        <Text weight={600} size={"16px"}>Volume Measurement Type---</Text>
         <Text weight={600} size={"16px"}>No of units</Text>
       </div>
       {
@@ -272,58 +272,37 @@ const Preview = () => {
   </>
 }
 
-const Existing = ({ onSelect = () => null }) => {
+const SaveAs = () => {
+  const setupData = useSelector(state => state.setup)
   const dispatch = useDispatch()
-
-  // const setups = useSelector(state => state.setup)
-  const [setups, setSetups] = useState([])
-  useEffect(() => {
-    const getSetup = async () => {
-      try {
-        const data = await firebaseFunctions('getSetups', { setupType: "volumeMeasurement" })
-
-        // console.log(data)
-        if (data?.data?.length) setSetups(data?.data)
-      } catch (error) {
-
-      }
-    }
-    getSetup()
-  }, [])
   return (
-    <div className='p-3'>
-      <Text size={24}> Volume measurement setups </Text> <br />
+    <div className="h-[300px] flex flex-col  w-[400px] mx-auto gap-1 justify-center">
+      <Text weight={600} size={24}>Save Setup as</Text>
+      <Input label={''} defaultValue={setupData?.title} onChange={(e) => dispatch(setSetupData({ name: 'title', value: e.target.value }))} />
+    </div>
+  )
+}
 
-      <div className='my-3 flex flex-wrap gap-3'>
-        {/* {
-          setups?.map(setup =>
-          (
-            <div className='border my-1 rounded w-[200px] p-2 cursor-pointer' onClick={() => {
-              dispatch(setWholeSetup(setup))
-              // onSetWholeSetup()
-
-            }}>
-              {setup?.asset} {setup?.id}
-
-            </div>
-          )
-          )
-        } */}
-        <RadaTable data={setups} columns={[
-          { name: "Asset", key: "asset" },
-          { name: "Time frame", key: "timeFrame" },
-
-          { name: "Fluid types ", render: (data) => data?.reportTypes?.join(', ') },
-          { name: "Date ", render: (data) => data?.created ? dayjs(data?.created).format("MMM DD. hh:mm a") : "--" },
-          {
-            name: "View", render: (data) => <><BsChevronRight className='cursor-pointer'
-              onClick={() => { dispatch(setWholeSetup(data)); onSelect(data) }} /></>
-          },
-
-        ]} noaction noSearch />
-      </div>
-
-
+const Existing = ({ onSelect = () => null }) => {
+  const { data } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "volumeMeasurement" } })
+  const [menuViewed, setMenuViewed] = useState(null)
+  const viewMenu = (i) => {
+    setMenuViewed(prev => {
+      if (prev === i) return null
+      return i
+    })
+  }
+  return (
+    <div className=" flex flex-wrap gap-4 m-5 ">
+      {data?.map((datum, i) => <div onClick={() => viewMenu(i)} className="w-[250px] relative shadow rounded-[8px] px-3 flex items-center gap-3">
+        <img src={images.file} alt="" width={100} />   <Text size={18}> {datum?.title || 'No name'}</Text>
+        {
+          menuViewed === i && <div className="absolute w-[100px] flex flex-col gap-2 px-2 right-[-50px] border rounded shadow bottom-[-30px] bg-[white]">
+            <Link to={`/users/fdc/daily/${datum?.reportTypes?.[0] === 'Gas' ? 'gas-table' : 'volume-measurement-table'}?id=${datum?.id}`}  >View</Link>
+            <div>Delete</div>
+          </div>
+        }
+      </div>)}
     </div>
   )
 }
@@ -334,18 +313,20 @@ const VolumeMeasurement = () => {
   const [setupTable, setSetupTable] = useState(false)
   const dispatch = useDispatch()
   const [loading, setLoading] = useState(false)
-  const [showSettings, setShowSettings] = useState(false)
+  // const [showSettings, setShowSettings] = useState(false)
+  const navigate =  useNavigate()
   const save = async () => {
     try {
       setLoading(true)
       const setupData = store.getState().setup
       // console.log(setupData)
-      const {data} = await firebaseFunctions('setupVolumeMeasurement', { ...setupData })
-      console.log({data},'----')
+      const { data } = await firebaseFunctions('createSetup', { ...setupData, setupType: 'volumeMeasurement' })
+      console.log({ data }, '----')
 
       dispatch(setWholeSetup(data))
       dispatch(closeModal())
-      setSetupTable(true)
+      navigate(`/users/fdc/daily/volume-measurement-table?id=${data?.id}`)
+      // setSetupTable(true)
     } catch (error) {
       toast.error(error?.message)
     }
@@ -354,29 +335,27 @@ const VolumeMeasurement = () => {
     }
 
   }
-  const setupData = useSelector(state => state.setup)
+  // const setupData = useSelector(state => state.setup)
   // console.log(setupData?.reportTypes)
 
-  const [currReport, setCurrReport] = useState(setupData?.reportTypes?.[0])
-  useEffect(() => {
-    // console.log(setupData?.reportTypes?.[0])
-    setCurrReport(setupData?.reportTypes?.[0])
-  }, [setupData?.reportTypes, setupTable])
-  const [date, setDate] = useState()
+  // const [, setCurrReport] = useState(setupData?.reportTypes?.[0])
+  // useEffect(() => {
+  //   // console.log(setupData?.reportTypes?.[0])
+  //   // setCurrReport(setupData?.reportTypes?.[0])
+  // }, [setupData?.reportTypes, setupTable])
+  // const [date, setDate] = useState()
   useEffect(() => {
     dispatch(clearSetup({}))
   }, [dispatch])
 
-  useEffect(() => {
-    console.log({ currReport })
-  }, [currReport])
+
 
   return (
     < >
       {
         setupTable ?
           <>
-            <div className='flex justify-between my-2 px-2 items-center'>
+            {/* <div className='flex justify-between my-2 px-2 items-center'>
               <div className='flex gap-4 items-center'>
                 <RadioSelect onChange={setCurrReport} defaultValue={setupData?.reportTypes?.[0]} list={setupData?.reportTypes} /> <RadaSwitch label="Edit Table" labelPlacement="left" />
               </div>
@@ -388,16 +367,16 @@ const VolumeMeasurement = () => {
                 </div>
               </div>
             </div>
-            {showSettings && <VolumeSettings onClickOut={() => setShowSettings(false)} />}
+            {showSettings && <VolumeSettings onClickOut={() => setShowSettings(false)} />} */}
 
-            {
+            {/* {
               currReport ? (currReport === 'Gas' ? <GasTable /> : <VolumeMeasurementTable currReport={currReport} date={date} />) : ""
-            }
+            } */}
 
           </>
           : <Setup
             title={'Setup Volume Measurement Parameters'}
-            steps={["Select Asset", "Define Report", "Measurement Type", "Select Flowstations", "Preview"]}
+            steps={["Select Asset", "Define Report", "Measurement Type", "Select Flowstations", "Preview", "SaveAs"]}
             // type={'volumeMeasurement'}
             existing={<Existing onSelect={() => setSetupTable(true)} />}
             rightBtnLoading={loading}
@@ -408,7 +387,7 @@ const VolumeMeasurement = () => {
                 <DefineReport />,
                 <SelectMeasurementType />,
                 <SelectFlowStation />,
-                <Preview />
+                <Preview />, <SaveAs />
               ]
             }
             onSave={save}
