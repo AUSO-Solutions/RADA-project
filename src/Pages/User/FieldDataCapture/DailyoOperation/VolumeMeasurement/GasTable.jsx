@@ -205,8 +205,8 @@ export default function GasTable() {
                 </TableCell>
                 <TableCell align="center"> Property</TableCell>
                 <TableCell align="center"> Meter Name</TableCell>
-                <TableCell align="center">Initial (bbls)</TableCell>
-                <TableCell align="center">Final (bbls)</TableCell>
+                <TableCell align="center">Initial (mmscf)</TableCell>
+                <TableCell align="center">Final (mmscf)</TableCell>
                 <TableCell align="center" colSpan={2}>mmscf</TableCell>
               </TableRow>
             </TableHead>

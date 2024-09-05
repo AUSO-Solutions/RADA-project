@@ -95,7 +95,7 @@ const DefineSchedule = () => {
             <table className={styles.table}>
                 <thead className=" mt-5">
                     <tr className="pt-4 w-full text-left" >
-                        <th className="pl-3">Wells</th>
+                        <th className="pl-3">Production String</th>
                         <th >Reservoir</th>
                         <th>Fluid Type</th>
                         <th>No of Chokes</th>
@@ -142,10 +142,10 @@ const DefineSchedule = () => {
                                         <input required={col?.isSelected} type="number" className={styles.inputBox} defaultValue={col?.chokeSize} name="chokeSize" onChange={handleWellChanges} />
                                     </td>
                                     <td>
-                                        <input required={col?.isSelected} type="date" className={styles.inputBox} defaultValue={col?.startDate} name="startDate" onChange={handleWellChanges} />
+                                        <input required={col?.isSelected} type="datetime-local" className={styles.inputBox} defaultValue={col?.startDate} name="startDate" onChange={handleWellChanges} />
                                     </td>
                                     <td>
-                                        <input required={col?.isSelected} type="date" className={styles.inputBox} defaultValue={col?.endDate} name="endDate" onChange={handleWellChanges} />
+                                        <input required={col?.isSelected} type="datetime-local" className={styles.inputBox} defaultValue={col?.endDate} name="endDate" onChange={handleWellChanges} />
                                     </td>
                                     <td>
                                         <input className={styles.inputBox} required={col?.isSelected} type='number' defaultValue={col?.duration} name="duration" onChange={handleWellChanges} />
