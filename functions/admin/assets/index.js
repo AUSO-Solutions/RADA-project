@@ -53,14 +53,45 @@ const createAsset = onCall(async (request) => {
       .collection("assetList")
       .doc(id)
       .set(payload);
-    logger.log("PAYLOAD ----", payload);
-    // await db.collection('assets').doc(name).set(payload)
     return { status: "success", message: "Asset created successfully", data };
   } catch (error) {
     logger.log("error ===> ", error);
     throw new HttpsError(error?.code, error?.message);
   }
 });
+
+const importMasterXY = onCall(async (request) => {
+  try {
+    let { data } = request;
+    const db = admin.firestore();
+    const dataList = data.dataList
+    const promises = dataList.map(async (dataListItem) => {
+      const {
+        name,
+        ...rest
+      } = dataListItem;
+      const id = crypto.randomBytes(8).toString("hex");
+      const payload = {
+        listId: id,
+        assetName: name,
+        ...rest
+      };
+      if (name) {
+        return await db.collection('assets')
+          .doc(name)
+          .collection("assetList")
+          .doc(id)
+          .set(payload);
+      }
+    });
+    await Promise.all(promises)
+    return { status: "success", message: "Master xy is being processed" };
+
+  } catch (error) {
+    logger.log("error ===> ", error);
+    throw new HttpsError(error?.code, error?.message);
+  }
+})
 
 const createAsset2 = onCall(async (request) => {
   try {
@@ -238,4 +269,5 @@ module.exports = {
   getAssetsName,
   getAssets2,
   createAsset2,
+  importMasterXY
 };

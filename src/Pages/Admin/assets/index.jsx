@@ -16,6 +16,7 @@ import { firebaseFunctions } from 'Services'
 
 import CreateAsset from './CreateAsset'
 import { toast } from 'react-toastify'
+import ImportMasterXY from './ImportMasterXY'
 
 const Assets = () => {
     const dispatch = useDispatch()
@@ -62,7 +63,7 @@ const Assets = () => {
                 name={'Manage Assets'}
                 btns={[
                     { text: 'Create Asset', onClick: () => dispatch(openModal({ title: 'Create Asset', component: <CreateAsset /> })) },
-                    //   { text: 'Import users', onClick: () => dispatch(openModal({ title: 'Import Users', component: <ImportUsers /> })) },
+                      { text: 'Import MasterXY', onClick: () => dispatch(openModal({ title: 'Import MasterXY', component: <ImportMasterXY /> })) },
                     // {   text: <>  <Button data={usersToDownloading} loading={downloadLoading} >{downloadLoading ? 'Loading...' : 'Download template '} </Button>  </>, onClick: () => downloadUser() },
                 ]}
             />
@@ -72,11 +73,11 @@ const Assets = () => {
                     { name: 'OML', key: 'assetName' },
                     { name: 'Field', key: 'field' },
                     { name: 'Well', key: 'well' },
-                    { name: 'Production string', key: 'productionString' },
+                    // { name: 'Production string', key: 'productionString' },
                     { name: 'Reservoir', key: 'reservoir' },
                     { name: 'Flowstation', key: 'flowStation' },
-                    { name: 'Surface X Coordinate', key: 'surfaceXcoordinate' },
-                    { name: 'Surface Y Coordinate', key: 'surfaceYcoordinate' },
+                    { name: 'Surface X Coordinate', key: 'surfaceX' },
+                    { name: 'Surface Y Coordinate', key: 'surfaceY' },
 
                 ]}
                 actions={(data, i) => <TableAction

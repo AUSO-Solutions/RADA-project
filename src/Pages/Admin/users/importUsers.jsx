@@ -18,7 +18,7 @@ const ImportUsers = () => {
   const dispatch = useDispatch()
 
   const upload = () => {
-    cvsToJson(file, "user-template.csv", async (jsonData) => {
+    cvsToJson(file, async (jsonData) => {
       // console.log(jsonData)
       try {
         await firebaseFunctions('createUsers', { users: jsonData })

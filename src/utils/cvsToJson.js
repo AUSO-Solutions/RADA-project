@@ -1,6 +1,6 @@
 import Papa from "papaparse";
 // import csvToJson from "convert-csv-to-json"
-export default function  csvToJson (files, filename, getFile=()=>null) {
+export default function  csvToJson (files, getFile=()=>null) {
 
     //var csv is the CSV file with headers
     // function csvJSON(csv){
