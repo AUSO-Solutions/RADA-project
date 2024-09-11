@@ -18,12 +18,13 @@ import MenuItem from '@mui/material/MenuItem';
 import { useDispatch } from 'react-redux';
 import { closeModal, openModal } from 'Store/slices/modalSlice';
 import Text from 'Components/Text';
-import { Divider } from '@mui/material';
+import { Avatar, Divider } from '@mui/material';
 import { colors } from 'Assets';
 import { MdOutlineCheck } from 'react-icons/md';
 import { useFetch } from 'hooks/useFetch';
 import CheckInput from 'Components/Input/CheckInput';
 import { toast } from 'react-toastify';
+import { CheckOutlined } from '@mui/icons-material';
 
 
 const SendTo = ({ title }) => {
@@ -45,7 +46,7 @@ const SendTo = ({ title }) => {
     const send = async () => {
         console.log(selectedGroups)
         dispatch(closeModal())
-        dispatch(openModal({ component: <Query /> }))
+        dispatch(openModal({ component: <Query done /> }))
     }
     return <div className='w-[500px] p-1 h-[600px]'>
         <Text size={24}>Send to</Text>
@@ -72,7 +73,7 @@ const SendTo = ({ title }) => {
 
 
 
-            <Button onClick={back} color={colors.rada_blue} bgcolor={'white'}  width={100} className={`float-left border !border-[${colors.rada_blue}] mt-[50px]`}>
+            <Button onClick={back} color={colors.rada_blue} bgcolor={'white'} width={100} className={`float-left border !border-[${colors.rada_blue}] mt-[50px]`}>
                 Back
             </Button>
             <Button onClick={send} width={100} className={'float-right mt-[50px]'}>
@@ -82,22 +83,22 @@ const SendTo = ({ title }) => {
 
     </div>
 }
-const Query = ({ title }) => {
+const Query = ({ title, done }) => {
     const [query, setQuery] = React.useState('')
     const dispatch = useDispatch()
     const send = async () => {
-       if(query){
-        dispatch(closeModal())
-        dispatch(openModal({ component: <SendTo /> }))
-       }else{
-        toast.info("Please a query!")
-       }
+        if (query) {
+            dispatch(closeModal())
+            dispatch(openModal({ component: <SendTo /> }))
+        } else {
+            toast.info("Please a query!")
+        }
     }
     return <div className='w-[500px] p-1 h-[600px]'>
         <Text size={24}>Query Well Test Data Result</Text>
 
         <Divider className='!mt-[40px]' />
-        <div className='mt-5 p-2 rounded bg-[#F9FAFA]'>
+        {!done ? <div className='mt-5 p-2 rounded bg-[#F9FAFA]'>
             <div className='h-[100px] flex items-center'>
                 <Text weight={600} color={colors.rada_blue}>{title}</Text>
             </div>
@@ -109,7 +110,16 @@ const Query = ({ title }) => {
             <Button onClick={send} width={100} className={'float-right mt-[50px]'}>
                 Send
             </Button>
-        </div>
+        </div> : <div className='mt-[100px] h-[300px] border gap-2 flex flex-col items-center justify-center p-2 rounded bg-[#F9FAFA]'>
+
+            <Avatar sx={{ bgcolor: '#00A3FF0D' }}>
+                <CheckOutlined sx={{ color:'#00A3FF'}} />
+            </Avatar>
+            <Text size={24}>
+                Query Sent
+            </Text>
+            <Text align={'center'} className={'block w-[85%] text-center'}>Well Test DATA-OML99/Field1/Wells Schedule/July,2024 query has been sent successfully to the Field Engineers Group.</Text>
+        </div>}
 
     </div>
 }

@@ -23,12 +23,12 @@ import Actions from './Actions';
 // import styles from './welltest.module.scss'
 
 const TableInput = (props) => {
-    return <input className='p-1 text-center w-[70px] border outline-none' required {...props}
-        onKeyPress={(e) => {
-            if (!/[0-9]/.test(e.key) && props.type === 'number') {
-                e.preventDefault();
-            }
-        }}
+    return <input className='p-1 text-center w-[80px] h-[100%] border outline-none ' required {...props}
+    // onKeyPress={(e) => {
+    //     if (!/[0-9]/.test(e.key) && props.type === 'number') {
+    //         e.preventDefault();
+    //     }
+    // }}
     />
 }
 
@@ -119,6 +119,11 @@ export default function WellTestDataTable() {
                         <Setting2 color='#00A3FF' />
                     </div>
                 </div>
+            </div>
+            <div className='border rounded flex gap-3 p-2 my-2'>
+                <Text>Well test schedule: {wellTest?.title}</Text>
+                <Text>   Asset: {wellTest?.asset}</Text>
+                <Text>   Field: {wellTest?.field}</Text>
             </div>
             <TableContainer className={`m-auto border  pr-5 ${tableStyles.borderedMuiTable}`}>
                 <Table sx={{ minWidth: 700 }} >
@@ -259,7 +264,7 @@ export default function WellTestDataTable() {
                                     </TableCell> */}
                                     <TableCell align="center" sx={{ minWidth: '200px' }} colSpan={3}>
                                         {/* <TableInput className='w-full outline-none border p-2' /> */}
-                                        <textarea defaultValue={well.remark} onChange={(e) => handleChange("remark", e.target.value)} className='border p-1' rows={2} cols={20}>
+                                        <textarea defaultValue={well.remark} onChange={(e) => handleChange("remark", e.target.value)} className='border outline-none p-1' rows={2} cols={20}>
 
                                         </textarea>
                                     </TableCell>
