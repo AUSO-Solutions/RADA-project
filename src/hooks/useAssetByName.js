@@ -9,14 +9,16 @@ export const useAssetByName = (name) => {
     const [assetData, setAssetData] = useState([])
     const [items, setItems] = useState({
         flowStations: [],
+        fields: [],
+        productionStrings: [],
         wells: []
     })
     // useEffect(() => {
-        // const set = new Set(data)
-        // const uniques = (Array.from(set))
-        // const flowStations = Array.from(new Set(uniques?.map(datum => datum?.flowStation)))
-        // // setAssetData(uniques)
-        // // setItems(prev => ({ ...prev, flowStations }))
+    // const set = new Set(data)
+    // const uniques = (Array.from(set))
+    // const flowStations = Array.from(new Set(uniques?.map(datum => datum?.flowStation)))
+    // // setAssetData(uniques)
+    // // setItems(prev => ({ ...prev, flowStations }))
 
     // }, [name])
 
@@ -29,11 +31,16 @@ export const useAssetByName = (name) => {
             try {
                 const res = await firebaseFunctions('getAssetByName', { name })
                 // setData(res?.data)
+                // console.log(res.data?.filter(t => !t?.wellId))
                 const set = new Set(res?.data)
                 const uniques = (Array.from(set))
                 const flowStations = Array.from(new Set(uniques?.map(datum => datum?.flowStation)))
+                const fields = Array.from(new Set(uniques?.map(datum => datum?.field)))
+                const reservoirs = Array.from(new Set(uniques?.map(datum => datum?.reservoir)))
+                const productionStrings = Array.from(new Set(uniques?.map(datum => datum?.wellId)))
+                const wells = Array.from(new Set(uniques?.map(datum => datum?.wellbore)))
                 setAssetData(uniques)
-                setItems(prev => ({ ...prev, flowStations }))
+                setItems(prev => ({ ...prev, flowStations, fields, reservoirs, productionStrings, wells }))
 
             } catch (error) {
 
@@ -42,8 +49,8 @@ export const useAssetByName = (name) => {
             }
         }
         getData()
-        // eslint-disable-next-line
-    }, [])
+
+    }, [name])
 
     // return {
     //     data,
@@ -51,6 +58,6 @@ export const useAssetByName = (name) => {
     // }
 
     return {
-        assetData, loading,...items
+        assetData, loading, ...items
     }
 }

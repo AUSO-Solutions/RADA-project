@@ -158,7 +158,7 @@ const SelectMeasurementType = () => {
               disabled={setupData?.fluidType === 'Gas'}
               options={measureMenntTypes.map(type => ({ label: type, value: type }))} />
             <Input type='number' containerClass={'!w-[150px]'} inputClass={'!text-center'} required
-              defaultValue={setupData?.flowStations?.[i].numberOfUnits} min={1} max={setupData?.fluidType === 'Gas' ? 3 : 10}
+              defaultValue={setupData?.flowStations?.[i]?.numberOfUnits} min={1} max={setupData?.fluidType === 'Gas' ? 3 : 10}
               onChange={(e) => updateFlowstation(i, "numberOfUnits", e.target.value)}
             />
           </div>)

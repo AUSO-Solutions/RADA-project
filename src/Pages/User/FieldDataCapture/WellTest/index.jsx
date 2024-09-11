@@ -2,8 +2,8 @@ import Header from 'Components/header'
 import React, { useState } from 'react'
 import Tab from 'Components/tab'
 import Schedule from './Schedule'
-import WellTestData from './WellTestData'
 import IPSC from './IPSC'
+import WellTestResults from './WellTestResults'
 
 
 const tabs = [
@@ -13,7 +13,7 @@ const tabs = [
   },
   {
     title: 'Well Test Result',
-    Component: <WellTestData />
+    Component: <WellTestResults />
   },
   {
     title: 'IPSC',

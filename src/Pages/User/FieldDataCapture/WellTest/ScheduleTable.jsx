@@ -13,16 +13,31 @@ import { Button } from 'Components';
 import { Link, useLocation } from 'react-router-dom';
 import { useFetch } from 'hooks/useFetch';
 import dayjs from 'dayjs';
+import { firebaseFunctions } from 'Services';
+import { toast } from 'react-toastify';
 
 
 export default function ScheduleTable() {
 
 
     const { search } = useLocation()
+    const [loading, setLoading] = React.useState(false)
     const [wellTest, setWellTest] = React.useState({})
     const id = React.useMemo(() => new URLSearchParams(search).get('id'), [search])
     const { data: res } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'wellTestSchedule', id } })
     React.useEffect(() => { setWellTest(res) }, [res])
+    const save = async () => {
+        setLoading(true)
+        try {
+            await firebaseFunctions('updateSetup', { id, setupType: 'wellTestSchedule', ...wellTest  })
+            toast.success("Remark saved successfully")
+            console.log(res, wellTest)
+        } catch (error) {
+
+        } finally {
+            setLoading(false)
+        }
+    }
 
     return (
         < div className='px-3'>
@@ -52,7 +67,7 @@ export default function ScheduleTable() {
                             <TableCell style={{ fontWeight: '600' }} align="center" >
                                 Reservoir
                             </TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center">Well</TableCell>
+                            <TableCell style={{ fontWeight: '600' }} align="center">Production string</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center">Test Choke (/64")</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center">On Program</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center">Start Date</TableCell>
@@ -67,31 +82,41 @@ export default function ScheduleTable() {
 
                         {
                             Object.values(wellTest?.wellsData || {})
-                            .sort((a,b)=>((b?.isSelected?1:0)  - (a?.isSelected?1:0)))?.map((well, i) => {
-                                return <TableRow>
-                                    <TableCell align="center">
-                                        {i + 1}
+                                .sort((a, b) => ((b?.isSelected ? 1 : 0) - (a?.isSelected ? 1 : 0)))?.map((well, i) => {
+                                    return <TableRow>
+                                        <TableCell align="center">
+                                            {i + 1}
 
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        {well?.reservoir}
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        {well?.well}
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        {well?.chokeSize}
-                                    </TableCell>
-                                    <TableCell bgcolor={well?.isSelected ? '#A7EF6F' : "#FF5252"} align="center">{well?.isSelected ? 'YES' : 'NO'}</TableCell>
-                                    <TableCell align="center">{well?.isSelected ? well?.startDate : '-'}</TableCell>
-                                    <TableCell align="center">{well?.isSelected ? well?.endDate : '-'}</TableCell>
-                                    <TableCell align="center">{well?.isSelected ? well?.stabilizatonDuration : '-'}</TableCell>
-                                    <TableCell align="center">{well?.isSelected ? well?.duration : '-'}</TableCell>
-                                    <TableCell colSpan={3} align="center">
-                                        <textarea className='border rounded px-2 py-1' />
-                                    </TableCell>
-                                </TableRow>
-                            })
+                                        </TableCell>
+                                        <TableCell align="center">
+                                            {well?.reservoir}
+                                        </TableCell>
+                                        <TableCell align="center">
+                                            {well?.productionString}
+                                        </TableCell>
+                                        <TableCell align="center">
+                                            {well?.chokeSize || '-'}
+                                        </TableCell>
+                                        <TableCell bgcolor={well?.isSelected ? '#A7EF6F' : "#FF5252"} align="center">{well?.isSelected ? 'YES' : 'NO'}</TableCell>
+                                        <TableCell align="center">{well?.isSelected ? dayjs(well?.startDate).format('DD MMM YYYY. hh:mmA') : '-'}</TableCell>
+                                        <TableCell align="center">{well?.isSelected ? dayjs(well?.endDate).format('DD MMM YYYY. hh:mmA') : '-'}</TableCell>
+                                        <TableCell align="center">{well?.isSelected ? well?.stabilizatonDuration : '-'}</TableCell>
+                                        <TableCell align="center">{well?.isSelected ? dayjs(well?.endDate).diff(well?.startDate, 'hours') : '-'}</TableCell>
+                                        <TableCell colSpan={3} align="center">
+                                           {
+                                            !well?.isSelected ?  <textarea className='border rounded px-2 py-1' defaultValue={well?.remark} onChange={(e) => {
+                                                setWellTest(prev => ({
+                                                    ...prev,
+                                                    wellsData: {
+                                                        ...prev?.wellsData,
+                                                        [well?.productionString]: { ...prev?.wellsData?.[well?.productionString], remark : e.target.value}
+                                                    }
+                                                }))
+                                            }} /> :"-"
+                                           }
+                                        </TableCell>
+                                    </TableRow>
+                                })
                         }
 
                     </TableBody>
@@ -100,7 +125,7 @@ export default function ScheduleTable() {
             </TableContainer>
 
             <div className='flex justify-end py-1'>
-                <Button width={120} >Save</Button>
+                <Button loading={loading} onClick={save} width={120} >Save</Button>
             </div>
         </div>
     );
