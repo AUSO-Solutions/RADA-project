@@ -44,6 +44,27 @@ const Query = () => {
     </div>
 }
 
+// const Approve =()=>{
+//     return <div className='w-[500px] p-1 h-[600px]'>
+//     <Text size={24}>Query Well Test Data Result</Text>
+
+//     <Divider className='mt-5' />
+//     <div className='mt-5 p-2 rounded bg-[#F9FAFA]'>
+//         <div className='h-[100px] flex items-center'>
+//             <Text weight={600} color={colors.rada_blue}>Well Test DATA-OML99/Field1/Wells Schedule/July,2024</Text>
+//         </div>
+
+//         <textarea rows={10} className='w-full p-3'>
+
+//         </textarea>
+
+//         <Button className={'float-right mt-4'}>
+//             Send
+//         </Button>
+//     </div>
+
+// </div>
+// }
 
 export default function Actions() {
     const [anchorEl, setAnchorEl] = React.useState(null);
