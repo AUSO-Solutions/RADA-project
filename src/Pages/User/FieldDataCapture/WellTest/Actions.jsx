@@ -17,10 +17,19 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useDispatch } from 'react-redux';
 import { openModal } from 'Store/slices/modalSlice';
+import Text from 'Components/Text';
+import { Divider } from '@mui/material';
 
 
-const Query =()=>{
+const Query = () => {
+    return <div className='w-[500px] p-2 h-[600px]'>
+        <Text size={24}>Query Well Test Data Result</Text>
+        <Divider />
+        <div className='mt-5 rounded bg-light'>
+dd
+        </div>
 
+    </div>
 }
 
 export default function Actions() {
@@ -29,18 +38,14 @@ export default function Actions() {
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
-    const dispatch =  useDispatch()
+    const dispatch = useDispatch()
 
     const handleClose = () => {
         setAnchorEl(null);
-        dispatch(openModal({component:<Query />}))
-        
     };
 
     return (
         <div>
-
-
             <Button id="basic-button"
                 aria-controls={open ? 'basic-menu' : undefined}
                 aria-haspopup="true"
@@ -54,8 +59,8 @@ export default function Actions() {
                     'aria-labelledby': 'basic-button',
                 }}
             >
-                <MenuItem onClick={handleClose}>Query</MenuItem>
-                <MenuItem onClick={handleClose}>Approve</MenuItem>
+                <MenuItem onClick={() => { handleClose(); dispatch(openModal({ component: <Query /> })) }}>Query Result</MenuItem>
+                <MenuItem onClick={handleClose}>Approve Result</MenuItem>
             </Menu>
         </div>
     );
