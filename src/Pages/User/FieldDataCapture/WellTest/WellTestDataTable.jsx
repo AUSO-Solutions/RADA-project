@@ -47,15 +47,15 @@ export default function WellTestDataTable() {
     const isEdit = React.useMemo(() => { return scheduleId }, [scheduleId])
     React.useEffect(() => { setWellTest(res) }, [res])
     React.useEffect(() => { if (!isEdit) setWellTestResult(wellTest?.wellsData) }, [wellTest.wellsData, isEdit])
-    React.useEffect(() => { if (isEdit) setWellTestResult(res2?.wellTestResultData) }, [res2, isEdit])
+    React.useEffect(() => { if (isEdit) setWellTestResult(res2?.wellTestResultData); setTitle(res2?.title) }, [res2, isEdit])
+    React.useEffect(() => { }, [])
     // 
     const save = async () => {
         setLoading(true)
         try {
 
             if (isEdit) {
-console.log(title)
-                const payload = { title: title || res2?.title, asset: wellTest?.asset, field: wellTest?.field, wellTestScheduleId: wellTest?.id, setupType: 'wellTestResult', wellTestResultData: wellTestResult, id }
+                const payload = { title: title, asset: wellTest?.asset, field: wellTest?.field, wellTestScheduleId: wellTest?.id, setupType: 'wellTestResult', wellTestResultData: wellTestResult, id }
                 console.log(payload)
                 await firebaseFunctions('updateSetup', payload)
             } else {
@@ -113,7 +113,7 @@ console.log(title)
                 </div>
                 <div className='flex justify-end py-2 items-center gap-3'>
                     <div className='flex gap-2' >
-            <Actions />
+                        <Actions wellTestResult={wellTestResult} title={title} />
                     </div>
                     <div className='border border-[#00A3FF] px-3 py-1 rounded-md' >
                         <Setting2 color='#00A3FF' />
