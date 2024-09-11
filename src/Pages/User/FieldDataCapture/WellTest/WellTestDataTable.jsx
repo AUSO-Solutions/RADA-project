@@ -11,7 +11,7 @@ import RadaSwitch from 'Components/Input/RadaSwitch';
 import { ArrowBack } from '@mui/icons-material';
 import Text from 'Components/Text';
 import { Button, Input } from 'Components';
-import { ArrowDown2, Setting2 } from 'iconsax-react';
+import { Setting2 } from 'iconsax-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useFetch } from 'hooks/useFetch';
 import dayjs from 'dayjs';
@@ -19,6 +19,7 @@ import { firebaseFunctions } from 'Services';
 import { closeModal, openModal } from 'Store/slices/modalSlice';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
+import Actions from './Actions';
 // import styles from './welltest.module.scss'
 
 const TableInput = (props) => {
@@ -112,7 +113,7 @@ console.log(title)
                 </div>
                 <div className='flex justify-end py-2 items-center gap-3'>
                     <div className='flex gap-2' >
-                        <Button width={120} >Actions <ArrowDown2 /></Button>
+            <Actions />
                     </div>
                     <div className='border border-[#00A3FF] px-3 py-1 rounded-md' >
                         <Setting2 color='#00A3FF' />

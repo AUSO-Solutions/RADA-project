@@ -14,7 +14,7 @@ import { closeModal } from 'Store/slices/modalSlice'
 import RadioSelect from '../RadioSelect'
 
 import { toast } from 'react-toastify'
-import { images } from 'Assets'
+
 
 import { camelize, updateFlowstation, updateFlowstationReading } from './helper'
 
@@ -22,7 +22,8 @@ import { camelize, updateFlowstation, updateFlowstationReading } from './helper'
 // import { BsChevronRight } from 'react-icons/bs'
 // import dayjs from 'dayjs'
 import { useFetch } from 'hooks/useFetch'
-import { Link, useNavigate } from 'react-router-dom'
+import {  useNavigate } from 'react-router-dom'
+import Files from 'Partials/Files'
 
 
 
@@ -285,24 +286,13 @@ const SaveAs = () => {
 
 const Existing = ({ onSelect = () => null }) => {
   const { data } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "volumeMeasurement" } })
-  const [menuViewed, setMenuViewed] = useState(null)
-  const viewMenu = (i) => {
-    setMenuViewed(prev => {
-      if (prev === i) return null
-      return i
-    })
-  }
+
   return (
     <div className=" flex flex-wrap gap-4 m-5 ">
-      {data?.map((datum, i) => <div onClick={() => viewMenu(i)} className="w-[250px] relative shadow rounded-[8px] px-3 flex items-center gap-3">
-        <img src={images.file} alt="" width={100} />   <Text size={18}> {datum?.title || 'No name'}</Text>
-        {
-          menuViewed === i && <div className="absolute w-[100px] flex flex-col gap-2 px-2 right-[-50px] border rounded shadow bottom-[-30px] bg-[white]">
-            <Link to={`/users/fdc/daily/${datum?.reportTypes?.[0] === 'Gas' ? 'gas-table' : 'volume-measurement-table'}?id=${datum?.id}`}  >View</Link>
-            <div>Delete</div>
-          </div>
-        }
-      </div>)}
+         <Files files={data} actions={[
+                { name: 'View', to: (file) =>`/users/fdc/daily/${file?.reportTypes?.[0] === 'Gas' ? 'gas-table' : 'volume-measurement-table'}?id=${file?.id}` },
+                { name: 'Delete', to: (file) => `` },
+            ]} />
     </div>
   )
 }
