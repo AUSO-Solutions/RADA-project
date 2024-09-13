@@ -15,7 +15,7 @@ const WellTestResults = () => {
 
             <Files files={data} actions={[
                 { name: 'Edit', to: (file) => `/users/fdc/well-test-data/well-test-table?id=${file?.id}&scheduleId=${file?.wellTestScheduleId}` },
-                { name: 'Create IPSC', to: (file) => `/users/fdc/well-test-data/well-test-table?id=${file?.id}&scheduleId=${file?.wellTestScheduleId}` },
+                { name: 'Create IPSC', to: (file) => `/users/fdc/well-test-data?page=ipsc&well-test-result-id=${file?.id}&autoOpenSetupModal=yes` },
                 { name: 'Delete', to: (file) => `` },
             ]} />
           
