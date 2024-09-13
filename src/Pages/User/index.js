@@ -9,8 +9,8 @@ import VolumeMeasurementTable from "./FieldDataCapture/DailyoOperation/VolumeMea
 import MerData from "./FieldDataCapture/MerData";
 import SurveyData from "./FieldDataCapture/SurveyData";
 import WellTest from "./FieldDataCapture/WellTest";
-import ScheduleTable from "./FieldDataCapture/WellTest/ScheduleTable";
-import WellTestDataTable from "./FieldDataCapture/WellTest/WellTestDataTable";
+import ScheduleTable from "./FieldDataCapture/WellTest/Schedule/ScheduleTable";
+import WellTestDataTable from "./FieldDataCapture/WellTest/WellTest/WellTestDataTable";
 // import UserRegister from "./Auth/register";
 import DataForm from "./dataform/dataform";
 import Homepage from "./homepage";

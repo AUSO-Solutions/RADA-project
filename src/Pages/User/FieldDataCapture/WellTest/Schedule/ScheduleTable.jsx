@@ -5,7 +5,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import tableStyles from './table.module.scss'
+import tableStyles from '../table.module.scss'
 import RadaSwitch from 'Components/Input/RadaSwitch';
 import { ArrowBack } from '@mui/icons-material';
 import Text from 'Components/Text';
@@ -29,7 +29,7 @@ export default function ScheduleTable() {
     const save = async () => {
         setLoading(true)
         try {
-            await firebaseFunctions('updateSetup', { id, setupType: 'wellTestSchedule', ...wellTest  })
+            await firebaseFunctions('updateSetup', { id, setupType: 'wellTestSchedule', ...wellTest })
             toast.success("Remark saved successfully")
             console.log(res, wellTest)
         } catch (error) {
@@ -103,17 +103,17 @@ export default function ScheduleTable() {
                                         <TableCell align="center">{well?.isSelected ? well?.stabilizatonDuration : '-'}</TableCell>
                                         <TableCell align="center">{well?.isSelected ? dayjs(well?.endDate).diff(well?.startDate, 'hours') : '-'}</TableCell>
                                         <TableCell colSpan={3} align="center">
-                                           {
-                                            !well?.isSelected ?  <textarea className='border rounded px-2 py-1' defaultValue={well?.remark} onChange={(e) => {
+
+                                            <textarea className='border rounded px-2 py-1' defaultValue={well?.remark} onChange={(e) => {
                                                 setWellTest(prev => ({
                                                     ...prev,
                                                     wellsData: {
                                                         ...prev?.wellsData,
-                                                        [well?.productionString]: { ...prev?.wellsData?.[well?.productionString], remark : e.target.value}
+                                                        [well?.productionString]: { ...prev?.wellsData?.[well?.productionString], remark: e.target.value }
                                                     }
                                                 }))
-                                            }} /> :"-"
-                                           }
+                                            }} />
+
                                         </TableCell>
                                     </TableRow>
                                 })

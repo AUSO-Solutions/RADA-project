@@ -5,7 +5,7 @@ import { clearSetup, setSetupData, setWholeSetup } from "Store/slices/setupSlice
 import CheckInput from "Components/Input/CheckInput"
 import { Input } from "Components"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import styles from './welltest.module.scss'
+import styles from '../welltest.module.scss'
 import { useFetch } from "hooks/useFetch"
 import Text from "Components/Text"
 import { closeModal } from "Store/slices/modalSlice"
@@ -330,7 +330,7 @@ const Exists = () => {
 
             <Files files={data} actions={[
                 { name: 'Remark', to: (file) =>`/users/fdc/well-test-data/schedule-table?id=${file?.id}` },
-                { name: 'Create well test result', to: (file) => `/users/fdc/well-test-data/well-test-table?id=${file?.id}` },
+                { name: 'Well Test Result', to: (file) => `/users/fdc/well-test-data/well-test-table?id=${file?.id}` },
             ]} />
            
         </div>

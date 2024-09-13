@@ -6,7 +6,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
-import tableStyles from './table.module.scss'
+import tableStyles from '../table.module.scss'
 import RadaSwitch from 'Components/Input/RadaSwitch';
 import { ArrowBack } from '@mui/icons-material';
 import Text from 'Components/Text';
@@ -19,7 +19,7 @@ import { firebaseFunctions } from 'Services';
 import { closeModal, openModal } from 'Store/slices/modalSlice';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import Actions from './Actions';
+import Actions from '../Actions';
 // import styles from './welltest.module.scss'
 
 const TableInput = (props) => {
@@ -30,6 +30,21 @@ const TableInput = (props) => {
     //     }
     // }}
     />
+}
+
+
+const SaveAs = ({ defaultValue, onSave = () => null, loading }) => {
+    const [title, setTitle] = React.useState(defaultValue)
+    return <div className='bg-[white] w-[400px]'>
+        <Text size={24}>Save Well Test Result as</Text>
+
+        <Input defaultValue={defaultValue} className='w-full' onChange={(e) => setTitle(e.target.value)} />
+        <Button loading={loading} className='float-right mt-4' onClick={() => {
+            onSave(title)
+        }} width={100}>
+            Save
+        </Button>
+    </div>
 }
 
 export default function WellTestDataTable() {
@@ -50,7 +65,11 @@ export default function WellTestDataTable() {
     React.useEffect(() => { if (isEdit) setWellTestResult(res2?.wellTestResultData); setTitle(res2?.title) }, [res2, isEdit])
     React.useEffect(() => { }, [])
     // 
-    const save = async () => {
+    const save = async (title) => {
+        if(!title) {
+            toast.info('Please provide a title')
+            return;
+        }
         setLoading(true)
         try {
 
@@ -60,11 +79,11 @@ export default function WellTestDataTable() {
                 await firebaseFunctions('updateSetup', payload)
             } else {
                 const payload = { title, asset: wellTest?.asset, field: wellTest?.field, wellTestScheduleId: wellTest?.id, setupType: 'wellTestResult', wellTestResultData: wellTestResult }
+                console.log(payload)
                 await firebaseFunctions('createSetup', payload)
+
             }
             dispatch(closeModal())
-
-
             toast.success('Data saved to well test result')
         } catch (error) {
             console.log(error)
@@ -73,17 +92,6 @@ export default function WellTestDataTable() {
         }
     }
 
-    const SaveAs = () => {
-
-        return <div className='bg-[white] w-[400px]'>
-            <Text size={24}>Save Well Test Result as</Text>
-
-            <Input defaultValue={res2?.title} className='w-full' onChange={(e) => setTitle(e.target.value)} />
-            <Button loading={loading} className='float-right mt-4' onClick={save} width={100}>
-                Save
-            </Button>
-        </div>
-    }
 
     const fields = [
         { name: 'gross', type: "number" },
@@ -113,7 +121,7 @@ export default function WellTestDataTable() {
                 </div>
                 <div className='flex justify-end py-2 items-center gap-3'>
                     <div className='flex gap-2' >
-                        <Actions wellTestResult={wellTestResult} title={title} />
+                     { isEdit &&  <Actions wellTestResult={wellTestResult} title={title} />}
                     </div>
                     <div className='border border-[#00A3FF] px-3 py-1 rounded-md' >
                         <Setting2 color='#00A3FF' />
@@ -189,7 +197,7 @@ export default function WellTestDataTable() {
                     </TableHead>
                     <TableBody>
                         {
-                            Object.values(wellTestResult || {})?.map((well, i) => {
+                            Object.values(wellTestResult || {}).sort((a, b) => ((b?.isSelected ? 1 : 0) - (a?.isSelected ? 1 : 0)))?.map((well, i) => {
                                 const handleChange = (name, value) => {
                                     setWellTestResult(prev => ({
                                         ...prev,
@@ -279,7 +287,7 @@ export default function WellTestDataTable() {
             <div className='flex justify-end py-2'>
                 <Button width={120} onClick={() => {
 
-                    dispatch(openModal({ component: <SaveAs /> }))
+                    dispatch(openModal({ component: <SaveAs defaultValue={res2?.title} onSave={save} loading={loading} /> }))
 
                 }} >Commit</Button>
             </div>

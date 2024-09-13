@@ -6,7 +6,7 @@ import React from 'react'
 
 
 
-const WellTestResults = () => {
+const IPSC = () => {
 
     const { data } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "wellTestResult" } })
 
@@ -15,6 +15,7 @@ const WellTestResults = () => {
 
             <Files files={data} actions={[
                 { name: 'Edit', to: (file) => `/users/fdc/well-test-data/well-test-table?id=${file?.id}&scheduleId=${file?.wellTestScheduleId}` },
+                { name: 'Create IPSC', to: (file) => `/users/fdc/well-test-data/well-test-table?id=${file?.id}&scheduleId=${file?.wellTestScheduleId}` },
                 { name: 'Delete', to: (file) => `` },
             ]} />
           
@@ -24,4 +25,4 @@ const WellTestResults = () => {
 
 }
 
-export default WellTestResults
+export default IPSC

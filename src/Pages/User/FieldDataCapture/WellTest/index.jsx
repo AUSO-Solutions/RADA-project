@@ -1,9 +1,10 @@
 import Header from 'Components/header'
 import React, { useState } from 'react'
 import Tab from 'Components/tab'
-import Schedule from './Schedule'
-import IPSC from './IPSC'
-import WellTestResults from './WellTestResults'
+import Schedule from './Schedule/Schedule'
+// import IPSC from './IPSC'
+import WellTestResults from './WellTest/WellTestResults'
+import CreateIPSC from './IPSC/CreateIPSC'
 
 
 const tabs = [
@@ -17,7 +18,7 @@ const tabs = [
   },
   {
     title: 'IPSC',
-    Component: <IPSC />
+    Component: <CreateIPSC />
   },
 ]
 const WellTest = () => {
