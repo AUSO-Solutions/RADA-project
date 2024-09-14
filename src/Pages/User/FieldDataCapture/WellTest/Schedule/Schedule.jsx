@@ -17,7 +17,7 @@ import { useAssetByName } from "hooks/useAssetByName"
 import { Chip } from "@mui/material"
 import dayjs from "dayjs"
 import Files from "Partials/Files"
-import { createTitle } from "utils"
+import { createWellTitle } from "utils"
 
 
 
@@ -147,7 +147,7 @@ const DefineSchedule = () => {
             <Input type='select' placeholder={setupData?.asset} containerClass={'h-[39px] !w-[150px]'} disabled />
             <Input type='month' placeholder="Daily" containerClass={'h-[39px] !w-[150px]'}
                 defaultValue={setupData?.month} required
-                onChange={(e) => dispatch(setSetupData({ name: 'month', value: e.value }))} />
+                onChange={(e) => dispatch(setSetupData({ name: 'month', value: e.target.value }))} />
         </div>
 
         <div key={setupData?.reportTypes?.length} className={styles.tableContainer}>
@@ -192,27 +192,27 @@ const DefineSchedule = () => {
                                         {getReservoirByProdString(productionString?.value)}
                                     </td>
                                     <td>
-                                        <Input type='select' placeholder={"Select"} required={col?.isSelected}
+                                        <Input type='select' placeholder={"Select"} required={col?.isSelected} disabled={!col?.isSelected}
                                             name="fluidType" onChange={handleFluidTypeChange} defaultValue={{ label: col?.fluidType, value: col?.fluidType }}
                                             options={[{ label: 'Oil', value: 'Oil' }, { label: 'Gas', value: 'Gas' }]} />
                                     </td>
                                     <td>
-                                        <input required={col?.isSelected} type="number" className={styles.inputBox} defaultValue={col?.noOfChokes} name="noOfChokes" onChange={handleWellChanges} />
+                                        <input required={col?.isSelected} disabled={!col?.isSelected} type="number" className={styles.inputBox} defaultValue={col?.noOfChokes} name="noOfChokes" onChange={handleWellChanges} />
                                     </td>
                                     <td >
-                                        <input required={col?.isSelected} type="number" className={styles.inputBox} defaultValue={col?.chokeSize} name="chokeSize" onChange={handleWellChanges} />
+                                        <input required={col?.isSelected} disabled={!col?.isSelected} type="number" className={styles.inputBox} defaultValue={col?.chokeSize} name="chokeSize" onChange={handleWellChanges} />
                                     </td>
                                     <td className="min-w-[230px]">
-                                        <input required={col?.isSelected} min={dayjs().format("YYYY-MM-DDTHH:mm")} type="datetime-local" className={styles.inputBox} defaultValue={col?.startDate} name="startDate" onChange={handleWellChanges} />
+                                        <input required={col?.isSelected} disabled={!col?.isSelected} min={dayjs().format("YYYY-MM-DDTHH:mm")} type="datetime-local" className={styles.inputBox} defaultValue={col?.startDate} name="startDate" onChange={handleWellChanges} />
                                     </td>
                                     <td className="min-w-[230px]">
-                                        <input required={col?.isSelected} key={col?.startDate} min={dayjs(col?.startDate).format("YYYY-MM-DDTHH:mm")} type="datetime-local" className={styles.inputBox} defaultValue={col?.endDate} name="endDate" onChange={handleWellChanges} />
+                                        <input required={col?.isSelected} disabled={!col?.isSelected} key={col?.startDate} min={dayjs(col?.startDate).format("YYYY-MM-DDTHH:mm")} type="datetime-local" className={styles.inputBox} defaultValue={col?.endDate} name="endDate" onChange={handleWellChanges} />
                                     </td>
                                     <td>
-                                        <input className={styles.inputBox} required={col?.isSelected} type='number' value={dayjs(col?.endDate).diff(col?.startDate, 'hours')} name="duration" />
+                                        <input className={styles.inputBox} required={col?.isSelected} disabled={!col?.isSelected} type='number' value={dayjs(col?.endDate).diff(col?.startDate, 'hours')} name="duration" />
                                     </td>
                                     <td>
-                                        <input className={styles.inputBox} required={col?.isSelected} type='number' defaultValue={col?.stabilizatonDuration} name="stabilizatonDuration" onChange={handleWellChanges} />
+                                        <input className={styles.inputBox} required={col?.isSelected} disabled={!col?.isSelected} type='number' defaultValue={col?.stabilizatonDuration} name="stabilizatonDuration" onChange={handleWellChanges} />
                                     </td>
                                 </tr>
                             )
@@ -329,7 +329,7 @@ const Exists = () => {
     return (
         <div className=" flex flex-wrap gap-4 m-5 ">
 
-            <Files  name={(file) => `${createTitle(file,'Well Test Schedule')}`}  files={data} actions={[
+            <Files  name={(file) => `${createWellTitle(file,'Well Test Schedule')}`}  files={data} actions={[
                 { name: 'Remark', to: (file) =>`/users/fdc/well-test-data/schedule-table?id=${file?.id}` },
                 { name: 'Well Test Result', to: (file) => `/users/fdc/well-test-data/well-test-table?id=${file?.id}` },
             ]} />

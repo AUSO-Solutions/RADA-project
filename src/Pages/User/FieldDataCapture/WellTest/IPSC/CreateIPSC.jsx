@@ -12,7 +12,7 @@ import Files from "Partials/Files"
 import { useLocation } from "react-router-dom"
 import { firebaseFunctions } from "Services"
 import { closeModal } from "Store/slices/modalSlice"
-import { createTitle } from "utils"
+import { createWellTitle } from "utils"
 
 
 const SelectAsset = () => {
@@ -85,7 +85,7 @@ const Exists = () => {
             <Files files={data} actions={[
                 { name: 'View', to: (file) => `/users/fdc/well-test-data/ipsc-table?id=${file?.id}` },
                 { name: 'Edit', to: (file) => `/users/fdc/well-test-data/well-test-table?id=${file?.id}` },
-            ]} name={(file) => `${createTitle(file, 'Well Test Result')}`} />
+            ]} name={(file) => `${createWellTitle(file, 'Well Test Result')}`} />
         </div>
     )
 }
