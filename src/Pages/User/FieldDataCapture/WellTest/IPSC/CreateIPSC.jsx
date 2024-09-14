@@ -11,6 +11,8 @@ import Setup from "Partials/setup"
 import Files from "Partials/Files"
 import { useLocation } from "react-router-dom"
 import { firebaseFunctions } from "Services"
+import { closeModal } from "Store/slices/modalSlice"
+import { createTitle } from "utils"
 
 
 const SelectAsset = () => {
@@ -53,10 +55,10 @@ const Preview = () => {
         <Input key={setupData?.asset + 'fields'} disabled defaultValue={setupData?.month}
             label={'Month'} type='month' options={wellTestResults?.map(result => ({ label: result.title, value: result.id }))}
         />
-        <Input key={setupData?.asset + 'fields'} disabled defaultValue={{label: setupData?.wellTestResult1?.title, value: setupData?.wellTestResult1?.id  }}
+        <Input key={setupData?.asset + 'fields'} disabled defaultValue={{ label: setupData?.wellTestResult1?.title, value: setupData?.wellTestResult1?.id }}
             label={'Well Test Result 1'} type='select' options={wellTestResults?.map(result => ({ label: result.title, value: result.id }))}
         />
-        <Input key={setupData?.asset + 'fields'} disabled defaultValue={{label: setupData?.wellTestResult2?.title, value: setupData?.wellTestResult2?.id  }}
+        <Input key={setupData?.asset + 'fields'} disabled defaultValue={{ label: setupData?.wellTestResult2?.title, value: setupData?.wellTestResult2?.id }}
             label={'Well Test Result 2'} type='select' options={wellTestResults?.map(result => ({ label: result.title, value: result.id }))}
         />
 
@@ -83,7 +85,7 @@ const Exists = () => {
             <Files files={data} actions={[
                 { name: 'View', to: (file) => `/users/fdc/well-test-data/ipsc-table?id=${file?.id}` },
                 { name: 'Edit', to: (file) => `/users/fdc/well-test-data/well-test-table?id=${file?.id}` },
-            ]} />
+            ]} name={(file) => `${createTitle(file, 'Well Test Result')}`} />
         </div>
     )
 }
@@ -107,7 +109,7 @@ const Schedule = () => {
             // console.log({ data }, '----')
 
             dispatch(setWholeSetup(data))
-            // dispatch(closeModal())
+            dispatch(closeModal())
 
         } catch (error) {
             toast.error(error?.message)
@@ -120,7 +122,7 @@ const Schedule = () => {
         <>
             {
                 <Setup
-                    title={'Setup Well Test Schedule'}
+                    title={'Setup IPSC'}
                     steps={["Select Well Test", "Preview", "Save As"]}
                     onSave={save}
                     rightLoading={loading}

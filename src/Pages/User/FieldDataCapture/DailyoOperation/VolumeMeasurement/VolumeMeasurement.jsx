@@ -22,8 +22,9 @@ import { camelize, updateFlowstation, updateFlowstationReading } from './helper'
 // import { BsChevronRight } from 'react-icons/bs'
 // import dayjs from 'dayjs'
 import { useFetch } from 'hooks/useFetch'
-import {  useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import Files from 'Partials/Files'
+import dayjs from 'dayjs'
 
 
 
@@ -289,10 +290,10 @@ const Existing = ({ onSelect = () => null }) => {
 
   return (
     <div className=" flex flex-wrap gap-4 m-5 ">
-         <Files files={data} actions={[
-                { name: 'View', to: (file) =>`/users/fdc/daily/${file?.reportTypes?.[0] === 'Gas' ? 'gas-table' : 'volume-measurement-table'}?id=${file?.id}` },
-                { name: 'Delete', to: (file) => `` },
-            ]} />
+      <Files files={data} actions={[
+        { name: 'View', to: (file) => `/users/fdc/daily/${file?.reportTypes?.[0] === 'Gas' ? 'gas-table' : 'volume-measurement-table'}?id=${file?.id}` },
+        { name: 'Delete', to: (file) => `` },
+      ]} name={(file) => `${file.title || "No title"}/${file?.asset}/${file.fluidType}/${dayjs(file.created).format('MMM-YYYY')}`} />
     </div>
   )
 }

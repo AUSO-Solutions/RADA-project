@@ -17,6 +17,7 @@ import { useAssetByName } from "hooks/useAssetByName"
 import { Chip } from "@mui/material"
 import dayjs from "dayjs"
 import Files from "Partials/Files"
+import { createTitle } from "utils"
 
 
 
@@ -145,8 +146,8 @@ const DefineSchedule = () => {
         <div className='flex justify-between !w-[100%]'>
             <Input type='select' placeholder={setupData?.asset} containerClass={'h-[39px] !w-[150px]'} disabled />
             <Input type='month' placeholder="Daily" containerClass={'h-[39px] !w-[150px]'}
-                defaultValue={setupData?.date}
-                onChange={(e) => dispatch(setSetupData({ name: 'date', value: e.value }))} />
+                defaultValue={setupData?.month} required
+                onChange={(e) => dispatch(setSetupData({ name: 'month', value: e.value }))} />
         </div>
 
         <div key={setupData?.reportTypes?.length} className={styles.tableContainer}>
@@ -328,7 +329,7 @@ const Exists = () => {
     return (
         <div className=" flex flex-wrap gap-4 m-5 ">
 
-            <Files files={data} actions={[
+            <Files  name={(file) => `${createTitle(file,'Well Test Schedule')}`}  files={data} actions={[
                 { name: 'Remark', to: (file) =>`/users/fdc/well-test-data/schedule-table?id=${file?.id}` },
                 { name: 'Well Test Result', to: (file) => `/users/fdc/well-test-data/well-test-table?id=${file?.id}` },
             ]} />

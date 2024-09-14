@@ -5,7 +5,6 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-
 import tableStyles from '../table.module.scss'
 import RadaSwitch from 'Components/Input/RadaSwitch';
 import { ArrowBack } from '@mui/icons-material';
@@ -20,18 +19,10 @@ import { closeModal, openModal } from 'Store/slices/modalSlice';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import Actions from '../Actions';
-// import styles from './welltest.module.scss'
 
 const TableInput = (props) => {
-    return <input className='p-1 text-center w-[80px] h-[100%] border outline-none ' required {...props}
-    // onKeyPress={(e) => {
-    //     if (!/[0-9]/.test(e.key) && props.type === 'number') {
-    //         e.preventDefault();
-    //     }
-    // }}
-    />
+    return <input className='p-1 text-center w-[80px] h-[100%] border outline-none ' required {...props} />
 }
-
 
 const SaveAs = ({ defaultValue, onSave = () => null, loading }) => {
     const [title, setTitle] = React.useState(defaultValue)
@@ -64,9 +55,9 @@ export default function WellTestDataTable() {
     React.useEffect(() => { if (!isEdit) setWellTestResult(wellTest?.wellsData) }, [wellTest.wellsData, isEdit])
     React.useEffect(() => { if (isEdit) setWellTestResult(res2?.wellTestResultData); setTitle(res2?.title) }, [res2, isEdit])
     React.useEffect(() => { }, [])
-    // 
+
     const save = async (title) => {
-        if(!title) {
+        if (!title) {
             toast.info('Please provide a title')
             return;
         }
@@ -110,7 +101,11 @@ export default function WellTestDataTable() {
     ]
 
     return (
-        < div className=' w-[80vw] px-3'>
+        < form className=' w-[80vw] px-3' onSubmit={(e) => {
+            e.preventDefault()
+            dispatch(openModal({ component: <SaveAs defaultValue={res2?.title} onSave={save} loading={loading} /> }))
+
+        }}>
             <div className='flex justify-between items-center'>
                 <div className='flex gap-4 items-center'>
                     <Link to='/users/fdc/well-test-data/' className='flex flex-row gap-2 bg-[#EFEFEF] px-4 py-1 rounded-md' >
@@ -121,7 +116,7 @@ export default function WellTestDataTable() {
                 </div>
                 <div className='flex justify-end py-2 items-center gap-3'>
                     <div className='flex gap-2' >
-                     { isEdit &&  <Actions wellTestResult={wellTestResult} title={title} />}
+                        {isEdit && <Actions wellTestResult={wellTestResult} title={title} />}
                     </div>
                     <div className='border border-[#00A3FF] px-3 py-1 rounded-md' >
                         <Setting2 color='#00A3FF' />
@@ -135,20 +130,12 @@ export default function WellTestDataTable() {
             </div>
             <TableContainer className={`m-auto border  pr-5 ${tableStyles.borderedMuiTable}`}>
                 <Table sx={{ minWidth: 700 }} >
-                    <TableHead >
+                    <TableHead>
                         <TableRow sx={{ bgcolor: `rgba(239, 239, 239, 1) !important`, color: 'black', fontWeight: 'bold  !important' }}>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={2} >
-                                Field 1
-                            </TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >
-                                Choke
-                            </TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >
-                                Latest Test Date
-                            </TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >
-                                Fluid Type
-                            </TableCell>
+                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={2} >Field 1</TableCell>
+                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Choke </TableCell>
+                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Latest Test Date  </TableCell>
+                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Fluid Type  </TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Prod. Method</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Gross</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Oil Rate</TableCell>
@@ -164,15 +151,10 @@ export default function WellTestDataTable() {
                             <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Orifice Plate Size</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Sand</TableCell>
                             <TableCell style={{ fontWeight: '600', height: '100%' }} align="center" colSpan={3} >Remark</TableCell>
-
                         </TableRow>
                         <TableRow>
-                            <TableCell style={{ fontWeight: '600' }} align="center" >
-                                Reservoir
-                            </TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" >
-                                Production string
-                            </TableCell>
+                            <TableCell style={{ fontWeight: '600' }} align="center" >Reservoir </TableCell>
+                            <TableCell style={{ fontWeight: '600' }} align="center" >Production string </TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center">Size(64")</TableCell>
                             <TableCell align="center"></TableCell>
                             <TableCell align="center"></TableCell>
@@ -183,7 +165,6 @@ export default function WellTestDataTable() {
                             <TableCell style={{ fontWeight: '600' }} align="center">(%)</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center">(Stb/MMscf)</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center">(Scf/Stb)</TableCell>
-
                             <TableCell style={{ fontWeight: '600' }} align="center">(MMscf/day)</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center">(MMscf/day)</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center">(Psia)</TableCell>
@@ -192,7 +173,6 @@ export default function WellTestDataTable() {
                             <TableCell style={{ fontWeight: '600' }} align="center">(Inches)</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center">(pptb)</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center"></TableCell>
-
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -228,52 +208,11 @@ export default function WellTestDataTable() {
                                     </TableCell>
                                     {
                                         fields.map(field => <TableCell align="center">
-                                            <TableInput type='number' defaultValue={well?.[field.name]} onChange={(e) => handleChange(field.name, e.target.value)} />
+                                            <TableInput type='number' required={well.isSelected} defaultValue={well?.[field.name]} onChange={(e) => handleChange(field.name, e.target.value)} />
                                         </TableCell>)
                                     }
-                                    {/* <TableCell align="center">
-                                        <TableInput type='number' onChange={(e) => handleChange("gross", e.target.value)} />
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        <TableInput type='number' onChange={(e) => handleChange("oilRate", e.target.value)} />
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        <TableInput type='number' onChange={(e) => handleChange("waterRate", e.target.value)} />
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        <TableInput type='number' onChange={(e) => handleChange("bsw", e.target.value)} />
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        <TableInput type='number' onChange={(e) => handleChange("wgr", e.target.value)} />
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        <TableInput type='number' onChange={(e) => handleChange("gor", e.target.value)} />
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        <TableInput type='number' onChange={(e) => handleChange("formationGas", e.target.value)} />
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        <TableInput type='number' onChange={(e) => handleChange("totalGas", e.target.value)} />
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        <TableInput type='number' onChange={(e) => handleChange("fthp", e.target.value)} />
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        <TableInput type='number' onChange={(e) => handleChange("flp", e.target.value)} />
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        <TableInput type='number' onChange={(e) => handleChange("staticPressure", e.target.value)} />
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        <TableInput type='number' onChange={(e) => handleChange("orificePlateSize", e.target.value)} />
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        <TableInput type='number' onChange={(e) => handleChange("sand", e.target.value)} />
-                                    </TableCell> */}
                                     <TableCell align="center" sx={{ minWidth: '200px' }} colSpan={3}>
-                                        {/* <TableInput className='w-full outline-none border p-2' /> */}
                                         <textarea defaultValue={well.remark} onChange={(e) => handleChange("remark", e.target.value)} className='border outline-none p-1' rows={2} cols={20}>
-
                                         </textarea>
                                     </TableCell>
                                 </TableRow>
@@ -285,12 +224,8 @@ export default function WellTestDataTable() {
                 </Table>
             </TableContainer>
             <div className='flex justify-end py-2'>
-                <Button width={120} onClick={() => {
-
-                    dispatch(openModal({ component: <SaveAs defaultValue={res2?.title} onSave={save} loading={loading} /> }))
-
-                }} >Commit</Button>
+                <Button width={120} type='submit' >Commit</Button>
             </div>
-        </div>
+        </form>
     );
 }

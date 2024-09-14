@@ -2,6 +2,7 @@
 import { useFetch } from 'hooks/useFetch'
 import Files from 'Partials/Files'
 import React from 'react'
+import { createTitle } from 'utils'
 
 
 
@@ -17,7 +18,7 @@ const WellTestResults = () => {
                 { name: 'Edit', to: (file) => `/users/fdc/well-test-data/well-test-table?id=${file?.id}&scheduleId=${file?.wellTestScheduleId}` },
                 { name: 'Create IPSC', to: (file) => `/users/fdc/well-test-data?page=ipsc&well-test-result-id=${file?.id}&autoOpenSetupModal=yes` },
                 { name: 'Delete', to: (file) => `` },
-            ]} />
+            ]} name={(file) => `${createTitle(file,'Well Test Result')}`} />
           
         </div>
     )
