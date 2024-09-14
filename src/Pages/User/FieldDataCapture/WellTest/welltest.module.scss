@@ -19,10 +19,11 @@
     td {
         display: flex;
         // flex-direction: column;
-        width: 150px !important;
+        // width: 150px !important;
         justify-content: center;
         align-items: center;
         padding: 5px 0;
+        word-break: keep-all !important;
 
         .inputBox {
             border: 1px lightgray solid;

@@ -260,8 +260,8 @@ export default function VolumeMeasurementTable() {
                   return (
                     <TableBody>
                       <TableRow key={name}>
-                        <TableCell align="left" rowSpan={parseFloat(numberOfUnits) + (measurementType === "Metering" ? 2 : 3)} colSpan={3}>
-                          {name} ({measurementType || "Metering"})
+                        <TableCell align="left" rowSpan={parseFloat(numberOfUnits) + ((!measurementType || measurementType === "Metering" )? 1 : 2)} colSpan={3}>
+                          {name} ({measurementType || "Metering"}) {measurementType}
                         </TableCell>
                       </TableRow>
                       {

@@ -9,7 +9,7 @@ import { store } from "Store"
 import { toast } from "react-toastify"
 import Setup from "Partials/setup"
 import Files from "Partials/Files"
-import { useLocation } from "react-router-dom"
+import { useLocation, useSearchParams } from "react-router-dom"
 import { firebaseFunctions } from "Services"
 import { closeModal } from "Store/slices/modalSlice"
 import { createWellTitle } from "utils"
@@ -27,11 +27,12 @@ const SelectAsset = () => {
     useEffect(() => {
         if (wellTestResult1?.id) {
             dispatch(setSetupData({ name: 'wellTestResult1', value: { title: wellTestResult1?.title, id: wellTestResult1?.id } }))
+            dispatch(setSetupData({ name: 'month', value: wellTestResult1?.month }))
         }
     }, [wellTestResult1, dispatch])
 
     return <div className="flex flex-col gap-5">
-        <Input required defaultValue={setupData?.month} name='month'
+        <Input disabled value={setupData?.month} name='month'
             label={'Month'} type='month' options={wellTestResults?.map(result => ({ label: result.title, value: result.id }))}
             onChange={(e) => dispatch(setSetupData({ name: 'month', value: e?.target.value }))}
         />
@@ -98,16 +99,19 @@ const Schedule = () => {
     useEffect(() => {
         dispatch(clearSetup())
     }, [dispatch])
-
+    const [searchParams] = useSearchParams()
+    const wellTestResult1Id = (searchParams.get("well-test-result-id"))
+    // const { data: wellTestResult1 } = useFetch({ firebaseFunction: 'getSetup', payload: { id: wellTestResult1Id, setupType: 'wellTestResult' }, })
+    // console.log(wellTestResult1)
 
     const save = async () => {
         try {
             setLoading(true)
-            const setupData = store.getState().setup
-            console.log(setupData)
-            const { data } = await firebaseFunctions('createSetup', { ...setupData, setupType: 'IPSC' })
-            // console.log({ data }, '----')
+            const { data: wellTestResult1 } = await firebaseFunctions('getSetup', { id: wellTestResult1Id, setupType: 'wellTestResult' })
 
+            const setupData = store.getState().setup
+
+            const { data } = await firebaseFunctions('createSetup', { ...setupData, setupType: 'IPSC', asset: wellTestResult1?.asset, field: wellTestResult1?.field })
             dispatch(setWholeSetup(data))
             dispatch(closeModal())
 

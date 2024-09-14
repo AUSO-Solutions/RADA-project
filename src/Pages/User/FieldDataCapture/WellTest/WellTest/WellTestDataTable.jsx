@@ -19,6 +19,7 @@ import { closeModal, openModal } from 'Store/slices/modalSlice';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import Actions from '../Actions';
+import { createWellTitle } from 'utils';
 
 const TableInput = (props) => {
     return <input className='p-1 text-center w-[80px] h-[100%] border outline-none ' required {...props} />
@@ -52,9 +53,9 @@ export default function WellTestDataTable() {
     const [title, setTitle] = React.useState('')
     const isEdit = React.useMemo(() => { return scheduleId }, [scheduleId])
     React.useEffect(() => { setWellTest(res) }, [res])
-    React.useEffect(() => { if (!isEdit) setWellTestResult(wellTest?.wellsData) }, [wellTest.wellsData, isEdit])
+    React.useEffect(() => { if (!isEdit) setWellTestResult(wellTest?.wellsData) }, [wellTest?.wellsData, isEdit])
     React.useEffect(() => { if (isEdit) setWellTestResult(res2?.wellTestResultData); setTitle(res2?.title) }, [res2, isEdit])
-    React.useEffect(() => { }, [])
+
 
     const save = async (title) => {
         if (!title) {
@@ -63,13 +64,17 @@ export default function WellTestDataTable() {
         }
         setLoading(true)
         try {
+            const saveScheduleData = {
+                asset: wellTest?.asset, field: wellTest?.field, wellTestScheduleId: wellTest?.id,
+                setupType: 'wellTestResult', wellTestResultData: wellTestResult, month: wellTest?.month
+            }
 
             if (isEdit) {
-                const payload = { title: title, asset: wellTest?.asset, field: wellTest?.field, wellTestScheduleId: wellTest?.id, setupType: 'wellTestResult', wellTestResultData: wellTestResult, id }
+                const payload = { title, ...saveScheduleData, id }
                 console.log(payload)
                 await firebaseFunctions('updateSetup', payload)
             } else {
-                const payload = { title, asset: wellTest?.asset, field: wellTest?.field, wellTestScheduleId: wellTest?.id, setupType: 'wellTestResult', wellTestResultData: wellTestResult }
+                const payload = { title, ...saveScheduleData }
                 console.log(payload)
                 await firebaseFunctions('createSetup', payload)
 
@@ -107,13 +112,14 @@ export default function WellTestDataTable() {
 
         }}>
             <div className='flex justify-between items-center'>
-                <div className='flex gap-4 items-center'>
+                <div className='flex gap-4 items-center min-w-fit'>
                     <Link to='/users/fdc/well-test-data/' className='flex flex-row gap-2 bg-[#EFEFEF] px-4 py-1 rounded-md' >
                         <ArrowBack />
                         <Text>Files</Text>
                     </Link>
                     <RadaSwitch label="Edit Table" labelPlacement="left" />
                 </div>
+                <Text display={'block'} className={'w-full'} align={'center'}> {createWellTitle(wellTest)}</Text>
                 <div className='flex justify-end py-2 items-center gap-3'>
                     <div className='flex gap-2' >
                         {isEdit && <Actions wellTestResult={wellTestResult} title={title} />}
@@ -123,11 +129,7 @@ export default function WellTestDataTable() {
                     </div>
                 </div>
             </div>
-            <div className='border rounded flex gap-3 p-2 my-2'>
-                <Text>Well test schedule: {wellTest?.title}</Text>
-                <Text>   Asset: {wellTest?.asset}</Text>
-                <Text>   Field: {wellTest?.field}</Text>
-            </div>
+
             <TableContainer className={`m-auto border  pr-5 ${tableStyles.borderedMuiTable}`}>
                 <Table sx={{ minWidth: 700 }} >
                     <TableHead>

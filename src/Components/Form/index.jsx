@@ -27,7 +27,7 @@ const RadaForm = ({
             let final_payload = modifyPayload(payload) || payload
             const res = await firebaseFunctions(url, final_payload)
             // const res = await apiRequest({ method, url, payload: final_payload, params, noToken })
-            console.log(res,'ddd')
+            // console.log(res,'ddd')
             // if (successMessage) { toast.success(successMessage) } else { toast.success(res?.message || 'Successful') }
             onSuccess(res, payload)
         }
@@ -44,7 +44,7 @@ const RadaForm = ({
         let formValues = {}
         for (let [key, value] of formData.entries()) {
             formValues[key] = value
-            console.log(value)
+            // console.log(value)
             if(String(value).includes('select-array-list')){
                 formValues[key] = value?.replace('select-array-list','').split("-sal-,-sal-")
             }
@@ -53,7 +53,7 @@ const RadaForm = ({
 
         }
         formValues = { ...formValues, ...extraFields }
-        console.log(formValues)
+        // console.log(formValues)
         onSubmit(formValues)
         if (validationSchema) {
             try {
