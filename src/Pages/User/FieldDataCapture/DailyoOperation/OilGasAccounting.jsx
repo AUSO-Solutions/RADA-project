@@ -14,6 +14,9 @@ import Setup from 'Partials/setup'
 import { useAssetByName } from 'hooks/useAssetByName'
 import { Chip } from '@mui/material'
 import { firebaseFunctions } from 'Services'
+import Files from 'Partials/Files'
+import { useFetch } from 'hooks/useFetch'
+import dayjs from 'dayjs'
 
 
 // const SelectAsset = () => {
@@ -164,6 +167,19 @@ const Preview = () => {
   </>
 }
 
+const Existing = ({ onSelect = () => null }) => {
+  const { data } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "oilAndGasAccounting" } })
+
+  return (
+    <div className=" flex flex-wrap gap-4 m-5 ">
+      <Files files={data} actions={[
+        { name: 'View', to: (file) => `/users/fdc/daily/${file?.reportTypes?.[0] === 'Gas' ? 'gas-table' : 'volume-measurement-table'}?id=${file?.id}` },
+        { name: 'Delete', to: (file) => `` },
+      ]} name={(file) => `${file.title || "No title"}/${file?.asset}/${dayjs(file.created).format('MMM-YYYY')}`} />
+    </div>
+  )
+}
+
 const OilGasAccounting = () => {
   const dispatch = useDispatch()
   useEffect(() => {
@@ -195,7 +211,7 @@ const OilGasAccounting = () => {
       <Setup
         title={'Setup Oil & Gas Accounting Parameters'}
         steps={["Select Well Test Data", "Define Report", "Preview"]}
-
+        existing={<Existing />}
         stepComponents={[
           <SelectAsset />,
           <DefineReport />, <Preview />
