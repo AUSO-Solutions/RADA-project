@@ -3,7 +3,7 @@ import React, { useMemo } from 'react'
 import Tab from 'Components/tab'
 import Summary from './Summary'
 import VolumeMeasurement from './VolumeMeasurement/VolumeMeasurement'
-import OilGasAccounting from './OilGasAccounting'
+import OilGasAccounting from './OilAndGasAccount/OilGasAccounting'
 import ShippingRecords from './ShippingRecords'
 import { useSearchParams } from 'react-router-dom'
 

@@ -1,5 +1,6 @@
 .borderedMuiTable {
-    overflow: hidden;
+    max-width: 80vw;
+    // overflow: scroll;    overflow: hidden;
     tr{
         height: 50px;
     }

@@ -173,7 +173,7 @@ const Existing = ({ onSelect = () => null }) => {
   return (
     <div className=" flex flex-wrap gap-4 m-5 ">
       <Files files={data} actions={[
-        { name: 'View', to: (file) => `/users/fdc/daily/${file?.reportTypes?.[0] === 'Gas' ? 'gas-table' : 'volume-measurement-table'}?id=${file?.id}` },
+        { name: 'View', to: (file) => `/users/fdc/daily/oil-and-gas-accounting-table?id=${file?.id}` },
         { name: 'Delete', to: (file) => `` },
       ]} name={(file) => `${file.title || "No title"}/${file?.asset}/${dayjs(file.created).format('MMM-YYYY')}`} />
     </div>
