@@ -17,7 +17,7 @@ import RadaDatePicker from 'Components/Input/RadaDatePicker';
 //     return <input className='p-1 text-center w-[70px] border outline-none' {...props} />
 // }
 
-export default function OilGasAccountingTable() {
+export default function OilGasAccountingTableForActual() {
     const setup = React.useMemo(() => {
         return store.getState().setup
 
@@ -63,6 +63,11 @@ export default function OilGasAccountingTable() {
 
     //   }
 
+    const statusArray = ['Producing', 'Closed In']
+    const defermentCategoryArray = ['Scheduled Deferment', 'Unscheduled Deferment', 'Third-Party Deferment', 'N/A']
+    const defermentDescriptionArray = ['Export Line Sabotage/ Leak', 'Flow station Engine Failure', 'Flowline Leak', 'Flow Station Trip', 'Logistic Problem']
+
+
     return (
         < div className='px-3'>
             <div className='flex justify-between items-center'>
@@ -78,22 +83,14 @@ export default function OilGasAccountingTable() {
                             <TableCell style={{ fontWeight: '600' }}  align="center" colSpan={2} >
                                 Flow stations ID
                             </TableCell>
-                            <TableCell style={{ fontWeight: '600' }}  align="center" colSpan={4} >
-                                Pressures
-                            </TableCell>
-                            <TableCell style={{ fontWeight: '600' }}  align="center" colSpan={2} >
-                                Separator Static
-                            </TableCell>
                             <TableCell style={{ fontWeight: '600' }}  align="center" colSpan={1} >
-                                Choke
+                                Uptime Production
                             </TableCell>
-                            <TableCell style={{ fontWeight: '600' }}  align="center" colSpan={1} >
-                                WH Temperature
+                            <TableCell style={{ fontWeight: '600' }}  align="center" colSpan={7} >
+                                Actual Production
                             </TableCell>
-                            <TableCell style={{ fontWeight: '600' }}  align="center" colSpan={1} >
-                                CITHP
-                            </TableCell>
-                            <TableCell style={{ fontWeight: '600' }}  align="center" colSpan={4} >Potentials (Test Data)</TableCell>
+                            
+                            
                             {/* <TableCell align="center">Net Target</TableCell>
               <TableCell align="center">BS&W</TableCell>
               <TableCell align="center">Gross</TableCell> */}
@@ -107,34 +104,17 @@ export default function OilGasAccountingTable() {
                                 Reservoir
                             </TableCell>
                             <TableCell style={{ fontWeight: '600' }}  align="center" >
-                                FTHP (Psi)
+                                (Hours)
                             </TableCell>
-                            <TableCell style={{ fontWeight: '600' }}  align="center" >
-                                CHP (Psi)
-                            </TableCell>
-                            <TableCell style={{ fontWeight: '600' }}  align="center" >
-                                FLP (Psi)
-                            </TableCell>
-                            <TableCell style={{ fontWeight: '600' }}  align="center" >
-                                MLP (Psi)
-                            </TableCell>
-                            <TableCell style={{ fontWeight: '600' }}  align="center" >
-                                HP (Psi)
-                            </TableCell>
-                            <TableCell style={{ fontWeight: '600' }}  align="center" >
-                                LP (Psi)
-                            </TableCell>
-                            <TableCell style={{ fontWeight: '600' }}  align="center" >
-                                Size (64")
-                            </TableCell>
-                            <TableCell style={{ fontWeight: '600' }}  align="center" >
-                                Degree F
-                            </TableCell>
-                            <TableCell style={{ fontWeight: '600' }}  align="center">(Psi)</TableCell>
-                            <TableCell style={{ fontWeight: '600' }}  align="center">Gross (blpd)</TableCell>
-                            <TableCell style={{ fontWeight: '600' }}  align="center">BS&W (bbls)</TableCell>
-                            <TableCell style={{ fontWeight: '600' }}  align="center">Net Oil (bopd)</TableCell>
-                            <TableCell style={{ fontWeight: '600' }}  align="center">Gas (mmscf/d)</TableCell>
+                            <TableCell style={{ fontWeight: '600' }}  align="center">Gross (bbls)</TableCell>
+                            <TableCell style={{ fontWeight: '600' }}  align="center">Net Oil (bbls)</TableCell>
+                            <TableCell style={{ fontWeight: '600' }}  align="center">Gas (mmscf/)</TableCell>
+                            <TableCell style={{ fontWeight: '600' }}  align="center">Status</TableCell>
+                            <TableCell style={{ fontWeight: '600' }}  align="center">Remarks</TableCell>
+                            <TableCell style={{ fontWeight: '600' }}  align="center">Deferment Category</TableCell>
+                            <TableCell style={{ fontWeight: '600' }}  align="center">Deferment Description</TableCell>
+                            
+                            
 
                         </TableRow>
                     </TableHead>
@@ -142,12 +122,6 @@ export default function OilGasAccountingTable() {
 
 
                     <TableBody>
-                        {/* <TableRow >
-                      <TableCell align="left"  colSpan={1}>ll</TableCell>
-                    </TableRow> */}
-                        {/* {
-                      new Array(parseInt(setup?.measurementTypeNumber[flowStation])).fill(0).map(
-                        (meter, i) => <> */}
                         <TableRow>
                             <TableCell align="center">
                                 Well 2L
@@ -163,28 +137,19 @@ export default function OilGasAccountingTable() {
                             <TableCell align="center">265230.0</TableCell>
                             <TableCell align="center">265230.0</TableCell>
                             <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">
+                            <TableCell style={{color:'white', background:'#A0E967'}} align="center">
                                 {/* {tableValues?.[flowStation]?.list?.[i]?.netProduction}  */}
-                                265230.0
+                                {'Producing'}
                             </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
+                            <TableCell rowSpan={2} align="center">{'Hi, This is a remark. Please make a remark here'}</TableCell>
+                            <TableCell style={{background:'#D9E3F9'}} align="center">{'Scheduled Deferment'}</TableCell>
+                            <TableCell style={{background:'#E6E4F9'}} align="center">{'N/A'}</TableCell>
+                          
+                        
                         </TableRow>
 
                     </TableBody>
                     <TableBody>
-                        {/* <TableRow >
-                      <TableCell align="left"  colSpan={1}>ll</TableCell>
-                    </TableRow> */}
-                        {/* {
-                      new Array(parseInt(setup?.measurementTypeNumber[flowStation])).fill(0).map(
-                        (meter, i) => <> */}
                         <TableRow>
                             <TableCell align="center">
                                 Well 2L
@@ -200,28 +165,19 @@ export default function OilGasAccountingTable() {
                             <TableCell align="center">265230.0</TableCell>
                             <TableCell align="center">265230.0</TableCell>
                             <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">
+                            <TableCell style={{color:'white', background:'#A0E967'}} align="center">
                                 {/* {tableValues?.[flowStation]?.list?.[i]?.netProduction}  */}
-                                265230.0
+                                {'Producing'}
                             </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
+                            <TableCell rowSpan={2} align="center">{'Hi, This is a remark. Please make a remark here'}</TableCell>
+                            <TableCell style={{background:'#D9E3F9'}} align="center">{'Scheduled Deferment'}</TableCell>
+                            <TableCell style={{background:'#E6E4F9'}} align="center">{'N/A'}</TableCell>
+                          
+                        
                         </TableRow>
 
                     </TableBody>
                     <TableBody>
-                        {/* <TableRow >
-                      <TableCell align="left"  colSpan={1}>ll</TableCell>
-                    </TableRow> */}
-                        {/* {
-                      new Array(parseInt(setup?.measurementTypeNumber[flowStation])).fill(0).map(
-                        (meter, i) => <> */}
                         <TableRow>
                             <TableCell align="center">
                                 Well 2L
@@ -237,28 +193,19 @@ export default function OilGasAccountingTable() {
                             <TableCell align="center">265230.0</TableCell>
                             <TableCell align="center">265230.0</TableCell>
                             <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">
+                            <TableCell style={{color:'white', background:'#FF5252'}} align="center">
                                 {/* {tableValues?.[flowStation]?.list?.[i]?.netProduction}  */}
-                                265230.0
+                                {'Closed In'}
                             </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
+                            <TableCell rowSpan={2} align="center">{'Hi, This is a remark. Please make a remark here'}</TableCell>
+                            <TableCell style={{background:'#D9E3F9'}} align="center">{'Scheduled Deferment'}</TableCell>
+                            <TableCell style={{background:'#E6E4F9'}} align="center">{'N/A'}</TableCell>
+                          
+                        
                         </TableRow>
 
                     </TableBody>
                     <TableBody>
-                        {/* <TableRow >
-                      <TableCell align="left"  colSpan={1}>ll</TableCell>
-                    </TableRow> */}
-                        {/* {
-                      new Array(parseInt(setup?.measurementTypeNumber[flowStation])).fill(0).map(
-                        (meter, i) => <> */}
                         <TableRow>
                             <TableCell align="center">
                                 Well 2L
@@ -274,28 +221,19 @@ export default function OilGasAccountingTable() {
                             <TableCell align="center">265230.0</TableCell>
                             <TableCell align="center">265230.0</TableCell>
                             <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">
+                            <TableCell style={{color:'white', background:'#A0E967'}} align="center">
                                 {/* {tableValues?.[flowStation]?.list?.[i]?.netProduction}  */}
-                                265230.0
+                                {'Producing'}
                             </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
+                            <TableCell rowSpan={2} align="center">{'Hi, This is a remark. Please make a remark here'}</TableCell>
+                            <TableCell style={{background:'#D9E3F9'}} align="center">{'Scheduled Deferment'}</TableCell>
+                            <TableCell style={{background:'#E6E4F9'}} align="center">{'N/A'}</TableCell>
+                          
+                        
                         </TableRow>
 
                     </TableBody>
                     <TableBody>
-                        {/* <TableRow >
-                      <TableCell align="left"  colSpan={1}>ll</TableCell>
-                    </TableRow> */}
-                        {/* {
-                      new Array(parseInt(setup?.measurementTypeNumber[flowStation])).fill(0).map(
-                        (meter, i) => <> */}
                         <TableRow>
                             <TableCell align="center">
                                 Well 2L
@@ -311,28 +249,19 @@ export default function OilGasAccountingTable() {
                             <TableCell align="center">265230.0</TableCell>
                             <TableCell align="center">265230.0</TableCell>
                             <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">
+                            <TableCell style={{color:'white',background:'#A0E967'}} align="center">
                                 {/* {tableValues?.[flowStation]?.list?.[i]?.netProduction}  */}
-                                265230.0
+                                {'Producing'}
                             </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
+                            <TableCell rowSpan={2} align="center">{'Hi, This is a remark. Please make a remark here'}</TableCell>
+                            <TableCell style={{background:'#D9E3F9'}} align="center">{'Scheduled Deferment'}</TableCell>
+                            <TableCell style={{background:'#E6E4F9'}} align="center">{'N/A'}</TableCell>
+                          
+                        
                         </TableRow>
 
                     </TableBody>
                     <TableBody>
-                        {/* <TableRow >
-                      <TableCell align="left"  colSpan={1}>ll</TableCell>
-                    </TableRow> */}
-                        {/* {
-                      new Array(parseInt(setup?.measurementTypeNumber[flowStation])).fill(0).map(
-                        (meter, i) => <> */}
                         <TableRow>
                             <TableCell align="center">
                                 Well 2L
@@ -348,28 +277,19 @@ export default function OilGasAccountingTable() {
                             <TableCell align="center">265230.0</TableCell>
                             <TableCell align="center">265230.0</TableCell>
                             <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">
+                            <TableCell style={{color:'white', background:'#FF5252'}} align="center">
                                 {/* {tableValues?.[flowStation]?.list?.[i]?.netProduction}  */}
-                                265230.0
+                                {'Closed In'}
                             </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
+                            <TableCell rowSpan={2} align="center">{'Hi, This is a remark. Please make a remark here'}</TableCell>
+                            <TableCell style={{background:'#D9E3F9'}} align="center">{'Scheduled Deferment'}</TableCell>
+                            <TableCell style={{background:'#E6E4F9'}} align="center">{'N/A'}</TableCell>
+                          
+                        
                         </TableRow>
 
                     </TableBody>
                     <TableBody>
-                        {/* <TableRow >
-                      <TableCell align="left"  colSpan={1}>ll</TableCell>
-                    </TableRow> */}
-                        {/* {
-                      new Array(parseInt(setup?.measurementTypeNumber[flowStation])).fill(0).map(
-                        (meter, i) => <> */}
                         <TableRow>
                             <TableCell align="center">
                                 Well 2L
@@ -385,28 +305,19 @@ export default function OilGasAccountingTable() {
                             <TableCell align="center">265230.0</TableCell>
                             <TableCell align="center">265230.0</TableCell>
                             <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">
+                            <TableCell style={{color:'white', background:'#A0E967'}} align="center">
                                 {/* {tableValues?.[flowStation]?.list?.[i]?.netProduction}  */}
-                                265230.0
+                                {'Producing'}
                             </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
+                            <TableCell rowSpan={2} align="center">{'Hi, This is a remark. Please make a remark here'}</TableCell>
+                            <TableCell style={{background:'#D9E3F9'}} align="center">{'Scheduled Deferment'}</TableCell>
+                            <TableCell style={{background:'#E6E4F9'}} align="center">{'N/A'}</TableCell>
+                          
+                        
                         </TableRow>
 
                     </TableBody>
                     <TableBody>
-                        {/* <TableRow >
-                      <TableCell align="left"  colSpan={1}>ll</TableCell>
-                    </TableRow> */}
-                        {/* {
-                      new Array(parseInt(setup?.measurementTypeNumber[flowStation])).fill(0).map(
-                        (meter, i) => <> */}
                         <TableRow>
                             <TableCell align="center">
                                 Well 2L
@@ -422,28 +333,19 @@ export default function OilGasAccountingTable() {
                             <TableCell align="center">265230.0</TableCell>
                             <TableCell align="center">265230.0</TableCell>
                             <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">
+                            <TableCell style={{color:'white',background:'#A0E967'}} align="center">
                                 {/* {tableValues?.[flowStation]?.list?.[i]?.netProduction}  */}
-                                265230.0
+                                {'Producing'}
                             </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
+                            <TableCell rowSpan={2} align="center">{'Hi, This is a remark. Please make a remark here'}</TableCell>
+                            <TableCell style={{background:'#D9E3F9'}} align="center">{'Scheduled Deferment'}</TableCell>
+                            <TableCell style={{background:'#E6E4F9'}} align="center">{'N/A'}</TableCell>
+                          
+                        
                         </TableRow>
 
                     </TableBody>
                     <TableBody>
-                        {/* <TableRow >
-                      <TableCell align="left"  colSpan={1}>ll</TableCell>
-                    </TableRow> */}
-                        {/* {
-                      new Array(parseInt(setup?.measurementTypeNumber[flowStation])).fill(0).map(
-                        (meter, i) => <> */}
                         <TableRow>
                             <TableCell align="center">
                                 Well 2L
@@ -459,28 +361,19 @@ export default function OilGasAccountingTable() {
                             <TableCell align="center">265230.0</TableCell>
                             <TableCell align="center">265230.0</TableCell>
                             <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">
+                            <TableCell style={{color:'white', background:'#A0E967'}} align="center">
                                 {/* {tableValues?.[flowStation]?.list?.[i]?.netProduction}  */}
-                                265230.0
+                                {'Producing'}
                             </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
+                            <TableCell rowSpan={2} align="center">{'Hi, This is a remark. Please make a remark here'}</TableCell>
+                            <TableCell style={{background:'#D9E3F9'}} align="center">{'Scheduled Deferment'}</TableCell>
+                            <TableCell style={{background:'#E6E4F9'}} align="center">{'N/A'}</TableCell>
+                          
+                        
                         </TableRow>
 
                     </TableBody>
                     <TableBody>
-                        {/* <TableRow >
-                      <TableCell align="left"  colSpan={1}>ll</TableCell>
-                    </TableRow> */}
-                        {/* {
-                      new Array(parseInt(setup?.measurementTypeNumber[flowStation])).fill(0).map(
-                        (meter, i) => <> */}
                         <TableRow>
                             <TableCell align="center">
                                 Well 2L
@@ -496,28 +389,19 @@ export default function OilGasAccountingTable() {
                             <TableCell align="center">265230.0</TableCell>
                             <TableCell align="center">265230.0</TableCell>
                             <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">
+                            <TableCell style={{color:'white', background:'#A0E967'}} align="center">
                                 {/* {tableValues?.[flowStation]?.list?.[i]?.netProduction}  */}
-                                265230.0
+                                {'Producing'}
                             </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
+                            <TableCell rowSpan={2} align="center">{'Hi, This is a remark. Please make a remark here'}</TableCell>
+                            <TableCell style={{background:'#D9E3F9'}} align="center">{'Scheduled Deferment'}</TableCell>
+                            <TableCell style={{background:'#E6E4F9'}} align="center">{'N/A'}</TableCell>
+                          
+                        
                         </TableRow>
 
                     </TableBody>
                     <TableBody>
-                        {/* <TableRow >
-                      <TableCell align="left"  colSpan={1}>ll</TableCell>
-                    </TableRow> */}
-                        {/* {
-                      new Array(parseInt(setup?.measurementTypeNumber[flowStation])).fill(0).map(
-                        (meter, i) => <> */}
                         <TableRow>
                             <TableCell align="center">
                                 Well 2L
@@ -533,18 +417,15 @@ export default function OilGasAccountingTable() {
                             <TableCell align="center">265230.0</TableCell>
                             <TableCell align="center">265230.0</TableCell>
                             <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">
+                            <TableCell style={{color:'white', background:'#A0E967'}} align="center">
                                 {/* {tableValues?.[flowStation]?.list?.[i]?.netProduction}  */}
-                                265230.0
+                                {'Producing'}
                             </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
+                            <TableCell rowSpan={2} align="center">{'Hi, This is a remark. Please make a remark here'}</TableCell>
+                            <TableCell style={{background:'#D9E3F9'}} align="center">{'Scheduled Deferment'}</TableCell>
+                            <TableCell style={{background:'#E6E4F9'}} align="center">{'N/A'}</TableCell>
+                          
+                        
                         </TableRow>
 
                     </TableBody>

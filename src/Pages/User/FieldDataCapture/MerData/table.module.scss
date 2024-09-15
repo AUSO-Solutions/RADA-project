@@ -1,11 +1,19 @@
 .borderedMuiTable {
-    max-width: 100%;
-    overflow: scroll;
+
     // display: ;
+    // tr{
+    //     display: flex;
+    // }
+    // background-color: red;
+    overflow: hidden;
     th,
+    
     td {
         border: .1px solid rgba(186, 186, 186, 1) !important;
-        // w padding: 2px;
+        // width: 70px;
+        // // max-width: 150px;
+        // display: flex;
+     
     }
 
     // .MuiTableCell-head {
