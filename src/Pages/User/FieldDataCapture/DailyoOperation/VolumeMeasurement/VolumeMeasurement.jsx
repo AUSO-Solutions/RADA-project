@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import Setup from '../setup'
+// import Setup from '../setup'
 import { Input } from 'Components'
 import { useAssetNames } from 'hooks/useAssetNames'
 import { useDispatch, useSelector } from 'react-redux'
@@ -25,6 +25,7 @@ import { useFetch } from 'hooks/useFetch'
 import { useNavigate } from 'react-router-dom'
 import Files from 'Partials/Files'
 import dayjs from 'dayjs'
+import Setup from 'Partials/setup'
 
 
 
@@ -301,7 +302,7 @@ const Existing = ({ onSelect = () => null }) => {
 
 const VolumeMeasurement = () => {
 
-  const [setupTable, setSetupTable] = useState(false)
+
   const dispatch = useDispatch()
   const [loading, setLoading] = useState(false)
   // const [showSettings, setShowSettings] = useState(false)
@@ -312,7 +313,7 @@ const VolumeMeasurement = () => {
       const setupData = store.getState().setup
       // console.log(setupData)
       const { data } = await firebaseFunctions('createSetup', { ...setupData, setupType: 'volumeMeasurement' })
-      console.log({ data }, '----')
+      // console.log({ data }, '----')
 
       dispatch(setWholeSetup(data))
       dispatch(closeModal())
@@ -344,33 +345,11 @@ const VolumeMeasurement = () => {
 
   return (
     < >
-      {
-        setupTable ?
-          <>
-            {/* <div className='flex justify-between my-2 px-2 items-center'>
-              <div className='flex gap-4 items-center'>
-                <RadioSelect onChange={setCurrReport} defaultValue={setupData?.reportTypes?.[0]} list={setupData?.reportTypes} /> <RadaSwitch label="Edit Table" labelPlacement="left" />
-              </div>
-              <div className='flex items-center gap-2 '>
-                <Text className={'cursor-pointer'} onClick={() => setSetupTable(false)} color={colors.rada_blue}>View setups</Text>
-                <RadaDatePicker onChange={setDate} />
-                <div onClick={() => setShowSettings(true)} style={{ borderColor: 'rgba(0, 163, 255, 1)' }} className='border cursor-pointer px-3 py-1 rounded-[8px]'>
-                  <MdOutlineSettings color='rgba(0, 163, 255, 1)' />
-                </div>
-              </div>
-            </div>
-            {showSettings && <VolumeSettings onClickOut={() => setShowSettings(false)} />} */}
-
-            {/* {
-              currReport ? (currReport === 'Gas' ? <GasTable /> : <VolumeMeasurementTable currReport={currReport} date={date} />) : ""
-            } */}
-
-          </>
-          : <Setup
+   <Setup
             title={'Setup Volume Measurement Parameters'}
             steps={["Select Asset", "Define Report", "Measurement Type", "Select Flowstations", "Preview", "SaveAs"]}
             // type={'volumeMeasurement'}
-            existing={<Existing onSelect={() => setSetupTable(true)} />}
+            existing={<Existing/>}
             rightBtnLoading={loading}
             // onSetWholeSetup={}
             stepComponents={
@@ -384,7 +363,7 @@ const VolumeMeasurement = () => {
             }
             onSave={save}
           />
-      }
+  
     </>
   )
 }

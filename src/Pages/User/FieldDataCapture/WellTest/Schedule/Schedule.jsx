@@ -24,8 +24,6 @@ import { createWellTitle } from "utils"
 const createOpt = item => ({ label: item, value: item })
 const optList = arr => arr?.length ? arr?.map(createOpt) : []
 const genList = (assets) => {
-    // console.log({assets})
-    // let filtered = assets?.filter(asset => asset?.assetName === name)
     return {
         fields: optList((assets?.fields)),
         productionStrings: optList((assets?.productionStrings)),
@@ -51,7 +49,6 @@ const SelectAsset = () => {
         dispatch(setSetupData({ name: 'asset', value: e.value }))
         dispatch(setSetupData({ name: 'field', value: '' }))
         dispatch(setSetupData({ name: 'productionStrings', value: null }))
-        // setSelectedProductionStrings([])
         dispatch(setSetupData({ name: 'wellsData', value: {} }))
     }, [dispatch])
     const [searchProdString, setSearchProdString] = useState('')
@@ -65,10 +62,6 @@ const SelectAsset = () => {
 
     }
 
-
-
-
-
     return <>
         <Input required defaultValue={{ label: setupData?.asset, value: setupData?.asset }}
             label={'Assets'} type='select' options={assetNames?.map(assetName => ({ value: assetName, label: assetName }))}
@@ -78,10 +71,7 @@ const SelectAsset = () => {
             label={'Field'} type='select' options={assetData.fields}
             onChange={(e) => dispatch(setSetupData({ name: 'field', value: e?.value }))}
         />
-        {/* <Input key={setupData?.asset + "prodString"} required defaultValue={setupData?.productionStrings?.map(createOpt)}
-            label={'Production String'} type='select' options={assetData.productionStrings} isMulti
-            onChange={(e) => dispatch(setSetupData({ name: 'productionStrings', value: e }))}
-        /> */}
+       
         <div className="mt-3 p-1 border rounded">
             <Text>Production Strings</Text><br />
             <input type="search" placeholder="Search for production string" className="w-1/2 border py-1 mt-3 px-2 rounded" onChange={(e) => setSearchProdString(e.target.value)} />
@@ -237,10 +227,6 @@ const Preview = () => {
     return <>
         <div className='flex justify-between !w-[100%]'>
             <Input type='select' placeholder={setupData?.asset} containerClass={'h-[39px] !w-[150px]'} disabled />
-            {/* <Input type='select' placeholder="Daily" containerClass={'h-[39px] !w-[150px]'}
-                defaultValue={{ label: setupData?.timeFrame, value: setupData?.timeFrame }}
-                onChange={(e) => dispatch(setSetupData({ name: 'timeFrame', value: e.value }))}
-                options={timeFrames?.map(timeFrame => ({ value: timeFrame, label: timeFrame }))} /> */}
         </div>
 
         <div key={setupData?.reportTypes?.length} className={styles.tableContainer}>
@@ -349,9 +335,7 @@ const Schedule = () => {
         try {
             setLoading(true)
             const setupData = store.getState().setup
-
             const { data } = await firebaseFunctions('createSetup', { ...setupData, setupType: 'wellTestSchedule' })
-            console.log({ data }, '----')
 
             dispatch(setWholeSetup(data))
             dispatch(closeModal())

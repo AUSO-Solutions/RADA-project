@@ -1,10 +1,11 @@
 import Header from 'Components/header'
-import React, { useState } from 'react'
+import React, { useMemo } from 'react'
 import Tab from 'Components/tab'
 import Summary from './Summary'
 import VolumeMeasurement from './VolumeMeasurement/VolumeMeasurement'
 import OilGasAccounting from './OilGasAccounting'
 import ShippingRecords from './ShippingRecords'
+import { useSearchParams } from 'react-router-dom'
 
 
 const tabs = [
@@ -26,7 +27,12 @@ const tabs = [
   }
 ]
 const FDC = () => {
-  const [tab, setTab] = useState(0)
+  const toPage = str => str.replaceAll(' ', '-').toLowerCase()
+  const [searchParams, setSearchParaams] = useSearchParams()
+  const tab = useMemo(() => {
+    const index = tabs.findIndex(tab => searchParams.get('tab') === toPage(tab.title))
+    return index > -1 ? index : 0
+  }, [searchParams])
   return (
     <div className='h-[100%] '>
       <Header
@@ -34,7 +40,10 @@ const FDC = () => {
       />
 
       < tabs style={{ display: 'flex', gap: '40px', paddingLeft: 40, borderBottom: "1px solid rgba(230, 230, 230, 1)" }} >
-        {tabs.map((x, i) => <Tab key={i} text={x.title} active={i === tab} onClick={() => setTab(i)} />)}
+        {tabs.map((x, i) => <Tab key={i} text={x.title} active={i === tab} onClick={() => setSearchParaams(prev => {
+          prev.set("tab", toPage(x.title))
+          return prev
+        })} />)}
       </ tabs>
       {
         tabs[tab].Component
