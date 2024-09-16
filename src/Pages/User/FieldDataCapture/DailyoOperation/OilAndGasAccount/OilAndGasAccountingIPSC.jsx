@@ -26,11 +26,11 @@ export default function OilGasAccountingIPSCTable({ wellTestResult }) {
                 <TableHead >
                     <TableRow sx={{ bgcolor: `rgba(239, 239, 239, 1) !important`, color: 'black', fontWeight: 'bold  !important' }}>
                         <TableCell style={{ fontWeight: '600' }} align="center" colSpan={2} >Flow stations ID </TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center" colSpan={4} >Pressures </TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center" colSpan={2} >Separator Static </TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" colSpan={3} >Pressures </TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Separator Static </TableCell>
                         <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Choke  </TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >WH Temperature</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >CITHP</TableCell>
+                        {/* <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >WH Temperature</TableCell> */}
+                        {/* <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >CITHP</TableCell> */}
                         <TableCell style={{ fontWeight: '600' }} align="center" colSpan={4} >Potentials (Test Data)</TableCell>
                     </TableRow>
                     <TableRow>
@@ -39,12 +39,12 @@ export default function OilGasAccountingIPSCTable({ wellTestResult }) {
                         <TableCell style={{ fontWeight: '600' }} align="center" >FTHP <br /> (Psi)</TableCell>
                         <TableCell style={{ fontWeight: '600' }} align="center" >CHP <br /> (Psi)</TableCell>
                         <TableCell style={{ fontWeight: '600' }} align="center" >FLP <br /> (Psi)</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center" >MLP <br /> (Psi)</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center" >HP <br /> (Psi)</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center" >LP<br />  (Psi)</TableCell>
+                        {/* <TableCell style={{ fontWeight: '600' }} align="center" >MLP <br /> (Psi)</TableCell> */}
+                        <TableCell style={{ fontWeight: '600' }} align="center" >Static Pressure <br /> (Psi)</TableCell>
+                        {/* <TableCell style={{ fontWeight: '600' }} align="center" >LP<br />  (Psi)</TableCell> */}
                         <TableCell style={{ fontWeight: '600' }} align="center" >Size (64")</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center" >Degree F </TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center">(Psi)</TableCell>
+                        {/* <TableCell style={{ fontWeight: '600' }} align="center" >Degree F </TableCell> */}
+                        {/* <TableCell style={{ fontWeight: '600' }} align="center">(Psi)</TableCell> */}
                         <TableCell style={{ fontWeight: '600' }} align="center">Gross<br />  (blpd)</TableCell>
                         <TableCell style={{ fontWeight: '600' }} align="center">BS&W<br />  (bbls)</TableCell>
                         <TableCell style={{ fontWeight: '600' }} align="center">Net Oil<br />  (bopd)</TableCell>
@@ -65,14 +65,14 @@ export default function OilGasAccountingIPSCTable({ wellTestResult }) {
                             </TableCell>
                             <TableCell align="center">{well?.chp}</TableCell>
                             <TableCell align="center">{well?.flp}</TableCell>
-                            <TableCell align="center">{well?.mlp}</TableCell>
+                            {/* <TableCell align="center">{well?.mlp}</TableCell> */}
                             <TableCell align="center">
-                                {well?.hp}
+                                {well?.staticPressure}
                             </TableCell>
-                            <TableCell align="center">{well?.lp}</TableCell>
+                            {/* <TableCell align="center">{well?.lp}</TableCell> */}
                             <TableCell align="center">{well?.chokeSize}</TableCell>
-                            <TableCell align="center">{well?.whTemperature}</TableCell>
-                            <TableCell align="center">{well?.CITHP}</TableCell>
+                            {/* <TableCell align="center">{well?.whTemperature}</TableCell> */}
+                            {/* <TableCell align="center">{well?.CITHP}</TableCell> */}
                             <TableCell align="center">{well?.gross}</TableCell>
                             <TableCell align="center">{well?.bsw}</TableCell>
                             <TableCell align="center">{well?.oilRate}</TableCell>

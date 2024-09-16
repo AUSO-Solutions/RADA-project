@@ -107,6 +107,7 @@ export default function IPSCTable() {
         // { name: 'totalGas', type: "number" },
         { name: 'fthp', type: "number" },
         { name: 'flp', type: "number" },
+        { name: 'chp', type: "number" },
         { name: 'staticPressure', type: "number" },
         { name: 'orificePlateSize', type: "number" },
         { name: 'sand', type: "number" },
@@ -171,6 +172,7 @@ export default function IPSCTable() {
                                 {/* <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Total Gas</TableCell> */}
                                 <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >FTHP</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >FLP</TableCell>
+                                <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >CHP</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Static Pressure</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Orifice Plate Size</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Sand</TableCell>
@@ -192,6 +194,7 @@ export default function IPSCTable() {
                                 <TableCell style={{ fontWeight: '600' }} align="center">(Stb/MMscf)</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center">(Scf/Stb)</TableCell>
                                 {/* <TableCell style={{ fontWeight: '600' }} align="center">(MMscf/day)</TableCell> */}
+                                <TableCell style={{ fontWeight: '600' }} align="center">(Psia)</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center">(Psia)</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center">(Psia)</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center">(Psia)</TableCell>

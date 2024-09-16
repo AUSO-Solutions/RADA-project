@@ -17,7 +17,7 @@ import { firebaseFunctions } from 'Services';
 import { toast } from 'react-toastify';
 
 
-export default function ScheduleTable() {
+export default function MERScheduleTable() {
 
 
     const { search } = useLocation()
