@@ -1,4 +1,4 @@
-import React  from 'react';
+import React from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -8,7 +8,7 @@ import TableRow from '@mui/material/TableRow';
 import tableStyles from '../table.module.scss'
 
 
-export default function OilGasAccountingIPSCTable({wellTestResult}) {
+export default function OilGasAccountingIPSCTable({ wellTestResult }) {
     // const [searchParams,] = useSearchParams()
     // const { data: res } = useFetch({ firebaseFunction: 'getSetup', payload: { id: searchParams.get('id'), setupType: 'oilAndGasAccounting' } })
     // const { data: IPSCs } = useFetch({ firebaseFunction: 'getSetups', payload: { id: searchParams.get('id'), setupType: 'IPSC' } })
@@ -36,19 +36,19 @@ export default function OilGasAccountingIPSCTable({wellTestResult}) {
                     <TableRow>
                         <TableCell style={{ fontWeight: '600' }} align="center" >  Production String</TableCell>
                         <TableCell style={{ fontWeight: '600' }} align="center" >Reservoir</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center" >FTHP (Psi)</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center" >CHP (Psi)</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center" >FLP (Psi)</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center" >MLP (Psi)</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center" >HP (Psi)</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center" >LP (Psi)</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" >FTHP <br /> (Psi)</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" >CHP <br /> (Psi)</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" >FLP <br /> (Psi)</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" >MLP <br /> (Psi)</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" >HP <br /> (Psi)</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" >LP<br />  (Psi)</TableCell>
                         <TableCell style={{ fontWeight: '600' }} align="center" >Size (64")</TableCell>
                         <TableCell style={{ fontWeight: '600' }} align="center" >Degree F </TableCell>
                         <TableCell style={{ fontWeight: '600' }} align="center">(Psi)</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center">Gross (blpd)</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center">BS&W (bbls)</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center">Net Oil (bopd)</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center">Gas (mmscf/d)</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center">Gross<br />  (blpd)</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center">BS&W<br />  (bbls)</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center">Net Oil<br />  (bopd)</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center">Gas<br />  (mmscf/d)</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>

@@ -29,7 +29,7 @@ export default function OilGasAccountingTableForActual({ wellTestResult }) {
                             Uptime Production
                         </TableCell>
                         <TableCell style={{ fontWeight: '600' }} align="center" colSpan={7} >
-                            Actual Production
+                            {searchParams.get('table') === 'actual-production' && "Actual"}  {searchParams.get('table') === 'deferred-production' && "Deferred"} Production
                         </TableCell>
 
                     </TableRow>
@@ -44,13 +44,13 @@ export default function OilGasAccountingTableForActual({ wellTestResult }) {
                         <TableCell style={{ fontWeight: '600' }} align="center" >
                             (Hours)
                         </TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center">Gross (bbls)</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center">Net Oil (bbls)</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center">Gas (mmscf/)</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center">Status</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center">Remarks</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center">Deferment Category</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center">Deferment Description</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center">Gross<br /> (bbls)</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center">Net Oil<br />  (bbls)</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center">Gas<br />  (mmscf/)</TableCell>
+                        {searchParams.get('table') === 'actual-production' && <TableCell style={{ fontWeight: '600' }} align="center">Status</TableCell>}
+                        {searchParams.get('table') === 'actual-production' && <TableCell style={{ fontWeight: '600' }} align="center">Remarks</TableCell>}
+                        {searchParams.get('table') === 'deferred-production' && <> <TableCell style={{ fontWeight: '600' }} align="center">Deferment Category</TableCell>
+                            <TableCell style={{ fontWeight: '600' }} align="center">Deferment Description</TableCell></>}
                     </TableRow>
                 </TableHead>
 
@@ -70,13 +70,13 @@ export default function OilGasAccountingTableForActual({ wellTestResult }) {
                             {/* <TableCell align="center">{well?.bsw}</TableCell> */}
                             <TableCell align="center">{well?.oilRate}</TableCell>
                             <TableCell align="center">{well?.gasRate}</TableCell>
-                            <TableCell style={{ color: 'white', background: '#A0E967' }} align="center">
+                            {searchParams.get('table') === 'actual-production' && <TableCell style={{ color: 'white', background: '#A0E967' }} align="center">
 
                                 {'Producing'}
-                            </TableCell>
+                            </TableCell>}
                             {searchParams.get('table') === 'actual-production' && <TableCell rowSpan={1} align="center">{'Hi, This is a remark. Please make a remark here'}</TableCell>}
                             {
-                                searchParams.get('table') === 'deffered-production' && <> <TableCell style={{ background: '#D9E3F9' }} align="center">{'Scheduled Deferment'}</TableCell>
+                                searchParams.get('table') === 'deferred-production' && <> <TableCell style={{ background: '#D9E3F9' }} align="center">{'Scheduled Deferment'}</TableCell>
                                     <TableCell style={{ background: '#E6E4F9' }} align="center">{'N/A'}</TableCell></>
                             }
                         </TableRow>
