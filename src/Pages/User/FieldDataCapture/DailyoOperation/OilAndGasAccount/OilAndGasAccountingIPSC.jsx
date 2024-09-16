@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React  from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -7,415 +7,81 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import tableStyles from '../table.module.scss'
 
-export default function OilGasAccountingIPSCTable() {
+
+export default function OilGasAccountingIPSCTable({wellTestResult}) {
+    // const [searchParams,] = useSearchParams()
+    // const { data: res } = useFetch({ firebaseFunction: 'getSetup', payload: { id: searchParams.get('id'), setupType: 'oilAndGasAccounting' } })
+    // const { data: IPSCs } = useFetch({ firebaseFunction: 'getSetups', payload: { id: searchParams.get('id'), setupType: 'IPSC' } })
+
+    // const matchingIPSC = useMemo(() => {
+    //     return IPSCs.find(IPSC => IPSC.asset === res.asset && IPSC.month === dayjs().format("YYYY-MM"))
+    // }, [res, IPSCs])
+
+    // const { data: wellTestResult } = useFetch({ firebaseFunction: 'getSetup', payload: { id: matchingIPSC?.wellTestResult1?.id, setupType: 'wellTestResult', }, dontFetch: !matchingIPSC?.wellTestResult1?.id })
+    // console.log(wellTestResult)
 
     return (
+        <TableContainer className={`m-auto border  ${tableStyles.borderedMuiTable}`}>
+            <Table sx={{ minWidth: 700 }} >
+                <TableHead >
+                    <TableRow sx={{ bgcolor: `rgba(239, 239, 239, 1) !important`, color: 'black', fontWeight: 'bold  !important' }}>
+                        <TableCell style={{ fontWeight: '600' }} align="center" colSpan={2} >Flow stations ID </TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" colSpan={4} >Pressures </TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" colSpan={2} >Separator Static </TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Choke  </TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >WH Temperature</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >CITHP</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" colSpan={4} >Potentials (Test Data)</TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell style={{ fontWeight: '600' }} align="center" >  Production String</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" >Reservoir</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" >FTHP (Psi)</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" >CHP (Psi)</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" >FLP (Psi)</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" >MLP (Psi)</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" >HP (Psi)</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" >LP (Psi)</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" >Size (64")</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" >Degree F </TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center">(Psi)</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center">Gross (blpd)</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center">BS&W (bbls)</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center">Net Oil (bopd)</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center">Gas (mmscf/d)</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {Object.values(wellTestResult?.wellTestResultData || {}).sort((a, b) => ((b?.isSelected ? 1 : 0) - (a?.isSelected ? 1 : 0)))?.map((well, i) => {
 
-        
-            <TableContainer className={`m-auto border  ${tableStyles.borderedMuiTable}`}>
-                <Table sx={{ minWidth: 700 }} >
-                    <TableHead >
-                        <TableRow sx={{ bgcolor: `rgba(239, 239, 239, 1) !important`, color: 'black', fontWeight: 'bold  !important' }}>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={2} >
-                                Flow stations ID
+                        return <TableRow>
+                            <TableCell align="center">{well?.productionString}
                             </TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={4} >
-                                Pressures
+                            <TableCell align="center">
+                                {well?.reservoir}
                             </TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={2} >
-                                Separator Static
+                            <TableCell align="center">
+                                {well?.fthp}
                             </TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >
-                                Choke
+                            <TableCell align="center">{well?.chp}</TableCell>
+                            <TableCell align="center">{well?.flp}</TableCell>
+                            <TableCell align="center">{well?.mlp}</TableCell>
+                            <TableCell align="center">
+                                {well?.hp}
                             </TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >
-                                WH Temperature
-                            </TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >
-                                CITHP
-                            </TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={4} >Potentials (Test Data)</TableCell>
-     
+                            <TableCell align="center">{well?.lp}</TableCell>
+                            <TableCell align="center">{well?.chokeSize}</TableCell>
+                            <TableCell align="center">{well?.whTemperature}</TableCell>
+                            <TableCell align="center">{well?.CITHP}</TableCell>
+                            <TableCell align="center">{well?.gross}</TableCell>
+                            <TableCell align="center">{well?.bsw}</TableCell>
+                            <TableCell align="center">{well?.oilRate}</TableCell>
+                            <TableCell align="center">{well?.gasRate}</TableCell>
                         </TableRow>
-                        <TableRow>
+                    })}
+                </TableBody>
 
-                            <TableCell style={{ fontWeight: '600' }} align="center" >
-                                Wells
-                            </TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" >
-                                Reservoir
-                            </TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" >
-                                FTHP (Psi)
-                            </TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" >
-                                CHP (Psi)
-                            </TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" >
-                                FLP (Psi)
-                            </TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" >
-                                MLP (Psi)
-                            </TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" >
-                                HP (Psi)
-                            </TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" >
-                                LP (Psi)
-                            </TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" >
-                                Size (64")
-                            </TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" >
-                                Degree F
-                            </TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center">(Psi)</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center">Gross (blpd)</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center">BS&W (bbls)</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center">Net Oil (bopd)</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center">Gas (mmscf/d)</TableCell>
-
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        <TableRow>
-                            <TableCell align="center">
-                                Well 2L
-
-                            </TableCell>
-                            <TableCell align="center">
-                                Res4321
-                            </TableCell>
-                            <TableCell align="center">
-                                265230.0
-
-                            </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">
-                                265230.0
-                            </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                        </TableRow>
-
-                    </TableBody>
-                    <TableBody>
-                        <TableRow>
-                            <TableCell align="center">
-                                Well 2L
-
-                            </TableCell>
-                            <TableCell align="center">
-                                Res4321
-                            </TableCell>
-                            <TableCell align="center">
-                                265230.0
-
-                            </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">
-                                265230.0
-                            </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                        </TableRow>
-
-                    </TableBody>
-                    <TableBody>
-                        <TableRow>
-                            <TableCell align="center">
-                                Well 2L
-
-                            </TableCell>
-                            <TableCell align="center">
-                                Res4321
-                            </TableCell>
-                            <TableCell align="center">
-                                265230.0
-
-                            </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">
-                                265230.0
-                            </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                        </TableRow>
-
-                    </TableBody>
-                    <TableBody>
-                   
-                        <TableRow>
-                            <TableCell align="center">
-                                Well 2L
-
-                            </TableCell>
-                            <TableCell align="center">
-                                Res4321
-                            </TableCell>
-                            <TableCell align="center">
-                                265230.0
-
-                            </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">
-
-                                265230.0
-                            </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                        </TableRow>
-
-                    </TableBody>
-                    <TableBody>
-                        <TableRow>
-                            <TableCell align="center">
-                                Well 2L
-
-                            </TableCell>
-                            <TableCell align="center">
-                                Res4321
-                            </TableCell>
-                            <TableCell align="center">
-                                265230.0
-
-                            </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">
-                                265230.0
-                            </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                        </TableRow>
-
-                    </TableBody>
-                    <TableBody>
-                        <TableRow>
-                            <TableCell align="center">
-                                Well 2L
-
-                            </TableCell>
-                            <TableCell align="center">
-                                Res4321
-                            </TableCell>
-                            <TableCell align="center">
-                                265230.0
-
-                            </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">
-
-                                265230.0
-                            </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                        </TableRow>
-
-                    </TableBody>
-                    <TableBody>
-                        <TableRow>
-                            <TableCell align="center">
-                                Well 2L
-
-                            </TableCell>
-                            <TableCell align="center">
-                                Res4321
-                            </TableCell>
-                            <TableCell align="center">
-                                265230.0
-
-                            </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">
-
-                                265230.0
-                            </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                        </TableRow>
-
-                    </TableBody>
-                    <TableBody>
-                    
-                        <TableRow>
-                            <TableCell align="center">
-                                Well 2L
-
-                            </TableCell>
-                            <TableCell align="center">
-                                Res4321
-                            </TableCell>
-                            <TableCell align="center">
-                                265230.0
-
-                            </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">
-
-                                265230.0
-                            </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                        </TableRow>
-
-                    </TableBody>
-                    <TableBody>
-                        <TableRow>
-                            <TableCell align="center">
-                                Well 2L
-
-                            </TableCell>
-                            <TableCell align="center">
-                                Res4321
-                            </TableCell>
-                            <TableCell align="center">
-                                265230.0
-
-                            </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">
-
-                                265230.0
-                            </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                        </TableRow>
-
-                    </TableBody>
-                    <TableBody>
-                        <TableRow>
-                            <TableCell align="center">
-                                Well 2L
-
-                            </TableCell>
-                            <TableCell align="center">
-                                Res4321
-                            </TableCell>
-                            <TableCell align="center">
-                                265230.0
-
-                            </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">
-
-                                265230.0
-                            </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                        </TableRow>
-
-                    </TableBody>
-                    <TableBody>
-                        <TableRow>
-                            <TableCell align="center">
-                                Well 2L
-
-                            </TableCell>
-                            <TableCell align="center">
-                                Res4321
-                            </TableCell>
-                            <TableCell align="center">
-                                265230.0
-
-                            </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">
-                                265230.0
-                            </TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265.50</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                            <TableCell align="center">265230.0</TableCell>
-                        </TableRow>
-                    </TableBody>
-                </Table>
-            </TableContainer>
-
+            </Table>
+        </TableContainer>
     );
 }

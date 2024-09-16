@@ -1,22 +1,8 @@
-// const functions = require('firebase-functions');
-// const admin = require('firebase-admin');
-// const { onCall, HttpsError } = require('firebase-functions/v1/https');
-// const db = admin.firestore();
-
 
 const admin = require("firebase-admin");
 const logger = require("firebase-functions/logger");
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const crypto = require('crypto');
-// const { currentTime } = require("../../helpers"); 
-
-// const generateSerialNumbers = (count) => {
-//     const serialNumbers = [];
-//     for (let i = 0; i < count; i++) {
-//         serialNumbers.push(`SN-${Math.random().toString(36).substring(2, 9)}`);
-//     }
-//     return serialNumbers;
-// };
 
 const createSetup = onCall(async (request) => {
 
@@ -110,7 +96,11 @@ const getSetup = onCall(async (request) => {
     const { data } = request
     const { setupType, id } = data
     const db = admin.firestore();
-    const res = await db.collection('setups').doc(setupType).collection('setupList').doc(id).get()
+    const res = await db.
+        collection('setups')
+        .doc(setupType)
+        .collection('setupList')
+        .doc(id).get()
     return { message: "Successful ", data: res?.data() }
 })
 

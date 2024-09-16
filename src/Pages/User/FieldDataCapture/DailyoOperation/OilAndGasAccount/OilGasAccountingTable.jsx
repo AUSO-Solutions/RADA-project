@@ -13,11 +13,25 @@ import RadaDatePicker from 'Components/Input/RadaDatePicker';
 import { useSearchParams } from 'react-router-dom';
 import OilGasAccountingIPSCTable from './OilAndGasAccountingIPSC';
 import OilGasAccountingTableForActual from './OilGasAccountingTableForActual';
+import { useFetch } from 'hooks/useFetch';
+import dayjs from 'dayjs';
 
 const tables = ['IPSC', 'Actual Production', 'Deferred Production']
 
 export default function OilGasAccountingTable() {
     const [searchParams, setSearchParams] = useSearchParams()
+
+
+    // const [searchParams,] = useSearchParams()
+    const { data: res } = useFetch({ firebaseFunction: 'getSetup', payload: { id: searchParams.get('id'), setupType: 'oilAndGasAccounting' } })
+    const { data: IPSCs } = useFetch({ firebaseFunction: 'getSetups', payload: { id: searchParams.get('id'), setupType: 'IPSC' } })
+
+    const matchingIPSC = React.useMemo(() => {
+        return IPSCs.find(IPSC => IPSC.asset === res.asset && IPSC.month === dayjs().format("YYYY-MM"))
+    }, [res, IPSCs])
+
+    const { data: wellTestResult } = useFetch({ firebaseFunction: 'getSetup', payload: { id: matchingIPSC?.wellTestResult1?.id, setupType: 'wellTestResult', }, dontFetch: !matchingIPSC?.wellTestResult1?.id })
+    console.log(wellTestResult)
 
 
     return (
@@ -29,11 +43,11 @@ export default function OilGasAccountingTable() {
                         return prev
                     })} /> <RadaSwitch label="Edit Table" labelPlacement="left" />
                 </div>
-                <RadaDatePicker  disabled />
+                <RadaDatePicker disabled />
             </div>
 
-            {(!searchParams.get('table') || searchParams.get('table') === 'ipsc') && <OilGasAccountingIPSCTable />}
-          {(searchParams.get('table') === 'actual-production' || searchParams.get('table') === 'deferred-production') &&  <OilGasAccountingTableForActual />}
+            {(!searchParams.get('table') || searchParams.get('table') === 'ipsc') && <OilGasAccountingIPSCTable wellTestResult={wellTestResult} />}
+            {(searchParams.get('table') === 'actual-production' || searchParams.get('table') === 'deferred-production') && <OilGasAccountingTableForActual wellTestResult={wellTestResult} />}
         </div>
     );
 }

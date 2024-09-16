@@ -150,8 +150,8 @@ const DefineSchedule = () => {
                         <th>Fluid Type</th>
                         <th>No of Chokes</th>
                         <th> Chokes Size(/64")</th>
-                        <th className="min-w-[230px] block "> Start Date</th>
-                        <th className="min-w-[230px] block "> End Date</th>
+                        <th > Start Date</th>
+                        <th > End Date</th>
                         <th> Duration (Hrs)</th>
                         <th> Stabilization Duration (Hrs)</th>
                     </tr>
@@ -234,7 +234,7 @@ const Preview = () => {
             <table className={styles.table}>
                 <thead className=" mt-5">
                     <tr className="pt-4 w-full text-left" >
-                        <th className="pl-3">Wells</th>
+                        <th className="pl-3">Production String</th>
                         <th >Reservoir</th>
                         <th>Fluid Type</th>
                         <th>No of Chokes</th>

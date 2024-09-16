@@ -100,11 +100,11 @@ export default function IPSCTable() {
         { name: 'gross', type: "number" },
         { name: 'oilRate', type: "number" },
         { name: 'waterRate', type: "number" },
+        { name: 'gasRate', type: "number" },
         { name: 'bsw', type: "number" },
         { name: 'wgr', type: "number" },
         { name: 'gor', type: "number" },
-        { name: 'formationGas', type: "number" },
-        { name: 'totalGas', type: "number" },
+        // { name: 'totalGas', type: "number" },
         { name: 'fthp', type: "number" },
         { name: 'flp', type: "number" },
         { name: 'staticPressure', type: "number" },
@@ -164,11 +164,11 @@ export default function IPSCTable() {
                                 <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Gross</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Oil Rate</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Water Rate</TableCell>
+                                <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} > Gas Rate</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >BS&W</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >WGR</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >GOR</TableCell>
-                                <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Formation Gas</TableCell>
-                                <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Total Gas</TableCell>
+                                {/* <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Total Gas</TableCell> */}
                                 <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >FTHP</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >FLP</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Static Pressure</TableCell>
@@ -187,11 +187,11 @@ export default function IPSCTable() {
                                 <TableCell style={{ fontWeight: '600' }} align="center">(blpd)</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center">(bopd)</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center">(bwpd)</TableCell>
+                                <TableCell style={{ fontWeight: '600' }} align="center">(MMscf/day)</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center">(%)</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center">(Stb/MMscf)</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center">(Scf/Stb)</TableCell>
-                                <TableCell style={{ fontWeight: '600' }} align="center">(MMscf/day)</TableCell>
-                                <TableCell style={{ fontWeight: '600' }} align="center">(MMscf/day)</TableCell>
+                                {/* <TableCell style={{ fontWeight: '600' }} align="center">(MMscf/day)</TableCell> */}
                                 <TableCell style={{ fontWeight: '600' }} align="center">(Psia)</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center">(Psia)</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center">(Psia)</TableCell>
