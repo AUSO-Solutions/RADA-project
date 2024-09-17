@@ -179,6 +179,16 @@ const Existing = ({ onSelect = () => null }) => {
     </div>
   )
 }
+const SaveAs = () => {
+  const setupData = useSelector(state => state.setup)
+  const dispatch = useDispatch()
+  return (
+      <div className="h-[300px] flex flex-col  w-[400px] mx-auto gap-1 justify-center">
+          <Text weight={600} size={24}>Save as</Text>
+          <Input label={''} defaultValue={setupData?.title} required onChange={(e) => dispatch(setSetupData({ name: 'title', value: e.target.value }))} />
+      </div>
+  )
+}
 
 const OilGasAccounting = () => {
   const dispatch = useDispatch()
@@ -210,11 +220,11 @@ const OilGasAccounting = () => {
 
       <Setup
         title={'Setup Oil & Gas Accounting Parameters'}
-        steps={["Select Well Test Data", "Define Report", "Preview"]}
+        steps={["Select Well Test Data", "Define Report", "Preview","Save As"]}
         existing={<Existing />}
         stepComponents={[
           <SelectAsset />,
-          <DefineReport />, <Preview />
+          <DefineReport />, <Preview />,<SaveAs />
         ]}
 
         onSave={save}
