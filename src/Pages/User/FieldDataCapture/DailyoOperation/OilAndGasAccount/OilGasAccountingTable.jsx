@@ -15,6 +15,7 @@ import OilGasAccountingIPSCTable from './OilAndGasAccountingIPSC';
 import OilGasAccountingTableForActual from './OilGasAccountingTableForActual';
 import { useFetch } from 'hooks/useFetch';
 import dayjs from 'dayjs';
+import { Alert } from '@mui/material';
 
 const tables = ['IPSC', 'Actual Production', 'Deferred Production']
 
@@ -30,8 +31,8 @@ export default function OilGasAccountingTable() {
         return IPSCs.find(IPSC => IPSC.asset === res.asset && IPSC.month === dayjs().format("YYYY-MM"))
     }, [res, IPSCs])
 
-    const { data: wellTestResult } = useFetch({ firebaseFunction: 'getSetup', payload: { id: matchingIPSC?.wellTestResult1?.id, setupType: 'wellTestResult', }, dontFetch: !matchingIPSC?.wellTestResult1?.id })
-    console.log(wellTestResult)
+    // const { data: wellTestResult } = useFetch({ firebaseFunction: 'getSetup', payload: { id: matchingIPSC?.wellTestResult1?.id, setupType: 'wellTestResult', }, dontFetch: !matchingIPSC?.wellTestResult1?.id })
+    // console.log({ wellTestResult })
 
 
     return (
@@ -46,8 +47,17 @@ export default function OilGasAccountingTable() {
                 <RadaDatePicker disabled />
             </div>
 
-            {(!searchParams.get('table') || searchParams.get('table') === 'ipsc') && <OilGasAccountingIPSCTable wellTestResult={wellTestResult} />}
-            {(searchParams.get('table') === 'actual-production' || searchParams.get('table') === 'deferred-production') && <OilGasAccountingTableForActual wellTestResult={wellTestResult} />}
+            {
+                matchingIPSC ?
+                    <>
+                        {(!searchParams.get('table') || searchParams.get('table') === 'ipsc') && <OilGasAccountingIPSCTable IPSC={matchingIPSC} />}
+                        {(searchParams.get('table') === 'actual-production' || searchParams.get('table') === 'deferred-production') && <OilGasAccountingTableForActual IPSC={matchingIPSC} />}
+
+                    </> : <>
+                        <Alert severity='info' > No IPSC for {res.asset} in the month {dayjs().format("YYYY-MM")} </Alert>
+                    </>
+            }
+
         </div>
     );
 }

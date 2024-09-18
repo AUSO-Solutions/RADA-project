@@ -21,6 +21,7 @@ import { BsThreeDots } from 'react-icons/bs';
 import { createWellTitle, getWellLastTestResult } from 'utils';
 import IPSCAnalytics from './IPSCAnalytics';
 import ToleranceSettiings from './ToleranceSettiings';
+import { firebaseFunctions } from 'Services';
 
 // const TableInput = (props) => {
 //     return <input className='p-1 text-center w-[80px] h-[100%] border outline-none ' required {...props} />
@@ -58,7 +59,7 @@ export default function IPSCTable() {
     const bringForward = (wellTestResults, wellTestResult, productionString) => {
         const data = getWellLastTestResult(wellTestResults, wellTestResult, productionString)
         console.log(data, wellTestResult)
-        setWellTestResult(prev => {
+        setIpscData(prev => {
             return {
                 ...prev, wellTestResultData: {
                     ...prev.wellTestResultData,
@@ -76,11 +77,12 @@ export default function IPSCTable() {
         }
         setLoading(true)
         try {
+            // console.log(wellTestResult?.wellTestResultData)
 
             // if (isEdit) {
-            //     const payload = { title: title, asset: wellTest?.asset, field: wellTest?.field, wellTestScheduleId: wellTest?.id, setupType: 'wellTestResult', wellTestResultData: wellTestResult, id }
-            //     console.log(payload)
-            //     await firebaseFunctions('updateSetup', payload)
+            const payload = { title: title, setupType: 'IPSC', wellTestResultData: ipscData?.wellTestResultData, id }
+            console.log(payload)
+            await firebaseFunctions('updateSetup', payload)
             // } else {
             //     const payload = { title, asset: wellTest?.asset, field: wellTest?.field, wellTestScheduleId: wellTest?.id, setupType: 'wellTestResult', wellTestResultData: wellTestResult }
             //     console.log(payload)
@@ -88,7 +90,7 @@ export default function IPSCTable() {
 
             // }
             dispatch(closeModal())
-            toast.success('Data saved to well test result')
+            toast.success('Data saved to IPSC')
         } catch (error) {
             console.log(error)
         } finally {
@@ -115,7 +117,7 @@ export default function IPSCTable() {
 
     return (
         < div className=' w-[80vw] px-3'>
-            {showSettings && <ToleranceSettiings onClickOut={()=>setShowSettings(false)} />}
+            {showSettings && <ToleranceSettiings onClickOut={() => setShowSettings(false)} />}
             <div className='flex justify-between items-center'>
                 <div className='flex gap-4 min-w-fit items-center'>
                     <Link to='/users/fdc/well-test-data/' className='flex flex-row gap-2 bg-[#EFEFEF] px-4 py-1 rounded-md' >
@@ -206,7 +208,7 @@ export default function IPSCTable() {
                         </TableHead>
                         <TableBody>
                             {
-                                Object.values(wellTestResult?.wellTestResultData || {}).sort((a, b) => ((b?.isSelected ? 1 : 0) - (a?.isSelected ? 1 : 0)))?.map((well, i) => {
+                                Object.values(ipscData?.wellTestResultData || {}).sort((a, b) => ((b?.isSelected ? 1 : 0) - (a?.isSelected ? 1 : 0)))?.map((well, i) => {
 
                                     return <TableRow key={well?.productionString}>
                                         <TableCell align="center">

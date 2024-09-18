@@ -10,7 +10,7 @@ import tableStyles from '../table.module.scss'
 import dayjs from 'dayjs';
 import { useSearchParams } from 'react-router-dom';
 
-export default function OilGasAccountingTableForActual({ wellTestResult }) {
+export default function OilGasAccountingTableForActual({ IPSC }) {
     const [searchParams] = useSearchParams()
     // const statusArray = ['Producing', 'Closed In']
     // const defermentCategoryArray = ['Scheduled Deferment', 'Unscheduled Deferment', 'Third-Party Deferment', 'N/A']
@@ -55,7 +55,7 @@ export default function OilGasAccountingTableForActual({ wellTestResult }) {
                 </TableHead>
 
                 <TableBody>
-                    {Object.values(wellTestResult?.wellTestResultData || {}).sort((a, b) => ((b?.isSelected ? 1 : 0) - (a?.isSelected ? 1 : 0)))?.map((well, i) => {
+                    {Object.values(IPSC?.wellTestResultData || {}).sort((a, b) => ((b?.isSelected ? 1 : 0) - (a?.isSelected ? 1 : 0)))?.map((well, i) => {
                         return <TableRow>
                             <TableCell align="center">{well?.productionString}
                             </TableCell>

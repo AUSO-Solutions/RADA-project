@@ -70,6 +70,8 @@ const Preview = () => {
 const SaveAs = () => {
     const setupData = useSelector(state => state.setup)
     const dispatch = useDispatch()
+
+
     return (
         <div className="h-[300px] flex flex-col  w-[400px] mx-auto gap-1 justify-center">
             <Text weight={600} size={24}>Save IPSC as</Text>
@@ -92,8 +94,6 @@ const Exists = () => {
 }
 
 const Schedule = () => {
-
-
     const [loading, setLoading] = useState(false)
     const dispatch = useDispatch()
     useEffect(() => {
@@ -104,14 +104,26 @@ const Schedule = () => {
     // const { data: wellTestResult1 } = useFetch({ firebaseFunction: 'getSetup', payload: { id: wellTestResult1Id, setupType: 'wellTestResult' }, })
     // console.log(wellTestResult1)
 
+
+    // const { data: IPSCs } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: 'IPSC' } })
+    // console.log(IPSCs)
+
     const save = async () => {
         try {
             setLoading(true)
             const { data: wellTestResult1 } = await firebaseFunctions('getSetup', { id: wellTestResult1Id, setupType: 'wellTestResult' })
-
+            const { data: IPSCs } = await firebaseFunctions('getSetups', { setupType: 'IPSC' })
+            // console.log(IPSCs, wellTestResult1)
             const setupData = store.getState().setup
 
-            const { data } = await firebaseFunctions('createSetup', { ...setupData, setupType: 'IPSC', asset: wellTestResult1?.asset, field: wellTestResult1?.field })
+            const created = IPSCs.find(ipsc => ipsc.month === wellTestResult1?.month)
+            // console.log(created)
+            if(created) {
+                toast.info(`IPSC for the month ${wellTestResult1?.month} is already created`)
+                return
+            }
+
+            const { data } = await firebaseFunctions('createSetup', { ...setupData, setupType: 'IPSC', asset: wellTestResult1?.asset, field: wellTestResult1?.field, wellTestResultData: wellTestResult1?.wellTestResultData, })
             dispatch(setWholeSetup(data))
             dispatch(closeModal())
 
