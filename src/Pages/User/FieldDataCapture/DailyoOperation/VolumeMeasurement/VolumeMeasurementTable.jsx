@@ -196,26 +196,19 @@ export default function VolumeMeasurementTable() {
       name: value[0],
       ...value[1]
     }))
-    // const payload = {
-    //   flowStations,
-    //   date,
-    //   asset: setup?.asset,
-    //   setupId: setup?.id,
-    //   timeFrame: setup?.timeFrame,
-    //   reportType: currReport,
-    //   ...totals
-    // }
     const reportTypes = {
-      "Gross": "gross", "Net Oil/ Condensate": "netProduction"
+      "Gross Liquid": "gross", "Net Oil/ Condensate": "netProduction"
     }
     const payload = {
       date: dayjs(date).format("DD/MM/YYYY"),
       asset: setup.asset,
       fluidType: currReport,
-      flowStations: flowStations.map(flowStation => {
+      totals,
+      setupId: setup?.id,
+      flowstations: flowStations.map(flowStation => {
         const addDeduction = flowStation?.measurementType === 'tankDipping' ? {
-          deductions: {
-            initialReading: flowStation?.deductionFinalReading,
+          deduction: {
+            initialReading: flowStation?.deductionInitialReading,
             finalReading: flowStation?.deductionFinalReading,
             meterFactor: flowStation?.deduction?.meterFactor,
             // gross: 500,
@@ -224,7 +217,7 @@ export default function VolumeMeasurementTable() {
         } : {}
         return {
           name: flowStation?.name,
-          reportType: reportTypes[flowStation?.reportType],
+          reportType: reportTypes[currReport],
           measurementType: flowStation?.measurementType,
           subtotal: {
             gross: isGross ? flowStation?.subTotal : calculatedGrossOrnNet(flowStation?.subTotal, flowStation?.bsw, 'net'),
@@ -237,7 +230,7 @@ export default function VolumeMeasurementTable() {
             initialReading: meter?.initialReading,
             finalReading: meter?.finalReading,
             meterFactor: meter?.meterFactor,
-            // gross: meter?.gross,
+            gross: meter?.netProduction,
             netProduction: meter?.netProduction,
           })),
           ...addDeduction
@@ -246,16 +239,13 @@ export default function VolumeMeasurementTable() {
       }),
 
     };
-
-    console.log((flowStations))
-
-    console.log((payload))
     try {
 
       await firebaseFunctions('captureOilOrCondensate', payload)
       toast.success("Successful")
     } catch (error) {
       console.log(error)
+      toast.error(error?.message)
     }
 
   }

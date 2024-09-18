@@ -23,6 +23,9 @@ import { colors } from 'Assets';
 import { useFetch } from 'hooks/useFetch';
 import { setWholeSetup } from 'Store/slices/setupSlice';
 import { useDispatch } from 'react-redux';
+import dayjs from 'dayjs';
+import { firebaseFunctions } from 'Services';
+import { store } from 'Store';
 
 
 const TableInput = ({ type = '', ...props }) => {
@@ -42,7 +45,7 @@ export default function GasTable() {
   React.useEffect(() => { setSetup(res) }, [res])
   React.useEffect(() => {
     dispatch(setWholeSetup(setup))
-  }, [setup,dispatch])
+  }, [setup, dispatch])
 
   const roundUp = (num, places = 2) => {
     return Math.round(num * 10000) / 10000
@@ -151,23 +154,32 @@ export default function GasTable() {
   }, [setup])
 
 
-  const save = (e) => {
+  const save = async (e) => {
+
     e.preventDefault()
+    const setup = store.getState().setup
     const flowStations = Object.entries(tableValues).map(value => ({
       name: value[0],
       ...value[1]
     }))
+    console.log(flowStations)
     const payload = {
-      flowStations,
-      asset: setup?.asset,
+      date: dayjs(date).format("DD/MM/YYYY"),
+      asset: setup.asset,
+      fluidType: 'gas',
+      totals,
       setupId: setup?.id,
-      timeFrame: setup?.timeFrame,
-      date,
-      reportType: "Gas",
-      ...totals
+      flowstations: flowStations
+    };
+    try {
+
+      await firebaseFunctions('captureGas', payload)
+      toast.success("Successful")
+    } catch (error) {
+      console.log(error)
+      toast.error(error?.message)
     }
-    console.log(payload)
-    toast.success("Successful")
+
   }
   return (
 

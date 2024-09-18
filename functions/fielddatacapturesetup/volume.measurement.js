@@ -34,7 +34,7 @@ const captureOilOrCondensate = onCall(async (request) => {
       data: flowstations,
     };
     const db = admin.firestore();
-    await db.collections("liquidVolumes").doc(id).set(dbData);
+    await db.collection("liquidVolumes").doc(id).set(dbData);
     return id;
   } catch (error) {
     logger.log("error ===> ", error);
@@ -70,7 +70,7 @@ const updateOilOrCondensate = onCall(async (request) => {
       data: flowstations,
     };
 
-    await db.collections("volumes").doc(id).set(dbData);
+    await db.collection("volumes").doc(id).set(dbData);
     return id;
   } catch (error) {
     logger.log("error ===> ", error);
@@ -124,7 +124,7 @@ const deleteOilOrCondensateVolumeByID = onCall(async (request) => {
       });
     }
     const db = admin.firestore();
-    await db.collections("liquidVolumes").doc(id).delete();
+    await db.collection("liquidVolumes").doc(id).delete();
     return { status: "success", message: "Volume deleted successfully" };
   } catch (error) {
     logger.log("error ===> ", error);
@@ -145,17 +145,17 @@ const captureGas = onCall(async (request) => {
       });
     }
 
-    validateGasFlowstationData(flowstations);
+    // validateGasFlowstationData(flowstations);
 
     const id = generateRandomID();
     const dbData = {
       date,
       asset,
-      fluidType: "oilOrCondensate",
+      fluidType: "gas",
       data: flowstations,
     };
     const db = admin.firestore();
-    await db.collections("volumes").doc(id).set(dbData);
+    await db.collection("gasVolumes").doc(id).set(dbData);
     return id;
   } catch (error) {
     logger.log("error ===> ", error);
