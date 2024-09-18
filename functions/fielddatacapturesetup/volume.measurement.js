@@ -17,7 +17,7 @@ const captureOilOrCondensate = onCall(async (request) => {
     logger.log("data ----", { data });
     const { date, asset, flowstations, fluidType } = data;
     if (!date || !asset || !flowstations) {
-      throw new Error({
+      throw ({
         code: "cancelled",
         message: "Missing required fields",
       });
@@ -164,147 +164,147 @@ const captureGas = onCall(async (request) => {
 });
 
 // Just a guide
-const demo = {
-  date: "12/12/2024",
-  asset: "OML 99",
-  flowstations: [
-    {
-      name: "Flowstation 1",
-      reportType: "gross",
-      measurementType: "metering",
-      subtotal: {
-        gross: 1500,
-        bsw: 50,
-        netProduction: 750,
-        netTarget: 750,
-      },
-      meters: [
-        {
-          serialNumber: "SN-001",
-          meterFactor: 1,
-          initialReading: 1000,
-          finalReading: 1500,
-          gross: 500,
-          bsw: 50,
-          netProduction: 250,
-          netTarget: 250,
-        },
-        {
-          serialNumber: "SN-002",
-          meterFactor: 0.98,
-          initialReading: 1500,
-          finalReading: 2500,
-          gross: 1000,
-          bsw: 50,
-          netProduction: 500,
-          netTarget: 250,
-        },
-      ],
-    },
-    {
-      name: "Flowstation 2",
-      reportType: "netOilOrCondensate",
-      measurementType: "tankDipping",
-      subtotal: {
-        gross: 1500,
-        bsw: 50,
-        netProduction: 750,
-        netTarget: 750,
-      },
-      meters: [
-        {
-          serialNumber: "Tank-001",
-          initialReading: 1000,
-          finalReading: 1500,
-          gross: 500,
-          bsw: 50,
-          netProduction: 250,
-          netTarget: 250,
-        },
-      ],
-      deductions: {
-        initialReading: 1000,
-        finalReading: 1500,
-        meterFactor: 0.98,
-        gross: 500,
-        bsw: 50,
-        netProduction: 250,
-        netTarget: 250,
-      },
-    },
-  ],
-};
+// const demo = {
+//   date: "12/12/2024",
+//   asset: "OML 99",
+//   flowstations: [
+//     {
+//       name: "Flowstation 1",
+//       reportType: "gross",
+//       measurementType: "metering",
+//       subtotal: {
+//         gross: 1500,
+//         bsw: 50,
+//         netProduction: 750,
+//         netTarget: 750,
+//       },
+//       meters: [
+//         {
+//           serialNumber: "SN-001",
+//           meterFactor: 1,
+//           initialReading: 1000,
+//           finalReading: 1500,
+//           gross: 500,
+//           bsw: 50,
+//           netProduction: 250,
+//           netTarget: 250,
+//         },
+//         {
+//           serialNumber: "SN-002",
+//           meterFactor: 0.98,
+//           initialReading: 1500,
+//           finalReading: 2500,
+//           gross: 1000,
+//           bsw: 50,
+//           netProduction: 500,
+//           netTarget: 250,
+//         },
+//       ],
+//     },
+//     {
+//       name: "Flowstation 2",
+//       reportType: "netOilOrCondensate",
+//       measurementType: "tankDipping",
+//       subtotal: {
+//         gross: 1500,
+//         bsw: 50,
+//         netProduction: 750,
+//         netTarget: 750,
+//       },
+//       meters: [
+//         {
+//           serialNumber: "Tank-001",
+//           initialReading: 1000,
+//           finalReading: 1500,
+//           gross: 500,
+//           bsw: 50,
+//           netProduction: 250,
+//           netTarget: 250,
+//         },
+//       ],
+//       deductions: {
+//         initialReading: 1000,
+//         finalReading: 1500,
+//         meterFactor: 0.98,
+//         gross: 500,
+//         bsw: 50,
+//         netProduction: 250,
+//         netTarget: 250,
+//       },
+//     },
+//   ],
+// };
 
-const demoGas = {
-  date: "12/12/2024",
-  asset: "OML 99",
-  flowstations: [
-    {
-      name: "Flowstation 1",
-      subtotal: {
-        gross: 1500,
-        bsw: 50,
-        netProduction: 750,
-        netTarget: 750,
-      },
-      meters: [
-        {
-          serialNumber: "SN-001",
-          meterFactor: 1,
-          initialReading: 1000,
-          finalReading: 1500,
-          gross: 500,
-          bsw: 50,
-          netProduction: 250,
-          netTarget: 250,
-        },
-        {
-          serialNumber: "SN-002",
-          meterFactor: 0.98,
-          initialReading: 1500,
-          finalReading: 2500,
-          gross: 1000,
-          bsw: 50,
-          netProduction: 500,
-          netTarget: 250,
-        },
-      ],
-    },
-    {
-      name: "Flowstation 2",
-      reportType: "netOilOrCondensate",
-      measurementType: "tankDipping",
-      subtotal: {
-        gross: 1500,
-        bsw: 50,
-        netProduction: 750,
-        netTarget: 750,
-      },
-      meters: [
-        {
-          serialNumber: "Tank-001",
-          initialReading: 1000,
-          finalReading: 1500,
-          gross: 500,
-          bsw: 50,
-          netProduction: 250,
-          netTarget: 250,
-        },
-      ],
-      deductions: {
-        initialReading: 1000,
-        finalReading: 1500,
-        meterFactor: 0.98,
-        gross: 500,
-        bsw: 50,
-        netProduction: 250,
-        netTarget: 250,
-      },
-    },
-  ],
-};
+// const demoGas = {
+//   date: "12/12/2024",
+//   asset: "OML 99",
+//   flowstations: [
+//     {
+//       name: "Flowstation 1",
+//       subtotal: {
+//         gross: 1500,
+//         bsw: 50,
+//         netProduction: 750,
+//         netTarget: 750,
+//       },
+//       meters: [
+//         {
+//           serialNumber: "SN-001",
+//           meterFactor: 1,
+//           initialReading: 1000,
+//           finalReading: 1500,
+//           gross: 500,
+//           bsw: 50,
+//           netProduction: 250,
+//           netTarget: 250,
+//         },
+//         {
+//           serialNumber: "SN-002",
+//           meterFactor: 0.98,
+//           initialReading: 1500,
+//           finalReading: 2500,
+//           gross: 1000,
+//           bsw: 50,
+//           netProduction: 500,
+//           netTarget: 250,
+//         },
+//       ],
+//     },
+//     {
+//       name: "Flowstation 2",
+//       reportType: "netOilOrCondensate",
+//       measurementType: "tankDipping",
+//       subtotal: {
+//         gross: 1500,
+//         bsw: 50,
+//         netProduction: 750,
+//         netTarget: 750,
+//       },
+//       meters: [
+//         {
+//           serialNumber: "Tank-001",
+//           initialReading: 1000,
+//           finalReading: 1500,
+//           gross: 500,
+//           bsw: 50,
+//           netProduction: 250,
+//           netTarget: 250,
+//         },
+//       ],
+//       deductions: {
+//         initialReading: 1000,
+//         finalReading: 1500,
+//         meterFactor: 0.98,
+//         gross: 500,
+//         bsw: 50,
+//         netProduction: 250,
+//         netTarget: 250,
+//       },
+//     },
+//   ],
+// };
 
-console.log({demo, demoGas})
+// console.log({demo, demoGas})
 
 module.exports = {
   captureOilOrCondensate,

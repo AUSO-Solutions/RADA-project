@@ -9,7 +9,7 @@ import { store } from 'Store';
 import tableStyles from '../table.module.scss'
 import { sum } from 'utils';
 import { Button } from 'Components';
-import { updateFlowstationReading } from './helper';
+import { camelize, updateFlowstationReading } from './helper';
 import { toast } from 'react-toastify';
 // import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
@@ -24,6 +24,8 @@ import { colors } from 'Assets';
 import { useFetch } from 'hooks/useFetch';
 import { setWholeSetup } from 'Store/slices/setupSlice';
 import { useDispatch } from 'react-redux';
+import dayjs from 'dayjs';
+import { firebaseFunctions } from 'Services';
 
 
 const TableInput = (props) => {
@@ -75,7 +77,7 @@ export default function VolumeMeasurementTable() {
     //careful, to also have the value updated before calculated
     // const setup = store.getState().setup
     const flowStationSetup = setup?.flowStations?.find(({ name }) => name === flowStation)
-    // console.log(setup)
+    // console.log(flowStationSetup)
     const meterFactor = parseFloat(flowStationSetup?.readings?.[readingIndex]?.meterFactor || 1)
     const deductionMeterFactor = parseFloat(flowStationSetup?.deductionMeterFactor || 1)
 
@@ -94,6 +96,7 @@ export default function VolumeMeasurementTable() {
       const deductionTotal = (deductionDiference * parseFloat(deductionMeterFactor || 0))
       // console.log({deductionFinalReading,deductionInitialReading, deductionDiference,deductionMeterFactor})
       const gross = (difference.toFixed(5) * parseFloat(meterFactor || 0).toFixed(5))
+      const measurementType = camelize(flowStationSetup?.measurementType) || 'metering'
       // console.log({ meterFactor, difference }, parseFloat(finalReading).toFixed(5), parseFloat(initialReading).toFixed(5))
       const isNum = typeof readingIndex === 'number'
       let updatedMeters = prevFlowStationList
@@ -106,7 +109,9 @@ export default function VolumeMeasurementTable() {
             netProduction,
             gross,
             serialNumber: flowStationSetup?.readings?.[readingIndex]?.serialNumber,
-            reportType: currReport
+            reportType: currReport,
+            meterFactor: meterFactor,
+
           }
         } : prevFlowStationList
       }
@@ -118,13 +123,14 @@ export default function VolumeMeasurementTable() {
       }
 
       const subTotal = parseFloat(sum(Object.values(updatedMeters || {}).map(value => parseFloat(value.netProduction)))) + parseFloat(deductionTotal.toFixed(5) || 0)
-      console.log(parseFloat(sum(Object.values(updatedMeters || {}).map(value => parseFloat(value.netProduction)))), parseFloat(deductionTotal || 0)?.toFixed(5))
+      // console.log(parseFloat(sum(Object.values(updatedMeters || {}).map(value => parseFloat(value.netProduction)))), parseFloat(deductionTotal || 0)?.toFixed(5))
       let updatedFlowStation = {
         ...prevFlowStation,
         meters: updatedMeters,
         deductionTotal,
         subTotal,
-        reportType: currReport
+        reportType: currReport,
+        measurementType
       }
       if (flowStationField) {
         updatedFlowStation = {
@@ -134,7 +140,7 @@ export default function VolumeMeasurementTable() {
 
         }
       }
-      console.log({ updatedFlowStation })
+      // console.log({ updatedFlowStation })
       return {
         ...prev,
         [flowStation]: updatedFlowStation,
@@ -172,7 +178,16 @@ export default function VolumeMeasurementTable() {
     });
     // eslint-disable-next-line
   }, [setup])
-
+  const calculatedGrossOrnNet = (subTotal, bsw, type = 'net') => {
+    // console.log({ subTotal, bsw, type })
+    let netResult = subTotal / ((1 - (0.01 * bsw))).toFixed(3) //for net
+    let grossResult = subTotal * ((1 - (0.01 * bsw))).toFixed(3) //for gross
+    // console.log({ netResult, grossResult })
+    if (type === 'net') return netResult
+    if (type === 'gross') return grossResult
+    if (isNaN(netResult || netResult)) return 0
+    // return result
+  }
   const save = async (e) => {
 
     e.preventDefault()
@@ -181,31 +196,71 @@ export default function VolumeMeasurementTable() {
       name: value[0],
       ...value[1]
     }))
-    const payload = {
-      flowStations,
-      date,
-      asset: setup?.asset,
-      setupId: setup?.id,
-      timeFrame: setup?.timeFrame,
-      reportType: currReport,
-
-      ...totals
+    // const payload = {
+    //   flowStations,
+    //   date,
+    //   asset: setup?.asset,
+    //   setupId: setup?.id,
+    //   timeFrame: setup?.timeFrame,
+    //   reportType: currReport,
+    //   ...totals
+    // }
+    const reportTypes = {
+      "Gross": "gross", "Net Oil/ Condensate": "netProduction"
     }
-    console.log(JSON.stringify(payload))
+    const payload = {
+      date: dayjs(date).format("DD/MM/YYYY"),
+      asset: setup.asset,
+      fluidType: currReport,
+      flowStations: flowStations.map(flowStation => {
+        const addDeduction = flowStation?.measurementType === 'tankDipping' ? {
+          deductions: {
+            initialReading: flowStation?.deductionFinalReading,
+            finalReading: flowStation?.deductionFinalReading,
+            meterFactor: flowStation?.deduction?.meterFactor,
+            // gross: 500,
+            netProduction: flowStation?.deductionTotal,
+          }
+        } : {}
+        return {
+          name: flowStation?.name,
+          reportType: reportTypes[flowStation?.reportType],
+          measurementType: flowStation?.measurementType,
+          subtotal: {
+            gross: isGross ? flowStation?.subTotal : calculatedGrossOrnNet(flowStation?.subTotal, flowStation?.bsw, 'net'),
+            bsw: flowStation?.bsw,
+            netProduction: isNet ? flowStation?.subTotal : calculatedGrossOrnNet(flowStation?.subTotal, flowStation?.bsw, 'gross'),
+            netTarget: flowStation?.netTarget,
+          },
+          meters: Object.values(flowStation?.meters || {})?.map(meter => ({
+            serialNumber: meter?.serialNumber,
+            initialReading: meter?.initialReading,
+            finalReading: meter?.finalReading,
+            meterFactor: meter?.meterFactor,
+            // gross: meter?.gross,
+            netProduction: meter?.netProduction,
+          })),
+          ...addDeduction
 
-    toast.success("Successful")
+        }
+      }),
+
+    };
+
+    console.log((flowStations))
+
+    console.log((payload))
+    try {
+
+      await firebaseFunctions('captureOilOrCondensate', payload)
+      toast.success("Successful")
+    } catch (error) {
+      console.log(error)
+    }
+
   }
 
-  const calculatedGrossOrnNet = (subTotal, bsw, type = 'net') => {
-    console.log({ subTotal, bsw, type })
-    let netResult = subTotal / ((1 - (0.01 * bsw))).toFixed(3) //for net
-    let grossResult = subTotal * ((1 - (0.01 * bsw))).toFixed(3) //for gross
-    console.log({netResult,grossResult})
-    if (type === 'net') return netResult
-    if (type === 'gross') return grossResult
-    if (isNaN(netResult || netResult)) return 0
-    // return result
-  }
+
   return (
 
     <>
@@ -260,7 +315,7 @@ export default function VolumeMeasurementTable() {
                   return (
                     <TableBody>
                       <TableRow key={name}>
-                        <TableCell align="left" rowSpan={parseFloat(numberOfUnits) + ((!measurementType || measurementType === "Metering" )? 1 : 2)} colSpan={3}>
+                        <TableCell align="left" rowSpan={parseFloat(numberOfUnits) + ((!measurementType || measurementType === "Metering") ? 2 : 3)} colSpan={3}>
                           {name} ({measurementType || "Metering"}) {measurementType}
                         </TableCell>
                       </TableRow>
