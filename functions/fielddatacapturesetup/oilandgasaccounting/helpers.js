@@ -5,15 +5,15 @@ const computeProdDeduction = (potentialData, flowstationData) => {
   let totalUptimeGas = 0;
 
   let uptimeProduction = [];
-
+  console.log(flowstationData)
   // Estimate Uptime Production
   potentialData.forEach((prodString) => {
     // Estimate uptime gross
-    const fractionalUptime = prodString.uptimeProduction / 24;
-    const gross = fractionalUptime * prodString.gross;
-    const oilRate = fractionalUptime * prodString.oilRate;
+    const fractionalUptime = parseInt(prodString.uptimeProduction) / 24;
+    const gross = fractionalUptime * parseFloat(prodString.gross);
+    const oilRate = fractionalUptime * parseFloat(prodString.oilRate);
     const waterRate = gross - oilRate;
-    const gasRate = fractionalUptime * prodString.gasRate;
+    const gasRate = fractionalUptime * parseFloat(prodString.gasRate);
 
     // Get the running subtotal
     totalUptimeGross += gross;

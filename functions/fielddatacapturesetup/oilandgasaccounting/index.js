@@ -8,9 +8,9 @@ const processIPSC = onCall(async (request) => {
   try {
     const { data } = request;
     logger.log("Data ----", { data });
-    const { flowStation, date, potentialTestData } = data;
+    const { flowStation, date, potentialTestData, asset } = data;
     if (!flowStation || !date || !potentialTestData) {
-      throw new Error({
+      throw ({
         code: "cancelled",
         message: "Missing required fields",
       });
@@ -18,37 +18,47 @@ const processIPSC = onCall(async (request) => {
 
     // Fetch flowstation volumes for the target date
     const db = admin.firestore();
+    // console.log('-----')
+    // const liquidVolume_ = (
+    //   await db.collection("liquidVolumes").where("date", "==", date).where("asset", "==", asset).get()
+    // )
+    // console.log(liquidVolume_, '000000-----')
+    const liquidVolume = (
+      await db.collection("liquidVolumes").where("date", "==", date).where("asset", "==", asset).get()
+    ).docs.map(doc => doc.data());
 
-    const flowstationsData = (
-      await db.collections("liquidVolumes").where("date", "==", date).get()
-    ).data();
+    // console.log(liquidVolume)
+    // console.log('--------', liquidVolume.length)
+    const flowstationsData = liquidVolume[liquidVolume.length - 1]
+    // console.log({ flowstationsData })
     if (!flowstationsData || flowstationsData === null) {
-      throw new Error({
+      throw ({
         code: "cancelled",
         message: "Missing flowstations data for current date",
       });
     }
 
-    const flowstationData = flowstationsData.find(
+    const flowstationData = flowstationsData.data.find(
       (flowstation) => flowstation.name === flowStation
     );
 
     if (!flowstationData) {
-      throw new Error({
+      throw ({
         code: "cancelled",
         message: "Missing flowstation data for current date",
       });
     }
-
-    const { actualProduction, deferment } = computeProdDeduction(
+    // console.log({ flowstationData })
+    const result = computeProdDeduction(
       potentialTestData,
       flowstationData.subtotal
     );
+    console.log(result)
 
-    return { status: "success", data: { actualProduction, deferment } };
+    return {status:'success', data :JSON.stringify(result)};
   } catch (error) {
-    logger.log("error ===> ", { error });
-    throw new HttpsError(error?.code, error?.message);
+    if (error.message) throw new HttpsError(error?.code, error?.message);
+    throw error
   }
 });
 

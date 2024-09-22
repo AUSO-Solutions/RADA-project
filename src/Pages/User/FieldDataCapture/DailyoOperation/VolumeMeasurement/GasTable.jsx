@@ -8,11 +8,9 @@ import TableRow from '@mui/material/TableRow';
 import tableStyles from '../table.module.scss'
 import { sum } from 'utils';
 import { Button } from 'Components';
-// import { updateFlowstationReading } from './helper';
 import { toast } from 'react-toastify';
 import { camelize } from './helper';
-
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import RadioSelect from '../RadioSelect';
 import RadaDatePicker from 'Components/Input/RadaDatePicker';
 import { MdOutlineSettings } from 'react-icons/md';
@@ -26,11 +24,10 @@ import { useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
 import { firebaseFunctions } from 'Services';
 import { store } from 'Store';
+import AttachSetup from './AttachSetup';
 
 
 const TableInput = ({ type = '', ...props }) => {
-  // if(type == =)
-
   return <input className='p-1 text-center w-[70px] border outline-none' step="any" type={type} {...props} />
 }
 
@@ -39,9 +36,11 @@ export default function GasTable() {
   const dispatch = useDispatch()
   const [setup, setSetup] = React.useState({})
   const [showSettings, setShowSettings] = React.useState(false)
-  const [date, setDate] = React.useState()
+  const [date, setDate] = React.useState(dayjs().format("DD/MM/YYYY"))
   const id = React.useMemo(() => new URLSearchParams(search).get('id'), [search])
   const { data: res } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'volumeMeasurement', id } })
+  const { data: attacmentSetup } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'volumeMeasurement', id: res?.attachmentId }, dontFetch: !res?.attachmentId/* */ })
+
   React.useEffect(() => { setSetup(res) }, [res])
   React.useEffect(() => {
     dispatch(setWholeSetup(setup))
@@ -51,7 +50,6 @@ export default function GasTable() {
     return Math.round(num * 10000) / 10000
   }
 
-  // const setup = useSelector(state => state.setup)
 
   const [tableValues, setTableValues] = React.useState({})
   const [totals, setTotals] = React.useState({
@@ -60,16 +58,10 @@ export default function GasTable() {
     bswTotal: 0,
     grossTotal: 0,
   })
-  // const gasTypes = ["Gas Flared USM", "Fuel Gas", "Export Gas"]
   const gasTypes = ["Gas Flared USM", "Fuel Gas", "Export Gas"].map(type => ({ label: type, value: camelize(type) }))
-  // const gasTypesColors = {
-  //   "Gas Flared USM": "white",
-  //   "Fuel Gas": "white",
-  //   "Export Gas": "white"
-  // }
 
   const handleChange = ({ flowStation, field, value, readingIndex, flowStationField, gasType }) => {
-    // console.log({ flowStation, field, value, readingIndex, flowStationField, gasType })
+
     //careful, to also have the value updated before calculated
     const flowStationSetup = setup?.flowStations?.find(({ name }) => name === flowStation)
     const meterFactor = parseFloat(flowStationSetup?.readings?.[readingIndex]?.meterFactor || 1).toFixed(5)
@@ -81,11 +73,8 @@ export default function GasTable() {
       const finalBbls = field === "finalBbls" ? value : (prevFlowStationListIndexValues?.finalBbls || 0)
       const initialBbls = field === "initialBbls" ? value : (prevFlowStationListIndexValues?.initialBbls || 0)
       const difference = roundUp(Math.abs(parseFloat(finalBbls) - parseFloat(initialBbls)))
-      // console.log({ difference, meterFactor })
       let meterTotal = prevFlowStationListIndexValues?.meterTotal
-      // meterTotal = (field === "meterTotal" ? value : (|| 0))
       if (field === "meterTotal") { meterTotal = parseFloat(value) } else { meterTotal = (difference * parseFloat(meterFactor || 0).toFixed(5)) }
-      // console.log({ finalBbls, initialBbls, meterTotal })
 
       const isNum = typeof readingIndex === 'number'
       let updatedMeters = prevFlowStationList
@@ -102,8 +91,6 @@ export default function GasTable() {
           }
         } : prevFlowStationList
       }
-
-      // console.log(updatedMeters)
       let updatedFlowStation = {
         ...prevFlowStation,
         meters: updatedMeters,
@@ -113,11 +100,8 @@ export default function GasTable() {
         updatedFlowStation = {
           ...updatedFlowStation,
           [flowStationField]: parseFloat(value),
-          // [`${gasType}-meterTotal`]:parseFloat(value)
         }
       }
-
-      // console.log(({ updatedFlowStation }))
       return {
         ...prev,
         [flowStation]: updatedFlowStation,
@@ -127,26 +111,20 @@ export default function GasTable() {
   }
   React.useEffect(() => {
     const values = (Object.values(tableValues))
-    // console.log(values)
     const calcs = {
-      netProductionTotal: sum(Object.values(values || {}).map(item => item?.subTotal || 0)).toFixed(5),
+      netProductionTotal: sum(Object.values(values || {}).map(item => item?.subTotal || 0))?.toFixed(5),
     }
     setTotals(calcs)
   }, [tableValues])
 
   React.useEffect(() => {
-    console.log('----')
     setup?.flowStations?.forEach((flowStation, flowStationIndex) => {
       const readings = flowStation?.readings || []
       readings.forEach((reading, readingIndex) => {
         const finalReading = parseFloat(tableValues?.[flowStation?.name]?.meters[readingIndex]?.finalReading) || 0
         const initialReading = parseFloat(tableValues?.[flowStation?.name]?.meters[readingIndex]?.initialReading) || 0
-        // const deductionInitialReading = parseFloat(tableValues?.[flowStation?.name]?.meters[readingIndex]?.deductionInitialReading) || 0
-        // const deductionFinalReading = parseFloat(tableValues?.[flowStation?.name]?.meters[readingIndex]?.deductionFinalReading) || 0
         const isNum = (num) => !isNaN(num)
         if (isNum(initialReading) || isNum(finalReading)) handleChange({ flowStation: flowStation?.name, field: 'finalReading', value: finalReading, readingIndex })
-        // if (isNum(deductionInitialReading) || isNum(deductionFinalReading)) handleChange({ flowStation: flowStation?.name, field: 'deductionFinalReading', value: deductionFinalReading, readingIndex })
-
       });
 
     });
@@ -181,15 +159,20 @@ export default function GasTable() {
     }
 
   }
+  const navigate = useNavigate()
+  const onSelectReportType = (e) => {
+    if (e !== 'Gas') navigate(`/users/fdc/daily/volume-measurement-table?id=${attacmentSetup?.id}&reportType=${e}`)
+  }
   return (
 
     <> <div className='flex justify-between my-2 px-2 items-center'>
       <div className='flex gap-4 items-center'>
-        <RadioSelect defaultValue={setup?.reportTypes?.[0]} list={setup?.reportTypes} /> <RadaSwitch label="Edit Table" labelPlacement="left" />
+        <RadioSelect defaultValue={setup?.reportTypes?.[0]} list={(attacmentSetup?.reportTypes || [])?.concat(setup?.reportTypes)} onChange={onSelectReportType} /> <RadaSwitch label="Edit Table" labelPlacement="left" />
       </div>
       <div className='flex items-center gap-2 '>
-        <Text className={'cursor-pointer'} color={colors.rada_blue}>View setups</Text>
-        <RadaDatePicker onChange={setDate} />
+        <AttachSetup setup={setup} />
+        <Link to={'/users/fdc/daily?tab=volume-measurement'}>   <Text className={'cursor-pointer'} color={colors.rada_blue}>View setups</Text></Link>
+        <RadaDatePicker onChange={setDate} disabled />
         <div onClick={() => setShowSettings(true)} style={{ borderColor: 'rgba(0, 163, 255, 1)' }} className='border cursor-pointer px-3 py-1 rounded-[8px]'>
           <MdOutlineSettings color='rgba(0, 163, 255, 1)' />
         </div>

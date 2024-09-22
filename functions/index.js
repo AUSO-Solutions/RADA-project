@@ -11,6 +11,7 @@ const { createRole, updateRole, deleteRole, getRoles, getRole, assignPermissionT
 const { createSetup, deleteSetup, getSetups, updateSetup, getSetup } = require("./fielddatacapturesetup/volumemeasurementsetup");
 const { captureOilOrCondensate, captureGas, updateOilOrCondensate, getOilOrCondensateVolumeByID, deleteOilOrCondensateVolumeByID, getOilOrCondensateVolumesByAsset } = require("./fielddatacapturesetup/volume.measurement");
 const { validateProductionStringsChokeSizesFile } = require("./fielddatacapturesetup/merdataSetup");
+const {processIPSC} = require('./fielddatacapturesetup/oilandgasaccounting/')
 // const { setupWellTestData, getSetups, updateWellTestData, deleteWellTestDataSetup } = require('./fielddatacapturesetup/welltestsetup')
 
 admin.initializeApp()
@@ -39,5 +40,6 @@ module.exports = {
   getOilOrCondensateVolumesByAsset,
   deleteOilOrCondensateVolumeByID,
 
-  validateProductionStringsChokeSizesFile
+  validateProductionStringsChokeSizesFile, 
+  processIPSC
 }
