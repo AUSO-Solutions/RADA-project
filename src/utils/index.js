@@ -46,7 +46,7 @@ export const firebaseFileUpload = async (file, name = Date.now() + Math.random()
     try {
         const storageRef = ref(project_storage, name);
         const snapshot = await uploadBytes(storageRef, file)
-        console.log('Uploaded a blob or file!', snapshot);
+        // console.log('Uploaded a blob or file!', snapshot);
         return snapshot.ref.fullPath
     } catch (error) {
         console.log(error)
@@ -63,4 +63,7 @@ export const firebaseGetUploadedFile = async (path) => {
         console.log(error)
         throw error
     }
+}
+export const genRandomNumber=()=>{
+   return Math.floor(Math.random()*100) + 1 
 }

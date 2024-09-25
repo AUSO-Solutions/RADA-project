@@ -18,7 +18,7 @@ import { closeModal, openModal } from 'Store/slices/modalSlice';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { BsThreeDots } from 'react-icons/bs';
-import { createWellTitle, getWellLastTestResult } from 'utils';
+import { createWellTitle, getWellLastTestResult, sum } from 'utils';
 import IPSCAnalytics from './IPSCAnalytics';
 import ToleranceSettiings from './ToleranceSettiings';
 import { firebaseFunctions } from 'Services';
@@ -114,6 +114,11 @@ export default function IPSCTable() {
         { name: 'orificePlateSize', type: "number" },
         { name: 'sand', type: "number" },
     ]
+    const getTotalOf = (key) => {
+        const res = Object.values(ipscData?.wellTestResultData || {})
+        const total = sum(res?.map(item => parseFloat(item?.[key] || 0)))
+        return total
+    }
 
     return (
         < div className=' w-[80vw] px-3'>
@@ -250,6 +255,17 @@ export default function IPSCTable() {
                                 })
                             }
 
+                            <TableRow sx={{ backgroundColor: '#00A3FF4D' }}>
+                                <TableCell style={{ fontWeight: '600' }} align="center" colSpan={6} >Spring Totals </TableCell>
+                                <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('gross')}</TableCell>
+                                <TableCell style={{ fontWeight: '600' }} align="center">{getTotalOf('oilRate')}</TableCell>
+                                <TableCell style={{ fontWeight: '600' }} align="center">{getTotalOf('waterRate')}</TableCell>
+                                <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('gasRate')}</TableCell>
+                                <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('bsw')}</TableCell>
+
+                                <TableCell align="center" colSpan={10}></TableCell>
+                                <TableCell style={{ fontWeight: '600', minWidth: '200px' }} colSpan={3} align="center"></TableCell>
+                            </TableRow>
                         </TableBody>
 
                     </Table>

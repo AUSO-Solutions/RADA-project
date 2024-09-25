@@ -217,15 +217,10 @@ export default function GasTable() {
                       </TableRow>
                       <>
                         {gasTypes.map((gasType, i) => {
-                          // let usedIndexs = []
                           const readingAtIndex = readings?.find(reading => reading?.gasType === gasType.value)
                           let readingIndex = readings?.findIndex(reading => reading?.gasType === gasType.value)
                           if (readingIndex === -1) readingIndex = i + readings?.length
                           if (!readings) readingIndex = i
-                          // usedIndexs.push(readingIndex)
-                          // console.log({usedIndexs})
-                          // usedIndexs.push(readingIndex)
-                          // console.log(readings,readingIndex,i)
 
                           const initialBbls = tableValues?.[name]?.meters?.[readingIndex]?.initialBbls
                           const finalBbls = tableValues?.[name]?.meters?.[readingIndex]?.finalBbls

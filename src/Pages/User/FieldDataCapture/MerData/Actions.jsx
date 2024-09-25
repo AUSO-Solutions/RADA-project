@@ -175,8 +175,8 @@ const Approve = () => {
     </div>
 }
 
-export default function Actions({ wellTestResult, title }) {
-    console.log({ title })
+export default function Actions({ wellTestResult, title , actions}) {
+    // console.log({ title })
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
@@ -203,7 +203,6 @@ export default function Actions({ wellTestResult, title }) {
                     'aria-labelledby': 'basic-button',
                 }}
             >
-                {/* <MenuItem onClick={() => { handleClose(); dispatch(openModal({ component: <Query /> })) }}>Query Result</MenuItem> */}
                 <MenuItem onClick={() => { handleClose(); dispatch(openModal({ component: <Approve /> })) }}>Approve Result</MenuItem>
                 <MenuItem onClick={() => { handleClose(); dispatch(openModal({ component: <Query wellTestResult={wellTestResult} title={title} /> })) }}>Query Result</MenuItem>
             </Menu>

@@ -26,7 +26,7 @@ export default function IPSCAnalytics() {
 
 
     const diff = (newValue = 0, oldValue = 0) => {
-        return (Math.abs(parseFloat(newValue) - parseFloat(oldValue)) / oldValue) * 100
+        return (Math.abs(parseFloat(newValue) - parseFloat(oldValue)) / (oldValue || 1)) * 100
     }
 
 
