@@ -3,35 +3,37 @@ const validateLiquidFlowstationData = (flowstationsData) => {
     if (
       ["metering", "tankDipping"].indexOf(flowstation.measurementType) === -1
     ) {
-      throw ({
+      throw {
         code: "cancelled",
         message: `Invalid metering type for Flowstation: ${flowstation.name}`,
-      });
+      };
     }
 
     if (["gross", "netProduction"].indexOf(flowstation.reportType) === -1) {
-      throw ({
+      throw {
         code: "cancelled",
         message: `Invalid report type for Flowstation: ${flowstation.name}`,
-      });
+      };
     }
 
     if (flowstation.reportType === "gross") {
       let computedGross = 0;
       for (let meter of flowstation.meters) {
-        const meterGross = Math.abs((meter.finalReading - meter.initialReading)) * meter.meterFactor;
+        const meterGross =
+          Math.abs(meter.finalReading - meter.initialReading) *
+          meter.meterFactor;
         if (meterGross !== meter.gross) {
-          throw ({
+          throw {
             code: "cancelled",
             message: `Gross might have been wrongly computed for meter: ${meter.serialNumber} in flowstation: ${flowstation.name}`,
-          });
+          };
         }
 
         // For metering, multiply gross by meterFactor. For Tank dipping, gross stays same
-        computedGross += meterGross
-          // flowstation.measurementType === "metering"
-          //   ? meterGross * meter.meterFactor
-          //   : meterGross
+        computedGross += meterGross;
+        // flowstation.measurementType === "metering"
+        //   ? meterGross * meter.meterFactor
+        //   : meterGross
       }
 
       // For tank dipping, account for export line or deduction
@@ -43,10 +45,10 @@ const validateLiquidFlowstationData = (flowstationsData) => {
       }
 
       if (computedGross !== flowstation.subtotal.gross) {
-        throw ({
+        throw {
           code: "cancelled",
           message: `Error computing gross for flowstation: ${flowstation.name}`,
-        });
+        };
       }
 
       // if (computedGross * (1 - (flowstation.subtotal.bsw * 0.01))) {
@@ -58,19 +60,21 @@ const validateLiquidFlowstationData = (flowstationsData) => {
     } else {
       let computedNetProduction = 0;
       for (let meter of flowstation.meters) {
-        const meterNetProduction = Math.abs((meter.finalReading - meter.initialReading)) * meter.meterFactor;
+        const meterNetProduction =
+          Math.abs(meter.finalReading - meter.initialReading) *
+          meter.meterFactor;
         if (meterNetProduction !== meter.netProduction) {
-          throw ({
+          throw {
             code: "cancelled",
             message: `Gross might have been wrongly computed for meter: ${meter.serialNumber} in flowstation: ${flowstation.name}`,
-          });
+          };
         }
 
         // For metering, multiply gross by meterFactor. For Tank dipping, gross stays same
-        computedNetProduction +=meterNetProduction
-          // flowstation.measurementType === "metering"
-          //   ? meterNetProduction * meter.meterFactor
-          //   : meterNetProduction;
+        computedNetProduction += meterNetProduction;
+        // flowstation.measurementType === "metering"
+        //   ? meterNetProduction * meter.meterFactor
+        //   : meterNetProduction;
       }
 
       // For tank dipping, account for export line or deduction
@@ -82,10 +86,10 @@ const validateLiquidFlowstationData = (flowstationsData) => {
       }
 
       if (computedNetProduction !== flowstation.subtotal.netProduction) {
-        throw ({
+        throw {
           code: "cancelled",
           message: `Error computing net production for flowstation: ${flowstation.name}`,
-        });
+        };
       }
 
       // if (computedNetProduction / (1 - (flowstation.subtotal.bsw * 0.01))) {
@@ -101,10 +105,10 @@ const validateLiquidFlowstationData = (flowstationsData) => {
 const validateGasFlowstationData = (flowstationsData) => {
   for (let flowstation of flowstationsData) {
     if (["gross", "netProduction"].indexOf(flowstation.reportType) === -1) {
-      throw ({
+      throw {
         code: "cancelled",
         message: `Invalid report type for Flowstation: ${flowstation.name}`,
-      });
+      };
     }
 
     if (flowstation.reportType === "gross") {
@@ -112,10 +116,10 @@ const validateGasFlowstationData = (flowstationsData) => {
       for (let meter of flowstation.meters) {
         const meterGross = meter.finalReading - meter.initialReading;
         if (meterGross !== meter.gross) {
-          throw ({
+          throw {
             code: "cancelled",
             message: `Gross might have been wrongly computed for meter: ${meter.serialNumber} in flowstation: ${flowstation.name}`,
-          });
+          };
         }
 
         // For metering, multiply gross by meterFactor. For Tank dipping, gross stays same
@@ -134,10 +138,10 @@ const validateGasFlowstationData = (flowstationsData) => {
       }
 
       if (computedGross !== flowstation.subtotal.gross) {
-        throw ({
+        throw {
           code: "cancelled",
           message: `Error computing gross for flowstation: ${flowstation.name}`,
-        });
+        };
       }
 
       // if (computedGross * (1 - (flowstation.subtotal.bsw * 0.01))) {
@@ -151,10 +155,10 @@ const validateGasFlowstationData = (flowstationsData) => {
       for (let meter of flowstation.meters) {
         const meterNetProduction = meter.finalReading - meter.initialReading;
         if (meterNetProduction !== meter.netProduction) {
-          throw ({
+          throw {
             code: "cancelled",
             message: `Gross might have been wrongly computed for meter: ${meter.serialNumber} in flowstation: ${flowstation.name}`,
-          });
+          };
         }
 
         // For metering, multiply gross by meterFactor. For Tank dipping, gross stays same
@@ -173,10 +177,10 @@ const validateGasFlowstationData = (flowstationsData) => {
       }
 
       if (computedNetProduction !== flowstation.subtotal.netProduction) {
-        throw ({
+        throw {
           code: "cancelled",
           message: `Error computing net production for flowstation: ${flowstation.name}`,
-        });
+        };
       }
 
       // if (computedNetProduction / (1 - (flowstation.subtotal.bsw * 0.01))) {
