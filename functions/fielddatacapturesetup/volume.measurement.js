@@ -1,3 +1,4 @@
+/* eslint-disable no-throw-literal */
 const admin = require("firebase-admin");
 const logger = require("firebase-functions/logger");
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
@@ -6,10 +7,8 @@ const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const {
   validateGasFlowstationData,
   validateLiquidFlowstationData,
-} = require("./helpers"); 
+} = require("./helpers");
 const { generateRandomID } = require("../helpers");
-
-
 
 const captureOilOrCondensate = onCall(async (request) => {
   try {
@@ -17,10 +16,10 @@ const captureOilOrCondensate = onCall(async (request) => {
     logger.log("data ----", { data });
     const { date, asset, flowstations, fluidType } = data;
     if (!date || !asset || !flowstations) {
-      throw ({
+      throw {
         code: "cancelled",
         message: "Missing required fields",
-      });
+      };
     }
 
     validateLiquidFlowstationData(flowstations);
