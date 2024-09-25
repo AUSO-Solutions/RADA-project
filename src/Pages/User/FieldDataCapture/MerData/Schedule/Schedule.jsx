@@ -357,12 +357,7 @@ const ImporFiles = () => {
 
 const SaveAs = () => {
     const setupData = useSelector(state => state.setup)
-    // console.log({ setupData })
     const dispatch = useDispatch()
-    // console.log('chokeSizesFileName', setupData?.)
-    // if (name === 'chokeSizes') {
-    // formData.append(name, file)
-    // const res = await firebaseFileUpload(file, Math.random()+file?.name)
     return (
         <div className="h-[300px] flex flex-col  w-[400px] mx-auto gap-1 justify-center">
             <Text weight={600} size={24}>Save Schedule as</Text>

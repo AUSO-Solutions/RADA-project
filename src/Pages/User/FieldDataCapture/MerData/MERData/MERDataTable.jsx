@@ -18,12 +18,12 @@ import { firebaseFunctions } from 'Services';
 import { closeModal, openModal } from 'Store/slices/modalSlice';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import Actions from '../Actions';
+import Actions from 'Partials/Actions';
 import { genRandomNumber } from 'utils';
+import { Approve } from 'Partials/Actions/Approve';
+import { Query } from 'Partials/Actions/Query';
+import ExtractWellTest from './ExtractWellTest';
 
-// const TableInput = (props) => {
-//     return <input className='p-1 text-center w-[80px] h-[100%] border outline-none ' required {...props} />
-// }
 
 const SaveAs = ({ defaultValue, onSave = () => null, loading }) => {
     const [title, setTitle] = useState(defaultValue)
@@ -122,6 +122,7 @@ export default function MERDataTable() {
         }
     }
 
+
     return (
         < form className='w-[80vw] px-3' onSubmit={(e) => {
             e.preventDefault()
@@ -138,7 +139,19 @@ export default function MERDataTable() {
                 </div>
                 <div className='flex justify-end py-2 items-center gap-3'>
                     <div className='flex gap-2' >
-                        {<Actions merResult={merResult} title={title} />}
+                        {<Actions merResult={merResult} title={title} actions={[
+                            { name: 'Query Result', onClick: () => dispatch(openModal({ component: <Query /> })) },
+                            { name: 'Approve', onClick: () => dispatch(openModal({ component: <Approve /> })) },
+                            {
+                                name: 'Extract Well Test', onClick: () => {
+                                    dispatch(openModal({
+                                        component: <ExtractWellTest merResult={merResult}
+
+                                        />
+                                    }))
+                                }
+                            }
+                        ]} />}
                     </div>
                     <div className='border border-[#00A3FF] px-3 py-1 rounded-md' >
                         <Setting2 color='#00A3FF' />
@@ -217,7 +230,7 @@ export default function MERDataTable() {
                                 newChokeValues[i][name] = value
                                 handleChange('chokes', newChokeValues)
                             }
-                           
+
 
                             return <TableBody className={tableStyles.tableBody}>
                                 <TableRow key={mer?.productionString}>

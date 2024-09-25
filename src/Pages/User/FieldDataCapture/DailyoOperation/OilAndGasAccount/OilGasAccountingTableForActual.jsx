@@ -15,8 +15,29 @@ import { Button } from 'Components';
 export default function OilGasAccountingTableForActual({ IPSC, flowStation, date = '' }) {
     const [searchParams] = useSearchParams()
     // const statusArray = ['Producing', 'Closed In']
-    // const defermentCategoryArray = ['Scheduled Deferment', 'Unscheduled Deferment', 'Third-Party Deferment', 'N/A']
+    const defermentCategoryArray = ['Scheduled Deferment', 'Unscheduled Deferment', 'Third-Party Deferment', 'N/A']
     // const defermentDescriptionArray = ['Export Line Sabotage/ Leak', 'Flow station Engine Failure', 'Flowline Leak', 'Flow Station Trip', 'Logistic Problem']
+    const Description = {
+        'Scheduled Deferment': [
+            'Well Test', 'Wellhead Maintenance', 'Flowline Maintenance', 'Bean Change / Check', 'Well Services', 'Data Acquisition', 'Facility Shutdown'
+        ],
+        'Unscheduled Deferment': [
+            'Engine Failure', 'Pump Failure', 'Well No - Flow', 'Mismatch'
+        ],
+        'Third-Party Deferment':[
+            'TFP Outage','Export Line Issues','Flowline Issue','Ovade GP','Community Interruption'
+        ],
+        'N/A':[
+
+        ]
+    }
+    
+
+		
+		
+		
+	
+
     const [wellTestResultData, setWellTestResultData] = useState({})
     // const []
     // const [calculated, setCalculated] = useState(false)
@@ -78,7 +99,7 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
                 setWellTestResultData(res)
             }
         }
-// eslint-disable-next-line
+        // eslint-disable-next-line
     }, [results, searchParams])
 
     return (
@@ -152,8 +173,16 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
                             </TableCell>}
                             {searchParams.get('table') === 'actual-production' && <TableCell rowSpan={1} align="center">{'No Remark'}</TableCell>}
                             {
-                                searchParams.get('table') === 'deferred-production' && <> <TableCell style={{ background: '#D9E3F9' }} align="center">{'Scheduled Deferment'}</TableCell>
-                                    <TableCell style={{ background: '#E6E4F9' }} align="center">{'N/A'}</TableCell></>
+                                searchParams.get('table') === 'deferred-production' && <> <TableCell style={{ background: '#D9E3F9' }} align="center">
+                                    <select className='bg-[inherit] outline-none' onChange={handleChange} name='defermentCategory'>
+                                        {defermentCategoryArray?.map(category => <option value={category}>{category}</option>)}
+                                    </select>
+                                </TableCell>
+                                    <TableCell style={{ background: '#E6E4F9' }} align="center">
+                                    <select className='bg-[inherit] outline-none'>
+                                        {Description[well?.defermentCategory]?.map(desc => <option value={desc}>{desc}</option>)}
+                                    </select>
+                                    </TableCell></>
                             }
                         </TableRow>
                     })}
