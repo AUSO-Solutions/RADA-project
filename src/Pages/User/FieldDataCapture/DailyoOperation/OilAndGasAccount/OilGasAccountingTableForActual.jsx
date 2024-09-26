@@ -78,6 +78,7 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
             console.log(JSON.parse(data))
         } catch (error) {
             console.log(error)
+            toast.error(error)
         }
     }
 

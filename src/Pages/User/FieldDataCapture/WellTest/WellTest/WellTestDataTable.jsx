@@ -95,7 +95,6 @@ export default function WellTestDataTable() {
         { name: 'waterRate', type: "number" },
         { name: 'gasRate', type: "number" },
         { name: 'bsw', type: "number" },
-        // { name: 'wgr', type: "number" },
         { name: 'gor', type: "number" },
         { name: 'fthp', type: "number" },
         { name: 'flp', type: "number" },
@@ -144,7 +143,7 @@ export default function WellTestDataTable() {
                             <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Water Rate</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Gas Rate</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >BS&W</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >WGR</TableCell>
+                            {/* <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >WGR</TableCell> */}
                             <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >GOR</TableCell>
                             {/* <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Total Gas</TableCell> */}
                             <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >FTHP</TableCell>
@@ -167,7 +166,7 @@ export default function WellTestDataTable() {
                             <TableCell style={{ fontWeight: '600' }} align="center">(bwpd)</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center">(MMscf/day)</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center">(%)</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center">(Stb/MMscf)</TableCell>
+                            {/* <TableCell style={{ fontWeight: '600' }} align="center">(Stb/MMscf)</TableCell> */}
                             <TableCell style={{ fontWeight: '600' }} align="center">(Scf/Stb)</TableCell>
                             {/* <TableCell style={{ fontWeight: '600' }} align="center">(MMscf/day)</TableCell> */}
                             <TableCell style={{ fontWeight: '600' }} align="center">(Psia)</TableCell>

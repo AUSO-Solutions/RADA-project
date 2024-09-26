@@ -19,16 +19,22 @@ const SelectChokes = ({ merResult }) => {
         let data = {
             ...toBeSaved,
             ...selectedChokeData,
-            noOfChokes: chokes?.length
+            noOfChokes: chokes?.length,
+            isSelected: true
         }
         console.log(data)
         const prevWellTestResultData = setup?.wellTestResultData
         dispatch(setSetupData({ name: 'wellTestResultData', value: { ...prevWellTestResultData, [resultData?.productionString]: data } }))
         console.log({ ...prevWellTestResultData, [resultData?.productionString]: data })
     }
-    return (
+
+    useEffect(() => {
+        dispatch(setSetupData({ name: 'merResultId', value: merResult?.id }))
+        dispatch(setSetupData({ name: 'asset', value: merResult?.asset }))
+    }, [dispatch,merResult?.id ,merResult?.asset])
+    return (<>
+        <Input type='month' onChange={e => dispatch(setSetupData({ name: 'month', value: e.target.value }))} containerClass={'!w-fit self-right  p-2'} />
         <div className='border rounded-[20px] w-full py-3'>
-            <Input type='month' onChange={e => dispatch(setSetupData({ name: 'month', value: e.target.value }))} />
             <div className='flex justify-between items-center py-3 border-b px-2'>
                 <Text>
                     Well
@@ -57,7 +63,7 @@ const SelectChokes = ({ merResult }) => {
                     )
                 }
             </div>
-        </div>
+        </div></>
     )
 }
 
@@ -93,16 +99,7 @@ const Preview = ({ merResult }) => {
         </div>
     )
 }
-const SaveAs = () => {
-    const setupData = useSelector(state => state.setup)
-    const dispatch = useDispatch()
-    return (
-        <div className="h-[300px] flex flex-col  w-[400px] mx-auto gap-1 justify-center">
-            <Text weight={600} size={24}>Save Well Test Result as</Text>
-            <Input label={''} required defaultValue={setupData?.title} onChange={(e) => dispatch(setSetupData({ name: 'title', value: e.target.value }))} />
-        </div>
-    )
-}
+
 const ExtractWellTest = ({ merResult }) => {
     const [, setSearchParaams] = useSearchParams()
     useEffect(() => {
@@ -110,28 +107,28 @@ const ExtractWellTest = ({ merResult }) => {
             prev.set('autoOpenSetupModal', '1')
             return prev
         })
-    }, [])
+    }, [setSearchParaams])
     const dispatch = useDispatch()
     const save = async () => {
         const setup = store.getState().setup
         console.log(setup)
-        const payload = {
-            ...setup,
-            asset: merResult?.asset,
-            merResultId: merResult?.id
-        }
-        dispatch(openModal({ component: <WellTestCommitTable wellTestResult={setup?.wellTestResultData} /> }))
+        // const payload = {
+        //     ...setup,
+        //     asset: merResult?.asset,
+        //     merResultId: merResult?.id
+        // }
+        dispatch(openModal({ component: <WellTestCommitTable wellTestResult={setup?.wellTestResultData} merResult={merResult} /> }))
 
     }
     const [loading,] = useState(false)
     return (
         <Setup
             title={'Extract Well Test'}
-            steps={["Select Choke Size", "Preview", "Generate "]}
+            steps={["Select Choke Size", "Preview"]}
             rightBtnLoading={loading}
             stepComponents={
                 [
-                    <SelectChokes merResult={merResult} />, <Preview />, <SaveAs />
+                    <SelectChokes merResult={merResult} />, <Preview />
                 ]
             }
             onSave={save}

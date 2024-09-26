@@ -19,7 +19,7 @@ import { closeModal, openModal } from 'Store/slices/modalSlice';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import Actions from 'Partials/Actions';
-import { genRandomNumber } from 'utils';
+import { createWellTitle, genRandomNumber } from 'utils';
 import { Approve } from 'Partials/Actions/Approve';
 import { Query } from 'Partials/Actions/Query';
 import ExtractWellTest from './ExtractWellTest';
@@ -28,7 +28,7 @@ import ExtractWellTest from './ExtractWellTest';
 const SaveAs = ({ defaultValue, onSave = () => null, loading }) => {
     const [title, setTitle] = useState(defaultValue)
     return <div className='bg-[white] w-[400px]'>
-        <Text size={24}>Save Well Test Result as</Text>
+        <Text size={24}>Save MER Result as</Text>
 
         <Input defaultValue={defaultValue} className='w-full' onChange={(e) => setTitle(e.target.value)} />
         <Button loading={loading} className='float-right mt-4' onClick={() => {
@@ -70,30 +70,30 @@ export default function MERDataTable() {
     }, [res])
 
     useEffect(() => { if (isEdit) setMerResult(res2); setTitle(res2?.title) }, [res2, isEdit])
-    // useEffect(() => {
-    //     const chokeFields = ['liquidRate', 'oilRate', 'bsw', 'currentGor', 'gasRate', 'sandCut', 'fthp']
-    //     const extraFields = ['drawdown', 'api', 'mer']
-    //     setMerResult(prev => {
-    //         let updates = {}
-    //         const productionStrings = Object.values(prev.merResultData || {})
-    //         productionStrings.forEach(productionString => {
-    //             const randomExtraValues = Object.fromEntries(extraFields.map(extraField => ([extraField, genRandomNumber()])))
-    //             updates[productionString?.productionString] = {
-    //                 ...productionString,
-    //                 ...randomExtraValues,
-    //                 chokes: productionString.chokes.map(choke => {
-    //                     const randomChokeValues = Object.fromEntries(chokeFields.map(chokeField => ([chokeField, genRandomNumber()])))
-    //                     return { ...choke, ...randomChokeValues }
-    //                 })
-    //             }
-    //         })
-    //         return {
-    //             ...prev,
-    //             merResultData: updates
-    //         }
-    //     })
+    useEffect(() => {
+        const chokeFields = ['gross', 'oilRate', 'bsw', 'gor', 'gasRate', 'sand', 'fthp']
+        const extraFields = ['drawdown', 'api', 'mer']
+        setMerResult(prev => {
+            let updates = {}
+            const productionStrings = Object.values(prev.merResultData || {})
+            productionStrings.forEach(productionString => {
+                const randomExtraValues = Object.fromEntries(extraFields.map(extraField => ([extraField, genRandomNumber()])))
+                updates[productionString?.productionString] = {
+                    ...productionString,
+                    ...randomExtraValues,
+                    chokes: productionString.chokes.map(choke => {
+                        const randomChokeValues = Object.fromEntries(chokeFields.map(chokeField => ([chokeField, genRandomNumber()])))
+                        return { ...choke, ...randomChokeValues }
+                    })
+                }
+            })
+            return {
+                ...prev,
+                merResultData: updates
+            }
+        })
 
-    // }, [res,res2])
+    }, [res,res2])
 
     const save = async (title) => {
         if (!title) {
@@ -131,7 +131,7 @@ export default function MERDataTable() {
         }}>
             <div className='flex justify-between items-center'>
                 <div className='flex gap-4 items-center'>
-                    <Link to='/users/fdc/well-test-data/' className='flex flex-row gap-2 bg-[#EFEFEF] px-4 py-1 rounded-md' >
+                    <Link to='/users/fdc/mer-data' className='flex flex-row gap-2 bg-[#EFEFEF] px-4 py-1 rounded-md' >
                         <ArrowBack />
                         <Text>Files</Text>
                     </Link>
@@ -159,9 +159,10 @@ export default function MERDataTable() {
                 </div>
             </div>
             <div className='border rounded flex gap-3 p-2 my-2'>
-                <Text>Well test schedule: {merResult?.title}</Text>
-                <Text>Asset: {merResult?.asset}</Text>
-                <Text>Field: {merResult?.field}</Text>
+                {/* <Text>  MER schedule: {merResult?.title}</Text>
+                <Text>Asset: {merResult?.asset}</Text> */}
+                {createWellTitle(merResult)}
+                {/* <Text>Field: {merResult?.field}</Text>  */}
             </div>
             <TableContainer className={`m-auto border  pr-5 ${tableStyles.borderedMuiTable}`}>
                 <Table sx={{ minWidth: 700 }} >
@@ -263,7 +264,7 @@ export default function MERDataTable() {
                                     <TableCell align="center" className={`${tableStyles.cellNoPadding} `}>
                                         {chokes?.map((choke, i) =>
                                         (<div className='border-b'>
-                                            <TableInput onChange={(e) => handleChokeItemChange(e, i)} name='liquidRate' defaultValue={choke?.liquidRate} />
+                                            <TableInput onChange={(e) => handleChokeItemChange(e, i)} name='gross' defaultValue={choke?.gross} />
                                         </div>)
                                         )}
                                     </TableCell>
@@ -284,7 +285,7 @@ export default function MERDataTable() {
                                     <TableCell align="center" className={`${tableStyles.cellNoPadding} `}>
                                         {chokes?.map((choke, i) =>
                                         (<div className='border-b'>
-                                            <TableInput onChange={(e) => handleChokeItemChange(e, i)} name='currentGor' defaultValue={choke?.currentGor} />
+                                            <TableInput onChange={(e) => handleChokeItemChange(e, i)} name='gor' defaultValue={choke?.gor} />
                                         </div>)
                                         )}
                                     </TableCell>
@@ -298,7 +299,7 @@ export default function MERDataTable() {
                                     <TableCell align="center" className={`${tableStyles.cellNoPadding} `}>
                                         {chokes?.map((choke, i) =>
                                         (<div className='border-b'>
-                                            <TableInput onChange={(e) => handleChokeItemChange(e, i)} name='sandCut' defaultValue={choke?.sandCut} />
+                                            <TableInput onChange={(e) => handleChokeItemChange(e, i)} name='sand' defaultValue={choke?.sand} />
                                         </div>)
                                         )}
                                     </TableCell>
@@ -318,8 +319,8 @@ export default function MERDataTable() {
                                     <TableCell align="center" >
                                         <select className='p-3 outline-none h-full' onChange={handleExtraChange} name='fluidType' defaultValue={mer?.fluidType} >
                                             <option value=""></option>
-                                            <option value="oil">Oil</option>
-                                            <option value="gas">Gas</option>
+                                            <option value="Oil">Oil</option>
+                                            <option value="Gas">Gas</option>
                                         </select>
                                     </TableCell>
                                     <TableCell align="center" >
