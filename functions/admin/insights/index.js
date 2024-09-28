@@ -27,7 +27,7 @@ const getInsight = onCall(async (request) => {
     if (flowstation) {
       // Getting data for a particular flow station
       if (frequency === "daily") {
-        const assetVolume = (
+        const liquidVolume = (
           await db
             .collection("liquidVolumes")
             .where("date", "==", date)
@@ -35,18 +35,47 @@ const getInsight = onCall(async (request) => {
             .get()
         ).docs.map((doc) => doc.data());
 
-        const flowstation = assetVolume.find(
+        const gasVolume = (
+          await db
+            .collection("gasVolumes")
+            .where("date", "==", date)
+            .where("asset", "==", asset)
+            .get()
+        ).docs.map((doc) => doc.data());
+
+        const flowstationOil = liquidVolume.find(
           (station) => station.name === flowstation
         );
-        const target = flowstation.subtotal.target;
-        const netProduction = flowstation.subtotal.netProduction;
+
+        const flowstationGas = gasVolume.find(
+          (station) => station.name === flowstation
+        );
+        const targetOil = flowstationOil.subtotal.target;
+        const netProduction = flowstationOil.subtotal.netProduction;
+        const targetTotalGas = flowstationGas.subtotal.targetTotalGas;
+        const targetFuelGas = flowstationGas.subtotal.targetFuelGas;
+        const targetExportGas = flowstationGas.subtotal.targetExportGas;
+        const targetFlaredGas = flowstationGas.subtotal.targetFlaredGas;
+        const totalGas = flowstationGas.subtotal.totalGas;
+        const fuelGas = flowstationGas.subtotal.fuelGas;
+        const exportGas = flowstationGas.subtotal.exportGas;
+        const flaredGas = flowstationGas.subtotal.flaredGas;
 
         return {
           status: "success",
           data: JSON.stringify({
-            target,
-            netProduction,
+            targetOil,
+            netOil: netProduction,
+            targetTotalGas,
+            targetFuelGas,
+            targetExportGas,
+            targetFlaredGas,
+            totalGas,
+            fuelGas,
+            exportGas,
+            flaredGas,
             flowstation,
+            date,
           }),
         };
       } else {
@@ -65,41 +94,92 @@ const getInsight = onCall(async (request) => {
           };
         }
 
-        let result = [];
+        let aggregatePromises = [];
         let runningNetOil = 0;
-        let runningTarget = 0;
+        let runningTargetOil = 0;
+        let runningTotalGas = 0;
+        let runningFuelGas = 0;
+        let runningExportGas = 0;
+        let runningFlaredGas = 0;
+        let runningTargetTotalGas = 0;
+        let runningTargetFuelGas = 0;
+        let runningTargetExportGas = 0;
+        let runningTargetFlaredGas = 0;
 
         for (let date of dates) {
-          const assetVolume = db
+          const assetOilVolume = db
             .collection("liquidVolumes")
             .where("date", "==", date)
             .where("asset", "==", asset)
             .get()
             .docs.map((doc) => doc.data());
+          const assetGasVolume = db
+            .collection("gasVolumes")
+            .where("date", "==", date)
+            .where("asset", "==", asset)
+            .get()
+            .docs.map((doc) => doc.data());
 
-          const flowstation = assetVolume.find(
+          const oilVolumes = assetOilVolume.find(
             (station) => station.name === flowstation
           );
 
-          const target = flowstation.subtotal.target;
-          const netProduction = flowstation.subtotal.netProduction;
+          const gasVolumes = assetGasVolume.find(
+            (station) => station.name === flowstation
+          );
 
-          runningTarget += target;
-          runningNetOil += netProduction;
+          const targetOil = oilVolumes.subtotal.target;
+          const netOil = oilVolumes.subtotal.netProduction;
+          const targetTotalGas = gasVolumes.subtotal.targetTotalGas;
+          const targetFuelGas = gasVolumes.subtotal.targetFuelGas;
+          const targetExportGas = gasVolumes.subtotal.targetExportGas;
+          const targetFlaredGas = gasVolumes.subtotal.targetFlaredGas;
+          const totalGas = gasVolumes.subtotal.totalGas;
+          const fuelGas = gasVolumes.subtotal.fuelGas;
+          const exportGas = gasVolumes.subtotal.exportGas;
+          const flaredGas = gasVolumes.subtotal.flaredGas;
 
-          result.push({ date, target, netProduction });
+          runningTargetOil += targetOil;
+          runningNetOil += netOil;
+          runningTargetTotalGas += targetTotalGas;
+          runningTargetFuelGas += targetFuelGas;
+          runningTargetExportGas += targetExportGas;
+          runningTargetFlaredGas += targetFlaredGas;
+          runningTotalGas += totalGas;
+          runningFuelGas += fuelGas;
+          runningExportGas += exportGas;
+          runningFlaredGas += flaredGas;
 
-          runningNetOil += netProduction;
-          runningTarget += target;
+          aggregatePromises.push({
+            date,
+            targetOil,
+            netOil,
+            targetTotalGas,
+            targetExportGas,
+            targetFlaredGas,
+            targetFuelGas,
+            totalGas,
+            fuelGas,
+            exportGas,
+            flaredGas,
+          });
         }
 
-        const aggregatedResult = await Promise.all(result);
+        const aggregate = await Promise.all(aggregatePromises);
         return {
           status: "success",
           data: JSON.stringify({
-            target: runningTarget,
-            netProduction: runningNetOil,
-            oilProduced: aggregatedResult,
+            targetOil: runningTargetOil,
+            netOil: runningNetOil,
+            targetTotalGas: runningTargetTotalGas,
+            targetFuelGas: runningTargetFuelGas,
+            targetFlaredGas: runningTargetFlaredGas,
+            targetExportGas: runningTargetExportGas,
+            totalGas: runningTotalGas,
+            fuelGas: runningFuelGas,
+            flaredGas: runningFlaredGas,
+            exportGas: runningExportGas,
+            aggregate,
             flowstation,
           }),
         };
@@ -107,7 +187,7 @@ const getInsight = onCall(async (request) => {
     } else {
       // Getting data for OML
       if (frequency === "daily") {
-        const assetVolume = (
+        const oilVolumes = (
           await db
             .collection("liquidVolumes")
             .where("date", "==", date)
@@ -115,27 +195,90 @@ const getInsight = onCall(async (request) => {
             .get()
         ).docs.map((doc) => doc.data());
 
-        let target = 0;
-        let netProduction = 0;
-        let oilProduced = [];
+        const gasVolumes = (
+          await db
+            .collection("gasVolumes")
+            .where("date", "==", date)
+            .where("asset", "==", asset)
+            .get()
+        ).docs.map((doc) => doc.data());
 
-        for (let flowstation of assetVolume) {
+        let runningTargetOil = 0;
+        let runningNetOil = 0;
+        let runningTargetTotalGas = 0;
+        let runningTargetFuelGas = 0;
+        let runningTargetFlaredGas = 0;
+        let runningTargetExportGas = 0;
+        let runningTotalGas = 0;
+        let runningFuelGas = 0;
+        let runningFlaredGas = 0;
+        let runningExportGas = 0;
+        let oilAggregate = [];
+        let gasAggregate = [];
+
+        for (let flowstation of oilVolumes) {
           const oilProduction = flowstation.subtotal.netProduction;
-          target += flowstation.subtotal.netTarget;
-          netProduction += oilProduction;
-          oilProduced.push({
+          const targetOil = flowstation.subtotal.netTarget;
+          runningTargetOil += targetOil;
+          runningNetOil += oilProduction;
+          oilAggregate.push({
             flowstation: flowstation.name,
-            oilProduction: oilProduction,
+            netOil: oilProduction,
+            targetOil,
+          });
+        }
+
+        for (let flowstationGas of gasVolumes) {
+          const targetTotalGas = flowstationGas.subtotal.targetTotalGas;
+          const targetFuelGas = flowstationGas.subtotal.targetFuelGas;
+          const targetExportGas = flowstationGas.subtotal.targetExportGas;
+          const targetFlaredGas = flowstationGas.subtotal.targetFlaredGas;
+          const totalGas = flowstationGas.subtotal.totalGas;
+          const fuelGas = flowstationGas.subtotal.fuelGas;
+          const exportGas = flowstationGas.subtotal.exportGas;
+          const flaredGas = flowstationGas.subtotal.flaredGas;
+
+          runningTargetTotalGas += targetTotalGas;
+          runningTargetFuelGas += targetFuelGas;
+          runningTargetExportGas += targetExportGas;
+          runningTargetFlaredGas += targetFlaredGas;
+          runningTotalGas += totalGas;
+          runningFuelGas += fuelGas;
+          runningExportGas += exportGas;
+          runningFlaredGas += flaredGas;
+
+          gasAggregate.push({
+            flowstation: flowstation.name,
+            totalGas,
+            flaredGas,
+            exportGas,
+            fuelGas,
+            targetTotalGas,
+            targetFuelGas,
+            targetFlaredGas,
+            targetExportGas,
           });
         }
 
         return {
           status: "success",
           data: JSON.stringify({
-            target,
-            netProduction,
-            oilProduced,
+            targetOil: runningTargetOil,
+            netOil: runningNetOil,
+            targetTotalGas: runningTargetTotalGas,
+            targetFuelGas: runningTargetFuelGas,
+            targetExportGas: runningTargetExportGas,
+            targetFlaredGas: runningTargetFlaredGas,
+            totalGas: runningTotalGas,
+            fuelGas: runningFuelGas,
+            exportGas: runningExportGas,
+            flaredGas: runningFlaredGas,
+            aggregate: {
+              oilAggregate,
+              gasAggregate,
+            },
             asset,
+            date,
           }),
         };
       } else {
@@ -154,45 +297,134 @@ const getInsight = onCall(async (request) => {
           };
         }
 
-        let result = [];
+        let aggregatePromise = [];
         let runningNetOil = 0;
-        let runningTarget = 0;
+        let runningTargetOil = 0;
+        let runningTargetTotalGas = 0;
+        let runningTargetFuelGas = 0;
+        let runningTargetFlaredGas = 0;
+        let runningTargetExportGas = 0;
+        let runningTotalGas = 0;
+        let runningFuelGas = 0;
+        let runningFlaredGas = 0;
+        let runningExportGas = 0;
 
         for (let date of dates) {
-          const assetVolume = db
+          const oilVolumes = db
             .collection("liquidVolumes")
             .where("date", "==", date)
             .where("asset", "==", asset)
             .get()
             .docs.map((doc) => doc.data());
 
-          let target = 0;
-          let netProduction = 0;
-          let oilProduced = [];
+          let dailyTargetOil = 0;
+          let dailyNetOil = 0;
+          let oilAggregate = [];
 
-          for (let flowstation of assetVolume) {
+          for (let flowstation of oilVolumes) {
             const oilProduction = flowstation.subtotal.netProduction;
-            target += flowstation.subtotal.netTarget;
-            netProduction += oilProduction;
-            oilProduced.push({
+            const targetOil = flowstation.subtotal.netTarget;
+            dailyTargetOil += targetOil;
+            dailyNetOil += oilProduction;
+            oilAggregate.push({
               flowstation: flowstation.name,
-              oilProduction: oilProduction,
+              netOil: oilProduction,
+              targetOil,
             });
           }
 
-          result.push({ date, target, netProduction, oilProduced });
+          let dailyTargetTotalGas = 0;
+          let dailyTargetFuelGas = 0;
+          let dailyTargetFlaredGas = 0;
+          let dailyTargetExportGas = 0;
+          let dailyTotalGas = 0;
+          let dailyFuelGas = 0;
+          let dailyFlaredGas = 0;
+          let dailyExportGas = 0;
+          let gasAggregate = [];
 
-          runningNetOil += netProduction;
-          runningTarget += target;
+          const gasVolumes = db
+            .collection("gasVolumes")
+            .where("date", "==", date)
+            .where("asset", "==", asset)
+            .get()
+            .docs.map((doc) => doc.data());
+
+          for (let flowstationGas of gasVolumes) {
+            const targetTotalGas = flowstationGas.subtotal.targetTotalGas;
+            const targetFuelGas = flowstationGas.subtotal.targetFuelGas;
+            const targetExportGas = flowstationGas.subtotal.targetExportGas;
+            const targetFlaredGas = flowstationGas.subtotal.targetFlaredGas;
+            const totalGas = flowstationGas.subtotal.totalGas;
+            const fuelGas = flowstationGas.subtotal.fuelGas;
+            const exportGas = flowstationGas.subtotal.exportGas;
+            const flaredGas = flowstationGas.subtotal.flaredGas;
+
+            dailyTargetTotalGas += targetTotalGas;
+            dailyTargetFuelGas += targetFuelGas;
+            dailyTargetExportGas += targetExportGas;
+            dailyTargetFlaredGas += targetFlaredGas;
+            dailyTotalGas += totalGas;
+            dailyFuelGas += fuelGas;
+            dailyExportGas += exportGas;
+            dailyFlaredGas += flaredGas;
+
+            gasAggregate.push({
+              flowstation: flowstation.name,
+              targetTotalGas,
+              targetFuelGas,
+              targetFlaredGas,
+              targetExportGas,
+              totalGas,
+              flaredGas,
+              fuelGas,
+              exportGas,
+            });
+          }
+
+          aggregatePromise.push({
+            date,
+            targetOil: dailyTargetOil,
+            netOil: dailyNetOil,
+            targetTotalGas: dailyTargetTotalGas,
+            targetFuelGas: dailyTargetFuelGas,
+            targetFlaredGas: dailyTargetFlaredGas,
+            targetExportGas: dailyTargetExportGas,
+            totalGas: dailyTotalGas,
+            flaredGas: dailyFlaredGas,
+            fuelGas: dailyFuelGas,
+            exportGas: dailyExportGas,
+            oilAggregate,
+            gasAggregate,
+          });
+
+          runningNetOil += dailyNetOil;
+          runningTargetOil += dailyTargetOil;
+          runningTargetTotalGas += dailyTargetTotalGas;
+          runningTargetExportGas += dailyTargetExportGas;
+          runningTargetFlaredGas += dailyTargetFlaredGas;
+          runningTargetFuelGas += dailyTargetFuelGas;
+          runningTotalGas += dailyTotalGas;
+          runningExportGas += dailyExportGas;
+          runningFuelGas += dailyFuelGas;
+          runningFlaredGas += dailyFlaredGas;
         }
 
-        const aggregatedResult = await Promise.all(result);
+        const aggregate = await Promise.all(aggregatePromise);
         return {
           status: "success",
           data: JSON.stringify({
-            target: runningTarget,
-            netProduction: runningNetOil,
-            oilProduced: aggregatedResult,
+            targetOil: runningTargetOil,
+            netOil: runningNetOil,
+            targetTotalGas: runningTargetTotalGas,
+            targetFuelGas: runningTargetFuelGas,
+            targetExportGas: runningTargetExportGas,
+            targetFlaredGas: runningTargetFlaredGas,
+            totalGas: runningTotalGas,
+            fuelGas: runningFuelGas,
+            exportGas: runningExportGas,
+            flaredGas: runningFlaredGas,
+            aggregate,
             asset,
           }),
         };
