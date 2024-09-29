@@ -50,6 +50,10 @@ export default function GasTable() {
     return Math.round(num * 10000) / 10000
   }
 
+  const { data: IPSCs } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: 'IPSC' } })
+  console.log(IPSCs)
+  const IPSC = IPSCs?.find(IPSC => IPSC?.month === dayjs().format('YYYY-MM'))
+  const targets =  IPSC?.totals
 
   const [tableValues, setTableValues] = React.useState({})
   const [totals, setTotals] = React.useState({
@@ -70,9 +74,9 @@ export default function GasTable() {
       const prevFlowStation = prev?.[flowStation]
       const prevFlowStationList = prevFlowStation?.meters
       const prevFlowStationListIndexValues = prevFlowStation?.meters?.[readingIndex]
-      const finalBbls = field === "finalBbls" ? value : (prevFlowStationListIndexValues?.finalBbls || 0)
-      const initialBbls = field === "initialBbls" ? value : (prevFlowStationListIndexValues?.initialBbls || 0)
-      const difference = roundUp(Math.abs(parseFloat(finalBbls) - parseFloat(initialBbls)))
+      const finalReading = field === "finalReading" ? value : (prevFlowStationListIndexValues?.finalReading || 0)
+      const initialReading = field === "initialReading" ? value : (prevFlowStationListIndexValues?.initialReading || 0)
+      const difference = roundUp(Math.abs(parseFloat(finalReading) - parseFloat(initialReading)))
       let meterTotal = prevFlowStationListIndexValues?.meterTotal
       if (field === "meterTotal") { meterTotal = parseFloat(value) } else { meterTotal = (difference * parseFloat(meterFactor || 0).toFixed(5)) }
 
@@ -86,7 +90,7 @@ export default function GasTable() {
             [field]: parseFloat(value || 0),
             meterTotal,
             gasType,
-            difference,
+            // difference,
             serialNumber: flowStationSetup?.readings?.[readingIndex]?.serialNumber
           }
         } : prevFlowStationList
@@ -140,18 +144,19 @@ export default function GasTable() {
       name: value[0],
       ...value[1]
     }))
-    console.log(flowStations)
+    // console.log(flowStations)
     const payload = {
       date: dayjs(date).format("DD/MM/YYYY"),
       asset: setup.asset,
       fluidType: 'gas',
       totals,
       setupId: setup?.id,
-      flowstations: flowStations
+      flowstations: flowStations,
+      targets
     };
     try {
-
-      await firebaseFunctions('captureGas', payload)
+console.log(payload)
+      // await firebaseFunctions('captureGas', payload)
       toast.success("Successful")
     } catch (error) {
       console.log(error)
@@ -163,11 +168,14 @@ export default function GasTable() {
   const onSelectReportType = (e) => {
     if (e !== 'Gas') navigate(`/users/fdc/daily/volume-measurement-table?id=${attacmentSetup?.id}&reportType=${e}`)
   }
+  const reportTypes__ = React.useMemo(() => {
+    return (attacmentSetup?.reportTypes || [])?.concat(setup?.reportTypes)
+  }, [attacmentSetup?.reportTypes, setup?.reportTypes])
   return (
 
     <> <div className='flex justify-between my-2 px-2 items-center'>
       <div className='flex gap-4 items-center'>
-        <RadioSelect defaultValue={setup?.reportTypes?.[0]} list={(attacmentSetup?.reportTypes || [])?.concat(setup?.reportTypes)} onChange={onSelectReportType} /> <RadaSwitch label="Edit Table" labelPlacement="left" />
+        {reportTypes__?.length && <RadioSelect defaultValue={setup?.reportTypes?.[0]} list={reportTypes__} onChange={onSelectReportType} />} <RadaSwitch label="Edit Table" labelPlacement="left" />
       </div>
       <div className='flex items-center gap-2 '>
         <AttachSetup setup={setup} />
@@ -222,8 +230,8 @@ export default function GasTable() {
                           if (readingIndex === -1) readingIndex = i + readings?.length
                           if (!readings) readingIndex = i
 
-                          const initialBbls = tableValues?.[name]?.meters?.[readingIndex]?.initialBbls
-                          const finalBbls = tableValues?.[name]?.meters?.[readingIndex]?.finalBbls
+                          const initialReading = tableValues?.[name]?.meters?.[readingIndex]?.initialReading
+                          const finalReading = tableValues?.[name]?.meters?.[readingIndex]?.finalReading
                           const meterTotal = tableValues?.[name]?.meters?.[readingIndex]?.meterTotal
                           return (<TableRow  >
                             <TableCell align="center">
@@ -235,14 +243,14 @@ export default function GasTable() {
 
                             <TableCell align="center">
 
-                              <TableInput value={readingAtIndex ? initialBbls : "-"}
+                              <TableInput value={readingAtIndex ? initialReading : "-"}
                                 disabled={!readingAtIndex} type={'number'}
-                                onChange={(e) => handleChange({ flowStation: name, field: 'initialBbls', value: e.target.value, readingIndex, gasType: gasType.value })} />
+                                onChange={(e) => handleChange({ flowStation: name, field: 'initialReading', value: e.target.value, readingIndex, gasType: gasType.value })} />
                             </TableCell>
                             <TableCell align="center">
-                              <TableInput value={readingAtIndex ? finalBbls : "-"}
+                              <TableInput value={readingAtIndex ? finalReading : "-"}
                                 disabled={!readingAtIndex} type={'number'}
-                                onChange={(e) => handleChange({ flowStation: name, field: 'finalBbls', value: e.target.value, readingIndex, gasType: gasType.value })} />
+                                onChange={(e) => handleChange({ flowStation: name, field: 'finalReading', value: e.target.value, readingIndex, gasType: gasType.value })} />
                             </TableCell>
                             <TableCell align="center" colSpan={2}>
                               {readingAtIndex ? meterTotal :
@@ -270,7 +278,8 @@ export default function GasTable() {
             }
             <TableBody>
               <TableRow >
-                <TableCell align="left" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} className='bg-[rgba(0, 163, 255, 0.3)]' colSpan={7}>{"Total Gas Production"}</TableCell>
+              <TableCell align="left" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} className='bg-[rgba(0, 163, 255, 0.3)]' colSpan={6}>{"Total Gas Production"}</TableCell>
+              <TableCell align="left" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} className='bg-[rgba(0, 163, 255, 0.3)]' colSpan={1}>Gas Target : {targets?.gasRate}</TableCell>
                 <TableCell align="center" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} >{totals?.netProductionTotal}</TableCell>
               </TableRow>
             </TableBody>

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -11,22 +11,25 @@ import { ArrowBack } from '@mui/icons-material';
 import Text from 'Components/Text';
 import { Button, Input } from 'Components';
 import { Setting2 } from 'iconsax-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useFetch } from 'hooks/useFetch';
 import dayjs from 'dayjs';
 import { firebaseFunctions } from 'Services';
 import { closeModal, openModal } from 'Store/slices/modalSlice';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import Actions from '../Actions';
-import { createWellTitle } from 'utils';
+import { createWellTitle, sum } from 'utils';
+import Actions from 'Partials/Actions';
+import { Query } from 'Partials/Actions/Query';
+import { Approve } from 'Partials/Actions/Approve';
+
 
 const TableInput = (props) => {
     return <input className='p-1 text-center w-[80px] h-[100%] border outline-none ' required {...props} />
 }
 
 const SaveAs = ({ defaultValue, onSave = () => null, loading }) => {
-    const [title, setTitle] = React.useState(defaultValue)
+    const [title, setTitle] = useState(defaultValue)
     return <div className='bg-[white] w-[400px]'>
         <Text size={24}>Save Well Test Result as</Text>
 
@@ -42,20 +45,20 @@ const SaveAs = ({ defaultValue, onSave = () => null, loading }) => {
 export default function WellTestDataTable() {
 
     const { search } = useLocation()
+    const navigate =  useNavigate()
     const dispatch = useDispatch()
-    const [loading, setLoading] = React.useState(false)
-    const [wellTest, setWellTest] = React.useState({})
-    const [wellTestResult, setWellTestResult] = React.useState({})
-    const id = React.useMemo(() => new URLSearchParams(search).get('id'), [search])
-    const scheduleId = React.useMemo(() => new URLSearchParams(search).get('scheduleId'), [search])
+    const [loading, setLoading] = useState(false)
+    const [wellTest, setWellTest] = useState({})
+    const [wellTestResult, setWellTestResult] = useState({})
+    const id = useMemo(() => new URLSearchParams(search).get('id'), [search])
+    const scheduleId = useMemo(() => new URLSearchParams(search).get('scheduleId'), [search])
     const { data: res } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'wellTestSchedule', id: scheduleId || id } })
     const { data: res2 } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'wellTestResult', id } })
-    const [title, setTitle] = React.useState('')
-    const isEdit = React.useMemo(() => { return scheduleId }, [scheduleId])
-    React.useEffect(() => { setWellTest(res) }, [res])
-    React.useEffect(() => { if (!isEdit) setWellTestResult(wellTest?.wellsData) }, [wellTest?.wellsData, isEdit])
-    React.useEffect(() => { if (isEdit) setWellTestResult(res2?.wellTestResultData); setTitle(res2?.title) }, [res2, isEdit])
-
+    const [title, setTitle] = useState('')
+    const isEdit = useMemo(() => { return scheduleId }, [scheduleId])
+    useEffect(() => { setWellTest(res) }, [res])
+    useEffect(() => { if (!isEdit) setWellTestResult(wellTest?.wellsData) }, [wellTest?.wellsData, isEdit])
+    useEffect(() => { if (isEdit) setWellTestResult(res2?.wellTestResultData); setTitle(res2?.title) }, [res2, isEdit])
 
     const save = async (title) => {
         if (!title) {
@@ -64,11 +67,26 @@ export default function WellTestDataTable() {
         }
         setLoading(true)
         try {
-            const saveScheduleData = {
-                asset: wellTest?.asset, field: wellTest?.field, wellTestScheduleId: wellTest?.id,
-                setupType: 'wellTestResult', wellTestResultData: wellTestResult, month: wellTest?.month
-            }
 
+            const arr = Object.values(wellTestResult || {})
+            console.log(arr)
+            const totals = {
+                gross: sum(arr.map(item => item?.gross || 0)),
+                oilRate: sum(arr.map(item => item?.oilRate || 0)),
+                gasRate: sum(arr.map(item => item?.gasRate || 0)),
+                exportGas: null,
+                flaredGas: null,
+                fuelGas: null
+            }
+            const saveScheduleData = {
+                asset: wellTest?.asset,
+                field: wellTest?.field,
+                wellTestScheduleId: wellTest?.id,
+                setupType: 'wellTestResult',
+                wellTestResultData: wellTestResult,
+                month: wellTest?.month,
+                totals
+            }
             if (isEdit) {
                 const payload = { title, ...saveScheduleData, id }
                 console.log(payload)
@@ -76,9 +94,11 @@ export default function WellTestDataTable() {
             } else {
                 const payload = { title, ...saveScheduleData }
                 console.log(payload)
-                await firebaseFunctions('createSetup', payload)
-
+                 await firebaseFunctions('createSetup', payload)
+                 navigate('/users/fdc/well-test-data/')
+                    // `/users/fdc/well-test-data/well-test-table?id=${res?.?.id}&scheduleId=${res?.?.wellTestScheduleId}`
             }
+
             dispatch(closeModal())
             toast.success('Data saved to well test result')
         } catch (error) {
@@ -90,19 +110,23 @@ export default function WellTestDataTable() {
 
 
     const fields = [
-        { name: 'gross', type: "number" },
-        { name: 'oilRate', type: "number" },
-        { name: 'waterRate', type: "number" },
-        { name: 'gasRate', type: "number" },
-        { name: 'bsw', type: "number" },
-        { name: 'gor', type: "number" },
-        { name: 'fthp', type: "number" },
-        { name: 'flp', type: "number" },
-        { name: 'chp', type: "number" },
-        { name: 'staticPressure', type: "number" },
-        { name: 'orificePlateSize', type: "number" },
-        { name: 'sand', type: "number" },
+        { name: 'gross', type: "number", fn: () => null },
+        { name: 'oilRate', type: "number", fn: () =>  null },
+        { name: 'waterRate', type: "number", fn: (value) => (value.gross || 0) - (value.oilRate || 0), disabled: true },
+        { name: 'gasRate', type: "number", fn: () =>  null },
+        { name: 'bsw', type: "number", fn: () =>  null },
+        { name: 'gor', type: "number", fn: () =>  null },
+        { name: 'fthp', type: "number", fn: () =>  null },
+        { name: 'flp', type: "number", fn: () =>  null },
+        { name: 'chp', type: "number", fn: () =>  null },
+        { name: 'staticPressure', type: "number", fn: () =>  null },
+        { name: 'orificePlateSize', type: "number", fn: () =>  null },
+        { name: 'sand', type: "number", fn: () =>  null },
     ]
+
+    useEffect(()=>{
+// set
+    },[])
 
     return (
         < form className=' w-[80vw] px-3' onSubmit={(e) => {
@@ -121,7 +145,11 @@ export default function WellTestDataTable() {
                 <Text display={'block'} className={'w-full'} align={'center'}> {createWellTitle(wellTest)}</Text>
                 <div className='flex justify-end py-2 items-center gap-3'>
                     <div className='flex gap-2' >
-                        {isEdit && <Actions wellTestResult={wellTestResult} title={title} />}
+                        {isEdit &&  <Actions  actions={[
+                            { name: 'Query Result', onClick: () => dispatch(openModal({ component: <Query /> })) },
+                            { name: 'Approve', onClick: () => dispatch(openModal({ component: <Approve /> })) },
+                         
+                        ]} />}
                     </div>
                     <div className='border border-[#00A3FF] px-3 py-1 rounded-md' >
                         <Setting2 color='#00A3FF' />
@@ -211,7 +239,7 @@ export default function WellTestDataTable() {
                                     </TableCell>
                                     {
                                         fields.map(field => <TableCell align="center">
-                                            <TableInput type='number' required={well.isSelected} defaultValue={well?.[field.name]} onChange={(e) => handleChange(field.name, e.target.value)} />
+                                            <TableInput type='number' required={well.isSelected} defaultValue={field?.fn(well) || well?.[field.name]} disabled={field?.disabled} onChange={(e) => handleChange(field.name, e.target.value)} />
                                         </TableCell>)
                                     }
                                     <TableCell align="center" sx={{ minWidth: '200px' }} colSpan={3}>
@@ -226,6 +254,7 @@ export default function WellTestDataTable() {
 
                 </Table>
             </TableContainer>
+
             <div className='flex justify-end py-2'>
                 <Button width={120} type='submit' >Commit</Button>
             </div>

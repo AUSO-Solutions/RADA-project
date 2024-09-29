@@ -171,7 +171,7 @@ export default function MERDataTable() {
                             <TableCell style={{ fontWeight: '600' }} align="center" colSpan={2} >Field 1</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Choke </TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center" colSpan={3} > Test Date  </TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Liquid Rate</TableCell>
+                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} ></TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Oil Rate</TableCell>
 
                             <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >BS&W</TableCell>

@@ -57,10 +57,8 @@ const ImportMasterXY = () => {
 
 
         })
-
-
-
     }
+    
     return (
         <div className='w-[400px]'>
             <label htmlFor="fileInput" className='flex flex-col items-center font-bold justify-center border h-[100px] w-full rounded p-3'>

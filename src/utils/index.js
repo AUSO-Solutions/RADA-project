@@ -12,7 +12,8 @@ export const createWellTitle = (setup, type) => {
     return `${setup?.title} ${setup?.asset}${field}${dayjs(setup?.month).format("MMM-YYYY")}`
 }
 
-export const getWellLastTestResult = (wellTestResults, wellTestResult, productionString,) => {
+export const getWellLastTestResult = (wellTestResults, wellTestResult, productionString) => {
+    if (!wellTestResults || !wellTestResult || !productionString) return
     let lastTestResult = null, productionStringData = null
     const remainingWellTestRessults = wellTestResults
         .filter(result => {
@@ -36,7 +37,8 @@ export const getWellLastTestResult = (wellTestResults, wellTestResult, productio
 
     }
     if (!lastTestResult) {
-        toast.info('No previous tests found for this well')
+        return null;
+        // ('No previous tests found for this well')
     }
     // console.log(lastTestResult, productionStringData)
     return { wellTestResult: lastTestResult, productionStringData }
@@ -64,6 +66,6 @@ export const firebaseGetUploadedFile = async (path) => {
         throw error
     }
 }
-export const genRandomNumber=()=>{
-   return Math.floor(Math.random()*100) + 1 
+export const genRandomNumber = () => {
+    return Math.floor(Math.random() * 100) + 1
 }

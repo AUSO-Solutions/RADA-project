@@ -22,6 +22,8 @@ import { createWellTitle, getWellLastTestResult, sum } from 'utils';
 import IPSCAnalytics from './IPSCAnalytics';
 import ToleranceSettiings from './ToleranceSettiings';
 import { firebaseFunctions } from 'Services';
+import Actions from 'Partials/Actions/Index';
+import { Tooltip } from '@mui/material';
 
 // const TableInput = (props) => {
 //     return <input className='p-1 text-center w-[80px] h-[100%] border outline-none ' required {...props} />
@@ -49,6 +51,7 @@ export default function IPSCTable() {
     const [ipscData, setIpscData] = useState({})
     const id = useMemo(() => new URLSearchParams(search).get('id'), [search])
     const { data: res } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'IPSC', id: id } })
+    // console.log(res)
     useEffect(() => { setIpscData(res) }, [res])
     const { data: wellTestResult___ } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'wellTestResult', id: res?.wellTestResult1?.id, }, dontFetch: !res?.wellTestResult1?.id })
     const { data: wellTestResults } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: 'wellTestResult', } })
@@ -58,7 +61,7 @@ export default function IPSCTable() {
 
     const bringForward = (wellTestResults, wellTestResult, productionString) => {
         const data = getWellLastTestResult(wellTestResults, wellTestResult, productionString)
-        console.log(data, wellTestResult)
+        console.log(data)
         setIpscData(prev => {
             return {
                 ...prev, wellTestResultData: {
@@ -77,18 +80,25 @@ export default function IPSCTable() {
         }
         setLoading(true)
         try {
-            // console.log(wellTestResult?.wellTestResultData)
 
-            // if (isEdit) {
-            const payload = { title: title, setupType: 'IPSC', wellTestResultData: ipscData?.wellTestResultData, id }
+            const arr = Object.values(ipscData?.wellTestResultData || {})
+            const totals = {
+                gross: sum(arr.map(item => item?.gross || 0)),
+                oilRate: sum(arr.map(item => item?.oilRate || 0)),
+                gasRate: sum(arr.map(item => item?.gasRate || 0)),
+                exportGas: ipscData?.totals?.exportGas,
+                fuelGas: ipscData?.totals?.fuelGas,
+                flaredGas: sum(arr.map(item => item?.gasRate || 0)) - ipscData?.totals?.fuelGas - ipscData?.totals?.exportGas,
+            }
+            const payload = { title: title, setupType: 'IPSC', wellTestResultData: ipscData?.wellTestResultData, id, totals }
+            if (payload.totals.gasRate !== payload.totals.exportGas + payload.totals.flaredGas + payload.totals.fuelGas) {
+                toast.error("Gas rate total must be equal to the summation of the gas types ")
+                return
+            }
             console.log(payload)
             await firebaseFunctions('updateSetup', payload)
-            // } else {
-            //     const payload = { title, asset: wellTest?.asset, field: wellTest?.field, wellTestScheduleId: wellTest?.id, setupType: 'wellTestResult', wellTestResultData: wellTestResult }
-            //     console.log(payload)
-            //     await firebaseFunctions('createSetup', payload)
 
-            // }
+
             dispatch(closeModal())
             toast.success('Data saved to IPSC')
         } catch (error) {
@@ -99,26 +109,41 @@ export default function IPSCTable() {
     }
 
     const fields = [
-        { name: 'gross', type: "number" },
-        { name: 'oilRate', type: "number" },
-        { name: 'waterRate', type: "number" },
-        { name: 'gasRate', type: "number" },
-        { name: 'bsw', type: "number" },
-        { name: 'wgr', type: "number" },
-        { name: 'gor', type: "number" },
-        // { name: 'totalGas', type: "number" },
-        { name: 'fthp', type: "number" },
-        { name: 'flp', type: "number" },
-        { name: 'chp', type: "number" },
-        { name: 'staticPressure', type: "number" },
-        { name: 'orificePlateSize', type: "number" },
-        { name: 'sand', type: "number" },
+        { name: 'gross', type: "number", fn: () => null },
+        { name: 'oilRate', type: "number", fn: () => null },
+        // { name: 'waterRate', type: "number",fn: () => null  },
+        { name: 'waterRate', type: "number", fn: (value) => (value.gross || 0) - (value.oilRate || 0), disabled: true },
+        { name: 'gasRate', type: "number", fn: () => null },
+        { name: 'bsw', type: "number", fn: () => null },
+        { name: 'wgr', type: "number", fn: () => null },
+        { name: 'gor', type: "number", fn: () => null },
+        // { name: 'totalGas', type: "number",fn: () => null  },
+        { name: 'fthp', type: "number", fn: () => null },
+        { name: 'flp', type: "number", fn: () => null },
+        { name: 'chp', type: "number", fn: () => null },
+        { name: 'staticPressure', type: "number", fn: () => null },
+        { name: 'orificePlateSize', type: "number", fn: () => null },
+        { name: 'sand', type: "number", fn: () => null },
     ]
     const getTotalOf = (key) => {
         const res = Object.values(ipscData?.wellTestResultData || {})
         const total = sum(res?.map(item => parseFloat(item?.[key] || 0)))
         return total
     }
+
+    // useEffect(() => {
+
+    //     setIpscData(prev => {
+    //         return {
+    //             ...prev,
+    //             totals: {
+    //                 ...prev?.totals,
+    //                 flaredGas: getTotalOf('gasRate') - prev?.totals?.fuelGas - prev?.totals?.exportGas
+    //             }
+    //         }
+    //     })
+
+    // }, [ipscData?.totals?.fuelGas, ipscData?.totals?.exportGas, getTotalOf])
 
     return (
         < div className=' w-[80vw] px-3'>
@@ -236,7 +261,7 @@ export default function IPSCTable() {
                                         </TableCell>
                                         {
                                             fields.map(field => <TableCell align="center">
-                                                {well?.[field.name] ?? "-"}
+                                                {field.fn(well) || (well?.[field.name] ?? "-")}
                                                 {/* <TableInput type='number' defaultValue={well?.[field.name]} onChange={(e) => handleChange(field.name, e.target.value)} /> */}
                                             </TableCell>)
                                         }
@@ -245,11 +270,15 @@ export default function IPSCTable() {
                                             {/* <textarea defaultValue={well.remark} onChange={(e) => handleChange("remark", e.target.value)} className='border outline-none p-1' rows={2} cols={20}>
                                         </textarea> */}
                                         </TableCell>
-                                        <TableCell align="center" colSpan={1}>
-                                            {
-                                                well?.isSelected ? '-' : <BsThreeDots onClick={() => bringForward(wellTestResults, wellTestResult, well.productionString)} className='cursor-pointer' />
-                                            }
+                                        <TableCell align="center"  colSpan={1}>
+                                            <Actions actions={[
+                                                { name:`Forward from ${getWellLastTestResult(wellTestResults, wellTestResult, well.productionString)?.wellTestResult?.month || "-"}`, onClick:() => bringForward(wellTestResults, wellTestResult, well.productionString)  },
+                                            ]} >
 
+                                                {
+                                                    well?.isSelected ? '-' : <Tooltip title="Delete"><BsThreeDots className='cursor-pointer w-full ' /></Tooltip> 
+                                                }
+                                            </Actions>
                                         </TableCell>
                                     </TableRow>
                                 })
@@ -270,11 +299,46 @@ export default function IPSCTable() {
 
                     </Table>
                 </TableContainer>}
-            {!searchParams.get('show-analytics') && <div className='flex justify-end py-2'>
-                <Button width={120} onClick={() => {
-                    dispatch(openModal({ component: <SaveAs defaultValue={res?.title} onSave={save} loading={loading} /> }))
-                }} >Commit</Button>
-            </div>}
-        </div>
+            <div className='flex flex-col items-end justify-end py-2'>
+                Enter Gas values <br />
+                <div className='flex gap-2'>
+                    <div>
+                        Export Gas
+                        <Input defaultValue={ipscData?.totals?.exportGas} containerClass={'w-[100px]'} onChange={(e) => setIpscData(prev => {
+                            return {
+                                ...prev,
+                                totals: {
+                                    ...prev?.totals,
+                                    exportGas: parseFloat(e.target.value)
+                                }
+                            }
+                        })} />
+                    </div>
+                    <div>
+                        Fuel Gas
+                        <Input defaultValue={ipscData?.totals?.fuelGas} containerClass={'w-[100px]'} onChange={(e) => setIpscData(prev => {
+                            return {
+                                ...prev,
+                                totals: {
+                                    ...prev?.totals,
+                                    fuelGas: parseFloat(e.target.value)
+                                }
+                            }
+                        })} />
+                    </div>
+                    <div>
+                        Flared Gas
+                        <Input containerClass={'w-[100px]'} disabled value={getTotalOf('gasRate') - (ipscData?.totals?.fuelGas || 0) - (ipscData?.totals?.exportGas || 0)} />
+                    </div>
+                </div>
+            </div>
+            {
+                !searchParams.get('show-analytics') && <div className='flex justify-end py-2'>
+                    <Button width={120} onClick={() => {
+                        dispatch(openModal({ component: <SaveAs defaultValue={res?.title} onSave={save} loading={loading} /> }))
+                    }} >Commit</Button>
+                </div>
+            }
+        </div >
     );
 }

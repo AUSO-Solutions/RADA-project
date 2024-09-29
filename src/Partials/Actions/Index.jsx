@@ -15,7 +15,7 @@ import MenuItem from '@mui/material/MenuItem';
 
 
 
-export default function Actions({ wellTestResult, title , actions}) {
+export default function Actions({ wellTestResult, title, actions, children }) {
     // console.log({ title })
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
@@ -30,10 +30,12 @@ export default function Actions({ wellTestResult, title , actions}) {
 
     return (
         <div>
-            <Button id="basic-button"
+            {children ? <div  onClick={handleClick} >{children}</div> : <Button id="basic-button"
                 aria-controls={open ? 'basic-menu' : undefined}
                 aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined} onClick={handleClick} width={120} >Actions <ArrowDown2 /></Button>
+                aria-expanded={open ? 'true' : undefined} onClick={handleClick} width={120} >
+                Actions <ArrowDown2 />
+            </Button>}
             <Menu
                 id="basic-menu"
                 anchorEl={anchorEl}
@@ -45,7 +47,7 @@ export default function Actions({ wellTestResult, title , actions}) {
             >
 
                 {
-                    actions.map(action =>  <MenuItem onClick={() => { handleClose(); action?.onClick() }}>{action?.name}</MenuItem>)
+                    actions.map(action => <MenuItem onClick={() => { handleClose(); action?.onClick() }}>{action?.name}</MenuItem>)
                 }
                 {/* <MenuItem onClick={() => { handleClose(); dispatch(openModal({ component: <Approve /> })) }}>Approve Result</MenuItem>
                 <MenuItem onClick={() => { handleClose(); dispatch(openModal({ component: <Query wellTestResult={wellTestResult} title={title} /> })) }}>Query Result</MenuItem> */}

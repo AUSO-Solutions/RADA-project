@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -11,7 +11,7 @@ import { sum } from 'utils';
 import { Button } from 'Components';
 import { camelize, updateFlowstationReading } from './helper';
 import { toast } from 'react-toastify';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import RadioSelect from '../RadioSelect';
 import RadaDatePicker from 'Components/Input/RadaDatePicker';
 import { MdOutlineSettings } from 'react-icons/md';
@@ -41,28 +41,32 @@ export default function VolumeMeasurementTable() {
 
   const { search } = useLocation()
   const dispatch = useDispatch()
-  const [setup, setSetup] = React.useState({})
-  const id = React.useMemo(() => new URLSearchParams(search).get('id'), [search])
+  const [setup, setSetup] = useState({})
+  const id = useMemo(() => new URLSearchParams(search).get('id'), [search])
   const { data: res } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'volumeMeasurement', id } })
 
   const { data: attacmentSetup } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'volumeMeasurement', id: res?.attachmentId }, dontFetch: !res?.attachmentId/* */ })
-  React.useEffect(() => { setSetup(res) }, [res])
+  useEffect(() => { setSetup(res) }, [res])
 
-  const [showSettings, setShowSettings] = React.useState(false)
-  const [currReport, setCurrReport] = React.useState(setup?.reportTypes?.[0])
-  const [date, setDate] = React.useState(dayjs().format(""))
+  const [showSettings, setShowSettings] = useState(false)
+  const [currReport, setCurrReport] = useState(setup?.reportTypes?.[0])
+  const [searchParams, setSearchParams] = useSearchParams()
 
-  React.useEffect(() => {
-    setCurrReport(setup?.reportTypes?.[0])
+
+  const [date, setDate] = useState(dayjs().format(""))
+
+  useEffect(() => {
+    const currReport__ = searchParams.get('reportType')
+    setCurrReport(currReport__ || setup?.reportTypes?.[0])
     dispatch(setWholeSetup(setup))
-  }, [setup, dispatch])
+  }, [setup, dispatch, searchParams])
 
   //  const isGas = currReport === "Gas"
   const isNet = currReport === "Net Oil/ Condensate"
   const isGross = currReport === 'Gross Liquid'
 
-  const [tableValues, setTableValues] = React.useState({})
-  const [totals, setTotals] = React.useState({
+  const [tableValues, setTableValues] = useState({})
+  const [totals, setTotals] = useState({
     netProductionTotal: 0,
     netTargetTotal: 0,
     bswTotal: 0,
@@ -139,7 +143,7 @@ export default function VolumeMeasurementTable() {
     })
 
   }
-  React.useEffect(() => {
+  useEffect(() => {
     const values = (Object.values(tableValues))
     const calcs = {
       netProductionTotal: sum(Object.values(values || {}).map(item => item?.subTotal || 0)),
@@ -150,7 +154,7 @@ export default function VolumeMeasurementTable() {
     setTotals(calcs)
   }, [tableValues])
 
-  React.useEffect(() => {
+  useEffect(() => {
     setup?.flowStations?.forEach((flowStation, flowStationIndex) => {
       const readings = flowStation?.readings || []
       readings.forEach((reading, readingIndex) => {
@@ -174,6 +178,11 @@ export default function VolumeMeasurementTable() {
     if (type === 'gross') return grossResult
     if (isNaN(netResult || netResult)) return 0
   }
+
+  const { data: IPSCs } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: 'IPSC' } })
+  console.log(IPSCs)
+  const IPSC = IPSCs?.find(IPSC => IPSC?.month === dayjs().format('YYYY-MM'))
+  const targets = IPSC?.totals
   const save = async (e) => {
 
     e.preventDefault()
@@ -235,13 +244,19 @@ export default function VolumeMeasurementTable() {
   const navigate = useNavigate()
   const onSelectReportType = (e) => {
     if (e === 'Gas') navigate(`/users/fdc/daily/gas-table?id=${attacmentSetup?.id}`)
-    else setCurrReport(e)
+    else {
+      setCurrReport(e)
+      setSearchParams(prev => {
+        prev.set("reportType", e)
+        return prev
+      })
+    }
   }
   return (
     <>
       <div className='flex justify-between my-2 px-2 items-center'>
         <div className='flex gap-4 items-center'>
-          {currReport ? <RadioSelect onChange={onSelectReportType} defaultValue={currReport} list={setup?.reportTypes?.concat(attacmentSetup?.reportTypes)} /> : 'Loading report...'} <RadaSwitch label="Edit Table" labelPlacement="left" />
+          {currReport ? <RadioSelect key={currReport} onChange={onSelectReportType} defaultValue={currReport} list={setup?.reportTypes?.concat(attacmentSetup?.reportTypes)} /> : 'Loading report...'} <RadaSwitch label="Edit Table" labelPlacement="left" />
         </div>
         <div className='flex items-center gap-2 '>
           <AttachSetup setup={setup} />
@@ -267,7 +282,7 @@ export default function VolumeMeasurementTable() {
                   Meter/Tank Readings
                 </TableCell>
                 <TableCell align="center">Net Production</TableCell>
-                <TableCell align="center">Net Target</TableCell>
+                <TableCell align="center">{isNet ? 'Net' : 'Gross'} Target</TableCell>
                 <TableCell align="center">BS&W</TableCell>
                 <TableCell align="center">Gross</TableCell>
               </TableRow>
@@ -341,7 +356,7 @@ export default function VolumeMeasurementTable() {
                         <TableCell sx={{ bgcolor: 'rgba(178, 181, 182, 0.2)' }} align="center">
                           {isNet ? (tableValues?.[name]?.subTotal || 0) : calculatedGrossOrnNet(tableValues?.[name]?.subTotal, tableValues?.[name]?.bsw, 'gross')}
                         </TableCell>
-                        <TableCell align="center"><TableInput type='number' onChange={(e) => handleChange({ flowStation: name, flowStationField: 'netTarget', value: e.target.value, readingIndex: null })} /></TableCell>
+                        <TableCell align="center"><TableInput type='number' disabled value={isNet ? targets?.oilRate : targets?.gross} /></TableCell>
                         <TableCell align="center"><TableInput type='number' onChange={(e) => handleChange({ flowStation: name, flowStationField: 'bsw', value: e.target.value, readingIndex: null })} /></TableCell>
                         <TableCell align="center">
                           {isGross ? (tableValues?.[name]?.subTotal || 0) : calculatedGrossOrnNet(tableValues?.[name]?.subTotal, tableValues?.[name]?.bsw, 'net')}

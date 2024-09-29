@@ -20,6 +20,7 @@ import Files from "Partials/Files"
 import { createWellTitle, firebaseFileUpload } from "utils"
 import { BsPlus } from "react-icons/bs"
 import dayjs from "dayjs"
+import ExcelToCsv from "Partials/ExcelToCSV"
 
 
 
@@ -340,6 +341,9 @@ const ImporFiles = () => {
     // }, [setupData])
     return (
         <div className="w-full  flex ">
+            <ExcelToCsv >
+                HHH
+            </ExcelToCsv>
             <input name="chokeSizes" type="file" hidden onChange={handleFiles} id="chokeSizes" />
             <label htmlFor="chokeSizes" className="block  border w-[50%] rounded m-3 p-3">
                 <BsPlus size={50} className="mx-auto" />
@@ -400,7 +404,7 @@ const Schedule = () => {
             const payload = {
                 title: setupData?.title, chokeSizesFileName, reservoirStaticParametersFileName, date: dayjs().format("DD/MM/YYYY")
             }
-             await firebaseFunctions('createMerSchedule', payload)
+            await firebaseFunctions('createMerSchedule', payload)
             // console.log({ data }, '----')
 
             // dispatch(setWholeSetup(data))
