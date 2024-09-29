@@ -132,7 +132,7 @@ export default function MERDataTable() {
                 <Table sx={{ minWidth: 700 }} >
                     <TableHead>
                         <TableRow sx={{ bgcolor: `rgba(239, 239, 239, 1) !important`, color: 'black', fontWeight: 'bold  !important' }}>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={3} >Field 1</TableCell>
+                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={2} >Field 1</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Choke </TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center" colSpan={3} > Test Date  </TableCell>
                             {/* <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Fluid Type  </TableCell> */}
@@ -154,8 +154,8 @@ export default function MERDataTable() {
                         </TableRow>
                         <TableRow>
                             <TableCell style={{ fontWeight: '600' }} align="center" >Reservoir </TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" >Production string </TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" >String </TableCell>
+                            <TableCell style={{ fontWeight: '600' }} align="center" >Production String </TableCell>
+                            {/* <TableCell style={{ fontWeight: '600' }} align="center" >String </TableCell> */}
                             <TableCell style={{ fontWeight: '600' }} align="center">Size(64")</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center">Start Date</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center">End Date</TableCell>
@@ -195,9 +195,9 @@ export default function MERDataTable() {
                                     <TableCell align="center">
                                         {well?.productionString}
                                     </TableCell>
-                                    <TableCell align="center">
+                                    {/* <TableCell align="center">
                                         {'L'}
-                                    </TableCell>
+                                    </TableCell> */}
                                     <TableCell align="center">
                                         {well?.chokeSize}
                                     </TableCell>

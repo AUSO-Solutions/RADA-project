@@ -67,8 +67,8 @@ export default function MERScheduleTable() {
                             <TableCell style={{ fontWeight: '600' }} align="center" >
                                 Reservoir
                             </TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center">Production string</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center">String</TableCell>
+                            <TableCell style={{ fontWeight: '600' }} align="center">Production String</TableCell>
+                            {/* <TableCell style={{ fontWeight: '600' }} align="center">String</TableCell> */}
                             <TableCell style={{ fontWeight: '600' }} align="center">Test Choke (/64")</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center">On Program</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center">Start Date</TableCell>
@@ -95,9 +95,9 @@ export default function MERScheduleTable() {
                                         <TableCell align="center">
                                             {well?.productionString}
                                         </TableCell>
-                                        <TableCell align="center">
+                                        {/* <TableCell align="center">
                                             {'L'}
-                                        </TableCell>
+                                        </TableCell> */}
                                         <TableCell align="center">
                                             {well?.chokeSize || '-'}
                                         </TableCell>
