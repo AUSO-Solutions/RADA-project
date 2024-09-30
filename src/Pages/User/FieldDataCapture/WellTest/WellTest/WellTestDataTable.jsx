@@ -19,7 +19,7 @@ import { closeModal, openModal } from 'Store/slices/modalSlice';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { createWellTitle, sum } from 'utils';
-import Actions from 'Partials/Actions';
+import Actions from 'Partials/Actions/Actions';
 import { Query } from 'Partials/Actions/Query';
 import { Approve } from 'Partials/Actions/Approve';
 
