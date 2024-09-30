@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import Select from 'react-select'
 
 
-const RadaSelect = ({ name, onChange, options, isMulti, ...rest }) => {
+const RadaSelect = ({ name, placeholder, onChange, options, isMulti, ...rest }) => {
     // console.log(options)
 
     const [value, setValue] = useState(isMulti ? [] : rest?.defaultValue)
@@ -22,8 +22,8 @@ const RadaSelect = ({ name, onChange, options, isMulti, ...rest }) => {
 
     return (
         <>
-            <input required={rest?.required} key={rest?.key} type='text' hidden name={name} value={isMulti ? value?.map(x => x?.value).join('-sal-,-sal-') + "select-array-list" : value ? value?.value : ""} />
-            <Select options={options} isMulti={isMulti} onChange={(e) => {
+            <input required={rest?.required} key={rest?.key}  type='text' hidden name={name} value={isMulti ? value?.map(x => x?.value).join('-sal-,-sal-') + "select-array-list" : value ? value?.value : ""} />
+            <Select placeholder={placeholder} options={options} isMulti={isMulti} onChange={(e) => {
                 setValue(e)
                 if (isMulti) {
                     const _c = e?.map(x => x?.value)

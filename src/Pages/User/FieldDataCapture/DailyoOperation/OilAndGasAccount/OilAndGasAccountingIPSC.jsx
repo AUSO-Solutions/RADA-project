@@ -8,7 +8,7 @@ import TableRow from '@mui/material/TableRow';
 import tableStyles from '../table.module.scss'
 
 
-export default function OilGasAccountingIPSCTable({ wellTestResult }) {
+export default function OilGasAccountingIPSCTable({ IPSC }) {
     // const [searchParams,] = useSearchParams()
     // const { data: res } = useFetch({ firebaseFunction: 'getSetup', payload: { id: searchParams.get('id'), setupType: 'oilAndGasAccounting' } })
     // const { data: IPSCs } = useFetch({ firebaseFunction: 'getSetups', payload: { id: searchParams.get('id'), setupType: 'IPSC' } })
@@ -52,7 +52,7 @@ export default function OilGasAccountingIPSCTable({ wellTestResult }) {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {Object.values(wellTestResult?.wellTestResultData || {}).sort((a, b) => ((b?.isSelected ? 1 : 0) - (a?.isSelected ? 1 : 0)))?.map((well, i) => {
+                    {Object.values(IPSC?.wellTestResultData || {}).sort((a, b) => ((b?.isSelected ? 1 : 0) - (a?.isSelected ? 1 : 0)))?.map((well, i) => {
 
                         return <TableRow>
                             <TableCell align="center">{well?.productionString}

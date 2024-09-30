@@ -8,6 +8,9 @@ import gasutilized from 'Assets/images/gasutilized.svg'
 import InsightsGraphCard from "Components/insightsGraphCard";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine, } from 'recharts';
 import OilProductionVariantChart from "./OilProductionVariantChart";
+import { useFetch } from "hooks/useFetch";
+import { useAssetNames } from "hooks/useAssetNames";
+
 
 
 
@@ -99,6 +102,15 @@ const GasProductionChart = () => {
 
 const Insights = () => {
 
+
+    const { assetNames } = useAssetNames()
+    console.log(assetNames)
+
+
+
+    const { data } = useFetch({ firebaseFunction: 'getInsight', payload: { asset: 'OML 152', date : '22/07/2024', frequency: 'daily', flowstation:'EFE Flowstation', month:'July', year:'2024 '  } });
+    console.log(data)
+
     return (
         <div className="bg-[#FAFAFA]" >
             <div className="mx-5 pt-3 flex flex-row  gap-5 " >
@@ -111,8 +123,8 @@ const Insights = () => {
 
             <div className="pt-5 flex flex-row flex-wrap justify-evenly shadow rounded" style={{ rowGap: "12px" }}>
                 <InsightsGraphCard>{<OilProductionChart />}</InsightsGraphCard>
-                <InsightsGraphCard >{<OilProductionVariantChart/>}</InsightsGraphCard>
-                <InsightsGraphCard>{<GasProductionChart/>}</InsightsGraphCard>
+                <InsightsGraphCard >{<OilProductionVariantChart />}</InsightsGraphCard>
+                <InsightsGraphCard>{<GasProductionChart />}</InsightsGraphCard>
                 <InsightsGraphCard />
             </div>
         </div>

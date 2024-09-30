@@ -25,8 +25,8 @@ export default function IPSCAnalytics() {
 
 
 
-    const diff = (value1 = 0, value2 = 0) => {
-        return Math.abs(parseFloat(value1) - parseFloat(value2))
+    const diff = (newValue = 0, oldValue = 0) => {
+        return (Math.abs(parseFloat(newValue) - parseFloat(oldValue)) / oldValue) * 100
     }
 
 
@@ -72,7 +72,7 @@ export default function IPSCAnalytics() {
                     </TableHead>
                     <TableBody>
                         {
-                            Object.values(wellTestResult1?.wellTestResultData || {}).sort((a, b) => ((b?.isSelected ? 1 : 0) - (a?.isSelected ? 1 : 0)))?.map((well, i) => {
+                            Object.values(res?.wellTestResultData || {}).sort((a, b) => ((b?.isSelected ? 1 : 0) - (a?.isSelected ? 1 : 0)))?.map((well, i) => {
 
                                 return <TableRow key={well?.productionString}>
                                     <TableCell align="center">
@@ -90,11 +90,12 @@ export default function IPSCAnalytics() {
                                     {
                                         fields.map(field => {
                                             const difference = diff(well?.[field.name], wellTestResult2?.wellTestResultData?.[well.productionString]?.[field.name])
-                                            const tolerate = (ipsc?.toleranceValues?.[field.name] ?? 0 ) > difference
+                                            const tolerate = (ipsc?.toleranceValues?.[field.name] ?? 0) <= difference
                                             return showTolerance ?
-                                                <TableCell  style={{ backgroundColor: tolerate ? '#FF5252' : '#A7EF6F', width: '97%', height: '97% !important'  }} align="center">
-                                                    <div style={{ backgroundColor: tolerate ? '#FF5252' : '#A7EF6F', width: '97%', height: '97% !important'  }}>
-                                                        {difference ?? "-"}</div>
+                                                <TableCell style={{ backgroundColor: tolerate ? '#FF5252' : '#A7EF6F', width: '97%', height: '97% !important' }} align="center">
+                                                    <div style={{ backgroundColor: tolerate ? '#FF5252' : '#A7EF6F', width: '97%', height: '97% !important' }}>
+                                                        {difference ?? "-"}
+                                                        </div>
                                                 </TableCell>
                                                 :
                                                 <TableCell align="center">{wellTestResult2?.wellTestResultData?.[well.productionString]?.[field.name] ?? "-"}

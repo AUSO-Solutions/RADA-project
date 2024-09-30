@@ -17,7 +17,8 @@ import { useAssetByName } from "hooks/useAssetByName"
 import { Chip } from "@mui/material"
 import dayjs from "dayjs"
 import Files from "Partials/Files"
-import { createWellTitle } from "utils"
+import { createWellTitle, firebaseFileUpload } from "utils"
+import { BsPlus } from "react-icons/bs"
 
 
 
@@ -311,6 +312,47 @@ const StaticParameters = () => {
     </>
 }
 
+const ImporFiles = () => {
+    const dispatch = useDispatch()
+    const handleFiles = async (e) => {
+
+        try {
+            const name = e.target.name
+            const file = e.target.files[0]
+
+            // dispatch(setSetupData({ name, value: file }))
+            // const formData = new FormData()
+            console.log(name, file)
+            // if (name === 'chokeSizes') {
+            // formData.append(name, file)
+            const res = await firebaseFileUpload(file, Math.random()+file?.name)
+            console.log(res)
+            await firebaseFunctions("validateProductionStringsChokeSizesFile", { filename: res })
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    const setupData = useSelector(state => state.setup)
+
+    // useEffect(() => {
+    //     if (setupData?.chokeSizes?.name)
+    // }, [setupData])
+    return (
+        <div className="w-full  flex ">
+            <input name="chokeSizes" type="file" hidden onChange={handleFiles} id="chokeSizes" />
+            <label htmlFor="chokeSizes" className="block  border rounded m-3 p-3">
+                <BsPlus size={50} className="mx-auto" />
+                {setupData?.chokeSizes?.name || " Import file for production strings chokes"}
+            </label>
+
+            <input t name="staticParameters" type="file" hidden onChange={handleFiles} id="reserviorParaemters" />
+            <label htmlFor="reserviorParaemters" className="block border rounded m-3 p-3">
+                <BsPlus size={50} className="mx-auto" />
+                {setupData?.staticParameters?.name || "Import file for Reservoir Parameters"}
+            </label>
+        </div>
+    )
+}
 
 const SaveAs = () => {
     const setupData = useSelector(state => state.setup)
@@ -368,14 +410,15 @@ const Schedule = () => {
             {
                 <Setup
                     title={'Setup MER Data Schedule'}
-                    steps={["Select Asset", "Define Schedule", "Static Parameters", "Save As"]}
+                    steps={["Import files", "Save As"]}
                     onSave={save}
                     rightLoading={loading}
                     existing={<Exists />}
                     stepComponents={[
-                        <SelectAsset />,
-                        <DefineSchedule />,
-                        <StaticParameters />,
+                        // <SelectAsset />,
+                        // <DefineSchedule />,
+                        // <StaticParameters />,
+                        <ImporFiles />,
                         <SaveAs />
                     ]}
                 />

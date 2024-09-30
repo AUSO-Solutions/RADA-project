@@ -1,8 +1,10 @@
 import dayjs from "dayjs"
 import { toast } from "react-toastify"
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { project_storage } from "firebase-config";
 
 export const sum = (array = []) => {
-    if (Array.isArray(array) && array?.length) return array.reduce((a, b) => parseFloat(a) + parseFloat(b))
+    if (Array.isArray(array) && array?.length) return parseFloat(array.reduce((a, b) => parseFloat(a) + parseFloat(b)))
     return 0
 }
 export const createWellTitle = (setup, type) => {
@@ -38,4 +40,27 @@ export const getWellLastTestResult = (wellTestResults, wellTestResult, productio
     }
     // console.log(lastTestResult, productionStringData)
     return { wellTestResult: lastTestResult, productionStringData }
+}
+
+export const firebaseFileUpload = async (file, name = Date.now() + Math.random()) => {
+    try {
+        const storageRef = ref(project_storage, name);
+        const snapshot = await uploadBytes(storageRef, file)
+        console.log('Uploaded a blob or file!', snapshot);
+        return snapshot.ref.fullPath
+    } catch (error) {
+        console.log(error)
+        throw error
+    }
+}
+
+export const firebaseGetUploadedFile = async (path) => {
+    try {
+        // const storage = getStorage();
+        const url = await getDownloadURL(ref(project_storage, 'images/stars.jpg'))
+        return url
+    } catch (error) {
+        console.log(error)
+        throw error
+    }
 }

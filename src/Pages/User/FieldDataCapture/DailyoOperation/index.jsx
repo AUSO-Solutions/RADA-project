@@ -11,26 +11,30 @@ import { useSearchParams } from 'react-router-dom'
 const tabs = [
   {
     title: 'Summary',
-    Component: <Summary />
+    Component: <Summary />,
+    path: 'summary'
   },
   {
     title: 'Volume Measurement',
-    Component: <VolumeMeasurement />
+    Component: <VolumeMeasurement />,
+    path: 'volume-measurement'
   },
   {
     title: 'Oil & Gas Accounting',
-    Component: <OilGasAccounting />
+    Component: <OilGasAccounting />,
+    path:'oil-and-gas-accounting'
   },
   {
     title: 'Shipping Records',
-    Component: <ShippingRecords />
+    Component: <ShippingRecords />,
+    path:'shipping-record'
   }
 ]
 const FDC = () => {
-  const toPage = str => str.replaceAll(' ', '-').toLowerCase()
+  // const toPage = str => str.replaceAll(' ', '-').toLowerCase()
   const [searchParams, setSearchParaams] = useSearchParams()
   const tab = useMemo(() => {
-    const index = tabs.findIndex(tab => searchParams.get('tab') === toPage(tab.title))
+    const index = tabs.findIndex(tab => searchParams.get('tab') === (tab.path))
     return index > -1 ? index : 0
   }, [searchParams])
   return (
@@ -41,7 +45,7 @@ const FDC = () => {
 
       < tabs style={{ display: 'flex', gap: '40px', paddingLeft: 40, borderBottom: "1px solid rgba(230, 230, 230, 1)" }} >
         {tabs.map((x, i) => <Tab key={i} text={x.title} active={i === tab} onClick={() => setSearchParaams(prev => {
-          prev.set("tab", toPage(x.title))
+          prev.set("tab", (x.path))
           return prev
         })} />)}
       </ tabs>

@@ -288,6 +288,15 @@ const SaveAs = () => {
 
 const Existing = ({ onSelect = () => null }) => {
   const { data } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "volumeMeasurement" } })
+  useEffect(() => {
+    // console.log({data})
+    if (data.length) {
+      const sorted = data.sort((a, b) => a.created - b.created)
+      // console.log(sorted.map)
+      const lastSetup = sorted[sorted.length - 1]
+      console.log(dayjs(lastSetup?.created).format('MMM-DD hh:mm A'))
+    }
+  }, [data])
 
   return (
     <div className=" flex flex-wrap gap-4 m-5 ">
@@ -345,25 +354,25 @@ const VolumeMeasurement = () => {
 
   return (
     < >
-   <Setup
-            title={'Setup Volume Measurement Parameters'}
-            steps={["Select Asset", "Define Report", "Measurement Type", "Select Flowstations", "Preview", "SaveAs"]}
-            // type={'volumeMeasurement'}
-            existing={<Existing/>}
-            rightBtnLoading={loading}
-            // onSetWholeSetup={}
-            stepComponents={
-              [
-                <SelectAsset />,
-                <DefineReport />,
-                <SelectMeasurementType />,
-                <SelectFlowStation />,
-                <Preview />, <SaveAs />
-              ]
-            }
-            onSave={save}
-          />
-  
+      <Setup
+        title={'Setup Volume Measurement Parameters'}
+        steps={["Select Asset", "Define Report", "Measurement Type", "Select Flowstations", "Preview", "SaveAs"]}
+        // type={'volumeMeasurement'}
+        existing={<Existing />}
+        rightBtnLoading={loading}
+        // onSetWholeSetup={}
+        stepComponents={
+          [
+            <SelectAsset />,
+            <DefineReport />,
+            <SelectMeasurementType />,
+            <SelectFlowStation />,
+            <Preview />, <SaveAs />
+          ]
+        }
+        onSave={save}
+      />
+
     </>
   )
 }

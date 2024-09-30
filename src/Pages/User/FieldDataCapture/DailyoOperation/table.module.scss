@@ -2,7 +2,7 @@
     max-width: 80vw;
     // overflow: scroll;    overflow: hidden;
     tr{
-        height: 50px;
+        // height: 50px;
     }
     th,td {
         border: .1px solid rgba(186, 186, 186, 1) !important;
@@ -13,6 +13,10 @@
         input {
             width: 100%;
             height: 50px;
+        }
+        padding: 20px 5px ;
+        &:has(input){
+            padding: 5px ;
         }
     }
 }
