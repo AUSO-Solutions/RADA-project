@@ -12,6 +12,7 @@ const { createSetup, deleteSetup, getSetups, updateSetup, getSetup } = require("
 const { captureOilOrCondensate, captureGas, updateOilOrCondensate, getOilOrCondensateVolumeByID, deleteOilOrCondensateVolumeByID, getOilOrCondensateVolumesByAsset } = require("./fielddatacapturesetup/volume.measurement");
 const { createMerSchedule } = require("./fielddatacapturesetup/merdataSetup");
 const {processIPSC} = require('./fielddatacapturesetup/oilandgasaccounting/')
+const {getInsight} =  require('./admin/insights')
 // const { setupWellTestData, getSetups, updateWellTestData, deleteWellTestDataSetup } = require('./fielddatacapturesetup/welltestsetup')
 
 admin.initializeApp()
@@ -41,5 +42,6 @@ module.exports = {
   deleteOilOrCondensateVolumeByID,
 
   createMerSchedule,
-  processIPSC
+  processIPSC,
+  getInsight
 }

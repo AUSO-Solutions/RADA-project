@@ -49,10 +49,12 @@ export default function IPSCTable() {
     const [searchParams, setSearchParams] = useSearchParams()
     const [loading, setLoading] = useState(false)
     const [ipscData, setIpscData] = useState({})
+
+    const [flowstationsTargets, setFlowstationTragets] = useState({})
     const id = useMemo(() => new URLSearchParams(search).get('id'), [search])
     const { data: res } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'IPSC', id: id } })
     // console.log(res)
-    useEffect(() => { setIpscData(res) }, [res])
+    useEffect(() => { setIpscData(res); setFlowstationTragets(res?.flowstationsTargets) }, [res])
     const { data: wellTestResult___ } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'wellTestResult', id: res?.wellTestResult1?.id, }, dontFetch: !res?.wellTestResult1?.id })
     const { data: wellTestResults } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: 'wellTestResult', } })
     const [showSettings, setShowSettings] = useState(false)
@@ -81,24 +83,23 @@ export default function IPSCTable() {
         setLoading(true)
         try {
 
-            const arr = Object.values(ipscData?.wellTestResultData || {})
-            const totals = {
-                gross: sum(arr.map(item => item?.gross || 0)),
-                oilRate: sum(arr.map(item => item?.oilRate || 0)),
-                gasRate: sum(arr.map(item => item?.gasRate || 0)),
-                exportGas: ipscData?.totals?.exportGas,
-                fuelGas: ipscData?.totals?.fuelGas,
-                flaredGas: sum(arr.map(item => item?.gasRate || 0)) - ipscData?.totals?.fuelGas - ipscData?.totals?.exportGas,
+            const arr = Object.values(flowstationsTargets || {})
+            const len =  arr.length
+            const averageTarget = {
+                gross: sum(arr.map(item => item?.gross || 0))/len,
+                oilRate: sum(arr.map(item => item?.oilRate || 0))/len,
+                gasRate: sum(arr.map(item => item?.gasRate || 0))/len,
+                exportGas:  sum(arr.map(item => item?.exportGas || 0))/len,
+                fuelGas:  sum(arr.map(item => item?.fuelGas || 0))/len,
+                gasFlaredUSM:  sum(arr.map(item => item?.gasFlaredUSM || 0))/len,
             }
-            const payload = { title: title, setupType: 'IPSC', wellTestResultData: ipscData?.wellTestResultData, id, totals }
-            if (payload.totals.gasRate !== payload.totals.exportGas + payload.totals.flaredGas + payload.totals.fuelGas) {
-                toast.error("Gas rate total must be equal to the summation of the gas types ")
-                return
-            }
-            console.log(payload)
+            const payload = { title: title, setupType: 'IPSC', wellTestResultData: ipscData?.wellTestResultData, id, flowstationsTargets, averageTarget }
+            // if (payload.totals.gasRate !== payload.totals.exportGas + payload.totals.gasFlaredUSM + payload.totals.fuelGas) {
+            //     toast.error("Gas rate total must be equal to the summation of the gas types ")
+            //     return
+            // }
+            // console.log(payload)
             await firebaseFunctions('updateSetup', payload)
-
-
             dispatch(closeModal())
             toast.success('Data saved to IPSC')
         } catch (error) {
@@ -131,20 +132,30 @@ export default function IPSCTable() {
         return total
     }
 
-    // useEffect(() => {
 
-    //     setIpscData(prev => {
-    //         return {
-    //             ...prev,
-    //             totals: {
-    //                 ...prev?.totals,
-    //                 flaredGas: getTotalOf('gasRate') - prev?.totals?.fuelGas - prev?.totals?.exportGas
-    //             }
-    //         }
-    //     })
+    useEffect(() => {
+        const ipscResults = Object.values(ipscData?.wellTestResultData || {})
+        const flowstations = Array.from(new Set(ipscResults.map(item => item?.flowstation)))
+        setFlowstationTragets((prev) => {
+            let targets = {}
+            flowstations.forEach((flowstation) => {
+                const results = ipscResults?.filter(result => result.flowstation === flowstation)
+                const getTotalOfinFlowstation = (key) => sum(results?.map(result => result?.[key]))
+                targets[flowstation] = {
+                    ...prev[flowstation],
+                    flowstation,
+                    // target: {
+                    oilRate: getTotalOfinFlowstation('oilRate'),
+                    gasRate: getTotalOfinFlowstation('gasRate'),
+                    gross: getTotalOfinFlowstation('gross'),
+                    // }
+                }
+            })
+            return targets
+        })
 
-    // }, [ipscData?.totals?.fuelGas, ipscData?.totals?.exportGas, getTotalOf])
-
+    }, [ipscData?.wellTestResultData])
+    // console.log(flowstationsTargets)
     return (
         < div className=' w-[80vw] px-3'>
             {showSettings && <ToleranceSettiings onClickOut={() => setShowSettings(false)} />}
@@ -270,13 +281,13 @@ export default function IPSCTable() {
                                             {/* <textarea defaultValue={well.remark} onChange={(e) => handleChange("remark", e.target.value)} className='border outline-none p-1' rows={2} cols={20}>
                                         </textarea> */}
                                         </TableCell>
-                                        <TableCell align="center"  colSpan={1}>
+                                        <TableCell align="center" colSpan={1}>
                                             <Actions actions={[
-                                                { name:`Forward from ${getWellLastTestResult(wellTestResults, wellTestResult, well.productionString)?.wellTestResult?.month || "-"}`, onClick:() => bringForward(wellTestResults, wellTestResult, well.productionString)  },
+                                                { name: `Forward from ${getWellLastTestResult(wellTestResults, wellTestResult, well.productionString)?.wellTestResult?.month || "-"}`, onClick: () => bringForward(wellTestResults, wellTestResult, well.productionString) },
                                             ]} >
 
                                                 {
-                                                    well?.isSelected ? '-' : <Tooltip title="Delete"><BsThreeDots className='cursor-pointer w-full ' /></Tooltip> 
+                                                    well?.isSelected ? '-' : <Tooltip title="Delete"><BsThreeDots className='cursor-pointer w-full ' /></Tooltip>
                                                 }
                                             </Actions>
                                         </TableCell>
@@ -299,37 +310,50 @@ export default function IPSCTable() {
 
                     </Table>
                 </TableContainer>}
-            <div className='flex flex-col items-end justify-end py-2'>
-                Enter Gas values <br />
-                <div className='flex gap-2'>
-                    <div>
-                        Export Gas
-                        <Input defaultValue={ipscData?.totals?.exportGas} containerClass={'w-[100px]'} onChange={(e) => setIpscData(prev => {
-                            return {
-                                ...prev,
-                                totals: {
-                                    ...prev?.totals,
-                                    exportGas: parseFloat(e.target.value)
-                                }
-                            }
-                        })} />
-                    </div>
-                    <div>
-                        Fuel Gas
-                        <Input defaultValue={ipscData?.totals?.fuelGas} containerClass={'w-[100px]'} onChange={(e) => setIpscData(prev => {
-                            return {
-                                ...prev,
-                                totals: {
-                                    ...prev?.totals,
-                                    fuelGas: parseFloat(e.target.value)
-                                }
-                            }
-                        })} />
-                    </div>
-                    <div>
-                        Flared Gas
-                        <Input containerClass={'w-[100px]'} disabled value={getTotalOf('gasRate') - (ipscData?.totals?.fuelGas || 0) - (ipscData?.totals?.exportGas || 0)} />
-                    </div>
+            <div className='flex  justify-between py-2'>
+                <Text weight={600}>
+                    {/* Flowstations */}
+                </Text>
+                <div>
+                    <Text weight={600}>
+                        Enter Gas values
+                    </Text><br />
+                    {
+                        Object.values(flowstationsTargets || {}).map(flowstationsTarget => {
+                            return <>
+                                {flowstationsTarget?.flowstation}
+                                <div className='flex gap-2'>
+                                    <div>
+                                        Export Gas
+                                        <Input min={0} defaultValue={ipscData?.flowstationsTargets?.[flowstationsTarget?.flowstation]?.exportGas} containerClass={'w-[100px]'}
+                                            onChange={(e) => setFlowstationTragets((prev) => ({
+                                                ...prev,
+                                                [flowstationsTarget?.flowstation]: {
+                                                    ...prev?.[flowstationsTarget?.flowstation],
+                                                    exportGas: parseFloat(e.target.value),
+                                                    gasFlaredUSM: prev?.gasRate - parseFloat(e.target.value) - (prev?.fuelGas)
+                                                }
+                                            }))} />
+                                    </div>
+                                    <div>
+                                        Fuel Gas
+                                        <Input min={0} defaultValue={ipscData?.flowstationsTargets?.[flowstationsTarget?.flowstation]?.fuelGas} containerClass={'w-[100px]'}
+                                            onChange={(e) => setFlowstationTragets((prev) => ({
+                                                ...prev,
+                                                [flowstationsTarget?.flowstation]: {
+                                                    ...prev?.[flowstationsTarget?.flowstation],
+                                                    fuelGas: parseFloat(e.target.value),
+                                                    gasFlaredUSM: prev?.[flowstationsTarget?.flowstation]?.gasRate - parseFloat(e.target.value) - (prev?.[flowstationsTarget?.flowstation]?.exportGas || 0)
+                                                }
+                                            }))} />
+                                    </div>
+                                    <div>
+                                        Flared Gas
+                                        <Input min={0} containerClass={'w-[100px]'} disabled value={flowstationsTargets?.[flowstationsTarget?.flowstation]?.gasFlaredUSM} />
+                                    </div>
+                                </div></>
+                        })
+                    }
                 </div>
             </div>
             {

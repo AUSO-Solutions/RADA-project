@@ -25,6 +25,7 @@ import { useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
 import { firebaseFunctions } from 'Services';
 import AttachSetup from './AttachSetup';
+import { Alert } from '@mui/material';
 
 
 const TableInput = (props) => {
@@ -53,7 +54,7 @@ export default function VolumeMeasurementTable() {
   const [searchParams, setSearchParams] = useSearchParams()
 
 
-  const [date, setDate] = useState(dayjs().format(""))
+  const [, setDate] = useState(dayjs().format(""))
 
   useEffect(() => {
     const currReport__ = searchParams.get('reportType')
@@ -180,9 +181,10 @@ export default function VolumeMeasurementTable() {
   }
 
   const { data: IPSCs } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: 'IPSC' } })
-  console.log(IPSCs)
-  const IPSC = IPSCs?.find(IPSC => IPSC?.month === dayjs().format('YYYY-MM'))
-  const targets = IPSC?.totals
+  // console.log(IPSCs)
+  const IPSC = IPSCs?.find(IPSC => IPSC?.month === dayjs().format('YYYY-MM') && IPSC?.asset === setup?.asset)
+  const flowstationsTargets = IPSC?.flowstationsTargets
+  const averageTarget = IPSC?.averageTarget
   const save = async (e) => {
 
     e.preventDefault()
@@ -195,11 +197,12 @@ export default function VolumeMeasurementTable() {
       "Gross Liquid": "gross", "Net Oil/ Condensate": "netProduction"
     }
     const payload = {
-      date: dayjs(date).format("DD/MM/YYYY"),
+      date: dayjs().format("DD/MM/YYYY"),
       asset: setup.asset,
       fluidType: currReport,
       totals,
       setupId: setup?.id,
+      averageTarget,
       flowstations: flowStations.map(flowStation => {
         const addDeduction = flowStation?.measurementType === 'tankDipping' ? {
           deduction: {
@@ -218,7 +221,8 @@ export default function VolumeMeasurementTable() {
             gross: isGross ? flowStation?.subTotal : calculatedGrossOrnNet(flowStation?.subTotal, flowStation?.bsw, 'net'),
             bsw: flowStation?.bsw,
             netProduction: isNet ? flowStation?.subTotal : calculatedGrossOrnNet(flowStation?.subTotal, flowStation?.bsw, 'gross'),
-            netTarget: flowStation?.netTarget,
+            netTarget: flowstationsTargets?.[flowStation?.name]?.oilRate,
+            grossTarget: flowstationsTargets?.[flowStation?.name]?.gross,
           },
           meters: Object.values(flowStation?.meters || {})?.map(meter => ({
             serialNumber: meter?.serialNumber,
@@ -234,6 +238,7 @@ export default function VolumeMeasurementTable() {
       }),
     };
     try {
+      console.log(payload)
       await firebaseFunctions('captureOilOrCondensate', payload)
       toast.success("Successful")
     } catch (error) {
@@ -269,9 +274,13 @@ export default function VolumeMeasurementTable() {
           </div>
         </div>
       </div>
+
       {showSettings && <VolumeSettings onClickOut={() => setShowSettings(false)} onComplete={setSetup} />}
       < form className='px-3 ' onSubmit={save} >
         <TableContainer className={`m-auto border ${tableStyles.borderedMuiTable}`}>
+         {!IPSC && <Alert severity='info' className='my-2' hidden={!IPSC}>
+            No IPSC for this {setup?.asset} this month
+          </Alert>}
           <Table sx={{ minWidth: 700 }} >
             <TableHead >
               <TableRow sx={{ bgcolor: `rgba(239, 239, 239, 1) !important`, color: 'black', fontWeight: 'bold  !important' }}>
@@ -356,7 +365,7 @@ export default function VolumeMeasurementTable() {
                         <TableCell sx={{ bgcolor: 'rgba(178, 181, 182, 0.2)' }} align="center">
                           {isNet ? (tableValues?.[name]?.subTotal || 0) : calculatedGrossOrnNet(tableValues?.[name]?.subTotal, tableValues?.[name]?.bsw, 'gross')}
                         </TableCell>
-                        <TableCell align="center"><TableInput type='number' disabled value={isNet ? targets?.oilRate : targets?.gross} /></TableCell>
+                        <TableCell align="center"><TableInput type='number' disabled value={isNet ? flowstationsTargets?.[name]?.oilRate : flowstationsTargets?.[name]?.gross} /></TableCell>
                         <TableCell align="center"><TableInput type='number' onChange={(e) => handleChange({ flowStation: name, flowStationField: 'bsw', value: e.target.value, readingIndex: null })} /></TableCell>
                         <TableCell align="center">
                           {isGross ? (tableValues?.[name]?.subTotal || 0) : calculatedGrossOrnNet(tableValues?.[name]?.subTotal, tableValues?.[name]?.bsw, 'net')}
@@ -371,7 +380,7 @@ export default function VolumeMeasurementTable() {
               <TableRow >
                 <TableCell align="left" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} className='bg-[rgba(0, 163, 255, 0.3)]' colSpan={6}>{"Total Net Production"}</TableCell>
                 <TableCell align="center" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} >{isNet ? totals?.netProductionTotal : calculatedGrossOrnNet(totals?.netProductionTotal, totals?.bswTotal, 'gross')}</TableCell>
-                <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{totals?.netTargetTotal}</TableCell>
+                <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{isNet ? averageTarget?.oilRate : averageTarget?.gross}</TableCell>
                 <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{totals?.bswTotal}</TableCell>
                 <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{isGross ? totals?.grossTotal : calculatedGrossOrnNet(totals?.grossTotal, totals?.bswTotal, 'net')}</TableCell>
               </TableRow>
@@ -379,7 +388,7 @@ export default function VolumeMeasurementTable() {
           </Table>
         </TableContainer>
         <div className='justify-end flex my-2'>
-          <Button className={'my-3'} type='submit' width={150}>Save</Button>
+          <Button className={'my-3'} type='submit' disabled={!IPSC} width={150}>Save</Button>
         </div>
       </form></>
   );

@@ -1,12 +1,17 @@
-import React, { useState } from "react";
+import React, { useId, useState } from "react";
 import Papa from "papaparse";
 import { read, utils } from "xlsx";
-function ExcelToCsv({ onComplete = () => null, children }) {
-    const [csvData, setCsvData] = useState("");
+import csvToJson from "utils/cvsToJson";
+import { toast } from "react-toastify";
+function ExcelToCsv({ onComplete = () => null, children, className }) {
+    const [, setCsvData] = useState("");
 
     const handleFileUpload = (event) => {
         const file = event.target.files[0];
-        const reader = new FileReader();
+        if (file.type !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"){
+            toast.error('File must be excel')
+        }
+            const reader = new FileReader();
         reader.onload = (e) => {
             const data = new Uint8Array(e.target.result);
             const workbook = read(data, { type: "array" });
@@ -18,23 +23,24 @@ function ExcelToCsv({ onComplete = () => null, children }) {
             // const newHeader = "Register No, Student Name, Branch, Semester, Course, Exam Type, Attendance, Withheld, IMark, Grade, Result\n";
             // const finalCSVData = newHeader + csvData.substring(csvData.indexOf("\n") + 1)
             setCsvData(csvData);
-            onComplete(csvData)
+            // console.log(csvData)
+            csvToJson(csvData, onComplete)
         };
-        console.log(reader.readAsArrayBuffer(file),'eee');
+        (reader.readAsArrayBuffer(file));
     };
-
+    const id = useId()
     return (
-        <div>
-            <label htmlFor="excelFile">
+        <div className={className} >
+            <label htmlFor={id}>
                 {children}
             </label>
             <input
                 type="file"
-                id="excelFile"
+                id={id}
                 hidden
                 onChange={handleFileUpload}
             />
-            <pre>{csvData}</pre>
+            {/* <pre>{csvData}</pre> */}
         </div>
     );
 }

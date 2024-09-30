@@ -6,9 +6,9 @@ const { generateRandomID } = require("../helpers");
 const csv = require("csvtojson");
 const dayjs = require("dayjs");
 
-const validateProductionStringsChokeSizesFile = async (fileStream, masterxy = []) => {
+const validateProductionStringsChokeSizesFile = async (JSONs, masterxy = []) => {
     try {
-        const JSONs = await csv().fromStream(fileStream)
+        // const JSONs = await csv().fromStream(fileStream)
         const assets = JSONs.map(json => json?.Asset)
         const asset = Array.from(new Set(assets))[0]
         const isSingleAsset = Array.from(new Set(assets)).length == 1
@@ -76,9 +76,9 @@ const validateProductionStringsChokeSizesFile = async (fileStream, masterxy = []
         throw new HttpsError('cancelled', JSON.stringify(error));
     }
 };
-const validateReservoirStaticParameters = async (fileStream, masterxy) => {
+const validateReservoirStaticParameters = async (JSONs, masterxy) => {
     try {
-        const JSONs = await csv().fromStream(fileStream)
+        // const JSONs = await csv().fromStream(fileStream)
         const assets = JSONs.map(json => json?.Asset)
         const asset = Array.from(new Set(assets))[0]
         const isSingleAsset = Array.from(new Set(assets)).length == 1
@@ -86,7 +86,7 @@ const validateReservoirStaticParameters = async (fileStream, masterxy) => {
             throw ({ message: 'Static Parameters file can only contain single asset', code: 'cancelled' })
         }
         let errors = []
-        let result = []
+        let result = {}
         console.log({ JSONs })
         JSONs.forEach(json => {
             const asset = json?.['Asset']
@@ -105,7 +105,7 @@ const validateReservoirStaticParameters = async (fileStream, masterxy) => {
                     if (!masterxyAssets.find(xy => xy?.wellId === productionString)) errors.push(`Production String ${productionString} does not exist in asset ${asset} `)
                     if (!masterxyAssets.find(xy => xy?.field === field)) errors.push(`Field ${field} does not exist in asset ${asset} `)
                     if (!masterxyAssets.find(xy => xy?.reservoir === reservoir)) errors.push(`Reservior ${reservoir} does not exist in asset ${asset} `)
-                    result.push({
+                    result[reservoir] = ({
                         asset, field, reservoir, productionString, date, initialGor, initialReservoirPressure, currentReservoirPressure, fbhp
                     })
                     // if (typeof parseInt(choke) !== 'number') errors.push(`choke size ${choke} must be a number `)
@@ -137,21 +137,33 @@ const createMerSchedule = onCall(async (request) => {
     try {
         const db = admin.firestore()
         let { data } = request;
-        const { title, chokeSizesFileName, reservoirStaticParametersFileName, date } = data
+        const { title, chokeSizes, staticParameters, date } = data
 
-        const bucket = admin.storage().bucket('ped-application-4d196.appspot.com');// initialize storage as admin
-        const chokesSizeStream = bucket.file(chokeSizesFileName).createReadStream();//create stream of the file in bucket
-        const staticParameterStream = bucket.file(reservoirStaticParametersFileName).createReadStream();//create stream of the file in bucket
+        // const bucket = admin.storage().bucket('ped-application-4d196.appspot.com');// initialize storage as admin
+        // const chokesSizeStream = bucket.file(chokeSizesFileName).createReadStream();//create stream of the file in bucket
+        // const staticParameterStream = bucket.file(reservoirStaticParametersFileName).createReadStream();//create stream of the file in bucket
         const masterxy = (await db.collectionGroup("assetList").get()).docs.map(doc => doc.data())
-        const res = await validateProductionStringsChokeSizesFile(chokesSizeStream, masterxy)
-        const res2 = await validateReservoirStaticParameters(staticParameterStream, masterxy)
-        await bucket.file(chokeSizesFileName).delete()
-        await bucket.file(reservoirStaticParametersFileName).delete()
+        const res = await validateProductionStringsChokeSizesFile(chokeSizes, masterxy)
+        const res2 = await validateReservoirStaticParameters(staticParameters, masterxy)
+        // await bucket.file(chokeSizesFileName).delete()
+        // await bucket.file(reservoirStaticParametersFileName).delete()
         const id = generateRandomID()
+        const combined =Object.fromEntries( Object.values(res.merScheduleData || {}).map(item => ([
+            item?.productionString,
+            {
+                ...item,
+                initialReservoirPressure: res2[item?.reservoir]?.initialReservoirPressure,
+                currentReservoirPressure: res2[item?.reservoir]?.currentReservoirPressure,
+                fbhp: res2[item?.reservoir]?.fbhp,
+                initialGor: res2[item?.reservoir]?.initialGor,
+                currentReservoirPressure: res2[item?.reservoir]?.currentReservoirPressure,
+            }
+        ])))
+        console.log({combined})
         const setup = {
             asset: res.asset,
-            merScheduleData: res.merScheduleData,
-            staticParameters:res2,
+            merScheduleData:combined,
+            staticParameters: res2,
             title,
             date: dayjs(date || "").format('DD/MM/YYYY'),
             id

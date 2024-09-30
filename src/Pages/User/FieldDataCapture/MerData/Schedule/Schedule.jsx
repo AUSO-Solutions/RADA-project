@@ -17,7 +17,7 @@ import Setup from "Partials/setup"
 // import { Chip } from "@mui/material"
 // import dayjs from "dayjs"
 import Files from "Partials/Files"
-import { createWellTitle, firebaseFileUpload } from "utils"
+import { createWellTitle } from "utils"
 import { BsPlus } from "react-icons/bs"
 import dayjs from "dayjs"
 import ExcelToCsv from "Partials/ExcelToCSV"
@@ -316,45 +316,35 @@ import ExcelToCsv from "Partials/ExcelToCSV"
 
 const ImporFiles = () => {
     const dispatch = useDispatch()
-    const handleFiles = async (e) => {
+    const handleFiles = async (name,jsonData) => {
 
         try {
-            const name = e.target.name
-            const file = e.target.files[0]
-
-            dispatch(setSetupData({ name, value: file }))
-            // const formData = new FormData()
-            // console.log(name, file)
-            // if (name === 'chokeSizes') {
-            // formData.append(name, file)
-            // const res = await firebaseFileUpload(file, Math.random()+file?.name)
-            // console.log(res)
-            // await firebaseFunctions("validateProductionStringsChokeSizesFile", { filename: res })
+            console.log({name,jsonData})
+            dispatch(setSetupData({ name, value: jsonData }))
         } catch (error) {
             console.log(error)
         }
     }
     const setupData = useSelector(state => state.setup)
 
-    // useEffect(() => {
-    //     if (setupData?.chokeSizes?.name)
-    // }, [setupData])
     return (
         <div className="w-full  flex ">
-            <ExcelToCsv >
-                HHH
-            </ExcelToCsv>
-            <input name="chokeSizes" type="file" hidden onChange={handleFiles} id="chokeSizes" />
-            <label htmlFor="chokeSizes" className="block  border w-[50%] rounded m-3 p-3">
-                <BsPlus size={50} className="mx-auto" />
-                {setupData?.chokeSizes?.name || " Import file for production strings chokes"}
-            </label>
+            <ExcelToCsv className="block  border w-[50%] rounded m-3 p-3" onComplete={jsonData => handleFiles('chokeSizes', jsonData)}>
 
-            <input t name="staticParameters" type="file" hidden onChange={handleFiles} id="reserviorParaemters" />
-            <label htmlFor="reserviorParaemters" className="block border w-[50%] rounded m-3 p-3">
-                <BsPlus size={50} className="mx-auto" />
-                {setupData?.staticParameters?.name || "Import file for Reservoir Parameters"}
-            </label>
+                    <BsPlus size={50} className="mx-auto" />
+                    {setupData?.chokeSizes?.name || " Import file for production strings chokes"}
+
+            </ExcelToCsv>
+            {/* <input name="chokeSizes" type="file" hidden onChange={handleFiles} id="chokeSizes" /> */}
+
+
+            {/* <input t name="staticParameters" type="file" hidden onChange={handleFiles} id="reserviorParaemters" /> */}
+            <ExcelToCsv  className="block border w-[50%] rounded m-3 p-3" onComplete={jsonData => handleFiles('staticParameters', jsonData)}>
+
+                    <BsPlus size={50} className="mx-auto" />
+                    {setupData?.staticParameters?.name || "Import file for Reservoir Parameters"}
+
+            </ExcelToCsv>
         </div>
     )
 }
@@ -398,11 +388,11 @@ const Schedule = () => {
             const setupData = store.getState().setup
             const chokeSizes = setupData?.chokeSizes
             const staticParameters = setupData?.staticParameters
-            const chokeSizesFileName = await firebaseFileUpload(chokeSizes, Math.random() + chokeSizes?.name)
-            const reservoirStaticParametersFileName = await firebaseFileUpload(staticParameters, Math.random() + staticParameters?.name)
+            // const chokeSizesFileName = await firebaseFileUpload(chokeSizes, Math.random() + chokeSizes?.name)
+            // const reservoirStaticParametersFileName = await firebaseFileUpload(staticParameters, Math.random() + staticParameters?.name)
 
             const payload = {
-                title: setupData?.title, chokeSizesFileName, reservoirStaticParametersFileName, date: dayjs().format("DD/MM/YYYY")
+                title: setupData?.title, chokeSizes, staticParameters, date: dayjs().format("DD/MM/YYYY")
             }
             await firebaseFunctions('createMerSchedule', payload)
             // console.log({ data }, '----')

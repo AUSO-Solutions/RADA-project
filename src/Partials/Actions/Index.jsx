@@ -3,16 +3,6 @@ import { ArrowDown2 } from 'iconsax-react'
 import React from 'react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-// import { useDispatch } from 'react-redux';
-// import { closeModal, openModal } from 'Store/slices/modalSlice';
-// import Text from 'Components/Text';
-// import { Avatar, Divider } from '@mui/material';
-// import { colors } from 'Assets';
-// import { useFetch } from 'hooks/useFetch';
-// import CheckInput from 'Components/Input/CheckInput';
-// import { toast } from 'react-toastify';
-// import { CheckOutlined } from '@mui/icons-material';
-
 
 
 export default function Actions({ wellTestResult, title, actions, children }) {

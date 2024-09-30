@@ -54,7 +54,7 @@ export default function WellTestDataTable() {
     const scheduleId = useMemo(() => new URLSearchParams(search).get('scheduleId'), [search])
     const { data: res } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'wellTestSchedule', id: scheduleId || id } })
     const { data: res2 } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'wellTestResult', id } })
-    const [title, setTitle] = useState('')
+    const [, setTitle] = useState('')
     const isEdit = useMemo(() => { return scheduleId }, [scheduleId])
     useEffect(() => { setWellTest(res) }, [res])
     useEffect(() => { if (!isEdit) setWellTestResult(wellTest?.wellsData) }, [wellTest?.wellsData, isEdit])
