@@ -19,7 +19,7 @@ import { closeModal, openModal } from 'Store/slices/modalSlice';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import Actions from 'Partials/Actions/Actions';
-import { createWellTitle, genRandomNumber } from 'utils';
+import { createWellTitle } from 'utils';
 import { Approve } from 'Partials/Actions/Approve';
 import { Query } from 'Partials/Actions/Query';
 import ExtractWellTest from './ExtractWellTest';

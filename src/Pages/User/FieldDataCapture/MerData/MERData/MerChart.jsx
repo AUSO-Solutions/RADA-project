@@ -1,11 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 // import { Box } from '@mui/material'
 // import Text from 'Components/Text'
 // import React, { useState } from 'react'
 // import { useDispatch, useSelector } from 'react-redux'
-import { Button, Input } from 'Components'
+import { Input } from 'Components'
 import Text from 'Components/Text';
 // import { firebaseFunctions } from 'Services'
 // // import { store } from 'Store'
@@ -13,50 +13,7 @@ import Text from 'Components/Text';
 // import { setWholeSetup } from 'Store/slices/setupSlice'
 // import { toast } from 'react-toastify'
 
-const data = [
-    {
-        name: 'Page A',
-        fthp: 4000,
-        pv: 2400,
-        amt: 2400,
-    },
-    {
-        name: 'Page B',
-        fthp: 3000,
-        pv: 1398,
-        amt: 2210,
-    },
-    {
-        name: 'Page C',
-        fthp: 2000,
-        pv: 9800,
-        amt: 2290,
-    },
-    {
-        name: 'Page D',
-        uv: 2780,
-        pv: 3908,
-        amt: 2000,
-    },
-    {
-        name: 'Page E',
-        uv: 1890,
-        pv: 4800,
-        amt: 2181,
-    },
-    {
-        name: 'Page F',
-        uv: 2390,
-        pv: 3800,
-        amt: 2500,
-    },
-    {
-        name: 'Page G',
-        uv: 3490,
-        pv: 4300,
-        amt: 2100,
-    },
-];
+
 
 const MerChart = ({ onClickOut = () => null, merResult }) => {
     // console.log(merResult?.merResultData)
