@@ -34,9 +34,9 @@ const SelectAsset = () => {
 
     return <div className="flex flex-col gap-5">
         <Input value={setupData?.month} name='month' disabled
-            label={'Month'} type='month' 
+            label={'Month'} type='month'
         // onChange={(e) => dispatch(setSetupData({ name: 'month', value: e?.target.value }))}
-        /> 
+        />
         <Input disabled={wellTestResult1?.id} key={wellTestResult1?.id} required={!wellTestResult1?.id} value={{ label: setupData?.wellTestResult1?.title, value: setupData?.wellTestResult1?.id }}
             label={'Well Test Result 1'} type='select' options={wellTestResults?.map(result => ({ label: result.title, value: result.id }))}
             onChange={(e) => dispatch(setSetupData({ name: 'wellTestResult1', value: { id: e.value, title: e.label } }))} name='wellTestResult1'
@@ -111,7 +111,7 @@ const Schedule = () => {
             // console.log(IPSCs, wellTestResult1)
             const setupData = store.getState().setup
 
-            const created = IPSCs.find(ipsc => ipsc.month === wellTestResult1?.month)
+            const created = IPSCs.find(ipsc => ipsc.month === dayjs(wellTestResult1?.month).add(1, 'month'))
             // console.log(created)
             if (created) {
                 toast.info(`IPSC for the month ${wellTestResult1?.month} is already created`)
