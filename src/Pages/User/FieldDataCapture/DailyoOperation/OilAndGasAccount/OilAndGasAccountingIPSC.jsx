@@ -6,6 +6,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import tableStyles from '../table.module.scss'
+import { sum } from 'utils';
 
 
 export default function OilGasAccountingIPSCTable({ IPSC }) {
@@ -19,6 +20,12 @@ export default function OilGasAccountingIPSCTable({ IPSC }) {
 
     // const { data: wellTestResult } = useFetch({ firebaseFunction: 'getSetup', payload: { id: matchingIPSC?.wellTestResult1?.id, setupType: 'wellTestResult', }, dontFetch: !matchingIPSC?.wellTestResult1?.id })
     // console.log(wellTestResult)
+
+    const getTotalOf = (key) => {
+        const res = Object.values(IPSC?.wellTestResultData || {})
+        const total = sum(res?.map(item => parseFloat(item?.[key] || 0)))
+        return total
+    }
 
     return (
         <TableContainer className={`m-auto border  ${tableStyles.borderedMuiTable}`}>
@@ -74,11 +81,24 @@ export default function OilGasAccountingIPSCTable({ IPSC }) {
                             {/* <TableCell align="center">{well?.whTemperature}</TableCell> */}
                             {/* <TableCell align="center">{well?.CITHP}</TableCell> */}
                             <TableCell align="center">{well?.gross}</TableCell>
-                            <TableCell align="center">{well?.bsw}</TableCell>
+                            <TableCell align="center">{well?.gross - well?.oilRate}</TableCell>
                             <TableCell align="center">{well?.oilRate}</TableCell>
                             <TableCell align="center">{well?.gasRate}</TableCell>
                         </TableRow>
                     })}
+                     <TableRow sx={{ backgroundColor: '#00A3FF4D' }}>
+                                <TableCell style={{ fontWeight: '600' }} align="center" colSpan={2} >Totals </TableCell>
+                                <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('fthp')}</TableCell>
+                                <TableCell style={{ fontWeight: '600' }} align="center">{getTotalOf('chp')}</TableCell>
+                                <TableCell style={{ fontWeight: '600' }} align="center">{getTotalOf('flp')}</TableCell>
+                                <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('staticPressure')}</TableCell>
+                                <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('chokeSize')}</TableCell>
+                                <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('gross')}</TableCell>
+                                <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('bsw')}</TableCell>
+                                <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('oilRate')}</TableCell>
+                                <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('gasRate')}</TableCell>
+                                
+                            </TableRow>
                 </TableBody>
 
             </Table>

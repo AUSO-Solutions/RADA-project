@@ -142,7 +142,7 @@ export default function IPSCTable() {
                 const results = ipscResults?.filter(result => result.flowstation === flowstation)
                 const getTotalOfinFlowstation = (key) => sum(results?.map(result => result?.[key]))
                 targets[flowstation] = {
-                    ...prev[flowstation],
+                    ...prev?.[flowstation],
                     flowstation,
                     // target: {
                     oilRate: getTotalOfinFlowstation('oilRate'),
