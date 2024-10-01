@@ -102,12 +102,6 @@ const Schedule = () => {
     }, [dispatch])
     const [searchParams] = useSearchParams()
     const wellTestResult1Id = (searchParams.get("well-test-result-id"))
-    // const { data: wellTestResult1 } = useFetch({ firebaseFunction: 'getSetup', payload: { id: wellTestResult1Id, setupType: 'wellTestResult' }, })
-    // console.log(wellTestResult1)
-
-
-    // const { data: IPSCs } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: 'IPSC' } })
-    // console.log(IPSCs)
 
     const save = async () => {
         try {

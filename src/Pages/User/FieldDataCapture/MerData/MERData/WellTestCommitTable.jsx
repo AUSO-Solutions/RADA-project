@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import * as React from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -6,157 +6,73 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import tableStyles from '../table.module.scss'
-import RadaSwitch from 'Components/Input/RadaSwitch';
-import { ArrowBack } from '@mui/icons-material';
-import Text from 'Components/Text';
-import { Button, Input } from 'Components';
-import { Setting2 } from 'iconsax-react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useFetch } from 'hooks/useFetch';
+// import RadaSwitch from 'Components/Input/RadaSwitch';
+// import { ArrowBack } from '@mui/icons-material';
+// import Text from 'Components/Text';
+// import { Button, Input } from 'Components';
+// import { Setting2 } from 'iconsax-react';
+// import { Link, useLocation } from 'react-router-dom';
+// import { useFetch } from 'hooks/useFetch';
 import dayjs from 'dayjs';
-import { firebaseFunctions } from 'Services';
+import { Button, Input } from 'Components';
+import Text from 'Components/Text';
+import { useDispatch, useSelector } from 'react-redux';
+import { setSetupData } from 'Store/slices/setupSlice';
 import { closeModal, openModal } from 'Store/slices/modalSlice';
-import { useDispatch } from 'react-redux';
+import { firebaseFunctions } from 'Services';
 import { toast } from 'react-toastify';
-import { createWellTitle, sum } from 'utils';
-import Actions from 'Partials/Actions/Actions';
-import { Query } from 'Partials/Actions/Query';
-import { Approve } from 'Partials/Actions/Approve';
+// import { firebaseFunctions } from 'Services';
+// import { closeModal, openModal } from 'Store/slices/modalSlice';
+// import { useDispatch } from 'react-redux';
+// import { toast } from 'react-toastify';
 
+// import { createWellTitle } from 'utils';
 
-const TableInput = (props) => {
-    return <input className='p-1 text-center w-[80px] h-[100%] border outline-none ' required {...props} />
-}
-
-const SaveAs = ({ defaultValue, onSave = () => null, loading }) => {
-    const [title, setTitle] = useState(defaultValue)
-    return <div className='bg-[white] w-[400px]'>
-        <Text size={24}>Save Well Test Result as</Text>
-
-        <Input defaultValue={defaultValue} className='w-full' onChange={(e) => setTitle(e.target.value)} />
-        <Button loading={loading} className='float-right mt-4' onClick={() => {
-            onSave(title)
-        }} width={100}>
-            Save
-        </Button>
-    </div>
-}
-
-export default function WellTestDataTable() {
-
-    const { search } = useLocation()
-    const navigate =  useNavigate()
+const SaveAs = () => {
+    const setupData = useSelector(state => state.setup)
     const dispatch = useDispatch()
-    const [loading, setLoading] = useState(false)
-    const [wellTest, setWellTest] = useState({})
-    const [wellTestResult, setWellTestResult] = useState({})
-    const id = useMemo(() => new URLSearchParams(search).get('id'), [search])
-    const scheduleId = useMemo(() => new URLSearchParams(search).get('scheduleId'), [search])
-    const { data: res } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'wellTestSchedule', id: scheduleId || id } })
-    const { data: res2 } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'wellTestResult', id } })
-    const [, setTitle] = useState('')
-    const isEdit = useMemo(() => { return scheduleId }, [scheduleId])
-    useEffect(() => { setWellTest(res) }, [res])
-    useEffect(() => { if (!isEdit) setWellTestResult(wellTest?.wellsData) }, [wellTest?.wellsData, isEdit])
-    useEffect(() => { if (isEdit) setWellTestResult(res2?.wellTestResultData); setTitle(res2?.title) }, [res2, isEdit])
-
-    const save = async (title) => {
-        if (!title) {
-            toast.info('Please provide a title')
-            return;
-        }
-        setLoading(true)
+    const save = async () => {
         try {
-
-            const arr = Object.values(wellTestResult || {})
-            console.log(arr)
-            const totals = {
-                gross: sum(arr.map(item => item?.gross || 0)),
-                oilRate: sum(arr.map(item => item?.oilRate || 0)),
-                gasRate: sum(arr.map(item => item?.gasRate || 0)),
-                exportGas: null,
-                flaredGas: null,
-                fuelGas: null
-            }
-            const saveScheduleData = {
-                asset: wellTest?.asset,
-                field: wellTest?.field,
-                wellTestScheduleId: wellTest?.id,
-                setupType: 'wellTestResult',
-                wellTestResultData: wellTestResult,
-                month: wellTest?.month,
-                totals
-            }
-            if (isEdit) {
-                const payload = { title, ...saveScheduleData, id }
-                console.log(payload)
-                await firebaseFunctions('updateSetup', payload)
-            } else {
-                const payload = { title, ...saveScheduleData }
-                console.log(payload)
-                 await firebaseFunctions('createSetup', payload)
-                 navigate('/users/fdc/well-test-data/')
-                    // `/users/fdc/well-test-data/well-test-table?id=${res?.?.id}&scheduleId=${res?.?.wellTestScheduleId}`
-            }
-
+            console.log(setupData)
+            await firebaseFunctions('createSetup', { ...setupData, setupType: 'wellTestResult' })
+            toast.success('Successfully uploaded')
             dispatch(closeModal())
-            toast.success('Data saved to well test result')
         } catch (error) {
-            console.log(error)
-        } finally {
-            setLoading(false)
+
         }
+
     }
-
-
-    const fields = [
-        { name: 'gross', type: "number", fn: () => null },
-        { name: 'oilRate', type: "number", fn: () =>  null },
-        { name: 'waterRate', type: "number", fn: (value) => (value.gross || 0) - (value.oilRate || 0), disabled: true },
-        { name: 'gasRate', type: "number", fn: () =>  null },
-        { name: 'bsw', type: "number", fn: () =>  null },
-        { name: 'gor', type: "number", fn: () =>  null },
-        { name: 'fthp', type: "number", fn: () =>  null },
-        { name: 'flp', type: "number", fn: () =>  null },
-        { name: 'chp', type: "number", fn: () =>  null },
-        { name: 'staticPressure', type: "number", fn: () =>  null },
-        { name: 'orificePlateSize', type: "number", fn: () =>  null },
-        { name: 'sand', type: "number", fn: () =>  null },
-    ]
-
-    useEffect(()=>{
-// set
-    },[])
-
     return (
-        < form className=' w-[80vw] px-3' onSubmit={(e) => {
-            e.preventDefault()
-            dispatch(openModal({ component: <SaveAs defaultValue={res2?.title} onSave={save} loading={loading} /> }))
+        <div className="h-fit flex flex-col  w-[400px] mx-auto gap-1 justify-center">
+            <Text weight={600} size={24}>Save Well Test Result as</Text>
+            <Input label={''} required defaultValue={setupData?.title} onChange={(e) => dispatch(setSetupData({ name: 'title', value: e.target.value }))} />
+            <Button className={'w-[100px] mt-5 px-3'} onClick={save}>
+                Save
+            </Button>
+        </div>
+    )
+}
 
-        }}>
-            <div className='flex justify-between items-center'>
-                <div className='flex gap-4 items-center min-w-fit'>
-                    <Link to='/users/fdc/well-test-data/' className='flex flex-row gap-2 bg-[#EFEFEF] px-4 py-1 rounded-md' >
-                        <ArrowBack />
-                        <Text>Files</Text>
-                    </Link>
-                    <RadaSwitch label="Edit Table" labelPlacement="left" />
-                </div>
-                <Text display={'block'} className={'w-full'} align={'center'}> {createWellTitle(wellTest)}</Text>
-                <div className='flex justify-end py-2 items-center gap-3'>
-                    <div className='flex gap-2' >
-                        {isEdit &&  <Actions  actions={[
-                            { name: 'Query Result', onClick: () => dispatch(openModal({ component: <Query /> })) },
-                            { name: 'Approve', onClick: () => dispatch(openModal({ component: <Approve /> })) },
-                         
-                        ]} />}
-                    </div>
-                    <div className='border border-[#00A3FF] px-3 py-1 rounded-md' >
-                        <Setting2 color='#00A3FF' />
-                    </div>
-                </div>
-            </div>
+const WellTestCommitTable = ({ wellTestResult, merResult }) => {
+    const fields = [
+        { name: 'gross', type: "number" },
+        { name: 'oilRate', type: "number" },
+        { name: 'waterRate', type: "number" },
+        { name: 'gasRate', type: "number" },
+        { name: 'bsw', type: "number" },
+        // { name: 'wgr', type: "number" },
+        { name: 'gor', type: "number" },
+        { name: 'fthp', type: "number" },
+        { name: 'flp', type: "number" },
+        { name: 'chp', type: "number" },
+        { name: 'staticPressure', type: "number" },
+        { name: 'orificePlateSize', type: "number" },
+        { name: 'sand', type: "number" },
+    ]
+    const dispatch = useDispatch()
+    return (
 
+        <div className='mx-auto w-[80vw]'>
             <TableContainer className={`m-auto border  pr-5 ${tableStyles.borderedMuiTable}`}>
                 <Table sx={{ minWidth: 700 }} >
                     <TableHead>
@@ -210,13 +126,13 @@ export default function WellTestDataTable() {
                         {
                             Object.values(wellTestResult || {}).sort((a, b) => ((b?.isSelected ? 1 : 0) - (a?.isSelected ? 1 : 0)))?.map((well, i) => {
                                 const handleChange = (name, value) => {
-                                    setWellTestResult(prev => ({
-                                        ...prev,
-                                        [well?.productionString]: {
-                                            ...prev?.[well?.productionString],
-                                            [name]: value
-                                        }
-                                    }))
+                                    // setWellTestResult(prev => ({
+                                    //     ...prev,
+                                    //     [well?.productionString]: {
+                                    //         ...prev?.[well?.productionString],
+                                    //         [name]: value
+                                    //     }
+                                    // }))
                                 }
                                 return <TableRow key={well?.productionString}>
                                     <TableCell align="center">
@@ -239,7 +155,8 @@ export default function WellTestDataTable() {
                                     </TableCell>
                                     {
                                         fields.map(field => <TableCell align="center">
-                                            <TableInput type='number' required={well.isSelected} defaultValue={field?.fn(well) || well?.[field.name]} disabled={field?.disabled} onChange={(e) => handleChange(field.name, e.target.value)} />
+                                            {well?.[field.name]}
+                                            {/* <TableInput type='number' required={well.isSelected} defaultValue={well?.[field.name]} onChange={(e) => handleChange(field.name, e.target.value)} /> */}
                                         </TableCell>)
                                     }
                                     <TableCell align="center" sx={{ minWidth: '200px' }} colSpan={3}>
@@ -255,9 +172,13 @@ export default function WellTestDataTable() {
                 </Table>
             </TableContainer>
 
-            <div className='flex justify-end py-2'>
-                <Button width={120} type='submit' >Commit</Button>
+            <div className='flew w-full my-3 float-right '>
+                <Button onClick={() => dispatch(openModal({ component: <SaveAs /> }))} className={'px-3'}>
+                    Commit
+                </Button>
             </div>
-        </form>
-    );
+        </div>
+    )
 }
+
+export default WellTestCommitTable

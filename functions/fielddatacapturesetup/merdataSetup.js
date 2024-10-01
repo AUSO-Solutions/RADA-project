@@ -4,35 +4,18 @@ const { onCall, HttpsError } = require("firebase-functions/v2/https");
 
 const { generateRandomID } = require("../helpers");
 const csv = require("csvtojson");
+const dayjs = require("dayjs");
 
-const validateProductionStringsChokeSizesFile = onCall(async (request) => {
+const validateProductionStringsChokeSizesFile = async (JSONs, masterxy = []) => {
     try {
-        let { data } = request;
-        logger.log("data ----", { data });
-
-        const { filename } = data;
-
-        const bucket = admin.storage().bucket('ped-application-4d196.appspot.com');                   // initialize storage as admin
-        const stream = bucket.file(filename).createReadStream();    // create stream of the file in bucket
-        const JSONs = await csv().fromStream(stream)
-        console.log(JSONs)
+        // const JSONs = await csv().fromStream(fileStream)
         const assets = JSONs.map(json => json?.Asset)
-        // if(assets.length === JSONs.length)
         const asset = Array.from(new Set(assets))[0]
         const isSingleAsset = Array.from(new Set(assets)).length == 1
         if (!isSingleAsset) {
-            throw ({ message: 'File can only contain single asset', code: 'cancelled' })
+            throw ({ message: 'Choke size file can only contain single asset', code: 'cancelled' })
         }
-        // const fields = JSONs.map(json => json?.Fields)
-        // const reservoir = JSONs.map(json => json?.Reservoir)
-        // const productionString = JSONs.map(json => json?.["Production String"])
-        // const choke = JSONs.map(json => json?.Choke)
-        // const startDate = JSONs.map(json => json?.["Start Date and Time"])
-        // const endDate = JSONs.map(json => json?.["End Date and Time"])
 
-        const db = admin.firestore()
-        const masterxy = (await db.collectionGroup("assetList").get()).docs.map(doc => doc.data())
-        // if (masterxy)
         let errors = []
         JSONs.forEach((json, i) => {
             const asset = json?.Asset
@@ -46,10 +29,12 @@ const validateProductionStringsChokeSizesFile = onCall(async (request) => {
                 const masterxyAssets = masterxy.filter(xy => xy?.assetName === asset)
                 if (masterxyAssets.length) {
 
-                    if (!masterxyAssets.find(xy => xy?.wellId === productionString)) errors.push(`Field ${productionString} does not exist in asset ${asset} `)
+                    if (!masterxyAssets.find(xy => xy?.wellId === productionString)) errors.push(`Production String ${productionString} does not exist in asset ${asset} `)
                     if (!masterxyAssets.find(xy => xy?.field === field)) errors.push(`Field ${field} does not exist in asset ${asset} `)
-                    if (!masterxyAssets.find(xy => xy?.reservoir === reservoir)) errors.push(`Field ${reservoir} does not exist in asset ${asset} `)
+                    if (!masterxyAssets.find(xy => xy?.reservoir === reservoir)) errors.push(`Reservior ${reservoir} does not exist in asset ${asset} `)
                     if (typeof parseInt(choke) !== 'number') errors.push(`choke size ${choke} must be a number `)
+                    if (!dayjs(startDate).isValid()) errors.push(`Invalid start date and time ${startDate}  in ${productionString}   `)
+                    if (!dayjs(endDate).isValid()) errors.push(`Invalid end date and time ${endDate} in ${productionString}   `)
 
                 } else {
                     errors.push(`Asset ${asset} does not exist`)
@@ -61,22 +46,141 @@ const validateProductionStringsChokeSizesFile = onCall(async (request) => {
         })
         if (errors.length) throw errors
         if (!errors.length) {
-            // db.collection("setup").doc()
-            return { status: "succes", message : 'File processed successfully' }
-        }
+            let results = {}
 
-        // const db = admin.firestore();
-        // await db.collection("liquidVolumes").doc(id).set(dbData);
+            const uniqueProdStrings = Array.from(new Set(JSONs.map(json => json?.["Production String"])))
+            uniqueProdStrings.forEach((productionString) => {
+                const details = JSONs.filter(json => json?.["Production String"] === productionString).map(json => {
+                    const asset = json?.Asset
+                    const field = json?.Field
+                    const reservoir = json?.Reservoir
+                    const productionString = json?.["Production String"]
+                    const choke = json?.Choke
+                    const startDate = json?.["Start Date and Time"]
+                    const endDate = json?.["End Date and Time"]
+                    return { asset, field, reservoir, productionString, choke, startDate, endDate }
+                })
+                results[productionString] = {
+                    productionString,
+                    reservoir: details[0].reservoir,
+                    chokes: details.map(detail => ({ chokeSize: detail.choke, startDate: detail.startDate, endDate: detail.endDate }))
+                }
+            });
+            return {
+                asset: asset,
+                merScheduleData: results,
+            }
+        }
+    } catch (error) {
+        logger.log("error ===> ", error);
+        throw new HttpsError('cancelled', JSON.stringify(error));
+    }
+};
+const validateReservoirStaticParameters = async (JSONs, masterxy) => {
+    try {
+        // const JSONs = await csv().fromStream(fileStream)
+        const assets = JSONs.map(json => json?.Asset)
+        const asset = Array.from(new Set(assets))[0]
+        const isSingleAsset = Array.from(new Set(assets)).length == 1
+        if (!isSingleAsset) {
+            throw ({ message: 'Static Parameters file can only contain single asset', code: 'cancelled' })
+        }
+        let errors = []
+        let result = {}
+        console.log({ JSONs })
+        JSONs.forEach(json => {
+            const asset = json?.['Asset']
+            const field = json?.['Field']
+            const reservoir = json?.['Reservoir']
+            const productionString = json?.['Production String']
+            const date = json?.['Date']
+            const initialGor = json?.['Initial GOR (scf/stb)']
+            const initialReservoirPressure = json?.['Initial Reservoir Pressure (psia)']
+            const currentReservoirPressure = json?.['Current Reservoir Pressure (psia)']
+            const fbhp = json?.['FBHP (psia)']
+
+            if (asset && field && reservoir && productionString && date && initialGor && initialReservoirPressure && currentReservoirPressure && fbhp) {
+                const masterxyAssets = masterxy.filter(xy => xy?.assetName === asset)
+                if (masterxyAssets.length) {
+                    if (!masterxyAssets.find(xy => xy?.wellId === productionString)) errors.push(`Production String ${productionString} does not exist in asset ${asset} `)
+                    if (!masterxyAssets.find(xy => xy?.field === field)) errors.push(`Field ${field} does not exist in asset ${asset} `)
+                    if (!masterxyAssets.find(xy => xy?.reservoir === reservoir)) errors.push(`Reservior ${reservoir} does not exist in asset ${asset} `)
+                    result[reservoir] = ({
+                        asset, field, reservoir, productionString, date, initialGor, initialReservoirPressure, currentReservoirPressure, fbhp
+                    })
+                    // if (typeof parseInt(choke) !== 'number') errors.push(`choke size ${choke} must be a number `)
+                    // if (!dayjs(startDate).isValid()) errors.push(`Invalid start date and time ${startDate}  in ${productionString}   `)
+                    // if (!dayjs(endDate).isValid()) errors.push(`Invalid end date and time ${endDate} in ${productionString}   `)
+                } else {
+                    errors.push(`Asset ${asset} does not exist`)
+                }
+
+            } else {
+                errors.push('All headers must match Asset, Field, Reservoir, Production String, Date, Initial GOR (scf/stb), Initial Reservoir Pressure (psia), Current Reservoir Pressure (psia), FBHP (psia) ')
+            }
+
+        })
+
+        if (errors.length) throw errors
+        if (!errors.length) {
+            return result
+        }
 
     } catch (error) {
         logger.log("error ===> ", error);
         throw new HttpsError('cancelled', JSON.stringify(error));
     }
-});
+};
 
 
+const createMerSchedule = onCall(async (request) => {
+    try {
+        const db = admin.firestore()
+        let { data } = request;
+        const { title, chokeSizes, staticParameters, date } = data
 
+        // const bucket = admin.storage().bucket('ped-application-4d196.appspot.com');// initialize storage as admin
+        // const chokesSizeStream = bucket.file(chokeSizesFileName).createReadStream();//create stream of the file in bucket
+        // const staticParameterStream = bucket.file(reservoirStaticParametersFileName).createReadStream();//create stream of the file in bucket
+        const masterxy = (await db.collectionGroup("assetList").get()).docs.map(doc => doc.data())
+        const res = await validateProductionStringsChokeSizesFile(chokeSizes, masterxy)
+        const res2 = await validateReservoirStaticParameters(staticParameters, masterxy)
+        // await bucket.file(chokeSizesFileName).delete()
+        // await bucket.file(reservoirStaticParametersFileName).delete()
+        const id = generateRandomID()
+        const combined =Object.fromEntries( Object.values(res.merScheduleData || {}).map(item => ([
+            item?.productionString,
+            {
+                ...item,
+                initialReservoirPressure: res2[item?.reservoir]?.initialReservoirPressure,
+                currentReservoirPressure: res2[item?.reservoir]?.currentReservoirPressure,
+                fbhp: res2[item?.reservoir]?.fbhp,
+                initialGor: res2[item?.reservoir]?.initialGor,
+                currentReservoirPressure: res2[item?.reservoir]?.currentReservoirPressure,
+            }
+        ])))
+        console.log({combined})
+        const setup = {
+            asset: res.asset,
+            merScheduleData:combined,
+            staticParameters: res2,
+            title,
+            date: dayjs(date || "").format('DD/MM/YYYY'),
+            id
+        }
+        await db.collection("setups").doc('merSchedule').collection('setupList').doc(id).set(setup)
+        console.log("----", res)
+        return { status: 'sccuessfull' }
+    } catch (error) {
+        console.log(error)
+        throw error
+
+    }
+})
 
 module.exports = {
-    validateProductionStringsChokeSizesFile
+
+    createMerSchedule,
+
+
 };

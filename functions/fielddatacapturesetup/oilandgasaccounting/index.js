@@ -43,7 +43,7 @@ const processIPSC = onCall(async (request) => {
       };
     }
 
-    const flowstationData = flowstationsData.data.find(
+    const flowstationData = flowstationsData.flowstation.find(
       (flowstation) => flowstation.name === flowStation
     );
 

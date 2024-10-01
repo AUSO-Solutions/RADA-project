@@ -14,7 +14,7 @@ const captureOilOrCondensate = onCall(async (request) => {
   try {
     let { data } = request;
     logger.log("data ----", { data });
-    const { date, asset, flowstations, fluidType } = data;
+    const { date, asset, flowstations, fluidType, averageTarget } = data;
     if (!date || !asset || !flowstations) {
       throw {
         code: "cancelled",
@@ -30,7 +30,7 @@ const captureOilOrCondensate = onCall(async (request) => {
       date,
       asset,
       fluidType,
-      data: flowstations,
+      flowstations, averageTarget
     };
     const db = admin.firestore();
     await db.collection("liquidVolumes").doc(id).set(dbData);
@@ -136,7 +136,7 @@ const captureGas = onCall(async (request) => {
   try {
     let { data } = request;
     logger.log("data ----", { data });
-    const { date, asset, flowstations } = data;
+    const { date, asset, flowstations, averageTarget, setupId, totalGasProduced, subtotal } = data;
     if (!date || !asset || !flowstations) {
       throw new Error({
         code: "cancelled",
@@ -151,7 +151,11 @@ const captureGas = onCall(async (request) => {
       date,
       asset,
       fluidType: "gas",
-      data: flowstations,
+      flowstations,
+      averageTarget,
+      setupId,
+      totalGasProduced,
+      subtotal
     };
     const db = admin.firestore();
     await db.collection("gasVolumes").doc(id).set(dbData);

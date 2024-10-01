@@ -9,13 +9,13 @@ import { createWellTitle } from 'utils'
 
 const MERDataTestResults = () => {
 
-    const { data } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "wellTestResult" } })
+    const { data } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "merResult" } })
 
     return (
         <div className=" flex flex-wrap gap-4 m-5 ">
 
             <Files files={data} actions={[
-                { name: 'Edit', to: (file) => `/users/fdc/mer-data/mer-data-table?id=${file?.id}&scheduleId=${file?.wellTestScheduleId}` },
+                { name: 'Edit', to: (file) => `/users/fdc/mer-data/mer-data-result-table?id=${file?.id}` },
                 // { name: 'Create IPSC', to: (file) => `/users/fdc/well-test-data?page=ipsc&well-test-result-id=${file?.id}&autoOpenSetupModal=yes` },
                 { name: 'Delete', to: (file) => `` },
             ]} name={(file) => `${createWellTitle(file,'Mer Data')}`} />

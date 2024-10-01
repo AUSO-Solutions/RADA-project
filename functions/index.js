@@ -10,8 +10,9 @@ const { createAsset, getAssetByName, updateAssetById, deleteAssetById, getAssets
 const { createRole, updateRole, deleteRole, getRoles, getRole, assignPermissionToRole } = require('./admin/rolesandpermissions');
 const { createSetup, deleteSetup, getSetups, updateSetup, getSetup } = require("./fielddatacapturesetup/volumemeasurementsetup");
 const { captureOilOrCondensate, captureGas, updateOilOrCondensate, getOilOrCondensateVolumeByID, deleteOilOrCondensateVolumeByID, getOilOrCondensateVolumesByAsset } = require("./fielddatacapturesetup/volume.measurement");
-const { validateProductionStringsChokeSizesFile } = require("./fielddatacapturesetup/merdataSetup");
+const { createMerSchedule } = require("./fielddatacapturesetup/merdataSetup");
 const {processIPSC} = require('./fielddatacapturesetup/oilandgasaccounting/')
+const {getInsight} =  require('./admin/insights')
 // const { setupWellTestData, getSetups, updateWellTestData, deleteWellTestDataSetup } = require('./fielddatacapturesetup/welltestsetup')
 
 admin.initializeApp()
@@ -40,6 +41,7 @@ module.exports = {
   getOilOrCondensateVolumesByAsset,
   deleteOilOrCondensateVolumeByID,
 
-  validateProductionStringsChokeSizesFile, 
-  processIPSC
+  createMerSchedule,
+  processIPSC,
+  getInsight
 }

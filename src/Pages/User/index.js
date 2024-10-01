@@ -1,4 +1,4 @@
-import ChangePassword from "./Auth/ChangePassword";
+ import ChangePassword from "./Auth/ChangePassword";
 import ForgotPassword from "./Auth/ForgotPassword";
 // import UserLogin from "./Auth/Login";
 import FieldOperatorCTA from "./Auth/fieldOperatorCTA";
@@ -32,7 +32,7 @@ export const user_routes = [
     // { path: '/users/fdc/mer-data', Component: <MerData />, layout: true },
     { path: '/users/fdc/mer-data', Component: <MERData />, layout: true },
     { path: '/users/fdc/mer-data/schedule-table', Component: < MERScheduleTable />, layout: true },
-    { path: '/users/fdc/mer-data/mer-data-table', Component: <MERDataTable />, layout: true },
+    { path: '/users/fdc/mer-data/mer-data-result-table', Component: <MERDataTable />, layout: true },
     { path: '/users/fdc/Well-test-data', Component: <WellTest />, layout: true },
     { path: '/users/fdc/Well-test-data/schedule-table', Component: <ScheduleTable />, layout: true },
     { path: '/users/fdc/Well-test-data/well-test-table', Component: <WellTestDataTable />, layout: true },

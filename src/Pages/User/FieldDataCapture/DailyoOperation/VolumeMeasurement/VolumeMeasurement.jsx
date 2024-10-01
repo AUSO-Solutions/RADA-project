@@ -288,15 +288,15 @@ const SaveAs = () => {
 
 const Existing = ({ onSelect = () => null }) => {
   const { data } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "volumeMeasurement" } })
-  useEffect(() => {
-    // console.log({data})
-    if (data.length) {
-      const sorted = data.sort((a, b) => a.created - b.created)
-      // console.log(sorted.map)
-      const lastSetup = sorted[sorted.length - 1]
-      console.log(dayjs(lastSetup?.created).format('MMM-DD hh:mm A'))
-    }
-  }, [data])
+  // useEffect(() => {
+  //   // console.log({data})
+  //   if (data.length) {
+  //     const sorted = data.sort((a, b) => a.created - b.created)
+  //     // console.log(sorted.map)
+  //     const lastSetup = sorted[sorted.length - 1]
+  //     console.log(dayjs(lastSetup?.created).format('MMM-DD hh:mm A'))
+  //   }
+  // }, [data])
 
   return (
     <div className=" flex flex-wrap gap-4 m-5 ">
@@ -337,15 +337,7 @@ const VolumeMeasurement = () => {
     }
 
   }
-  // const setupData = useSelector(state => state.setup)
-  // console.log(setupData?.reportTypes)
-
-  // const [, setCurrReport] = useState(setupData?.reportTypes?.[0])
-  // useEffect(() => {
-  //   // console.log(setupData?.reportTypes?.[0])
-  //   // setCurrReport(setupData?.reportTypes?.[0])
-  // }, [setupData?.reportTypes, setupTable])
-  // const [date, setDate] = useState()
+  
   useEffect(() => {
     dispatch(clearSetup({}))
   }, [dispatch])

@@ -25,6 +25,7 @@ import dayjs from 'dayjs';
 import { firebaseFunctions } from 'Services';
 import { store } from 'Store';
 import AttachSetup from './AttachSetup';
+import { Alert } from '@mui/material';
 
 
 const TableInput = ({ type = '', ...props }) => {
@@ -36,7 +37,7 @@ export default function GasTable() {
   const dispatch = useDispatch()
   const [setup, setSetup] = React.useState({})
   const [showSettings, setShowSettings] = React.useState(false)
-  const [date, setDate] = React.useState(dayjs().format("DD/MM/YYYY"))
+  const [ , setDate] = React.useState(dayjs().format("DD/MM/YYYY"))
   const id = React.useMemo(() => new URLSearchParams(search).get('id'), [search])
   const { data: res } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'volumeMeasurement', id } })
   const { data: attacmentSetup } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'volumeMeasurement', id: res?.attachmentId }, dontFetch: !res?.attachmentId/* */ })
@@ -50,13 +51,17 @@ export default function GasTable() {
     return Math.round(num * 10000) / 10000
   }
 
+  const { data: IPSCs } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: 'IPSC' } })
+  const IPSC = React.useMemo(()=>IPSCs?.find(IPSC => IPSC?.month === dayjs().format('YYYY-MM') && IPSC?.asset === setup?.asset),[IPSCs,setup?.asset])
+
+  const flowstationsTargets = IPSC?.flowstationsTargets
+  const averageTarget = IPSC?.averageTarget
+  // console.log(flowstationsTargets)
 
   const [tableValues, setTableValues] = React.useState({})
+  const [loading, setLoading] = React.useState(false)
   const [totals, setTotals] = React.useState({
-    netProductionTotal: 0,
-    netTargetTotal: 0,
-    bswTotal: 0,
-    grossTotal: 0,
+    totalGasProduced: 0,
   })
   const gasTypes = ["Gas Flared USM", "Fuel Gas", "Export Gas"].map(type => ({ label: type, value: camelize(type) }))
 
@@ -70,9 +75,9 @@ export default function GasTable() {
       const prevFlowStation = prev?.[flowStation]
       const prevFlowStationList = prevFlowStation?.meters
       const prevFlowStationListIndexValues = prevFlowStation?.meters?.[readingIndex]
-      const finalBbls = field === "finalBbls" ? value : (prevFlowStationListIndexValues?.finalBbls || 0)
-      const initialBbls = field === "initialBbls" ? value : (prevFlowStationListIndexValues?.initialBbls || 0)
-      const difference = roundUp(Math.abs(parseFloat(finalBbls) - parseFloat(initialBbls)))
+      const finalReading = field === "finalReading" ? value : (prevFlowStationListIndexValues?.finalReading || 0)
+      const initialReading = field === "initialReading" ? value : (prevFlowStationListIndexValues?.initialReading || 0)
+      const difference = roundUp(Math.abs(parseFloat(finalReading) - parseFloat(initialReading)))
       let meterTotal = prevFlowStationListIndexValues?.meterTotal
       if (field === "meterTotal") { meterTotal = parseFloat(value) } else { meterTotal = (difference * parseFloat(meterFactor || 0).toFixed(5)) }
 
@@ -86,7 +91,7 @@ export default function GasTable() {
             [field]: parseFloat(value || 0),
             meterTotal,
             gasType,
-            difference,
+            // difference,
             serialNumber: flowStationSetup?.readings?.[readingIndex]?.serialNumber
           }
         } : prevFlowStationList
@@ -94,7 +99,7 @@ export default function GasTable() {
       let updatedFlowStation = {
         ...prevFlowStation,
         meters: updatedMeters,
-        subTotal: sum(Object.values(updatedMeters || {}).map(value => value.meterTotal)).toFixed(5),
+        totalGas: sum(Object.values(updatedMeters || {}).map(value => value.meterTotal)).toFixed(5),
       }
       if (flowStationField) {
         updatedFlowStation = {
@@ -112,7 +117,7 @@ export default function GasTable() {
   React.useEffect(() => {
     const values = (Object.values(tableValues))
     const calcs = {
-      netProductionTotal: sum(Object.values(values || {}).map(item => item?.subTotal || 0))?.toFixed(5),
+      totalGasProduced: sum(Object.values(values || {}).map(item => item?.totalGas || 0))?.toFixed(5),
     }
     setTotals(calcs)
   }, [tableValues])
@@ -138,24 +143,38 @@ export default function GasTable() {
     const setup = store.getState().setup
     const flowStations = Object.entries(tableValues).map(value => ({
       name: value[0],
+      subtotal: {
+        gasFlaredUSMTarget: flowstationsTargets?.[value[0]]?.gasFlaredUSM,
+        exportGasTarget: flowstationsTargets?.[value[0]]?.exportGas,
+        fuelGasTarget: flowstationsTargets?.[value[0]]?.fuelGas,
+        fuelGas: Object.values(value[1]?.meters || {})?.find(meter => meter?.gasType === 'fuelGas')?.meterTotal,
+        exportGas: Object.values(value[1]?.meters || {})?.find(meter => meter?.gasType === 'exportGas')?.meterTotal,
+        gasFlaredUSM: Object.values(value[1]?.meters || {})?.find(meter => meter?.gasType === 'gasFlaredUSM')?.meterTotal,
+        totalGasTarget:flowstationsTargets?.[value[0]]?.gasFlaredUSM + flowstationsTargets?.[value[0]]?.exportGas + flowstationsTargets?.[value[0]]?.fuelGas,
+        totalGas: value[1]?.totalGas
+      },
       ...value[1]
     }))
-    console.log(flowStations)
+    // console.log(flowStations)
     const payload = {
-      date: dayjs(date).format("DD/MM/YYYY"),
+      date: dayjs().format("DD/MM/YYYY"),
       asset: setup.asset,
       fluidType: 'gas',
-      totals,
+      totalGasProduced: totals.totalGasProduced,
       setupId: setup?.id,
-      flowstations: flowStations
+      flowstations: flowStations,
+      averageTarget
     };
     try {
-
+      setLoading(true)
+      console.log(payload)
       await firebaseFunctions('captureGas', payload)
       toast.success("Successful")
     } catch (error) {
       console.log(error)
       toast.error(error?.message)
+    } finally {
+      setLoading(false)
     }
 
   }
@@ -163,11 +182,14 @@ export default function GasTable() {
   const onSelectReportType = (e) => {
     if (e !== 'Gas') navigate(`/users/fdc/daily/volume-measurement-table?id=${attacmentSetup?.id}&reportType=${e}`)
   }
+  const reportTypes__ = React.useMemo(() => {
+    return (attacmentSetup?.reportTypes || [])?.concat(setup?.reportTypes)
+  }, [attacmentSetup?.reportTypes, setup?.reportTypes])
   return (
 
     <> <div className='flex justify-between my-2 px-2 items-center'>
       <div className='flex gap-4 items-center'>
-        <RadioSelect defaultValue={setup?.reportTypes?.[0]} list={(attacmentSetup?.reportTypes || [])?.concat(setup?.reportTypes)} onChange={onSelectReportType} /> <RadaSwitch label="Edit Table" labelPlacement="left" />
+        {reportTypes__?.length && <RadioSelect defaultValue={setup?.reportTypes?.[0]} list={reportTypes__} onChange={onSelectReportType} />} <RadaSwitch label="Edit Table" labelPlacement="left" />
       </div>
       <div className='flex items-center gap-2 '>
         <AttachSetup setup={setup} />
@@ -182,13 +204,16 @@ export default function GasTable() {
 
       < form className='px-3 ' onSubmit={save} >
         <TableContainer className={`m-auto border ${tableStyles.borderedMuiTable}`}>
+        {!IPSC && <Alert severity='info' className='my-2' hidden={!IPSC}>
+            No IPSC for this {setup?.asset} this month
+          </Alert>}
           <Table sx={{ minWidth: 700 }} >
             <TableHead >
               <TableRow sx={{ bgcolor: `rgba(239, 239, 239, 1) !important`, color: 'black', fontWeight: 'bold  !important' }}>
                 <TableCell align="left" colSpan={3} >
                   Flow stations
                 </TableCell>
-                <TableCell align="center" colSpan={4} >
+                <TableCell align="center" colSpan={5} >
                   Gas Readings
                 </TableCell>
                 <TableCell align="center" colSpan={4}>Total</TableCell>
@@ -202,6 +227,7 @@ export default function GasTable() {
                 <TableCell align="center"> Meter Name</TableCell>
                 <TableCell align="center">Initial (mmscf)</TableCell>
                 <TableCell align="center">Final (mmscf)</TableCell>
+                <TableCell align="center">Gas Target</TableCell>
                 <TableCell align="center" colSpan={2}>mmscf</TableCell>
               </TableRow>
             </TableHead>
@@ -217,18 +243,13 @@ export default function GasTable() {
                       </TableRow>
                       <>
                         {gasTypes.map((gasType, i) => {
-                          // let usedIndexs = []
                           const readingAtIndex = readings?.find(reading => reading?.gasType === gasType.value)
                           let readingIndex = readings?.findIndex(reading => reading?.gasType === gasType.value)
                           if (readingIndex === -1) readingIndex = i + readings?.length
                           if (!readings) readingIndex = i
-                          // usedIndexs.push(readingIndex)
-                          // console.log({usedIndexs})
-                          // usedIndexs.push(readingIndex)
-                          // console.log(readings,readingIndex,i)
 
-                          const initialBbls = tableValues?.[name]?.meters?.[readingIndex]?.initialBbls
-                          const finalBbls = tableValues?.[name]?.meters?.[readingIndex]?.finalBbls
+                          const initialReading = tableValues?.[name]?.meters?.[readingIndex]?.initialReading
+                          const finalReading = tableValues?.[name]?.meters?.[readingIndex]?.finalReading
                           const meterTotal = tableValues?.[name]?.meters?.[readingIndex]?.meterTotal
                           return (<TableRow  >
                             <TableCell align="center">
@@ -240,14 +261,19 @@ export default function GasTable() {
 
                             <TableCell align="center">
 
-                              <TableInput value={readingAtIndex ? initialBbls : "-"}
+                              <TableInput value={readingAtIndex ? initialReading : "-"}
                                 disabled={!readingAtIndex} type={'number'}
-                                onChange={(e) => handleChange({ flowStation: name, field: 'initialBbls', value: e.target.value, readingIndex, gasType: gasType.value })} />
+                                onChange={(e) => handleChange({ flowStation: name, field: 'initialReading', value: e.target.value, readingIndex, gasType: gasType.value })} />
                             </TableCell>
                             <TableCell align="center">
-                              <TableInput value={readingAtIndex ? finalBbls : "-"}
+                              <TableInput value={readingAtIndex ? finalReading : "-"}
                                 disabled={!readingAtIndex} type={'number'}
-                                onChange={(e) => handleChange({ flowStation: name, field: 'finalBbls', value: e.target.value, readingIndex, gasType: gasType.value })} />
+                                onChange={(e) => handleChange({ flowStation: name, field: 'finalReading', value: e.target.value, readingIndex, gasType: gasType.value })} />
+                            </TableCell>
+                            <TableCell align="center">
+                              <TableInput value={flowstationsTargets?.[name]?.[gasType.value]}
+                                disabled type={'number'}
+                              />
                             </TableCell>
                             <TableCell align="center" colSpan={2}>
                               {readingAtIndex ? meterTotal :
@@ -260,8 +286,8 @@ export default function GasTable() {
                         }
                         )}
                         <TableRow key={name}>
-                          <TableCell sx={{ bgcolor: '#8080807a' }} align="left" className='pl-5 !bg-[#8080807a]' colSpan={4}><div > Total Gas Produced</div></TableCell>
-                          <TableCell sx={{ bgcolor: '#8080807a' }} align="center">{(tableValues?.[name]?.subTotal || 0)}
+                          <TableCell sx={{ bgcolor: '#8080807a' }} align="left" className='pl-5 !bg-[#8080807a]' colSpan={5}><div > Total Gas Produced</div></TableCell>
+                          <TableCell sx={{ bgcolor: '#8080807a' }} align="center">{(tableValues?.[name]?.totalGas || 0)}
 
                           </TableCell>
                         </TableRow>
@@ -276,14 +302,15 @@ export default function GasTable() {
             <TableBody>
               <TableRow >
                 <TableCell align="left" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} className='bg-[rgba(0, 163, 255, 0.3)]' colSpan={7}>{"Total Gas Production"}</TableCell>
-                <TableCell align="center" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} >{totals?.netProductionTotal}</TableCell>
+                <TableCell align="center" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} className='bg-[rgba(0, 163, 255, 0.3)]' colSpan={1}> {averageTarget?.gasRate}</TableCell>
+                <TableCell align="center" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} >{totals?.totalGasProduced}</TableCell>
               </TableRow>
             </TableBody>
 
           </Table>
         </TableContainer>
         <div className='justify-end flex my-2'>
-          <Button className={'my-3'} type='submit' width={150}>Save</Button>
+          <Button className={'my-3'} disabled={!IPSC} type='submit' loading={loading} width={150}>Save</Button>
         </div>
       </form></>
   );

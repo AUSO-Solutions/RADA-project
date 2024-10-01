@@ -1,4 +1,4 @@
-export default [
+export const permissions = [
     'Edit Daily Production and Operation Report',
     'Edit Well Test and MER Data',
     'Edit FG/SG Survey Data',

@@ -22,16 +22,16 @@ export default function MERScheduleTable() {
 
     const { search } = useLocation()
     const [loading, setLoading] = React.useState(false)
-    const [wellTest, setWellTest] = React.useState({})
+    const [merSchedule, setMerSchedule] = React.useState({})
     const id = React.useMemo(() => new URLSearchParams(search).get('id'), [search])
-    const { data: res } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'wellTestSchedule', id } })
-    React.useEffect(() => { setWellTest(res) }, [res])
+    const { data: res } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'merSchedule', id } })
+    React.useEffect(() => { setMerSchedule(res) }, [res])
     const save = async () => {
         setLoading(true)
         try {
-            await firebaseFunctions('updateSetup', { id, setupType: 'wellTestSchedule', ...wellTest })
+            await firebaseFunctions('updateSetup', { id, setupType: 'merSchedule', ...merSchedule })
             toast.success("Remark saved successfully")
-            console.log(res, wellTest)
+            console.log(res, merSchedule)
         } catch (error) {
 
         } finally {
@@ -54,8 +54,8 @@ export default function MERScheduleTable() {
                 <Table sx={{ minWidth: 700 }} >
                     <TableHead >
                         <TableRow sx={{ bgcolor: `rgba(239, 239, 239, 1) !important`, color: 'black', fontWeight: 'bold  !important' }}>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={12} >
-                                MER DATA-{wellTest?.asset}/{wellTest?.field}/Wells Schedule/{dayjs(wellTest?.created).format('MMM YYYY')}
+                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={11} >
+                                MER DATA-{merSchedule?.asset}/Mer Schedule/{dayjs(merSchedule?.created).format('MMM YYYY')}
                             </TableCell>
 
                         </TableRow>
@@ -67,63 +67,64 @@ export default function MERScheduleTable() {
                             <TableCell style={{ fontWeight: '600' }} align="center" >
                                 Reservoir
                             </TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center">Production String</TableCell>
-                            {/* <TableCell style={{ fontWeight: '600' }} align="center">String</TableCell> */}
+                            <TableCell style={{ fontWeight: '600' }} align="center">Production string</TableCell>
+
+                            <TableCell style={{ fontWeight: '600' }} colSpan={1} align="center">Remarks</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center">Test Choke (/64")</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center">On Program</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center">Start Date</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center">End Date</TableCell>
                             {/* <TableCell style={{ fontWeight: '600' }} align="center">Stabilization Duration (Hrs)</TableCell> */}
                             <TableCell style={{ fontWeight: '600' }} align="center">Test Duration (Hrs)</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} colSpan={3} align="center">Remarks</TableCell>
                         </TableRow>
                     </TableHead>
 
-                    <TableBody>
-
-                        {
-                            Object.values(wellTest?.wellsData || {})
-                                .sort((a, b) => ((b?.isSelected ? 1 : 0) - (a?.isSelected ? 1 : 0)))?.map((well, i) => {
-                                    return <TableRow>
-                                        <TableCell align="center">
+                    {
+                        Object.values(merSchedule?.merScheduleData || {}).map((mer, i) => {
+                            return <>
+                                <TableBody className='flex w-fit'>
+                                    <TableRow >
+                                        <TableCell rowSpan={mer?.chokes?.length + 1} align="center">
                                             {i + 1}
 
                                         </TableCell>
-                                        <TableCell align="center">
-                                            {well?.reservoir}
+                                        <TableCell rowSpan={mer?.chokes?.length + 1} align="center">
+                                            {mer?.reservoir}
                                         </TableCell>
-                                        <TableCell align="center">
-                                            {well?.productionString}
+                                        <TableCell rowSpan={mer?.chokes?.length + 1} align="center">
+                                            {mer?.productionString}
                                         </TableCell>
-                                        {/* <TableCell align="center">
-                                            {'L'}
-                                        </TableCell> */}
-                                        <TableCell align="center">
-                                            {well?.chokeSize || '-'}
-                                        </TableCell>
-                                        <TableCell bgcolor={well?.isSelected ? '#A7EF6F' : "#FF5252"} align="center">{well?.isSelected ? 'YES' : 'NO'}</TableCell>
-                                        <TableCell align="center">{well?.isSelected ? dayjs(well?.startDate).format('DD MMM YYYY. hh:mmA') : '-'}</TableCell>
-                                        <TableCell align="center">{well?.isSelected ? dayjs(well?.endDate).format('DD MMM YYYY. hh:mmA') : '-'}</TableCell>
-                                        {/* <TableCell align="center">{well?.isSelected ? well?.stabilizatonDuration : '-'}</TableCell> */}
-                                        <TableCell align="center">{well?.isSelected ? dayjs(well?.endDate).diff(well?.startDate, 'hours') : '-'}</TableCell>
-                                        <TableCell colSpan={3} align="center">
+                                        <TableCell rowSpan={mer?.chokes?.length + 1} colSpan={1} align="center">
 
-                                            <textarea className='border rounded px-2 py-1' defaultValue={well?.remark} onChange={(e) => {
-                                                setWellTest(prev => ({
+                                            <textarea className='border outline-none px-2 !h-[100%] py-1' defaultValue={mer?.remark || 'No Remark'} onChange={(e) => {
+                                                setMerSchedule(prev => ({
                                                     ...prev,
-                                                    wellsData: {
-                                                        ...prev?.wellsData,
-                                                        [well?.productionString]: { ...prev?.wellsData?.[well?.productionString], remark: e.target.value }
+                                                    merScheduleData: {
+                                                        ...prev?.merScheduleData,
+                                                        [mer?.productionString]: { ...prev?.merScheduleData?.[mer?.productionString], remark: e.target.value }
                                                     }
                                                 }))
                                             }} />
 
                                         </TableCell>
                                     </TableRow>
-                                })
-                        }
 
-                    </TableBody>
+                                    {
+                                        mer?.chokes?.map(choke => <TableRow >
+                                            <TableCell align="center">  {choke?.chokeSize || '-'}  </TableCell>
+                                            <TableCell bgcolor={mer?.isSelected ? '#A7EF6F' : "#FF5252"} align="center">{mer?.isSelected ? 'YES' : 'NO'}</TableCell>
+                                            <TableCell align="center">{dayjs(choke?.startDate).format('DD MMM YYYY. hh:mmA')}</TableCell>
+                                            <TableCell align="center">{dayjs(choke?.endDate).format('DD MMM YYYY. hh:mmA')}</TableCell>
+                                            <TableCell align="center">{dayjs(choke?.endDate).diff(choke?.startDate, 'hours')}</TableCell>
+                                        </TableRow>)
+                                    }
+                                </TableBody>
+                            </>
+                        })
+                    }
+
+
+
 
                 </Table>
             </TableContainer>

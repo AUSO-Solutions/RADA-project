@@ -50,8 +50,9 @@ const getInsight = onCall(async (request) => {
         const flowstationGas = gasVolume.find(
           (station) => station.name === flowstation
         );
-        const targetOil = flowstationOil.subtotal.target;
-        const netProduction = flowstationOil.subtotal.netProduction;
+        const targetOil = flowstationOil.subtotal.netTarget;
+        const targetGross = flowstationOil.subtotal.grossTarget;
+        const netProduction = flowstationOil.subtotal.netProduction; //---
         const targetTotalGas = flowstationGas.subtotal.targetTotalGas;
         const targetFuelGas = flowstationGas.subtotal.targetFuelGas;
         const targetExportGas = flowstationGas.subtotal.targetExportGas;
@@ -107,13 +108,13 @@ const getInsight = onCall(async (request) => {
         let runningTargetFlaredGas = 0;
 
         for (let date of dates) {
-          const assetOilVolume = db
+          const assetOilVolume =  await db
             .collection("liquidVolumes")
             .where("date", "==", date)
             .where("asset", "==", asset)
             .get()
             .docs.map((doc) => doc.data());
-          const assetGasVolume = db
+          const assetGasVolume = await db
             .collection("gasVolumes")
             .where("date", "==", date)
             .where("asset", "==", asset)
@@ -128,7 +129,7 @@ const getInsight = onCall(async (request) => {
             (station) => station.name === flowstation
           );
 
-          const targetOil = oilVolumes.subtotal.target;
+          const targetOil = oilVolumes.subtotal.netTarget;
           const netOil = oilVolumes.subtotal.netProduction;
           const targetTotalGas = gasVolumes.subtotal.targetTotalGas;
           const targetFuelGas = gasVolumes.subtotal.targetFuelGas;

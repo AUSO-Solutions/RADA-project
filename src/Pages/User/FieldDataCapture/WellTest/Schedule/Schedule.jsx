@@ -100,6 +100,9 @@ const DefineSchedule = () => {
     const getReservoirByProdString = (productionString) => {
         return assets.assetData?.find(asset => asset?.wellId === productionString)?.reservoir
     }
+    const getFlowstationByProdString = (productionString) => {
+        return assets.assetData?.find(asset => asset?.wellId === productionString)?.flowstation
+    }
 
 
     const storeWellChanges = (productionString, name, value, i) => {
@@ -125,6 +128,7 @@ const DefineSchedule = () => {
                 ...updates[productionString],
                 productionString,
                 reservoir: getReservoirByProdString(productionString),
+                flowstation: getFlowstationByProdString(productionString),
                 isSelected: setupData?.productionStrings?.includes(productionString)
             }
         })

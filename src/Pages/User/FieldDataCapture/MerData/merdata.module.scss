@@ -7,7 +7,7 @@
     border-radius: 12px;
 }
 
-.table {
+table {
     min-width: 700px !important;
 
     tr {
@@ -17,21 +17,23 @@
     // display: none;
     th,
     td {
-        display: flex;
-        // flex-direction: column;
-        width: 150px !important;
-        justify-content: center;
-        align-items: center;
-        padding: 5px 0;
+        // display: flex;
+        // // flex-direction: column;
+        // width: 150px !important;
+        // justify-content: center;
+        // align-items: center;
+        // padding: 5px 0;
 
-        .inputBox {
-            border: 1px lightgray solid;
-            outline: none;
-            border-radius: 8px;
-            width: 80%;
-            margin: auto;
-            text-align: center;
-            height: 40px;
-        }
+        // .inputBox {
+        //     border: 1px lightgray solid;
+        //     outline: none;
+        //     border-radius: 8px;
+        //     width: 80%;
+        //     margin: auto;
+        //     text-align: center;
+        //     height: 40px;
+        // }
+
+       
     }
 }
