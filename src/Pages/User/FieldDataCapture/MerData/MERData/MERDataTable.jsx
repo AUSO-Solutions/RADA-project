@@ -265,14 +265,14 @@ export default function MERDataTable() {
                                         <TableCell align="center" className={tableStyles.cellNoPadding}>
                                             {chokes?.map((choke, i) =>
                                             (<div className={`border-b py-2`}>
-                                                <TableInput onChange={(e) => setStartDate({ startDate: e.target.value })} type='date' defaultValue={dayjs(choke?.startDate).format("YYYY-MM-DD")} />
+                                                <TableInput onChange={(e) => handleChokeItemChange(e, i)} name={'startDate'} type='date' defaultValue={dayjs(choke?.startDate).format("YYYY-MM-DD")} />
                                             </div>)
                                             )}
                                         </TableCell>
                                         <TableCell align="center" className={tableStyles.cellNoPadding}>
                                             {chokes?.map((choke, i) =>
                                             (<div className={`border-b py-2`}>
-                                                <TableInput onChange={(e) => setEndDate({ endDate: e.target.value })} type='date' defaultValue={dayjs(choke?.endDate).format("YYYY-MM-DD")} />
+                                                <TableInput onChange={(e) => handleChokeItemChange(e, i)} type='date' name={'endDate'}  defaultValue={dayjs(choke?.endDate).format("YYYY-MM-DD")} />
                                             </div>)
                                             )}
                                         </TableCell>

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux"
 // import { useAssetNames } from "hooks/useAssetNames"
 import { clearSetup, setSetupData } from "Store/slices/setupSlice"
 // import CheckInput from "Components/Input/CheckInput"
-import { Input } from "Components"
+import { Button, Input } from "Components"
 import { useEffect, useState } from "react"
 // import styles from '../merdata.module.scss'
 import { useFetch } from "hooks/useFetch"
@@ -21,7 +21,6 @@ import { createWellTitle } from "utils"
 import { BsPlus } from "react-icons/bs"
 import dayjs from "dayjs"
 import ExcelToCsv from "Partials/ExcelToCSV"
-
 
 
 // const createOpt = item => ({ label: item, value: item })
@@ -316,10 +315,10 @@ import ExcelToCsv from "Partials/ExcelToCSV"
 
 const ImporFiles = () => {
     const dispatch = useDispatch()
-    const handleFiles = async (name,jsonData) => {
+    const handleFiles = async (name, jsonData) => {
 
         try {
-            console.log({name,jsonData})
+            console.log({ name, jsonData })
             dispatch(setSetupData({ name, value: jsonData }))
         } catch (error) {
             console.log(error)
@@ -331,18 +330,18 @@ const ImporFiles = () => {
         <div className="w-full  flex ">
             <ExcelToCsv className="block  border w-[50%] rounded m-3 p-3" onComplete={jsonData => handleFiles('chokeSizes', jsonData)}>
 
-                    <BsPlus size={50} className="mx-auto" />
-                    {setupData?.chokeSizes?.name || " Import file for production strings chokes"}
+                <BsPlus size={50} className="mx-auto" />
+                {setupData?.chokeSizes?.name || " Import file for production strings chokes"}
 
             </ExcelToCsv>
             {/* <input name="chokeSizes" type="file" hidden onChange={handleFiles} id="chokeSizes" /> */}
 
 
             {/* <input t name="staticParameters" type="file" hidden onChange={handleFiles} id="reserviorParaemters" /> */}
-            <ExcelToCsv  className="block border w-[50%] rounded m-3 p-3" onComplete={jsonData => handleFiles('staticParameters', jsonData)}>
+            <ExcelToCsv className="block border w-[50%] rounded m-3 p-3" onComplete={jsonData => handleFiles('staticParameters', jsonData)}>
 
-                    <BsPlus size={50} className="mx-auto" />
-                    {setupData?.staticParameters?.name || "Import file for Reservoir Parameters"}
+                <BsPlus size={50} className="mx-auto" />
+                {setupData?.staticParameters?.name || "Import file for Reservoir Parameters"}
 
             </ExcelToCsv>
         </div>
@@ -363,7 +362,12 @@ const Exists = () => {
 
     const { data } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "merSchedule" } })
 
-    return (
+    return (<>
+       <div className="pl-5 mt-5 ">
+       <Button>
+            <a href={'https://firebasestorage.googleapis.com/v0/b/ped-application-4d196.appspot.com/o/MER%20DATA%20Import%20(1).xlsx?alt=media&token=aa2321b6-4f81-447f-b8a2-14140f98389d'} download>Download Template</a>
+        </Button>
+       </div>
         <div className=" flex flex-wrap gap-4 m-5 ">
 
             <Files name={(file) => `${createWellTitle(file, 'MER Data Schedule')}`} files={data} actions={[
@@ -371,7 +375,7 @@ const Exists = () => {
                 { name: 'MER DATA Result', to: (file) => `/users/fdc/mer-data/mer-data-result-table?scheduleId=${file?.id}` },
             ]} />
 
-        </div>
+        </div></>
     )
 }
 
