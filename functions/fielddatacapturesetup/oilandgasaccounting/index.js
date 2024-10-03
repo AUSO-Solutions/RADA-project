@@ -43,7 +43,7 @@ const processIPSC = onCall(async (request) => {
       };
     }
 
-    const flowstationData = flowstationsData.flowstation.find(
+    const flowstationData = flowstationsData.flowstations.find(
       (flowstation) => flowstation.name === flowStation
     );
 
@@ -62,6 +62,7 @@ const processIPSC = onCall(async (request) => {
 
     return { status: "success", data: JSON.stringify(result) };
   } catch (error) {
+    console.log({error})
     if (error.message) throw new HttpsError(error?.code, error?.message);
     throw error;
   }

@@ -45,7 +45,7 @@ const ImporFiles = () => {
                     {setupData?.chokeSizes ?
                         <><TickCircle color={colors.rada_blue} className="mx-auto" size={50} /> Choke sizes file uploaded</>
                         : <>
-                            <BsPlus  size={50} className="mx-auto" />
+                            <BsPlus size={50} className="mx-auto" />
                             Import file for production strings chokes
                         </>}
 
@@ -55,10 +55,10 @@ const ImporFiles = () => {
 
 
 
-                {setupData?.staticParameters ?
+                    {setupData?.staticParameters ?
                         <><TickCircle color={colors.rada_blue} className="mx-auto" size={50} /> Reservoir Parameterss file uploaded</>
                         : <>
-                            <BsPlus size={50} className="mx-auto" />
+                            <BsPlus color={colors.rada_blue} size={50} className="mx-auto" />
                             Import file for Reservoir Parameters
                         </>}
 
@@ -109,7 +109,7 @@ const Schedule = () => {
             const staticParameters = setupData?.staticParameters
 
             const payload = {
-                title: setupData?.title, chokeSizes, staticParameters, date: dayjs().format("DD/MM/YYYY")
+                title: setupData?.title, chokeSizes, staticParameters, date: dayjs().format("DD/MM/YYYY"), month: setupData?.month
             }
             await firebaseFunctions('createMerSchedule', payload)
             dispatch(closeModal())

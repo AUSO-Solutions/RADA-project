@@ -32,7 +32,7 @@ export default function Actions({ actions}) {
             >
 
                 {
-                    actions.map(action =>  <MenuItem onClick={() => { handleClose(); action?.onClick() }}>{action?.name}</MenuItem>)
+                    actions.map(action => <MenuItem onClick={() => { handleClose(); action?.onClick() }}>{action?.name}</MenuItem>)
                 }
                           </Menu>
         </div>

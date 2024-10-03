@@ -11,6 +11,7 @@ import { useSearchParams } from 'react-router-dom';
 import { firebaseFunctions } from 'Services';
 import { toast } from 'react-toastify';
 import { Button } from 'Components';
+import { sum } from 'utils';
 
 export default function OilGasAccountingTableForActual({ IPSC, flowStation, date = '' }) {
     const [searchParams] = useSearchParams()
@@ -24,19 +25,19 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
         'Unscheduled Deferment': [
             'Engine Failure', 'Pump Failure', 'Well No - Flow', 'Mismatch'
         ],
-        'Third-Party Deferment':[
-            'TFP Outage','Export Line Issues','Flowline Issue','Ovade GP','Community Interruption'
+        'Third-Party Deferment': [
+            'TFP Outage', 'Export Line Issues', 'Flowline Issue', 'Ovade GP', 'Community Interruption'
         ],
-        'N/A':[
+        'N/A': [
 
         ]
     }
-    
 
-		
-		
-		
-	
+
+
+
+
+
 
     const [wellTestResultData, setWellTestResultData] = useState({})
     // const []
@@ -80,6 +81,12 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
             console.log(error)
             toast.error(error)
         }
+    }
+
+    const getTotalOf = (key) => {
+        const res = Object.values(wellTestResultData || {})
+        const total = sum(res?.map(item => parseFloat(item?.[key] || 0)))
+        return total
     }
 
     useEffect(() => {
@@ -168,7 +175,7 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
                             <TableCell align="center">{well?.gross || 0}</TableCell>
                             <TableCell align="center">{well?.oilRate || 0}</TableCell>
                             <TableCell align="center">{well?.gasRate || 0}</TableCell>
-                            <TableCell align="center">{well?.waterRate || 0}</TableCell>
+                            <TableCell align="center">{well?.gross - well?.oilRate || 0}</TableCell>
                             {searchParams.get('table') === 'actual-production' && <TableCell style={{ color: 'white', fontWeight: "600", background: parseInt(well?.uptimeProduction) === 0 || !well?.uptimeProduction ? '#FF5252' : '#A0E967' }} align="center">
                                 {(parseInt(well?.uptimeProduction) === 0 || !well?.uptimeProduction) ? 'Closed In' : 'Producing'}
                             </TableCell>}
@@ -180,13 +187,28 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
                                     </select>
                                 </TableCell>
                                     <TableCell style={{ background: '#E6E4F9' }} align="center">
-                                    <select className='bg-[inherit] outline-none'>
-                                        {Description[well?.defermentCategory]?.map(desc => <option value={desc}>{desc}</option>)}
-                                    </select>
+                                        <select className='bg-[inherit] outline-none'>
+                                            {Description[well?.defermentCategory]?.map(desc => <option value={desc}>{desc}</option>)}
+                                        </select>
                                     </TableCell></>
                             }
                         </TableRow>
                     })}
+
+                    <TableRow sx={{ backgroundColor: '#00A3FF4D' }}>
+                        <TableCell style={{ fontWeight: '600' }} align="center" colSpan={2} >Totals </TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('uptimeProduction')}</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center">{getTotalOf('gross')}</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center">{getTotalOf('oilRate')}</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('gasRate')}</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('gross') - getTotalOf('oilRate')} </TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" >-</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" >-</TableCell>
+                        {/* <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('bsw')}</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('oilRate')}</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('gasRate')}</TableCell> */}
+
+                    </TableRow>
 
                 </TableBody>
 

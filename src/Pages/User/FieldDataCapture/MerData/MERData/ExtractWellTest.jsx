@@ -8,6 +8,7 @@ import { store } from 'Store'
 import { openModal } from 'Store/slices/modalSlice'
 import { setSetupData } from 'Store/slices/setupSlice'
 import WellTestCommitTable from './WellTestCommitTable'
+import dayjs from 'dayjs'
 
 
 const SelectChokes = ({ merResult }) => {
@@ -27,7 +28,7 @@ const SelectChokes = ({ merResult }) => {
         dispatch(setSetupData({ name: 'wellTestResultData', value: { ...prevWellTestResultData, [resultData?.productionString]: data } }))
         console.log({ ...prevWellTestResultData, [resultData?.productionString]: data })
     }
-    console.log({merResult})
+    // console.log({merResult})
 
     useEffect(() => {
         dispatch(setSetupData({ name: 'merResultId', value: merResult?.id }))
@@ -35,8 +36,11 @@ const SelectChokes = ({ merResult }) => {
         dispatch(setSetupData({ name: 'month', value: merResult?.month }))
     }, [dispatch, merResult?.id, merResult?.asset])
     return (<>
-        {setup?.month}---- {merResult?.month }
-        <Input type='month' onChange={e => dispatch(setSetupData({ name: 'month', value: e.target.value }))} defaultValue={{ label: setup?.month, value: setup?.month }} containerClass={'!w-fit self-right  p-2'} />
+        <div className='border rounded py-2 px-4 w-fit bg-[lightgrey] mb-3'>
+            {dayjs(merResult?.month).format('MMM YYYY')}
+        </div>
+
+        {/* <Input type='month' onChange={e => dispatch(setSetupData({ name: 'month', value: e.target.value }))} disabled value={{ label: setup?.month, value: setup?.month }} containerClass={'!w-fit self-right  p-2'} /> */}
         <div className='border rounded-[20px] w-full py-3'>
             <div className='flex justify-between items-center py-3 border-b px-2'>
                 <Text>

@@ -22,7 +22,7 @@ import { createWellTitle, getWellLastTestResult, sum } from 'utils';
 import IPSCAnalytics from './IPSCAnalytics';
 import ToleranceSettiings from './ToleranceSettiings';
 import { firebaseFunctions } from 'Services';
-import Actions from 'Partials/Actions/Index';
+import Actions from 'Partials/Actions/Actions';
 import { Tooltip } from '@mui/material';
 
 // const TableInput = (props) => {
