@@ -69,3 +69,37 @@ export const firebaseGetUploadedFile = async (path) => {
 export const genRandomNumber = () => {
     return Math.floor(Math.random() * 100) + 1
 }
+
+const getLineDetails = (line, at1, at2) => {
+    const x1 = line[at1]?.x,
+        x2 = line[at2]?.x,
+        y1 = line[at1]?.y,
+        y2 = line[at2]?.y;
+    const point1 = { y: y1, x: x1 }
+    const point2 = { y: y2, x: x2 }
+    const slope = (y2 - y1) / (x2 - x1)
+    // y = mx + c
+    const c = y1 - (slope * x1)
+    return {
+        x1, x2, y1, y2, point1, point2, slope, c
+    }
+}
+
+/**
+ * @param {Object} point
+ * @param {Array} line1
+ * @param {Array} line2
+ */
+export const getIntersectionBetweenTwoLines = (line1, line2, at1 = 0, at2 = 1) => {
+    if (!line1.length || !line1.length) return {
+        x: 0, y: 0
+    }
+    const line1Details = getLineDetails(line1, at1, at2)
+    const line2Details = getLineDetails(line2, at1, at2)
+    const x = (line2Details.c - line1Details.c) / (line1Details.slope - line2Details.slope)
+    const y = ((line1Details.c * line2Details.slope) - (line2Details.c * line1Details.slope)) / (line1Details.slope - line2Details.slope)
+    return {
+        line1Details, line2Details, x, y
+    }
+
+}

@@ -1,11 +1,7 @@
-
 import { useDispatch, useSelector } from "react-redux"
-// import { useAssetNames } from "hooks/useAssetNames"
 import { clearSetup, setSetupData } from "Store/slices/setupSlice"
-// import CheckInput from "Components/Input/CheckInput"
 import { Input } from "Components"
 import { useEffect, useState } from "react"
-// import styles from '../merdata.module.scss'
 import { useFetch } from "hooks/useFetch"
 import Text from "Components/Text"
 import { closeModal } from "Store/slices/modalSlice"
@@ -13,15 +9,11 @@ import { store } from "Store"
 import { firebaseFunctions } from "Services"
 import { toast } from "react-toastify"
 import Setup from "Partials/setup"
-// import { useAssetByName } from "hooks/useAssetByName"
-// import { Chip } from "@mui/material"
-// import dayjs from "dayjs"
 import Files from "Partials/Files"
 import { createWellTitle } from "utils"
 import { BsPlus } from "react-icons/bs"
 import dayjs from "dayjs"
 import ExcelToCsv from "Partials/ExcelToCSV"
-
 
 
 const ImporFiles = () => {
@@ -45,10 +37,6 @@ const ImporFiles = () => {
                     {setupData?.chokeSizes?.name || " Import file for production strings chokes"}
 
             </ExcelToCsv>
-            {/* <input name="chokeSizes" type="file" hidden onChange={handleFiles} id="chokeSizes" /> */}
-
-
-            {/* <input t name="staticParameters" type="file" hidden onChange={handleFiles} id="reserviorParaemters" /> */}
             <ExcelToCsv  className="block border w-[50%] rounded m-3 p-3" onComplete={jsonData => handleFiles('staticParameters', jsonData)}>
 
                     <BsPlus size={50} className="mx-auto" />
@@ -75,18 +63,15 @@ const Exists = () => {
 
     return (
         <div className=" flex flex-wrap gap-4 m-5 ">
-
             <Files name={(file) => `${createWellTitle(file, 'MER Data Schedule')}`} files={data} actions={[
                 { name: 'Remark', to: (file) => `/users/fdc/mer-data/schedule-table?id=${file?.id}` },
                 { name: 'MER DATA Result', to: (file) => `/users/fdc/mer-data/mer-data-result-table?scheduleId=${file?.id}` },
             ]} />
-
         </div>
     )
 }
 
 const Schedule = () => {
-    // const setupData = useSelector(state => state.setup)
     const [loading, setLoading] = useState(false)
     const dispatch = useDispatch()
     useEffect(() => {
@@ -103,9 +88,6 @@ const Schedule = () => {
                 title: setupData?.title, chokeSizes, staticParameters, date: dayjs().format("DD/MM/YYYY")
             }
             await firebaseFunctions('createMerSchedule', payload)
-            // console.log({ data }, '----')
-
-            // dispatch(setWholeSetup(data))
             dispatch(closeModal())
 
         } catch (error) {
@@ -125,9 +107,6 @@ const Schedule = () => {
                     rightLoading={loading}
                     existing={<Exists />}
                     stepComponents={[
-                        // <SelectAsset />,
-                        // <DefineSchedule />,
-                        // <StaticParameters />,
                         <ImporFiles />,
                         <SaveAs />
                     ]}

@@ -7,6 +7,8 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'r
 // import { useDispatch, useSelector } from 'react-redux'
 import { Input } from 'Components'
 import Text from 'Components/Text';
+import { getIntersectionBetweenTwoLines } from 'utils';
+import { getChokeFthpPoints } from './getChokeFthpPoints'
 // import { firebaseFunctions } from 'Services'
 // // import { store } from 'Store'
 // import { Close } from '@mui/icons-material'
@@ -22,14 +24,22 @@ const MerChart = ({ onClickOut = () => null, merResult }) => {
         const results = Object.values(merResult?.merResultData || {}).filter(result => result?.productionString === current)
         return results?.flatMap(result => result?.chokes?.map(choke => ({ ...choke, fthp: choke?.fthp, reservoir: result?.reservoir, productionString: result?.productionString })))
     }, [current, merResult?.merResultData])
-    // console.log(graphData)
+
+    const points = useMemo(() => {
+        const { fthpPoints, chokePoints } = getChokeFthpPoints(graphData)
+        const intersection = getIntersectionBetweenTwoLines(fthpPoints, chokePoints)
+        return { fthpPoints, chokePoints, intersection }
+    }, [graphData])
+
+
+
     return (
         <>
             <div className='h-[100vh] w-[100vw] fixed ' onClick={onClickOut}></div>
-            <div className='fixed bottom-2 right-8 w-[600px] drop-shadow border p-2 rounded bg-white p'>
+            <div className='fixed bottom-10 right-8 w-[600px] drop-shadow shadow p-2 rounded-[12px] bg-white p'>
 
-                <div className='my-3'>
-                    <Text>
+                <div className='my-3 flex py-3 justify-between items-center'>
+                    <Text weight={600}>
                         MER Chart
                     </Text>
                     <Input containerClass='!w-[150px]' type='select' onChange={(e) => setCurrent(e.value)} options={Object.values(merResult?.merResultData || {}).map(result => ({ label: result?.productionString, value: result?.productionString }))} />
@@ -38,7 +48,7 @@ const MerChart = ({ onClickOut = () => null, merResult }) => {
                 <div className='p-2 bg-[#F3F4F6] mx-auto'>
                     <LineChart
                         width={550}
-                        height={400}
+                        height={500}
                         data={graphData}
                         style={{ backgroundColor: 'white', margin: 'auto' }}
                     // margin={{

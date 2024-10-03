@@ -10,7 +10,7 @@ import RadaSwitch from 'Components/Input/RadaSwitch';
 import { ArrowBack } from '@mui/icons-material';
 import Text from 'Components/Text';
 import { Button, Input } from 'Components';
-import { Setting2 } from 'iconsax-react';
+import { Chart } from 'iconsax-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useFetch } from 'hooks/useFetch';
 import dayjs from 'dayjs';
@@ -61,7 +61,7 @@ export default function MERDataTable() {
     const isEdit = useMemo(() => { return !scheduleId }, [scheduleId])
     const [showChart,setShowChart] = useState(false)
     useEffect(() => {
-        console.log(res)
+        // console.log(res)
         if (res) setMerResult({
             title: res?.title,
             merResultData: res?.merScheduleData,
@@ -157,8 +157,8 @@ export default function MERDataTable() {
                             }
                         ]} />}
                     </div>
-                    <div className='border border-[#00A3FF] px-3 py-1 rounded-md' onClick={()=>setShowChart(true)} >
-                        <Setting2 color='#00A3FF' />
+                    <div className='border border-[#00A3FF] px-3 py-1 rounded-md cursor-pointer' onClick={()=>setShowChart(true)} >
+                        <Chart color='#00A3FF' />
                     </div>
                 </div>
             </div>
