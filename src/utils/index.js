@@ -2,6 +2,7 @@ import dayjs from "dayjs"
 
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { project_storage } from "firebase-config";
+import { findLineByLeastSquares } from "./findLineByLeastSquares";
 
 export const sum = (array = []) => {
     if (Array.isArray(array) && array?.length) return parseFloat(array.reduce((a, b) => parseFloat(a) + parseFloat(b)))
@@ -94,6 +95,9 @@ export const getIntersectionBetweenTwoLines = (line1, line2, at1 = 0, at2 = 1) =
     if (!line1.length || !line1.length) return {
         x: 0, y: 0
     }
+    // console.log(line1?.map(line => line?.x), line1?.map(line => line?.y))
+    // const res = findLineByLeastSquares(line1?.map(line => line?.x), line1?.map(line => line?.y))
+    // console.log({lineOfBestFit :  res})
     const line1Details = getLineDetails(line1, at1, at2)
     const line2Details = getLineDetails(line2, at1, at2)
     const x = (line2Details.c - line1Details.c) / (line1Details.slope - line2Details.slope)
@@ -103,3 +107,4 @@ export const getIntersectionBetweenTwoLines = (line1, line2, at1 = 0, at2 = 1) =
     }
 
 }
+

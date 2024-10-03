@@ -299,7 +299,7 @@ export default function IPSCTable() {
                                 <TableCell style={{ fontWeight: '600' }} align="center" colSpan={6} >Spring Totals </TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('gross')}</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center">{getTotalOf('oilRate')}</TableCell>
-                                <TableCell style={{ fontWeight: '600' }} align="center">{getTotalOf('waterRate')}</TableCell>
+                                <TableCell style={{ fontWeight: '600' }} align="center">{getTotalOf('gross')-getTotalOf('oilRate')}</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('gasRate')}</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('bsw')}</TableCell>
 

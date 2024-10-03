@@ -27,13 +27,16 @@ const SelectChokes = ({ merResult }) => {
         dispatch(setSetupData({ name: 'wellTestResultData', value: { ...prevWellTestResultData, [resultData?.productionString]: data } }))
         console.log({ ...prevWellTestResultData, [resultData?.productionString]: data })
     }
+    console.log({merResult})
 
     useEffect(() => {
         dispatch(setSetupData({ name: 'merResultId', value: merResult?.id }))
         dispatch(setSetupData({ name: 'asset', value: merResult?.asset }))
-    }, [dispatch,merResult?.id ,merResult?.asset])
+        dispatch(setSetupData({ name: 'month', value: merResult?.month }))
+    }, [dispatch, merResult?.id, merResult?.asset])
     return (<>
-        <Input type='month' onChange={e => dispatch(setSetupData({ name: 'month', value: e.target.value }))} containerClass={'!w-fit self-right  p-2'} />
+        {setup?.month}---- {merResult?.month }
+        <Input type='month' onChange={e => dispatch(setSetupData({ name: 'month', value: e.target.value }))} defaultValue={{ label: setup?.month, value: setup?.month }} containerClass={'!w-fit self-right  p-2'} />
         <div className='border rounded-[20px] w-full py-3'>
             <div className='flex justify-between items-center py-3 border-b px-2'>
                 <Text>

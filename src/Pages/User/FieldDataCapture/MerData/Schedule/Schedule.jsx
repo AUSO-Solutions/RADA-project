@@ -14,14 +14,17 @@ import { createWellTitle } from "utils"
 import { BsPlus } from "react-icons/bs"
 import dayjs from "dayjs"
 import ExcelToCsv from "Partials/ExcelToCSV"
+import { Check, TickCircle } from "iconsax-react"
+import { colors } from "Assets"
 
 
 const ImporFiles = () => {
     const dispatch = useDispatch()
-    const handleFiles = async (name,jsonData) => {
+    const [files, setFiles] = useState({})
+    const handleFiles = async (name, jsonData) => {
 
         try {
-            console.log({name,jsonData})
+            console.log({ name, jsonData })
             dispatch(setSetupData({ name, value: jsonData }))
         } catch (error) {
             console.log(error)
@@ -30,19 +33,40 @@ const ImporFiles = () => {
     const setupData = useSelector(state => state.setup)
 
     return (
-        <div className="w-full  flex ">
-            <ExcelToCsv className="block  border w-[50%] rounded m-3 p-3" onComplete={jsonData => handleFiles('chokeSizes', jsonData)}>
+        <div>
+            <Input type='month' label={'MER Month'} onChange={e => dispatch(setSetupData({ name: 'month', value: e.target.value }))} defaultValue={{ label: setupData?.month, value: setupData?.month }} containerClass={'!w-fit self-right  p-2'} />
 
-                    <BsPlus size={50} className="mx-auto" />
-                    {setupData?.chokeSizes?.name || " Import file for production strings chokes"}
+            <div className="w-full  flex ">
+                <ExcelToCsv className="block  border w-[50%] text-center rounded m-3 p-3" onComplete={(jsonData, file) => {
+                    handleFiles('chokeSizes', jsonData)
+                    setFiles({ chokeFile: file })
+                }}>
 
-            </ExcelToCsv>
-            <ExcelToCsv  className="block border w-[50%] rounded m-3 p-3" onComplete={jsonData => handleFiles('staticParameters', jsonData)}>
+                    {setupData?.chokeSizes ?
+                        <><TickCircle color={colors.rada_blue} className="mx-auto" size={50} /> Choke sizes file uploaded</>
+                        : <>
+                            <BsPlus  size={50} className="mx-auto" />
+                            Import file for production strings chokes
+                        </>}
 
-                    <BsPlus size={50} className="mx-auto" />
-                    {setupData?.staticParameters?.name || "Import file for Reservoir Parameters"}
+                </ExcelToCsv>
+                <ExcelToCsv className="block border w-[50%] rounded m-3 p-3" onComplete={jsonData => handleFiles('staticParameters', jsonData)}>
 
-            </ExcelToCsv>
+
+
+
+                {setupData?.staticParameters ?
+                        <><TickCircle color={colors.rada_blue} className="mx-auto" size={50} /> Reservoir Parameterss file uploaded</>
+                        : <>
+                            <BsPlus size={50} className="mx-auto" />
+                            Import file for Reservoir Parameters
+                        </>}
+
+                    {/* <BsPlus size={50} className="mx-auto" />
+                    {setupData?.staticParameters?.name || "Import file for Reservoir Parameters"} */}
+
+                </ExcelToCsv>
+            </div>
         </div>
     )
 }

@@ -137,7 +137,7 @@ const createMerSchedule = onCall(async (request) => {
     try {
         const db = admin.firestore()
         let { data } = request;
-        const { title, chokeSizes, staticParameters, date } = data
+        const { title, chokeSizes, staticParameters, date, month } = data
 
         // const bucket = admin.storage().bucket('ped-application-4d196.appspot.com');// initialize storage as admin
         // const chokesSizeStream = bucket.file(chokeSizesFileName).createReadStream();//create stream of the file in bucket
@@ -166,7 +166,8 @@ const createMerSchedule = onCall(async (request) => {
             staticParameters: res2,
             title,
             date: dayjs(date || "").format('DD/MM/YYYY'),
-            id
+            id,
+            month
         }
         await db.collection("setups").doc('merSchedule').collection('setupList').doc(id).set(setup)
         console.log("----", res)

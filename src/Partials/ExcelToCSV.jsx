@@ -43,7 +43,7 @@ function ExcelToCsv({ onComplete = () => null, children, className }) {
                 const json = utils.sheet_to_json(worksheet, {
                     raw: false,
                 });
-               onComplete(json)
+                onComplete(json)
             };
             reader.readAsArrayBuffer(e.target.files[0]);
         }
