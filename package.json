@@ -16,7 +16,7 @@
     "axios": "^1.6.8",
     "chart.js": "^4.4.4",
     "dayjs": "^1.11.11",
-    "firebase": "^10.12.2",
+    "firebase": "^10.14.0",
     "iconsax-react": "^0.0.8",
     "mdb-react-ui-kit": "^8.0.0",
     "papaparse": "^5.4.1",

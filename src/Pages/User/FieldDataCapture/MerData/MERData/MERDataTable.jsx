@@ -124,9 +124,6 @@ export default function MERDataTable() {
         }
     }
 
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
-
 
 
     return (
