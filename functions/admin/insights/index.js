@@ -43,24 +43,23 @@ const getInsight = onCall(async (request) => {
             .get()
         ).docs.map((doc) => doc.data());
 
-        const flowstationOil = liquidVolume.find(
+        const flowstationOil = liquidVolume.flowstations.find(
           (station) => station.name === flowstation
         );
 
-        const flowstationGas = gasVolume.find(
+        const flowstationGas = gasVolume.flowstations.find(
           (station) => station.name === flowstation
         );
         const targetOil = flowstationOil.subtotal.netTarget;
-        const targetGross = flowstationOil.subtotal.grossTarget;
-        const netProduction = flowstationOil.subtotal.netProduction; //---
-        const targetTotalGas = flowstationGas.subtotal.targetTotalGas;
-        const targetFuelGas = flowstationGas.subtotal.targetFuelGas;
-        const targetExportGas = flowstationGas.subtotal.targetExportGas;
-        const targetFlaredGas = flowstationGas.subtotal.targetFlaredGas;
+        const netProduction = flowstationOil.subtotal.netProduction;
+        const targetTotalGas = flowstationGas.subtotal.totalGasTarget;
+        const targetFuelGas = flowstationGas.subtotal.fuelGasTarget;
+        const targetExportGas = flowstationGas.subtotal.exportGasTarget;
+        const targetFlaredGas = flowstationGas.subtotal.gasFlaredUSMTarget;
         const totalGas = flowstationGas.subtotal.totalGas;
         const fuelGas = flowstationGas.subtotal.fuelGas;
         const exportGas = flowstationGas.subtotal.exportGas;
-        const flaredGas = flowstationGas.subtotal.flaredGas;
+        const flaredGas = flowstationGas.subtotal.gasFlaredUSM;
 
         return {
           status: "success",
@@ -121,24 +120,24 @@ const getInsight = onCall(async (request) => {
             .get()
             .docs.map((doc) => doc.data());
 
-          const oilVolumes = assetOilVolume.find(
+          const oilVolumes = assetOilVolume.flowstations.find(
             (station) => station.name === flowstation
           );
 
-          const gasVolumes = assetGasVolume.find(
+          const gasVolumes = assetGasVolume.flowstations.find(
             (station) => station.name === flowstation
           );
 
           const targetOil = oilVolumes.subtotal.netTarget;
           const netOil = oilVolumes.subtotal.netProduction;
-          const targetTotalGas = gasVolumes.subtotal.targetTotalGas;
-          const targetFuelGas = gasVolumes.subtotal.targetFuelGas;
-          const targetExportGas = gasVolumes.subtotal.targetExportGas;
-          const targetFlaredGas = gasVolumes.subtotal.targetFlaredGas;
+          const targetTotalGas = gasVolumes.subtotal.totalGasTarget;
+          const targetFuelGas = gasVolumes.subtotal.fuelGasTarget;
+          const targetExportGas = gasVolumes.subtotal.exportGasTarget;
+          const targetFlaredGas = gasVolumes.subtotal.gasFlaredUSMTarget;
           const totalGas = gasVolumes.subtotal.totalGas;
           const fuelGas = gasVolumes.subtotal.fuelGas;
           const exportGas = gasVolumes.subtotal.exportGas;
-          const flaredGas = gasVolumes.subtotal.flaredGas;
+          const flaredGas = gasVolumes.subtotal.gasFlaredUSM;
 
           runningTargetOil += targetOil;
           runningNetOil += netOil;
@@ -217,7 +216,7 @@ const getInsight = onCall(async (request) => {
         let oilAggregate = [];
         let gasAggregate = [];
 
-        for (let flowstation of oilVolumes) {
+        for (let flowstation of oilVolumes.flowstations) {
           const oilProduction = flowstation.subtotal.netProduction;
           const targetOil = flowstation.subtotal.netTarget;
           runningTargetOil += targetOil;
@@ -230,14 +229,14 @@ const getInsight = onCall(async (request) => {
         }
 
         for (let flowstationGas of gasVolumes) {
-          const targetTotalGas = flowstationGas.subtotal.targetTotalGas;
-          const targetFuelGas = flowstationGas.subtotal.targetFuelGas;
-          const targetExportGas = flowstationGas.subtotal.targetExportGas;
-          const targetFlaredGas = flowstationGas.subtotal.targetFlaredGas;
+          const targetTotalGas = flowstationGas.subtotal.totalGasTarget;
+          const targetFuelGas = flowstationGas.subtotal.fuelGasTarget;
+          const targetExportGas = flowstationGas.subtotal.exportGasTarget;
+          const targetFlaredGas = flowstationGas.subtotal.gasFlaredUSMTarget;
           const totalGas = flowstationGas.subtotal.totalGas;
           const fuelGas = flowstationGas.subtotal.fuelGas;
           const exportGas = flowstationGas.subtotal.exportGas;
-          const flaredGas = flowstationGas.subtotal.flaredGas;
+          const flaredGas = flowstationGas.subtotal.gasFlaredUSM;
 
           runningTargetTotalGas += targetTotalGas;
           runningTargetFuelGas += targetFuelGas;
@@ -322,7 +321,7 @@ const getInsight = onCall(async (request) => {
           let dailyNetOil = 0;
           let oilAggregate = [];
 
-          for (let flowstation of oilVolumes) {
+          for (let flowstation of oilVolumes.flowstations) {
             const oilProduction = flowstation.subtotal.netProduction;
             const targetOil = flowstation.subtotal.netTarget;
             dailyTargetOil += targetOil;
@@ -351,15 +350,15 @@ const getInsight = onCall(async (request) => {
             .get()
             .docs.map((doc) => doc.data());
 
-          for (let flowstationGas of gasVolumes) {
-            const targetTotalGas = flowstationGas.subtotal.targetTotalGas;
-            const targetFuelGas = flowstationGas.subtotal.targetFuelGas;
-            const targetExportGas = flowstationGas.subtotal.targetExportGas;
-            const targetFlaredGas = flowstationGas.subtotal.targetFlaredGas;
+          for (let flowstationGas of gasVolumes.flowstations) {
+            const targetTotalGas = flowstationGas.subtotal.totalGasTarget;
+            const targetFuelGas = flowstationGas.subtotal.fuelGasTarget;
+            const targetExportGas = flowstationGas.subtotal.exportGasTarget;
+            const targetFlaredGas = flowstationGas.subtotal.gasFlaredUSMTarget;
             const totalGas = flowstationGas.subtotal.totalGas;
             const fuelGas = flowstationGas.subtotal.fuelGas;
             const exportGas = flowstationGas.subtotal.exportGas;
-            const flaredGas = flowstationGas.subtotal.flaredGas;
+            const flaredGas = flowstationGas.subtotal.gasFlaredUSM;
 
             dailyTargetTotalGas += targetTotalGas;
             dailyTargetFuelGas += targetFuelGas;

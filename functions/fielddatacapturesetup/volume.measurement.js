@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-throw-literal */
 const admin = require("firebase-admin");
 const logger = require("firebase-functions/logger");
