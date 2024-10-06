@@ -2,7 +2,7 @@ import dayjs from "dayjs"
 
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { project_storage } from "firebase-config";
-import { findLineByLeastSquares } from "./findLineByLeastSquares";
+// import { findLineByLeastSquares } from "./findLineByLeastSquares";
 
 export const sum = (array = []) => {
     if (Array.isArray(array) && array?.length) return parseFloat(array.reduce((a, b) => parseFloat(a) + parseFloat(b)))
@@ -107,4 +107,9 @@ export const getIntersectionBetweenTwoLines = (line1, line2, at1 = 0, at2 = 1) =
     }
 
 }
+export const bsw = ({ gross, oil, water }) => {
+    let water__ = (water || 0) || (gross || 0) - (oil || 0)
+    const result  =  ((water__ / (oil + water__)) * 100).toFixed(4)
+    return isNaN(result) ? '':result
 
+}

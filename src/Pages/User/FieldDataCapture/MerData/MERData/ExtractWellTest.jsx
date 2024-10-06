@@ -1,4 +1,3 @@
-import { Input } from 'Components'
 import Text from 'Components/Text'
 import Setup from 'Partials/setup'
 import React, { useEffect, useState } from 'react'
@@ -34,7 +33,7 @@ const SelectChokes = ({ merResult }) => {
         dispatch(setSetupData({ name: 'merResultId', value: merResult?.id }))
         dispatch(setSetupData({ name: 'asset', value: merResult?.asset }))
         dispatch(setSetupData({ name: 'month', value: merResult?.month }))
-    }, [dispatch, merResult?.id, merResult?.asset])
+    }, [dispatch, merResult?.id, merResult?.asset, merResult?.month])
     return (<>
         <div className='border rounded py-2 px-4 w-fit bg-[lightgrey] mb-3'>
             {dayjs(merResult?.month).format('MMM YYYY')}

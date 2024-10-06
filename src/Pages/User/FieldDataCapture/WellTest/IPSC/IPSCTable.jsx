@@ -18,12 +18,13 @@ import { closeModal, openModal } from 'Store/slices/modalSlice';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { BsThreeDots } from 'react-icons/bs';
-import { createWellTitle, getWellLastTestResult, sum } from 'utils';
+import { bsw, createWellTitle, getWellLastTestResult, sum } from 'utils';
 import IPSCAnalytics from './IPSCAnalytics';
 import ToleranceSettiings from './ToleranceSettiings';
 import { firebaseFunctions } from 'Services';
 import Actions from 'Partials/Actions/Actions';
-import { Tooltip } from '@mui/material';
+import { Box, Tooltip } from '@mui/material';
+import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
 
 // const TableInput = (props) => {
 //     return <input className='p-1 text-center w-[80px] h-[100%] border outline-none ' required {...props} />
@@ -47,10 +48,15 @@ export default function IPSCTable() {
     const { search } = useLocation()
     const dispatch = useDispatch()
     const [searchParams, setSearchParams] = useSearchParams()
-    const [loading, setLoading] = useState(false)
+
     const [ipscData, setIpscData] = useState({})
 
     const [flowstationsTargets, setFlowstationTragets] = useState({})
+    const [currFlowstation, setCurrFlowstation] = useState()
+    useEffect(() => {
+        setCurrFlowstation(ipscData?.flowstations?.[0])
+    }, [ipscData?.flowstations])
+    // console.log({ flowstationsTargets })
     const id = useMemo(() => new URLSearchParams(search).get('id'), [search])
     const { data: res } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'IPSC', id: id } })
     // console.log(res)
@@ -80,32 +86,32 @@ export default function IPSCTable() {
             toast.info('Please provide a title')
             return;
         }
-        setLoading(true)
+        dispatch(setLoadingScreen({ open: true }))
         try {
 
             const arr = Object.values(flowstationsTargets || {})
-            const len =  arr.length
+            const len = arr.length
             const averageTarget = {
-                gross: sum(arr.map(item => item?.gross || 0))/len,
-                oilRate: sum(arr.map(item => item?.oilRate || 0))/len,
-                gasRate: sum(arr.map(item => item?.gasRate || 0))/len,
-                exportGas:  sum(arr.map(item => item?.exportGas || 0))/len,
-                fuelGas:  sum(arr.map(item => item?.fuelGas || 0))/len,
-                gasFlaredUSM:  sum(arr.map(item => item?.gasFlaredUSM || 0))/len,
+                gross: sum(arr.map(item => item?.gross || 0)) / len,
+                oilRate: sum(arr.map(item => item?.oilRate || 0)) / len,
+                gasRate: sum(arr.map(item => item?.gasRate || 0)) / len,
+                exportGas: sum(arr.map(item => item?.exportGas || 0)) / len,
+                fuelGas: sum(arr.map(item => item?.fuelGas || 0)) / len,
+                gasFlaredUSM: sum(arr.map(item => item?.gasFlaredUSM || 0)) / len,
             }
             const payload = { title: title, setupType: 'IPSC', wellTestResultData: ipscData?.wellTestResultData, id, flowstationsTargets, averageTarget }
             // if (payload.totals.gasRate !== payload.totals.exportGas + payload.totals.gasFlaredUSM + payload.totals.fuelGas) {
             //     toast.error("Gas rate total must be equal to the summation of the gas types ")
             //     return
             // }
-            // console.log(payload)
-            await firebaseFunctions('updateSetup', payload)
+            console.log(payload)
+            // await firebaseFunctions('updateSetup', payload)
             dispatch(closeModal())
             toast.success('Data saved to IPSC')
         } catch (error) {
             console.log(error)
         } finally {
-            setLoading(false)
+            dispatch(setLoadingScreen({ open: false }))
         }
     }
 
@@ -115,7 +121,7 @@ export default function IPSCTable() {
         // { name: 'waterRate', type: "number",fn: () => null  },
         { name: 'waterRate', type: "number", fn: (value) => (value.gross || 0) - (value.oilRate || 0), disabled: true },
         { name: 'gasRate', type: "number", fn: () => null },
-        { name: 'bsw', type: "number", fn: () => null },
+        { name: 'bsw', type: "number", fn: (value) => bsw({ gross: value.gross, oil: value.oilRate }) },
         { name: 'wgr', type: "number", fn: () => null },
         { name: 'gor', type: "number", fn: () => null },
         // { name: 'totalGas', type: "number",fn: () => null  },
@@ -126,8 +132,8 @@ export default function IPSCTable() {
         { name: 'orificePlateSize', type: "number", fn: () => null },
         { name: 'sand', type: "number", fn: () => null },
     ]
-    const getTotalOf = (key) => {
-        const res = Object.values(ipscData?.wellTestResultData || {})
+    const getTotalOf = (key, flowstation) => {
+        const res = Object.values(ipscData?.wellTestResultData || {})?.filter(item => flowstation ? item?.flowstation === flowstation : true)
         const total = sum(res?.map(item => parseFloat(item?.[key] || 0)))
         return total
     }
@@ -140,15 +146,14 @@ export default function IPSCTable() {
             let targets = {}
             flowstations.forEach((flowstation) => {
                 const results = ipscResults?.filter(result => result.flowstation === flowstation)
-                const getTotalOfinFlowstation = (key) => sum(results?.map(result => result?.[key]))
+                const getTotalOfinFlowstation = (key) => sum(results?.map(result => result?.[key] || 0))
+
                 targets[flowstation] = {
                     ...prev?.[flowstation],
                     flowstation,
-                    // target: {
                     oilRate: getTotalOfinFlowstation('oilRate'),
                     gasRate: getTotalOfinFlowstation('gasRate'),
                     gross: getTotalOfinFlowstation('gross'),
-                    // }
                 }
             })
             return targets
@@ -166,10 +171,15 @@ export default function IPSCTable() {
                         <Text>Files</Text>
                     </Link>
                     <RadaSwitch label="Edit Table" labelPlacement="left" />
-                </div>
+                </div>{currFlowstation}
                 <Text display={'block'} className={'w-full'} align={'center'}> {createWellTitle(ipscData)}</Text>
 
                 <div className='flex justify-end py-2 items-center gap-3'>
+                    <Input type='select' placeholder='Flowstation'
+                        onChange={e => setCurrFlowstation(e.value)}
+                        containerClass={'!w-[250px]'} value={{ label: currFlowstation, value: currFlowstation }}
+                        options={ipscData?.flowstations?.map(flowstation => ({ label: flowstation, value: flowstation }))} />
+
 
                     {
                         searchParams.get('show-analytics') && <div onClick={() => setSearchParams(prev => {
@@ -249,59 +259,62 @@ export default function IPSCTable() {
                         </TableHead>
                         <TableBody>
                             {
-                                Object.values(ipscData?.wellTestResultData || {}).sort((a, b) => ((b?.isSelected ? 1 : 0) - (a?.isSelected ? 1 : 0)))?.map((well, i) => {
+                                Object.values(ipscData?.wellTestResultData || {})
+                                    .sort((a, b) => ((b?.isSelected ? 1 : 0) - (a?.isSelected ? 1 : 0)))
+                                    ?.filter(well => well?.flowstation === currFlowstation)
+                                    ?.map((well, i) => { 
 
-                                    return <TableRow key={well?.productionString}>
-                                        <TableCell align="center">
-                                            {well?.reservoir}
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            {well?.productionString}
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            {well?.chokeSize}
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            {dayjs(well?.endDate).format("DD/MMM/YYYY")}
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            {well?.fluidType}
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            NF
-                                        </TableCell>
-                                        {
-                                            fields.map(field => <TableCell align="center">
-                                                {field.fn(well) || (well?.[field.name] ?? "-")}
-                                                {/* <TableInput type='number' defaultValue={well?.[field.name]} onChange={(e) => handleChange(field.name, e.target.value)} /> */}
-                                            </TableCell>)
-                                        }
-                                        <TableCell align="center" sx={{ minWidth: '200px' }} colSpan={3}>
-                                            {well?.remark || "No remark"}
-                                            {/* <textarea defaultValue={well.remark} onChange={(e) => handleChange("remark", e.target.value)} className='border outline-none p-1' rows={2} cols={20}>
+                                        return <TableRow key={well?.productionString}>
+                                            <TableCell align="center">
+                                                {well?.reservoir}
+                                            </TableCell>
+                                            <TableCell align="center">
+                                                {well?.productionString}
+                                            </TableCell>
+                                            <TableCell align="center">
+                                                {well?.chokeSize}
+                                            </TableCell>
+                                            <TableCell align="center">
+                                                {dayjs(well?.endDate).format("DD/MMM/YYYY")}
+                                            </TableCell>
+                                            <TableCell align="center">
+                                                {well?.fluidType}
+                                            </TableCell>
+                                            <TableCell align="center">
+                                                NF
+                                            </TableCell>
+                                            {
+                                                fields.map(field => <TableCell align="center">
+                                                    {field.fn(well) || (well?.[field.name] ?? "-")}
+                                                    {/* <TableInput type='number' defaultValue={well?.[field.name]} onChange={(e) => handleChange(field.name, e.target.value)} /> */}
+                                                </TableCell>)
+                                            }
+                                            <TableCell align="center" sx={{ minWidth: '200px' }} colSpan={3}>
+                                                {well?.remark || "No remark"}
+                                                {/* <textarea defaultValue={well.remark} onChange={(e) => handleChange("remark", e.target.value)} className='border outline-none p-1' rows={2} cols={20}>
                                         </textarea> */}
-                                        </TableCell>
-                                        <TableCell align="center" colSpan={1}>
-                                            <Actions actions={[
-                                                { name: `Forward from ${getWellLastTestResult(wellTestResults, wellTestResult, well.productionString)?.wellTestResult?.month || "-"}`, onClick: () => bringForward(wellTestResults, wellTestResult, well.productionString) },
-                                            ]} >
+                                            </TableCell>
+                                            <TableCell align="center" colSpan={1}>
+                                                <Actions actions={[
+                                                    { name: `Forward from ${getWellLastTestResult(wellTestResults, wellTestResult, well.productionString)?.wellTestResult?.month || "-"}`, onClick: () => bringForward(wellTestResults, wellTestResult, well.productionString) },
+                                                ]} >
 
-                                                {
-                                                    well?.isSelected ? '-' : <Tooltip title="Delete"><BsThreeDots className='cursor-pointer w-full ' /></Tooltip>
-                                                }
-                                            </Actions>
-                                        </TableCell>
-                                    </TableRow>
-                                })
+                                                    {
+                                                        well?.isSelected ? '-' : <Tooltip title="Delete"><BsThreeDots className='cursor-pointer w-full ' /></Tooltip>
+                                                    }
+                                                </Actions>
+                                            </TableCell>
+                                        </TableRow>
+                                    })
                             }
 
                             <TableRow sx={{ backgroundColor: '#00A3FF4D' }}>
-                                <TableCell style={{ fontWeight: '600' }} align="center" colSpan={6} >Spring Totals </TableCell>
-                                <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('gross')}</TableCell>
-                                <TableCell style={{ fontWeight: '600' }} align="center">{getTotalOf('oilRate')}</TableCell>
-                                <TableCell style={{ fontWeight: '600' }} align="center">{getTotalOf('gross')-getTotalOf('oilRate')}</TableCell>
-                                <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('gasRate')}</TableCell>
-                                <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('bsw')}</TableCell>
+                                <TableCell style={{ fontWeight: '600' }} align="center" colSpan={6} >String Totals </TableCell>
+                                <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('gross', currFlowstation,)}</TableCell>
+                                <TableCell style={{ fontWeight: '600' }} align="center">{getTotalOf('oilRate', currFlowstation)}</TableCell>
+                                <TableCell style={{ fontWeight: '600' }} align="center">{getTotalOf('gross', currFlowstation) - getTotalOf('oilRate', currFlowstation)}</TableCell>
+                                <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('gasRate', currFlowstation)}</TableCell>
+                                <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('bsw', currFlowstation)}</TableCell>
 
                                 <TableCell align="center" colSpan={10}></TableCell>
                                 <TableCell style={{ fontWeight: '600', minWidth: '200px' }} colSpan={3} align="center"></TableCell>
@@ -316,42 +329,45 @@ export default function IPSCTable() {
                 </Text>
                 <div>
                     <Text weight={600}>
-                        Enter Gas values
+                        Enter Gas values ({currFlowstation})
                     </Text><br />
                     {
                         Object.values(flowstationsTargets || {}).map(flowstationsTarget => {
+                            const curr = flowstationsTarget?.flowstation === currFlowstation
                             return <>
-                                {flowstationsTarget?.flowstation}
-                                <div className='flex gap-2'>
+                                {/* {flowstationsTarget?.flowstation} */}
+
+                                {curr && <Box component={'div'} className='flex gap-2' >
                                     <div>
-                                        Export Gas
-                                        <Input min={0} defaultValue={ipscData?.flowstationsTargets?.[flowstationsTarget?.flowstation]?.exportGas} containerClass={'w-[100px]'}
+                                        Export Gas (MMscf/day)
+                                        <Input min={0} defaultValue={flowstationsTargets?.[flowstationsTarget?.flowstation]?.exportGas} containerClass={'w-[100px]'}
                                             onChange={(e) => setFlowstationTragets((prev) => ({
                                                 ...prev,
                                                 [flowstationsTarget?.flowstation]: {
                                                     ...prev?.[flowstationsTarget?.flowstation],
                                                     exportGas: parseFloat(e.target.value),
-                                                    gasFlaredUSM: prev?.gasRate - parseFloat(e.target.value) - (prev?.fuelGas)
+                                                    gasFlaredUSM: prev?.[flowstationsTarget?.flowstation]?.gasRate - parseFloat(e.target.value || 0) - (prev?.[flowstationsTarget?.flowstation]?.fuelGas || 0)
                                                 }
                                             }))} />
                                     </div>
                                     <div>
-                                        Fuel Gas
-                                        <Input min={0} defaultValue={ipscData?.flowstationsTargets?.[flowstationsTarget?.flowstation]?.fuelGas} containerClass={'w-[100px]'}
+                                        Fuel Gas (MMscf/day)
+                                        <Input min={0} defaultValue={flowstationsTargets?.[flowstationsTarget?.flowstation]?.fuelGas} containerClass={'w-[100px]'}
                                             onChange={(e) => setFlowstationTragets((prev) => ({
                                                 ...prev,
                                                 [flowstationsTarget?.flowstation]: {
                                                     ...prev?.[flowstationsTarget?.flowstation],
                                                     fuelGas: parseFloat(e.target.value),
-                                                    gasFlaredUSM: prev?.[flowstationsTarget?.flowstation]?.gasRate - parseFloat(e.target.value) - (prev?.[flowstationsTarget?.flowstation]?.exportGas || 0)
+                                                    gasFlaredUSM: prev?.[flowstationsTarget?.flowstation]?.gasRate - parseFloat(e.target.value || 0) - (prev?.[flowstationsTarget?.flowstation]?.exportGas || 0)
                                                 }
                                             }))} />
                                     </div>
                                     <div>
-                                        Flared Gas
+                                        Flared Gas (MMscf/day)
                                         <Input min={0} containerClass={'w-[100px]'} disabled value={flowstationsTargets?.[flowstationsTarget?.flowstation]?.gasFlaredUSM} />
                                     </div>
-                                </div></>
+                                </Box>}
+                            </>
                         })
                     }
                 </div>
@@ -359,7 +375,7 @@ export default function IPSCTable() {
             {
                 !searchParams.get('show-analytics') && <div className='flex justify-end py-2'>
                     <Button width={120} onClick={() => {
-                        dispatch(openModal({ component: <SaveAs defaultValue={res?.title} onSave={save} loading={loading} /> }))
+                        dispatch(openModal({ component: <SaveAs defaultValue={res?.title} onSave={save} /> }))
                     }} >Commit</Button>
                 </div>
             }

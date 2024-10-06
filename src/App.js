@@ -11,6 +11,7 @@ import { queryClient } from "Services/queryClient";
 import Modal from "Components/Modal";
 
 import Layout from "Components/layout";
+import Loading from "Components/Loading";
 
 function App() {
 
@@ -21,6 +22,7 @@ function App() {
           <BrowserRouter>
             <ToastContainer />
             <Modal />
+            <Loading />
             {/* <Refresh/> */}
             <Routes>
               {routes.map(route => {

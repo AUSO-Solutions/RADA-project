@@ -14,13 +14,13 @@ import { createWellTitle } from "utils"
 import { BsPlus } from "react-icons/bs"
 import dayjs from "dayjs"
 import ExcelToCsv from "Partials/ExcelToCSV"
-import { Check, TickCircle } from "iconsax-react"
+import {  TickCircle } from "iconsax-react"
 import { colors } from "Assets"
 
 
 const ImporFiles = () => {
     const dispatch = useDispatch()
-    const [files, setFiles] = useState({})
+    const [, setFiles] = useState({})
     const handleFiles = async (name, jsonData) => {
 
         try {

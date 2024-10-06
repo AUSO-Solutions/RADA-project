@@ -1,6 +1,5 @@
 import React from "react";
 import styles from './insightsgraph.module.scss'
-import Text from "Components/Text";
 
 const InsightsGraphCard = ({children}) => {
 

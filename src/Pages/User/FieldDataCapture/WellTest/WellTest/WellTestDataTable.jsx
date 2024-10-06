@@ -18,10 +18,11 @@ import { firebaseFunctions } from 'Services';
 import { closeModal, openModal } from 'Store/slices/modalSlice';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import { createWellTitle, sum } from 'utils';
+import { bsw, createWellTitle, sum } from 'utils';
 import Actions from 'Partials/Actions/Actions';
 import { Query } from 'Partials/Actions/Query';
 import { Approve } from 'Partials/Actions/Approve';
+import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
 
 
 const TableInput = (props) => {
@@ -45,9 +46,9 @@ const SaveAs = ({ defaultValue, onSave = () => null, loading }) => {
 export default function WellTestDataTable() {
 
     const { search } = useLocation()
-    const navigate =  useNavigate()
+    const navigate = useNavigate()
     const dispatch = useDispatch()
-    const [loading, setLoading] = useState(false)
+    const [loading] = useState(false)
     const [wellTest, setWellTest] = useState({})
     const [wellTestResult, setWellTestResult] = useState({})
     const id = useMemo(() => new URLSearchParams(search).get('id'), [search])
@@ -65,7 +66,7 @@ export default function WellTestDataTable() {
             toast.info('Please provide a title')
             return;
         }
-        setLoading(true)
+        dispatch(setLoadingScreen({ open: true }))
         try {
 
             const arr = Object.values(wellTestResult || {})
@@ -85,6 +86,7 @@ export default function WellTestDataTable() {
                 setupType: 'wellTestResult',
                 wellTestResultData: wellTestResult,
                 month: wellTest?.month,
+                flowstations: wellTest?.flowstations,
                 totals
             }
             if (isEdit) {
@@ -94,9 +96,9 @@ export default function WellTestDataTable() {
             } else {
                 const payload = { title, ...saveScheduleData }
                 console.log(payload)
-                 await firebaseFunctions('createSetup', payload)
-                 navigate('/users/fdc/well-test-data/')
-                    // `/users/fdc/well-test-data/well-test-table?id=${res?.?.id}&scheduleId=${res?.?.wellTestScheduleId}`
+                await firebaseFunctions('createSetup', payload)
+                navigate('/users/fdc/well-test-data/')
+                // `/users/fdc/well-test-data/well-test-table?id=${res?.?.id}&scheduleId=${res?.?.wellTestScheduleId}`
             }
 
             dispatch(closeModal())
@@ -104,29 +106,29 @@ export default function WellTestDataTable() {
         } catch (error) {
             console.log(error)
         } finally {
-            setLoading(false)
+            dispatch(setLoadingScreen({ open: false }))
         }
     }
 
 
     const fields = [
-        { name: 'gross', type: "number", fn: () => null },
-        { name: 'oilRate', type: "number", fn: () =>  null },
+        { name: 'gross', type: "number", fn: () => null, required: true },
+        { name: 'oilRate', type: "number", fn: () => null, required: true },
         { name: 'waterRate', type: "number", fn: (value) => (value.gross || 0) - (value.oilRate || 0), disabled: true },
-        { name: 'gasRate', type: "number", fn: () =>  null },
-        { name: 'bsw', type: "number", fn: () =>  null },
-        { name: 'gor', type: "number", fn: () =>  null },
-        { name: 'fthp', type: "number", fn: () =>  null },
-        { name: 'flp', type: "number", fn: () =>  null },
-        { name: 'chp', type: "number", fn: () =>  null },
-        { name: 'staticPressure', type: "number", fn: () =>  null },
-        { name: 'orificePlateSize', type: "number", fn: () =>  null },
-        { name: 'sand', type: "number", fn: () =>  null },
+        { name: 'gasRate', type: "number", fn: () => null, required: true },
+        { name: 'bsw', type: "number", fn: (value) => bsw({ gross: value.gross, oil: value.oilRate }), disabled: true },
+        { name: 'gor', type: "number", fn: () => null, required: true },
+        { name: 'fthp', type: "number", fn: () => null, required: true },
+        { name: 'flp', type: "number", fn: () => null, required: true },
+        { name: 'chp', type: "number", fn: () => null, required: false },
+        { name: 'staticPressure', type: "number", fn: () => null, required: false },
+        { name: 'orificePlateSize', type: "number", fn: () => null, required: false },
+        { name: 'sand', type: "number", fn: () => null, required: false },
     ]
 
-    useEffect(()=>{
-// set
-    },[])
+    useEffect(() => {
+        // set
+    }, [])
 
     return (
         < form className=' w-[80vw] px-3' onSubmit={(e) => {
@@ -145,10 +147,10 @@ export default function WellTestDataTable() {
                 <Text display={'block'} className={'w-full'} align={'center'}> {createWellTitle(wellTest)}</Text>
                 <div className='flex justify-end py-2 items-center gap-3'>
                     <div className='flex gap-2' >
-                        {isEdit &&  <Actions  actions={[
+                        {isEdit && <Actions actions={[
                             { name: 'Query Result', onClick: () => dispatch(openModal({ component: <Query /> })) },
                             { name: 'Approve', onClick: () => dispatch(openModal({ component: <Approve /> })) },
-                         
+
                         ]} />}
                     </div>
                     <div className='border border-[#00A3FF] px-3 py-1 rounded-md' >
@@ -239,7 +241,7 @@ export default function WellTestDataTable() {
                                     </TableCell>
                                     {
                                         fields.map(field => <TableCell align="center">
-                                            <TableInput type='number' required={well.isSelected} defaultValue={field?.fn(well) || well?.[field.name]} disabled={field?.disabled} onChange={(e) => handleChange(field.name, e.target.value)} />
+                                            <TableInput type='number' required={well.isSelected && field.required} defaultValue={field?.fn(well) || well?.[field.name]} disabled={field?.disabled} onChange={(e) => handleChange(field.name, e.target.value)} />
                                         </TableCell>)
                                     }
                                     <TableCell align="center" sx={{ minWidth: '200px' }} colSpan={3}>

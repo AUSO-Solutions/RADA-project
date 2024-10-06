@@ -251,10 +251,14 @@ const deleteAssetById = onCall(async (request) => {
   try {
     let { data } = request;
     logger.log("data ----", { data });
-    const { id } = data;
+    const { listId, assetName } = data;
     const db = admin.firestore();
-    if (id) {
-      await db.collection("assets").doc(id).delete();
+    if (listId) {
+      await db
+        .collection("assets")
+        .doc(assetName)
+        .collection("assetList")
+        .doc(listId).delete();
       return { status: "success", message: "Asset deleted successfully" };
     } else {
       throw { code: "cancelled", message: "Error deleting asset." };

@@ -133,12 +133,6 @@ export default function MERDataTable() {
 
     }, [])
 
-
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
-
-
-
     return (
         <>
             {showChart && <MerChart merResult={merResult} onClickOut={() => setShowChart(false)} />}

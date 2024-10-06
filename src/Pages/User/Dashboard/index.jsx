@@ -4,8 +4,8 @@ import Insights from './Insights'
 import Tab from 'Components/tab'
 import Header from 'Components/header'
 import dayjs from 'dayjs'
-import { LuListFilter } from "react-icons/lu";
-import { IoIosArrowDown } from "react-icons/io";
+// import { LuListFilter } from "react-icons/lu";
+// import { IoIosArrowDown } from "react-icons/io";
 import { Input } from 'Components'
 import { useAssetNames } from 'hooks/useAssetNames'
 import { useSelector } from 'react-redux'
@@ -25,15 +25,8 @@ const tabs = [
 const Dashboard = () => {
 
   const createOpt = item => ({ label: item, value: item })
-  const optList = arr => arr?.length ? arr?.map(createOpt) : []
-  const genList = (assets) => {
-    return {
-      fields: optList((assets?.fields)),
-      productionStrings: optList((assets?.productionStrings)),
-      wells: optList((assets?.wells)),
-      reservoirs: optList((assets?.reservoirs)),
-    }
-  }
+
+
 
   const [tab, setTab] = useState(0)
 
@@ -43,7 +36,18 @@ const Dashboard = () => {
 
   const assets = useAssetByName(setupData?.asset)
 
-  const assetData = useMemo(() => genList(assets), [assets])
+  const assetData = useMemo(() => {
+    const optList = arr => arr?.length ? arr?.map(createOpt) : []
+    return {
+      fields: optList((assets?.fields)),
+      productionStrings: optList((assets?.productionStrings)),
+      wells: optList((assets?.wells)),
+      reservoirs: optList((assets?.reservoirs)),
+    }
+    // }
+    // return genList(assets)
+  },
+    [assets])
   const { assetNames } = useAssetNames()
 
   // const OMLOptions = [

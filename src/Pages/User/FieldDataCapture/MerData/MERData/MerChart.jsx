@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Scatter, ComposedChart } from 'recharts';
+import {  Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ComposedChart } from 'recharts';
 import { Input } from 'Components'
 import Text from 'Components/Text';
 import { getIntersectionBetweenTwoLines } from 'utils';
-import { getChokeFthpPoints } from './getChokeFthpPoints'
-import { findLineByLeastSquares } from 'utils/findLineByLeastSquares';
+// import { getChokeFthpPoints } from './getChokeFthpPoints'
+// import { findLineByLeastSquares } from 'utils/findLineByLeastSquares';
 
 const MerChart = ({ onClickOut = () => null, merResult }) => {
     // console.log(merResult?.merResultData)
