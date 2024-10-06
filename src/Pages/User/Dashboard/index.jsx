@@ -8,8 +8,9 @@ import { LuListFilter } from "react-icons/lu";
 import { IoIosArrowDown } from "react-icons/io";
 import { Input } from 'Components'
 import { useAssetNames } from 'hooks/useAssetNames'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useAssetByName } from 'hooks/useAssetByName'
+import { setSetupData } from 'Store/slices/setupSlice'
 
 const tabs = [
   {
@@ -24,6 +25,8 @@ const tabs = [
 
 const Dashboard = () => {
 
+  const dispatch = useDispatch();
+
   const createOpt = item => ({ label: item, value: item })
   const optList = arr => arr?.length ? arr?.map(createOpt) : []
   const genList = (assets) => {
@@ -32,6 +35,7 @@ const Dashboard = () => {
       productionStrings: optList((assets?.productionStrings)),
       wells: optList((assets?.wells)),
       reservoirs: optList((assets?.reservoirs)),
+      flowstations: optList((assets?.flowStations)),
     }
   }
 
@@ -39,18 +43,16 @@ const Dashboard = () => {
 
   const setupData = useSelector(state => state.setup)
 
-  // const { data: assets } = useFetch({ firebaseFunction: 'getAssets' })
-
   const assets = useAssetByName(setupData?.asset)
+  console.log(assets)
 
   const assetData = useMemo(() => genList(assets), [assets])
   const { assetNames } = useAssetNames()
+  console.log(assetData)
 
-  // const OMLOptions = [
-  //   { value: 'chocolate', label: 'Chocolate' },
-  //   { value: 'strawberry', label: 'Strawberry' },
-  //   { value: 'vanilla', label: 'Vanilla' }
-  // ]
+  //   const handleFluidTypeChange = (e) => {
+  //     storeWellChanges(productionString.value, 'fluidType', e.value, i)
+  // }
 
   return (
     <div className='h-full'>
@@ -66,17 +68,23 @@ const Dashboard = () => {
           <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 20 }}>
             {tabs[tab]?.title === 'Insights' &&
               <>
-                {/* <div style={{ border: '1px solid #9DA0A7', padding: '5px 10px', borderRadius: 5, display:'flex', alignItems:'center', gap:10 }}><LuListFilter />{'Filter by'}</div>  */}
+
                 <div style={{ width: '120px' }} >
-                  <Input placeholder={'Filter by'} required defaultValue={'Filter by'}
+                  <Input placeholder={'Assets'} required defaultValue={'Filter by'}
                     type='select' options={assetNames?.map(assetName => ({ value: assetName, label: assetName }))}
-                  // onChange={onSelectAsset}
+                    onChange={(e) => dispatch(setSetupData({ name: 'asset', value: e?.value }))}
                   />
                 </div>
-                <div style={{ width: '120px' }}>
-                  <Input placeholder={'Select'} required defaultValue={'Filter by'}
-                    type='select' options={assetData.fields}
-                  // onChange={onSelectAsset}
+                <div style={{ width: '150px' }}>
+                  <Input key={setupData?.asset} placeholder={'Flow Stations'} required defaultValue={'Filter by'}
+                    type='select' options={assetData.flowstations}
+                    onChange={(e) => dispatch(setSetupData({ name: 'flowstations', value: e?.value }))}
+                  />
+                </div>
+                <div style={{ width: '120px' }} >
+                  <Input placeholder={'Frequency'} required defaultValue={'Filter by'}
+                    type='select' options={[{ label: 'Daily', value: 'Daily' }, { label: 'Monthly', value: 'Monthly' }]}
+                    onChange={() => {}}
                   />
                 </div>
               </>
