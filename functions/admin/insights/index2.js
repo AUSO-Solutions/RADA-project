@@ -22,7 +22,7 @@ const getInsights = onCall(async (request) => {
         let noOfDays = dayjs(endDate).diff(startDate, 'days') // get the number of days
         let noOfMonths = dayjs(endDate).diff(startDate, 'months') // get the number of months
         let format = 'DD/MM/YYYY'
-        console.log({noOfDays,noOfMonths})
+        console.log({ noOfDays, noOfMonths })
         let frame = [] // placeholder for the days or months
         if (noOfDays < 32) {
             format = 'DD/MM/YYYY'
@@ -57,18 +57,23 @@ const getInsights = onCall(async (request) => {
 
         let result = {
             oilProduced: 0,
+            oilTarget: 0,
             gasProduced: 0,
             gasExported: 0,
             gasFlared: 0,
             gasUtilized: 0,
+            gasProducedTarget: 0,
+            // exportGasTarget:0,
+            // fuelGasTarget:0,
+            // flareGasTarget:0,
             assetOilProduction: {},
             assetGasProduction: {}
         }
         //flat map all flowstations within the date range and add the capture date to its body- { date: item?.date, ...flowstation }
-        let oilFlowstations = queryResult.oilQuery
+        let oilFlowstationsData = queryResult.oilQuery
             ?.flatMap(item => item?.flowstations?.map(flowstation => ({ date: item?.date, ...flowstation })))
             ?.filter(flowstation_ => (flowstation ? flowstation_?.name === flowstation : true))
-        let gasFlowstations = queryResult.gasQuery
+        let gasFlowstationsData = queryResult.gasQuery
             ?.flatMap(item => item?.flowstations?.map(flowstation => ({ date: item?.date, ...flowstation })))
             ?.filter(flowstation_ => (flowstation ? flowstation_?.name === flowstation : true))
 
@@ -76,29 +81,33 @@ const getInsights = onCall(async (request) => {
             if (Array.isArray(array) && array?.length) return parseFloat(array.reduce((a, b) => parseFloat(a) + parseFloat(b)))
             return 0
         }
-        // const getValueFromFlowstationSubtotal = key => flowstation?.subtotal?.netProduction
-        result.oilProduced = sum(oilFlowstations.map(flowstation => flowstation?.subtotal?.netProduction))
-        result.gasProduced = sum(gasFlowstations.map(flowstation => flowstation?.subtotal?.totalGas))
-        result.gasExported = sum(gasFlowstations.map(flowstation => flowstation?.subtotal?.exportGas))
-        result.gasFlared = sum(gasFlowstations.map(flowstation => flowstation?.subtotal?.gasFlaredUSM))
-        result.gasUtilized = sum(gasFlowstations.map(flowstation => flowstation?.subtotal?.fuelGas))
-
-        // result.assetOilProduction = frame.map()
-        console.log(frame)
+        const flowstations = Array.from(new Set(oilFlowstationsData?.map(flowstation => flowstation?.name)))
+        result.oilProduced = sum(oilFlowstationsData.map(flowstation => flowstation?.subtotal?.netProduction))
+        result.oilTarget = sum(oilFlowstationsData.map(flowstation => flowstation?.averageTarget?.oilRate)) / oilFlowstationsData.length
+        result.gasProduced = sum(gasFlowstationsData.map(flowstation => flowstation?.subtotal?.totalGas))
+        result.oilTarget = sum(gasFlowstationsData.map(flowstation => flowstation?.averageTarget?.oilRate)) / oilFlowstationsData.length
+        result.gasExported = sum(gasFlowstationsData.map(flowstation => flowstation?.subtotal?.exportGas))
+        result.gasFlared = sum(gasFlowstationsData.map(flowstation => flowstation?.subtotal?.gasFlaredUSM))
+        result.gasUtilized = sum(gasFlowstationsData.map(flowstation => flowstation?.subtotal?.fuelGas))
+        //get data from each day/month in the timeframe 
         frame.forEach((time) => {
             const format_ = time.format(format) //
-            console.log(format_)
             const filterByTimeFrameFormat = (flowstation) => dayjs(flowstation?.date).format(format) === format_
-            result.assetOilProduction[time.format(format)] = {
-                netProduction: sum(oilFlowstations.filter(filterByTimeFrameFormat).map(flowstation => flowstation?.subtotal?.netProduction)),
-                x: time.format(format)
-            }
+            flowstations.forEach(flowstation___ => {
+                result.assetOilProduction[time.format(format)] = {
+                    ...result.assetOilProduction[time.format(format)],
+                    [flowstation___]: sum(oilFlowstationsData.filter(filterByTimeFrameFormat)
+                        .filter(flowstation => flowstation === flowstation___)
+                        .map(flowstation => flowstation?.subtotal?.netProduction)),
+                    x: time.format(format)
+                }
+            })
+
             result.assetGasProduction[time.format(format)] = {
-                
-                totalGas: sum(gasFlowstations.filter(filterByTimeFrameFormat).map(flowstation => flowstation?.subtotal?.totalGas)),
-                exportGas: sum(gasFlowstations.filter(filterByTimeFrameFormat).map(flowstation => flowstation?.subtotal?.exportGas)),
-                gasFlaredUSM: sum(gasFlowstations.filter(filterByTimeFrameFormat).map(flowstation => flowstation?.subtotal?.gasFlaredUSM)),
-                fuelGas: sum(gasFlowstations.filter(filterByTimeFrameFormat).map(flowstation => flowstation?.subtotal?.fuelGas)),
+                // ['Total Gas']: sum(gasFlowstationsData.filter(filterByTimeFrameFormat).map(flowstation => flowstation?.subtotal?.totalGas)),
+                ['Export Gas']: sum(gasFlowstationsData.filter(filterByTimeFrameFormat).map(flowstation => flowstation?.subtotal?.exportGas)),
+                ['Flared Gas']: sum(gasFlowstationsData.filter(filterByTimeFrameFormat).map(flowstation => flowstation?.subtotal?.gasFlaredUSM)),
+                ['Fuel Gas']: sum(gasFlowstationsData.filter(filterByTimeFrameFormat).map(flowstation => flowstation?.subtotal?.fuelGas)),
                 x: time.format(format)
             }
 
@@ -125,17 +134,7 @@ const getInsights = onCall(async (request) => {
                     "gasFlaredUSMTarget": 50
                 }
         */
-
-        console.log({ oilFlowstations, gasFlowstations })
-        // if (flowstation) {
-        //     oilFlowstations = queryResult.oilQuery?.map(item => item?.flowstations)?.filter(flowstation_ => flowstation_?.name === flowstation)
-        //     gasFlowstations = queryResult.gasQuery?.map(item => item?.flowstations)?.filter(flowstation_ => flowstation_?.name === flowstation)
-        // }
-        return {
-            result,
-            oilFlowstations, gasFlowstations, frame
-        }
-
+        return { data: JSON.stringify(result) }
     } catch (error) {
         logger.log("error ===> ", error);
         throw new HttpsError(error?.code, error?.message);

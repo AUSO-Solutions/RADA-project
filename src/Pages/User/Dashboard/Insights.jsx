@@ -116,7 +116,9 @@ const Insights = () => {
             //  month: 'July', year: '2024 '
         }
     });
-    console.log(data)
+    console.log(
+        JSON.parse(data||{})
+    )
 
     return (
         <div className="bg-[#FAFAFA]" >
