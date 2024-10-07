@@ -26,6 +26,7 @@ import { firebaseFunctions } from 'Services';
 import { store } from 'Store';
 import AttachSetup from './AttachSetup';
 import { Alert } from '@mui/material';
+import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
 
 
 const TableInput = ({ type = '', ...props }) => {
@@ -59,7 +60,7 @@ export default function GasTable() {
   // console.log(flowstationsTargets)
 
   const [tableValues, setTableValues] = React.useState({})
-  const [loading, setLoading] = React.useState(false)
+  // const [loading, setLoading] = React.useState(false)
   const [totals, setTotals] = React.useState({
     totalGasProduced: 0,
   })
@@ -157,7 +158,7 @@ export default function GasTable() {
     }))
     // console.log(flowStations)
     const payload = {
-      date: dayjs().format("DD/MM/YYYY"),
+      date: dayjs().toISOString(),
       asset: setup.asset,
       fluidType: 'gas',
       totalGasProduced: totals.totalGasProduced,
@@ -166,7 +167,7 @@ export default function GasTable() {
       averageTarget
     };
     try {
-      setLoading(true)
+      dispatch(setLoadingScreen({ open: true }))
       console.log(payload)
       await firebaseFunctions('captureGas', payload)
       toast.success("Successful")
@@ -174,7 +175,7 @@ export default function GasTable() {
       console.log(error)
       toast.error(error?.message)
     } finally {
-      setLoading(false)
+      dispatch(setLoadingScreen({ open: false }))
     }
 
   }
@@ -310,7 +311,7 @@ export default function GasTable() {
           </Table>
         </TableContainer>
         <div className='justify-end flex my-2'>
-          <Button className={'my-3'} disabled={!IPSC} type='submit' loading={loading} width={150}>Save</Button>
+          <Button className={'my-3'} disabled={!IPSC} type='submit' width={150}>Save</Button>
         </div>
       </form></>
   );

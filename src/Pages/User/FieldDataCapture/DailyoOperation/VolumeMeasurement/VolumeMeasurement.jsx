@@ -331,7 +331,7 @@ const VolumeMeasurement = () => {
       dispatch(setLoadingScreen({ open: true }))
       const setupData = store.getState().setup
       const path = searchParams.get('volume-setup-id') ? 'updateSetup' : 'createSetup'
-      const editId = { id: searchParams.get('volume-setup-id') }
+      const editId = searchParams.get('volume-setup-id') ? { id: searchParams.get('volume-setup-id') } : {}
       const { data } = await firebaseFunctions(path, { ...setupData, ...editId, setupType: 'volumeMeasurement' })
 
       dispatch(setWholeSetup(data))

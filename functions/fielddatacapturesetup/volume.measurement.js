@@ -9,6 +9,8 @@ const {
   validateLiquidFlowstationData,
 } = require("./helpers");
 const { generateRandomID } = require("../helpers");
+const dayjs = require("dayjs");
+const { Timestamp } = require("firebase-admin/firestore");
 
 const captureOilOrCondensate = onCall(async (request) => {
   try {
@@ -28,6 +30,7 @@ const captureOilOrCondensate = onCall(async (request) => {
     const dbData = {
       id,
       date,
+      // timeStamp: Timestamp.fromDate(date),
       asset,
       fluidType,
       flowstations, averageTarget
@@ -148,7 +151,9 @@ const captureGas = onCall(async (request) => {
 
     const id = generateRandomID();
     const dbData = {
+      
       date,
+      // timeStamp: Timestamp.fromDate(date),
       asset,
       fluidType: "gas",
       flowstations,

@@ -105,7 +105,7 @@ export default function IPSCTable() {
             //     return
             // }
             console.log(payload)
-            // await firebaseFunctions('updateSetup', payload)
+            await firebaseFunctions('updateSetup', payload)
             dispatch(closeModal())
             toast.success('Data saved to IPSC')
         } catch (error) {

@@ -106,9 +106,16 @@ const Insights = () => {
     const { assetNames } = useAssetNames()
     console.log(assetNames)
 
-
-
-    const { data } = useFetch({ firebaseFunction: 'getInsight', payload: { asset: 'OML 152', date : '22/07/2024', frequency: 'daily', flowstation:'EFE Flowstation', month:'July', year:'2024 '  } });
+    const { data } = useFetch({
+        firebaseFunction: 'getInsights', payload: {
+            asset: 'OML 152',
+            startDate: '10/01/2024',
+            endDate: '10/10/2024',
+            // frequency: 'daily',
+            // flowstation: "Ekulama 2 Flowstation",
+            //  month: 'July', year: '2024 '
+        }
+    });
     console.log(data)
 
     return (

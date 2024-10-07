@@ -6,13 +6,14 @@ const admin = require("firebase-admin");
 const { login, createUser, getUsers, getUserByUid, deleteUserByUid, updateUserByUid, createUsers } = require("./admin/auth");
 
 const { getGroups, createGroup, addMembersToGroup, deleteGroupMember, deleteGroup, deleteGroupAsset, assignAssetsToGroup } = require("./admin/auth/group");
-const { createAsset, getAssetByName, updateAssetById, deleteAssetById, getAssets, getAssetsName , importMasterXY} = require('./admin/assets')
+const { createAsset, getAssetByName, updateAssetById, deleteAssetById, getAssets, getAssetsName, importMasterXY } = require('./admin/assets')
 const { createRole, updateRole, deleteRole, getRoles, getRole, assignPermissionToRole } = require('./admin/rolesandpermissions');
 const { createSetup, deleteSetup, getSetups, updateSetup, getSetup } = require("./fielddatacapturesetup/volumemeasurementsetup");
 const { captureOilOrCondensate, captureGas, updateOilOrCondensate, getOilOrCondensateVolumeByID, deleteOilOrCondensateVolumeByID, getOilOrCondensateVolumesByAsset } = require("./fielddatacapturesetup/volume.measurement");
 const { createMerSchedule } = require("./fielddatacapturesetup/merdataSetup");
-const {processIPSC} = require('./fielddatacapturesetup/oilandgasaccounting/')
-const {getInsight} =  require('./admin/insights')
+const { processIPSC } = require('./fielddatacapturesetup/oilandgasaccounting/')
+const { getInsight } = require('./admin/insights')
+const { getInsights } = require('./admin/insights/index2')
 // const { setupWellTestData, getSetups, updateWellTestData, deleteWellTestDataSetup } = require('./fielddatacapturesetup/welltestsetup')
 
 admin.initializeApp()
@@ -43,5 +44,5 @@ module.exports = {
 
   createMerSchedule,
   processIPSC,
-  getInsight
+  getInsight, getInsights
 }

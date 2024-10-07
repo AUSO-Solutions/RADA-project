@@ -26,6 +26,7 @@ import dayjs from 'dayjs';
 import { firebaseFunctions } from 'Services';
 import AttachSetup from './AttachSetup';
 import { Alert } from '@mui/material';
+import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
 
 
 const TableInput = (props) => {
@@ -186,6 +187,7 @@ export default function VolumeMeasurementTable() {
   const flowstationsTargets = IPSC?.flowstationsTargets
   const averageTarget = IPSC?.averageTarget
   const save = async (e) => {
+    // if(!flowstationsTargets?.oilRate || flowstationsTargets?.gross)
 
     e.preventDefault()
     const setup = store.getState().setup
@@ -197,7 +199,7 @@ export default function VolumeMeasurementTable() {
       "Gross Liquid": "gross", "Net Oil/ Condensate": "netProduction"
     }
     const payload = {
-      date: dayjs().format("DD/MM/YYYY"),
+      date: dayjs().toISOString(),
       asset: setup.asset,
       fluidType: currReport,
       totals,
@@ -237,6 +239,7 @@ export default function VolumeMeasurementTable() {
         }
       }),
     };
+    dispatch(setLoadingScreen({ open: true }))
     try {
       console.log(payload)
       await firebaseFunctions('captureOilOrCondensate', payload)
@@ -244,6 +247,8 @@ export default function VolumeMeasurementTable() {
     } catch (error) {
       console.log(error)
       toast.error(error?.message)
+    }finally{
+      dispatch(setLoadingScreen({ open: false }))
     }
   }
   const navigate = useNavigate()
@@ -278,7 +283,7 @@ export default function VolumeMeasurementTable() {
       {showSettings && <VolumeSettings onClickOut={() => setShowSettings(false)} onComplete={setSetup} />}
       < form className='px-3 ' onSubmit={save} >
         <TableContainer className={`m-auto border ${tableStyles.borderedMuiTable}`}>
-         {!IPSC && <Alert severity='info' className='my-2' hidden={!IPSC}>
+          {!IPSC && <Alert severity='info' className='my-2' hidden={!IPSC}>
             No IPSC for this {setup?.asset} this month
           </Alert>}
           <Table sx={{ minWidth: 700 }} >
