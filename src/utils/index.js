@@ -69,3 +69,7 @@ export const firebaseGetUploadedFile = async (path) => {
 export const genRandomNumber = () => {
     return Math.floor(Math.random() * 100) + 1
 }
+
+export const roundUp = (number) => {
+    return number.toFixed(3);
+}

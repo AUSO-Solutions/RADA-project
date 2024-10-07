@@ -22,9 +22,11 @@ const Insights = () => {
 
     const { data } = useFetch({
         firebaseFunction: 'getInsight', payload: {
-            asset: 'OML 152', date: '06/10/2024', frequency: 'daily',
+            asset: 'OML 152', 
+            // date: '05/10/2024',
+             frequency: 'monthly',
             flowstation: 'EFE Flowstation',
-            month: 'July', year: '2024'
+            month: 'October', year: '2024'
         }
     });
 
