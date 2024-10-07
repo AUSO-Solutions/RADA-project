@@ -205,7 +205,7 @@ export default function GasTable() {
 
       < form className='px-3 ' onSubmit={save} >
         <TableContainer className={`m-auto border ${tableStyles.borderedMuiTable}`}>
-        {!IPSC && <Alert severity='info' className='my-2' hidden={!IPSC}>
+        {!IPSC && <Alert severity='error' className='my-2' hidden={!IPSC}>
             No IPSC for this {setup?.asset} this month
           </Alert>}
           <Table sx={{ minWidth: 700 }} >
