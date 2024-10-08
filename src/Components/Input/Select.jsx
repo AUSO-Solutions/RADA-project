@@ -23,7 +23,7 @@ const RadaSelect = ({ name, placeholder, onChange, options, isMulti, ...rest }) 
     return (
         <>
             <input required={rest?.required} key={rest?.key}  type='text' hidden name={name} value={isMulti ? value?.map(x => x?.value).join('-sal-,-sal-') + "select-array-list" : value ? value?.value : ""} />
-            <Select placeholder={placeholder} options={options} isMulti={isMulti} onChange={(e) => {
+            <Select  placeholder={placeholder} options={options} isMulti={isMulti} onChange={(e) => {
                 setValue(e)
                 if (isMulti) {
                     const _c = e?.map(x => x?.value)

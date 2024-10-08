@@ -9,90 +9,49 @@ import InsightsGraphCard from "Components/insightsGraphCard";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine, } from 'recharts';
 import OilProductionVariantChart from "./OilProductionVariantChart";
 import { useFetch } from "hooks/useFetch";
-import { useAssetNames } from "hooks/useAssetNames";
-import { useAssetByName } from "hooks/useAssetByName";
+import { useSelector } from "react-redux";
+// import { useAssetNames } from "hooks/useAssetNames";
+// import { useAssetByName } from "hooks/useAssetByName";
 
 
 const Insights = () => {
-
-
-    // const { assetNames } = useAssetByName()
-    // console.log(assetNames)
-
-
-    const { data } = useFetch({
-        firebaseFunction: 'getInsight', payload: {
-            asset: 'OML 152', 
-            // date: '05/10/2024',
-             frequency: 'monthly',
-            flowstation: 'EFE Flowstation',
-            month: 'October', year: '2024'
-        }
+    const querys = useSelector(state => state?.setup)
+    console.log(querys)
+    const res = useFetch({
+        firebaseFunction: 'getInsights', payload: {
+            asset: querys?.asset,
+            flowstation: querys?.flowstation,
+            startDate: querys?.startDate,
+            endDate:querys?.endDate
+        }, refetch: querys
     });
-
-
-    const flows = useMemo(() => {
-
-        let _jjjj = []
-        if (data?.length) {
-            _jjjj = data
-        } else {
-            _jjjj = [data]
-        }
-        const flows = (Object.fromEntries(_jjjj.map(item => ([item?.flowstation, item?.netOil]))))
-        return flows
-    }, [data])
-    console.log({ flows })
-    const OilProdData = useMemo(() => {
-        return [
-            {
-                date: data?.date,
-                ...flows
-            }
-        ]
-    }, [data, flows]);
-
+    const data = useMemo(() => {
+        if (res?.data.length) return (JSON.parse(res?.data))
+        return {}
+    }, [res?.data])
+    // console.log(data)
+    const OilProdData = useMemo(() => Object.values(data.assetOilProduction || {}), [data]);
+    const GasProdData = useMemo(() => Object.values(data.assetGasProduction || {}), [data]);
     const OilProductionChart = () => {
-
         return (
             <ResponsiveContainer width="100%" height={'100%'}>
                 <BarChart data={OilProdData} margin={{ top: 20, right: 20, left: 0, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis domain={[0, data?.targetOil]} />
+                    <XAxis dataKey="x" />
+                    <YAxis domain={[0, data?.oilTarget]} />
                     <Tooltip />
-
                     <Legend verticalAlign="bottom" align="center" height={36} />
-                    <ReferenceLine y={data?.targetOil} label="NCEP Target" stroke="#A5A5A5" strokeDasharray="4 4" strokeWidth={2} />
                     {
-                        Object.entries(flows || {}).map(item => <Bar key={item[0]} dataKey={item[0]} stackId="a" fill="#22B2A2" name={item[0]} />)
+                        data.flowstations?.map(flowstation => <Bar dataKey={flowstation} stackId="a" fill="#8884d8" />)
                     }
+
+                    <ReferenceLine y={data?.oilTarget} label="NCEP Target" stroke="#A5A5A5" strokeDasharray="4 4" strokeWidth={2} />
+
 
                 </BarChart>
             </ResponsiveContainer>
         );
     };
-
-
-    const gas = useMemo(() => {
-        if (!data) return [];
-    
-        const gasData = Array?.isArray(data) ? data : [data];
-    
-        return gasData?.map(item => ({
-            date: item?.date,
-            fuelGas: item?.fuelGas || 0,
-            flaredGas: item?.flaredGas || 0,
-            exportGas: item?.exportGas || 0
-        }));
-    }, [data]);
-
-    console.log({ gas })
-
-    const GasProdData = useMemo(() => {
-        return gas?.length ? gas : [];  
-    }, [gas]);
-
 
     const GasProductionChart = () => {
 
@@ -100,24 +59,15 @@ const Insights = () => {
             <ResponsiveContainer width="100%" height={'100%'}>
                 <BarChart data={GasProdData} margin={{ top: 20, right: 20, left: 0, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" />
-
-                    <XAxis dataKey="date" />
-                    <YAxis domain={[0, data?.targetTotalGas]} />
+                    <XAxis dataKey="x" />
+                    <YAxis domain={[0, data?.gasProducedTarget]} />
                     <Tooltip />
 
                     <Legend verticalAlign="bottom" align="center" height={36} />
-                    <ReferenceLine y={data?.targetTotalGas} label="Prod. Gas Target" stroke="#A5A5A5" strokeDasharray="4 4" strokeWidth={2} />
-                    {/* <Bar dataKey="flow1" stackId="a" fill="#14A459" name="Utilized Gas" /> */}
-                    {/* {
-                        Object.entries(gas || {}).map(item => <>
-                            <Bar key={item[0]} dataKey={item[0]} stackId="a" fill="#14A459" name={item[0]} />
-                        </>
-                        )
-                    } */}
-
-                    <Bar dataKey="fuelGas" stackId="a" fill="#14A459" name="Utilized Gas" />
-                    <Bar dataKey="exportGas" stackId="a" fill="#A8D18D" name="Export Gas" />
-                    <Bar dataKey="flaredGas" stackId="a" fill="#F4B184" name="Flared Gas" />
+                    <Bar dataKey="Fuel Gas" stackId="a" fill="#14A459" name="Utilized Gas" />
+                    <Bar dataKey="Export Gas" stackId="a" fill="#A8D18D" name="Export Gas" />
+                    <Bar dataKey="Flared Gas" stackId="a" fill="#F4B184" name="Flared Gas" />
+                    <ReferenceLine y={data?.gasProducedTarget} label="Prod. Gas Target" stroke="#A5A5A5" strokeDasharray="4 4" strokeWidth={2} />
                 </BarChart>
             </ResponsiveContainer>
         );
@@ -126,11 +76,11 @@ const Insights = () => {
     return (
         <div className="bg-[#FAFAFA]" >
             <div className="mx-5 pt-3 flex flex-row  gap-5 " >
-                <DashboardCard targetVal={'Target: 984kbbls'} img={assets} title={"Oil Produced"} num={'949 Kbbls'} />
-                <DashboardCard targetVal={'Target: 834 MMscf'} img={grossprodgas} title={"Gas Produced"} num={'834 MMscf'} />
-                <DashboardCard targetVal={'Target: 480 MMscf'} img={gasexported} title={"Gas Exported"} num={'480 MMscf'} />
-                <DashboardCard targetVal={'341 MMscf'} img={gasflared} title={"Gas Flared"} num={'341 MMscf'} />
-                <DashboardCard targetVal={'13 MMscf'} img={gasutilized} title={"Gas Utilized"} num={'13 MMscf'} />
+                <DashboardCard targetVal={`Target: ${data?.oilTarget}kbbls`} img={assets} title={"Oil Produced"} num={`${data?.oilProduced} Kbbls`} />
+                <DashboardCard targetVal={`Target: ${data?.gasProducedTarget} MMscf`} img={grossprodgas} title={"Gas Produced"} num={`${data?.gasProduced} MMscf`} />
+                <DashboardCard targetVal={`Target: ${data?.gasProduced} MMscf`} img={gasexported} title={"Gas Exported"} num={`${data?.gasExported} MMscf`} />
+                <DashboardCard targetVal={`${data?.gasProduced} MMscf`} img={gasflared} title={"Gas Flared"} num={`${data?.gasFlared} MMscf`} />
+                <DashboardCard targetVal={`${data?.gasProduced} MMscf`} img={gasutilized} title={"Gas Utilized"} num={`${data?.gasUtilized} MMscf`} />
             </div>
 
             <div className="pt-5 flex flex-row flex-wrap justify-evenly shadow rounded" style={{ rowGap: "12px" }}>

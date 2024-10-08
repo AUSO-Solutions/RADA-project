@@ -16,6 +16,7 @@ import dayjs from "dayjs"
 import ExcelToCsv from "Partials/ExcelToCSV"
 import {  TickCircle } from "iconsax-react"
 import { colors } from "Assets"
+import { setLoadingScreen } from "Store/slices/loadingScreenSlice"
 
 
 const ImporFiles = () => {
@@ -103,7 +104,7 @@ const Schedule = () => {
     }, [dispatch])
     const save = async () => {
         try {
-            setLoading(true)
+            dispatch(setLoadingScreen({open:true}))
             const setupData = store.getState().setup
             const chokeSizes = setupData?.chokeSizes
             const staticParameters = setupData?.staticParameters
@@ -118,7 +119,7 @@ const Schedule = () => {
             toast.error(error?.message)
         }
         finally {
-            setLoading(false)
+            dispatch(setLoadingScreen({open:false}))
         }
     }
     return (

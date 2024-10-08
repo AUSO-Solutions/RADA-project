@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import {  Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ComposedChart } from 'recharts';
+import { Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ComposedChart } from 'recharts';
 import { Input } from 'Components'
 import Text from 'Components/Text';
 import { getIntersectionBetweenTwoLines } from 'utils';
@@ -58,10 +58,14 @@ const MerChart = ({ onClickOut = () => null, merResult }) => {
                     // }}
                     >
                         <CartesianGrid strokeDasharray="5 5" />
-                        <XAxis dataKey="oilRate" label={{ value: 'Oil Rate', angle: 0, position: 'insideLeft' }} />
-                        <YAxis yAxisId="left" label={{ value: 'Choke sizes', angle: -90, position: 'insideLeft' }} />
-                        <YAxis yAxisId="right" orientation="right" label={{ value: 'FTHP', angle: -90, position: 'insideRight', }} />
-                        <Tooltip />
+                        <XAxis dataKey="oilRate" label={{ value: 'Oil Rate', angle: 0, position: 'insideLeft' }} domain={[0, 1500]} />
+                        <YAxis yAxisId="left" label={{ value: 'Choke sizes', angle: -90, position: 'insideLeft' }} domain={[0, 200]} />
+                        <YAxis yAxisId="right" orientation="right" label={{ value: 'FTHP', angle: -90, position: 'insideRight', }} domain={[0, 200]} />
+                        <Tooltip cursor={{
+                            stroke: "#BABABA",
+                            strokeWidth: 2,
+                            strokeDasharray: "5 5",
+                        }} />
                         <Legend />
 
 

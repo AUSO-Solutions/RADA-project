@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useState } from 'react'
 import Overview from './Overview'
 import Insights from './Insights'
 import Tab from 'Components/tab'
@@ -11,6 +11,7 @@ import { useAssetNames } from 'hooks/useAssetNames'
 import { useDispatch, useSelector } from 'react-redux'
 import { useAssetByName } from 'hooks/useAssetByName'
 import { setSetupData } from 'Store/slices/setupSlice'
+import DateRangePicker from 'Components/DatePicker'
 
 const tabs = [
   {
@@ -26,45 +27,12 @@ const tabs = [
 const Dashboard = () => {
 
   const dispatch = useDispatch();
-
   const createOpt = item => ({ label: item, value: item })
-  const optList = arr => arr?.length ? arr?.map(createOpt) : []
-  const genList = (assets) => {
-    return {
-      fields: optList((assets?.fields)),
-      productionStrings: optList((assets?.productionStrings)),
-      wells: optList((assets?.wells)),
-      reservoirs: optList((assets?.reservoirs)),
-      flowstations: optList((assets?.flowStations)),
-    }
-  }
-
   const [tab, setTab] = useState(0)
-
   const setupData = useSelector(state => state.setup)
-
   const assets = useAssetByName(setupData?.asset)
-  console.log(assets)
 
-  const assetData = useMemo(() => {
-    const optList = arr => arr?.length ? arr?.map(createOpt) : []
-    return {
-      fields: optList((assets?.fields)),
-      productionStrings: optList((assets?.productionStrings)),
-      wells: optList((assets?.wells)),
-      reservoirs: optList((assets?.reservoirs)),
-    }
-    // }
-    // return genList(assets)
-  },
-    [assets])
   const { assetNames } = useAssetNames()
-  console.log(assetData)
-
-  //   const handleFluidTypeChange = (e) => {
-  //     storeWellChanges(productionString.value, 'fluidType', e.value, i)
-  // }
-
   return (
     <div className='h-full'>
       <Header
@@ -81,26 +49,35 @@ const Dashboard = () => {
               <>
 
                 <div style={{ width: '120px' }} >
-                  <Input placeholder={'Assets'} required defaultValue={'Filter by'}
+                  <Input placeholder={'Assets'} required
                     type='select' options={assetNames?.map(assetName => ({ value: assetName, label: assetName }))}
-                    onChange={(e) => dispatch(setSetupData({ name: 'asset', value: e?.value }))}
+                    onChange={(e) => {
+                      dispatch(setSetupData({ name: 'asset', value: e?.value }))
+                      dispatch(setSetupData({ name: 'flowstation', value: '' }))
+                    }}
+                    defaultValue={{ value: setupData?.asset, label: setupData?.asset }}
                   />
                 </div>
                 <div style={{ width: '150px' }}>
-                  <Input key={setupData?.asset} placeholder={'Flow Stations'} required defaultValue={'Filter by'}
-                    type='select' options={assetData.flowstations}
-                    onChange={(e) => dispatch(setSetupData({ name: 'flowstations', value: e?.value }))}
+                  <Input isClearable key={setupData?.asset} placeholder={'Flow Stations'} required
+                    type='select' options={assets.flowStations?.map(createOpt)}
+                    onChange={(e) => dispatch(setSetupData({ name: 'flowstation', value: e?.value }))}
                   />
                 </div>
-                <div style={{ width: '120px' }} >
-                  <Input placeholder={'Frequency'} required defaultValue={'Filter by'}
+                <div  >
+                  <DateRangePicker onChange={e => {
+                    // console.log(e)
+                    dispatch(setSetupData({ name: 'startDate', value: dayjs(e?.startDate).format('MM/DD/YYYY') }))
+                    dispatch(setSetupData({ name: 'endDate', value: dayjs(e?.endDate).format('MM/DD/YYYY') }))
+                  }} />
+                  {/* <Input placeholder={'Frequency'} required
                     type='select' options={[{ label: 'Daily', value: 'Daily' }, { label: 'Monthly', value: 'Monthly' }]}
-                    onChange={() => {}}
-                  />
+                    onChange={() => { }}
+                  /> */}
                 </div>
               </>
             }
-            <div style={{ border: '1px solid #9DA0A7', padding: '5px 20px', borderRadius: 5 }}>{dayjs().format('DD/MM/YY')}</div>
+            {/* <div style={{ border: '1px solid #9DA0A7', padding: '5px 20px', borderRadius: 5 }}>{dayjs().format('DD/MM/YY')}</div> */}
           </div>
         </div>
         {

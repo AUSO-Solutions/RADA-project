@@ -63,6 +63,7 @@ const getInsights = onCall(async (request) => {
             gasFlared: 0,
             gasUtilized: 0,
             gasProducedTarget: 0,
+            flowstations: [],
             // exportGasTarget:0,
             // fuelGasTarget:0,
             // flareGasTarget:0,
@@ -82,10 +83,11 @@ const getInsights = onCall(async (request) => {
             return 0
         }
         const flowstations = Array.from(new Set(oilFlowstationsData?.map(flowstation => flowstation?.name)))
+        result.flowstations = flowstations
         result.oilProduced = sum(oilFlowstationsData.map(flowstation => flowstation?.subtotal?.netProduction))
-        result.oilTarget = sum(oilFlowstationsData.map(flowstation => flowstation?.averageTarget?.oilRate)) / oilFlowstationsData.length
+        result.oilTarget = sum(oilFlowstationsData.map(flowstation => flowstation?.subtotal?.netTarget)) / oilFlowstationsData.length
         result.gasProduced = sum(gasFlowstationsData.map(flowstation => flowstation?.subtotal?.totalGas))
-        result.oilTarget = sum(gasFlowstationsData.map(flowstation => flowstation?.averageTarget?.oilRate)) / oilFlowstationsData.length
+        result.gasProducedTarget = sum(gasFlowstationsData.map(flowstation => flowstation?.subtotal?.totalGasTarget)) / gasFlowstationsData.length
         result.gasExported = sum(gasFlowstationsData.map(flowstation => flowstation?.subtotal?.exportGas))
         result.gasFlared = sum(gasFlowstationsData.map(flowstation => flowstation?.subtotal?.gasFlaredUSM))
         result.gasUtilized = sum(gasFlowstationsData.map(flowstation => flowstation?.subtotal?.fuelGas))
@@ -97,7 +99,7 @@ const getInsights = onCall(async (request) => {
                 result.assetOilProduction[time.format(format)] = {
                     ...result.assetOilProduction[time.format(format)],
                     [flowstation___]: sum(oilFlowstationsData.filter(filterByTimeFrameFormat)
-                        .filter(flowstation => flowstation === flowstation___)
+                        .filter(flowstation => flowstation?.name === flowstation___)
                         .map(flowstation => flowstation?.subtotal?.netProduction)),
                     x: time.format(format)
                 }

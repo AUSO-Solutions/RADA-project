@@ -35,7 +35,7 @@ function Navbar() {
             <Box sx={{ width: '30%' }}>
                
             </Box> */}
-            <Typography fontSize={"24px"} fontWeight={600} style={{ color: '#000000' }} >Welcome Hillary</Typography>
+            <Typography fontSize={"24px"} fontWeight={600} style={{ color: '#000000' }} >Welcome Kehinde</Typography>
             <Box className={styles.rightContain} >
                 {/* <Box className={`${styles.right}`}>
 

@@ -1,7 +1,7 @@
 import { firebaseFunctions } from "Services"
 import { useEffect, useState } from "react"
 
-export const useFetch = ({ firebaseFunction = '', payload = {}, dontFetch }) => {
+export const useFetch = ({ firebaseFunction = '', payload = {}, dontFetch, refetch }) => {
 
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
@@ -20,7 +20,7 @@ export const useFetch = ({ firebaseFunction = '', payload = {}, dontFetch }) => 
         }
         if (!dontFetch) getData()
         // eslint-disable-next-line
-    }, [dontFetch])
+    }, [dontFetch,refetch])
 
     return {
         data,
