@@ -1,5 +1,5 @@
 import RadaTable from 'Components/RadaTable'
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { Pie } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -10,17 +10,42 @@ import {
 import Text from 'Components/Text';
 import { Close } from '@mui/icons-material';
 import RadioSelect from './RadioSelect';
+import { useFetch } from 'hooks/useFetch';
+import { useDispatch, useSelector } from 'react-redux';
+import { setSetupData } from 'Store/slices/setupSlice';
+import { Input } from 'Components';
+import DateRangePicker from 'Components/DatePicker';
+import dayjs from 'dayjs';
+import { useAssetByName } from 'hooks/useAssetByName';
+import { useAssetNames } from 'hooks/useAssetNames';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 
 
+const createOpt = item => ({ label: item, value: item })
 const Summary = () => {
 
+  const setupData = useSelector(state => state?.setup)
+  const res = useFetch({
+    firebaseFunction: 'getInsights', payload: {
+      asset: setupData?.asset,
+      flowstation: setupData?.flowstation,
+      startDate: setupData?.startDate,
+      endDate: setupData?.endDate
+    },
+    refetch: setupData
+  });
+  const dispatch = useDispatch()
+
+  const tableData = useMemo(() => {
+    return res?.data?.length ? JSON.parse(res?.data) : {}
+  }, [res])
+  console.log(tableData)
+  const assets = useAssetByName(setupData?.asset)
+  const { assetNames } = useAssetNames()
   const [showChart, setShowChart] = useState(false);
   const switches = ['Oil/Condensate', 'Gas'];
-
-
   const data = {
     labels: ["Produced Gas", "Export Gas", "Flared Gas"],
     datasets: [
@@ -74,9 +99,34 @@ const Summary = () => {
 
           Chart
         </div>
-        <div className='border-2 border-[#FAFAFA] flex items-center justify-center px-3 rounded-lg' >27-June-2024</div>
+        {/* <div className='border-2 border-[#FAFAFA] flex items-center justify-center px-3 rounded-lg' >27-June-2024</div> */}
+        <div className='flex gap-2'>
 
+          <div style={{ width: '120px' }} >
+            <Input placeholder={'Assets'} required
+              type='select' options={assetNames?.map(assetName => ({ value: assetName, label: assetName }))}
+              onChange={(e) => {
+                dispatch(setSetupData({ name: 'asset', value: e?.value }))
+                dispatch(setSetupData({ name: 'flowstation', value: '' }))
+              }}
+              defaultValue={{ value: setupData?.asset, label: setupData?.asset }}
+            />
+          </div>
+          <div style={{ width: '150px' }}>
+            <Input isClearable key={setupData?.asset} placeholder={'Flow Stations'} required
+              type='select' options={assets.flowStations?.map(createOpt)}
+              onChange={(e) => dispatch(setSetupData({ name: 'flowstation', value: e?.value }))}
+            />
+          </div>
+          <div  >
+            <DateRangePicker onChange={e => {
+              dispatch(setSetupData({ name: 'startDate', value: dayjs(e?.startDate).format('MM/DD/YYYY') }))
+              dispatch(setSetupData({ name: 'endDate', value: dayjs(e?.endDate).format('MM/DD/YYYY') }))
+            }} />
+          </div>
+        </div>
       </div>
+
 
       <div className='mt-5' >
         <RadaTable noaction noNumbers noSearch headBgColor='#FAFAFA'
@@ -84,24 +134,24 @@ const Summary = () => {
           columns={[
             { name: 'Item', key: "name" },
             {
-              name: 'Target',
+              name: 'Target', key: 'target'
             },
             {
-              name: 'Actual',
+              name: 'Actual', key: 'actual'
             },
             {
-              name: 'Remarks',
+              name: 'Remarks', key: 'remarks'
             },
           ]}
 
           data={[
-            { name: "Gross Liquid (bbls/day)" },
-            { name: "BS&W (%)" },
-            { name: "Net Oil (bbls/day)" },
-            { name: "Produced Gas (mmscf)" },
-            { name: "Export Gas (mmscf)" },
-            { name: "Fuel Gas Consumed (mmscf)" },
-            { name: "Flare Gas (mmscf)" },
+            { name: "Gross Liquid (bbls/day)", target: parseFloat(tableData.grossTarget).toFixed(3), actual: parseFloat(tableData.grossProduction).toFixed(3) },
+            { name: "BS&W (%)", target: 100, actual: parseFloat(tableData.bsw).toFixed(3) },
+            { name: "Net Oil (bbls/day)", target: parseFloat(tableData.oilTarget).toFixed(3), actual: parseFloat(tableData.oilProduced).toFixed(3) },
+            { name: "Produced Gas (mmscf)", target: parseFloat(tableData.gasProducedTarget).toFixed(3), actual: parseFloat(tableData.gasProduced).toFixed(3) },
+            { name: "Export Gas (mmscf)", target: parseFloat(tableData.exportGasTarget).toFixed(3), actual: parseFloat(tableData.gasExported).toFixed(3) },
+            { name: "Fuel Gas Consumed (mmscf)", target: parseFloat(tableData.gasUtilizedTarget).toFixed(3), actual: parseFloat(tableData.gasUtilized).toFixed(3) },
+            { name: "Flare Gas (mmscf)", target: parseFloat(tableData.gasFlaredTarget).toFixed(3), actual: parseFloat(tableData.gasFlared).toFixed(3) },
             { name: "Condensate Produced (bbls)" },
             { name: "Barged Crude (bbls)" },
             { name: "Export Gas (BOE)" },
@@ -132,7 +182,7 @@ const Summary = () => {
             />
           </div>
 
-          <div style={{ padding:90, display: 'flex', justifyContent: 'center', alignItems: 'center',  }} >
+          <div style={{ padding: 90, display: 'flex', justifyContent: 'center', alignItems: 'center', }} >
             <Pie data={data} options={options} />
           </div>
 

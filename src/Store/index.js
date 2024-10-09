@@ -6,11 +6,12 @@ import authSlice from './slices/auth';
 import modalSlice from './slices/modalSlice';
 import setupSlice from './slices/setupSlice';
 import loadingScreenSlice from './slices/loadingScreenSlice';
+import formdataSlice from './slices/formdataSlice';
 
 const persistConfig = {
   key: 'root',
   storage,
-  blacklist: ['modal','loadingScreen']
+  blacklist: ['modal', 'loadingScreen', 'formdata']
   // Specify the reducers you want to persist
   // whitelist: ['user'], // In this example, we persist the 'user' reducer
 };
@@ -20,7 +21,8 @@ const reducers = combineReducers({
   auth: authSlice,
   modal: modalSlice,
   setup: setupSlice,
-  loadingScreen: loadingScreenSlice
+  loadingScreen: loadingScreenSlice,
+  formdata: formdataSlice
 })
 
 const persistedReducer = persistReducer(persistConfig, reducers);

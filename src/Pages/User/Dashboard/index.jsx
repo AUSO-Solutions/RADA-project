@@ -31,7 +31,6 @@ const Dashboard = () => {
   const [tab, setTab] = useState(0)
   const setupData = useSelector(state => state.setup)
   const assets = useAssetByName(setupData?.asset)
-
   const { assetNames } = useAssetNames()
   return (
     <div className='h-full'>
@@ -47,7 +46,6 @@ const Dashboard = () => {
           <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 20 }}>
             {tabs[tab]?.title === 'Insights' &&
               <>
-
                 <div style={{ width: '120px' }} >
                   <Input placeholder={'Assets'} required
                     type='select' options={assetNames?.map(assetName => ({ value: assetName, label: assetName }))}
@@ -66,14 +64,9 @@ const Dashboard = () => {
                 </div>
                 <div  >
                   <DateRangePicker onChange={e => {
-                    // console.log(e)
                     dispatch(setSetupData({ name: 'startDate', value: dayjs(e?.startDate).format('MM/DD/YYYY') }))
                     dispatch(setSetupData({ name: 'endDate', value: dayjs(e?.endDate).format('MM/DD/YYYY') }))
                   }} />
-                  {/* <Input placeholder={'Frequency'} required
-                    type='select' options={[{ label: 'Daily', value: 'Daily' }, { label: 'Monthly', value: 'Monthly' }]}
-                    onChange={() => { }}
-                  /> */}
                 </div>
               </>
             }

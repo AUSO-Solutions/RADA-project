@@ -22,9 +22,10 @@ const Insights = () => {
             asset: querys?.asset,
             flowstation: querys?.flowstation,
             startDate: querys?.startDate,
-            endDate:querys?.endDate
+            endDate: querys?.endDate
         }, refetch: querys
     });
+    
     const data = useMemo(() => {
         if (res?.data.length) return (JSON.parse(res?.data))
         return {}
@@ -76,11 +77,11 @@ const Insights = () => {
     return (
         <div className="bg-[#FAFAFA]" >
             <div className="mx-5 pt-3 flex flex-row  gap-5 " >
-                <DashboardCard targetVal={`Target: ${data?.oilTarget}kbbls`} img={assets} title={"Oil Produced"} num={`${data?.oilProduced} Kbbls`} />
-                <DashboardCard targetVal={`Target: ${data?.gasProducedTarget} MMscf`} img={grossprodgas} title={"Gas Produced"} num={`${data?.gasProduced} MMscf`} />
-                <DashboardCard targetVal={`Target: ${data?.gasProduced} MMscf`} img={gasexported} title={"Gas Exported"} num={`${data?.gasExported} MMscf`} />
-                <DashboardCard targetVal={`${data?.gasProduced} MMscf`} img={gasflared} title={"Gas Flared"} num={`${data?.gasFlared} MMscf`} />
-                <DashboardCard targetVal={`${data?.gasProduced} MMscf`} img={gasutilized} title={"Gas Utilized"} num={`${data?.gasUtilized} MMscf`} />
+                <DashboardCard targetVal={`Target: ${parseFloat(data?.oilTarget || 0)?.toFixed(3)}kbbls`} img={assets} title={"Oil Produced"} num={`${parseFloat(data?.oilProduced || 0)?.toFixed(3)} Kbbls`} />
+                <DashboardCard targetVal={`Target: ${parseFloat(data?.gasProducedTarget || 0)?.toFixed(3)} MMscf`} img={grossprodgas} title={"Gas Produced"} num={`${parseFloat(data?.gasProduced || 0)?.toFixed(3)} MMscf`} />
+                <DashboardCard targetVal={`Target: ${parseFloat(data?.exportGasTarget || 0)?.toFixed(3)} MMscf`} img={gasexported} title={"Gas Exported"} num={`${parseFloat(data?.gasExported || 0)?.toFixed(3)} MMscf`} />
+                <DashboardCard targetVal={`${parseFloat(data?.gasFlaredTarget || 0)?.toFixed(3)} MMscf`} img={gasflared} title={"Gas Flared"} num={`${parseFloat(data?.gasFlared || 0)?.toFixed(3)} MMscf`} />
+                <DashboardCard targetVal={`${parseFloat(data?.gasUtilizedTarget || 0)?.toFixed(3)} MMscf`} img={gasutilized} title={"Gas Utilized"} num={`${parseFloat(data?.gasUtilized || 0)?.toFixed(3)} MMscf`} />
             </div>
 
             <div className="pt-5 flex flex-row flex-wrap justify-evenly shadow rounded" style={{ rowGap: "12px" }}>

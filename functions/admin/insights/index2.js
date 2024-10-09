@@ -10,7 +10,7 @@ const getInsights = onCall(async (request) => {
     try {
         const { data } = request;
         logger.log("Data ----", { data });
-        const { asset, flowstation, startDate, endDate } = data;
+        const { asset = 'OML 24', flowstation, startDate = dayjs(), endDate = dayjs() } = data;
         if (!asset) throw { code: 'cancelled', messsage: 'Please provide asset' }
         if (!startDate || !endDate) throw { code: "cancelled", message: "Please provide start or end dates", };
         if (!dayjs(startDate).isValid() || !dayjs(endDate).isValid()) throw { code: "cancelled", message: "Invalid start or end dates" };
@@ -24,19 +24,21 @@ const getInsights = onCall(async (request) => {
         let format = 'DD/MM/YYYY'
         console.log({ noOfDays, noOfMonths })
         let frame = [] // placeholder for the days or months
-        if (noOfDays < 32) {
+        if (noOfDays === 0) frame.push(dayjs(startDate))
+        if (noOfDays > 0 && noOfDays < 32) {
             format = 'DD/MM/YYYY'
-            for (let day = 0; day < noOfDays; day++) {
+            for (let day = 0; day <= noOfDays; day++) {
                 frame.push(dayjs(startDate).add(day, 'days'))
             }
         }
-        else {
+        if (noOfDays >= 32) {
             format = 'MM/YYYY'
-            for (let day = 0; day < noOfMonths; day++) {
+            for (let day = 0; day <= noOfMonths; day++) {
                 frame.push(dayjs(startDate).add(day, 'months'))
 
             }
         }
+
 
         // query by start and end dates 
         const oilStartEndData = db
@@ -50,12 +52,14 @@ const getInsights = onCall(async (request) => {
             .where('date', '>=', startDate_)
             .where('date', '<=', endDate_)
             .where('asset', '==', asset)
-
         const oilQuery = (await oilStartEndData.get()).docs.map(doc => doc?.data() || {})
         const gasQuery = (await gasStartEndData.get()).docs.map(doc => doc?.data() || {})
+        console.log({ oilQuery, gasQuery })
         const queryResult = { oilQuery, gasQuery }
 
         let result = {
+            grossProduction: 0,
+            grossTarget:0,
             oilProduced: 0,
             oilTarget: 0,
             gasProduced: 0,
@@ -64,9 +68,10 @@ const getInsights = onCall(async (request) => {
             gasUtilized: 0,
             gasProducedTarget: 0,
             flowstations: [],
-            // exportGasTarget:0,
-            // fuelGasTarget:0,
-            // flareGasTarget:0,
+            bsw: 0,
+            exportGasTarget: 0,
+            gasFlaredTarget: 0,
+            gasUtilizedTarget: 0,
             assetOilProduction: {},
             assetGasProduction: {}
         }
@@ -79,18 +84,31 @@ const getInsights = onCall(async (request) => {
             ?.filter(flowstation_ => (flowstation ? flowstation_?.name === flowstation : true))
 
         const sum = (array = []) => {
-            if (Array.isArray(array) && array?.length) return parseFloat(array.reduce((a, b) => parseFloat(a) + parseFloat(b)))
+            if (Array.isArray(array) && array?.length) return parseFloat(array.reduce((a, b) => parseFloat(a) + parseFloat(b))).toFixed(4)
             return 0
         }
         const flowstations = Array.from(new Set(oilFlowstationsData?.map(flowstation => flowstation?.name)))
         result.flowstations = flowstations
+        //Oil and Oil Target
+        result.grossProduction = sum(oilFlowstationsData.map(flowstation => flowstation?.subtotal?.gross))
+        result.grossTarget = sum(oilFlowstationsData.map(flowstation => flowstation?.subtotal?.grossTarget)) / oilFlowstationsData.length
         result.oilProduced = sum(oilFlowstationsData.map(flowstation => flowstation?.subtotal?.netProduction))
         result.oilTarget = sum(oilFlowstationsData.map(flowstation => flowstation?.subtotal?.netTarget)) / oilFlowstationsData.length
+        //BSW
+        result.bsw = sum(oilFlowstationsData.map(flowstation => flowstation?.subtotal?.bsw))
+        //Gases
         result.gasProduced = sum(gasFlowstationsData.map(flowstation => flowstation?.subtotal?.totalGas))
-        result.gasProducedTarget = sum(gasFlowstationsData.map(flowstation => flowstation?.subtotal?.totalGasTarget)) / gasFlowstationsData.length
         result.gasExported = sum(gasFlowstationsData.map(flowstation => flowstation?.subtotal?.exportGas))
         result.gasFlared = sum(gasFlowstationsData.map(flowstation => flowstation?.subtotal?.gasFlaredUSM))
         result.gasUtilized = sum(gasFlowstationsData.map(flowstation => flowstation?.subtotal?.fuelGas))
+        //Gases Targets
+        result.gasProducedTarget = sum(gasFlowstationsData.map(flowstation => flowstation?.subtotal?.totalGasTarget)) / gasFlowstationsData.length
+        result.exportGasTarget = sum(gasFlowstationsData.map(flowstation => flowstation?.subtotal?.exportGasTarget)) / gasFlowstationsData.length
+        result.gasFlaredTarget = sum(gasFlowstationsData.map(flowstation => flowstation?.subtotal?.gasFlaredUSMTarget)) / gasFlowstationsData.length
+        result.gasUtilizedTarget = sum(gasFlowstationsData.map(flowstation => flowstation?.subtotal?.fuelGasTarget)) / gasFlowstationsData.length
+
+
+
         //get data from each day/month in the timeframe 
         frame.forEach((time) => {
             const format_ = time.format(format) //
