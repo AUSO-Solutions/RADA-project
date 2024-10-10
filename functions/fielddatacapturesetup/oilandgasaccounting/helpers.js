@@ -105,6 +105,8 @@ const payload = {
       reservoir: "",
       uptimeProduction: "",
       status: "",
+      defermentCategory:"",
+      defermentSubCategory:"",
     },
     {
       productionString: "",
@@ -114,6 +116,8 @@ const payload = {
       reservoir: "",
       uptimeProduction: "",
       status: "",
+      defermentCategory:"",
+      defermentSubCategory:"",
     },
   ],
 };
