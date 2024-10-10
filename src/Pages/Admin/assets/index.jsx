@@ -42,14 +42,15 @@ const Assets = () => {
 
     const [deleteLoading, setDeleteLoading] = useState(false)
 
-    const deleteAsset = async (id) => {
+    const deleteAsset = async (listId, assetName,onComplete=()=>null) => {
         setDeleteLoading(true)
         try {
-            await firebaseFunctions("deleteAssetById", { id })
+            await firebaseFunctions("deleteAssetById", { listId, assetName })
+            onComplete()
             toast.success("Successful")
         } catch (error) {
 
-        }finally{
+        } finally {
             setDeleteLoading(false)
         }
 
@@ -63,7 +64,7 @@ const Assets = () => {
                 name={'Manage Assets'}
                 btns={[
                     { text: 'Create Asset', onClick: () => dispatch(openModal({ title: 'Create Asset', component: <CreateAsset /> })) },
-                      { text: 'Import MasterXY', onClick: () => dispatch(openModal({ title: 'Import MasterXY', component: <ImportMasterXY /> })) },
+                    { text: 'Import MasterXY', onClick: () => dispatch(openModal({ title: 'Import MasterXY', component: <ImportMasterXY /> })) },
                     // {   text: <>  <Button data={usersToDownloading} loading={downloadLoading} >{downloadLoading ? 'Loading...' : 'Download template '} </Button>  </>, onClick: () => downloadUser() },
                 ]}
             />
@@ -83,7 +84,7 @@ const Assets = () => {
                 actions={(data, i) => <TableAction
                     actions={[
                         { component: 'Update asset', onClick: () => dispatch(openModal({ title: 'Update asset', component: <CreateAsset defaultValues={data} /> })) },
-                        { component: 'Delete asset', onClick: () => dispatch(openModal({ title: 'Delete asset', component: <ConfirmModal color='red' loading={deleteLoading} onProceed={() => deleteAsset(data?.id, () => dispatch(closeModal()))} /> })) },
+                        { component: 'Delete asset', onClick: () => dispatch(openModal({ title: 'Delete asset', component: <ConfirmModal color='red' loading={deleteLoading} onProceed={() => deleteAsset(data?.listId, data?.assetName, () => dispatch(closeModal()))} /> })) },
                     ]}
                 />}
             />

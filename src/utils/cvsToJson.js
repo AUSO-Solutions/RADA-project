@@ -11,7 +11,7 @@ export default function  csvToJson (files, getFile=()=>null) {
         Papa.parse(files, {
             header: true,
             complete: function (results) {
-                console.log("Finished:", results.data);
+                // console.log("Finished:", results.data);
                 getFile(results.data)
                 jsonData = results.data
             }

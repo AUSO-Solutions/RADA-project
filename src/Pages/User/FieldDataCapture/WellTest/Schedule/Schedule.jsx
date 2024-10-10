@@ -1,10 +1,9 @@
-
 import { useDispatch, useSelector } from "react-redux"
 import { useAssetNames } from "hooks/useAssetNames"
 import { clearSetup, setSetupData, setWholeSetup } from "Store/slices/setupSlice"
 import CheckInput from "Components/Input/CheckInput"
 import { Input } from "Components"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import styles from '../welltest.module.scss'
 import { useFetch } from "hooks/useFetch"
 import Text from "Components/Text"
@@ -13,74 +12,69 @@ import { store } from "Store"
 import { firebaseFunctions } from "Services"
 import { toast } from "react-toastify"
 import Setup from "Partials/setup"
-import { useAssetByName } from "hooks/useAssetByName"
+import { getAssetByName, useAssetByName } from "hooks/useAssetByName"
 import { Chip } from "@mui/material"
 import dayjs from "dayjs"
 import Files from "Partials/Files"
 import { createWellTitle } from "utils"
-
-
-
-const createOpt = item => ({ label: item, value: item })
-const optList = arr => arr?.length ? arr?.map(createOpt) : []
-const genList = (assets) => {
-    return {
-        fields: optList((assets?.fields)),
-        productionStrings: optList((assets?.productionStrings)),
-        wells: optList((assets?.wells)),
-        reservoirs: optList((assets?.reservoirs)),
-    }
-}
+import { setLoadingScreen } from "Store/slices/loadingScreenSlice"
 
 const SelectAsset = () => {
 
     const setupData = useSelector(state => state.setup)
-
-    // const { data: assets } = useFetch({ firebaseFunction: 'getAssets' })
-
-    const assets = useAssetByName(setupData?.asset)
-
-    const assetData = useMemo(() => genList(assets), [assets])
+    const [asset, setAsset] = useState()
     const { assetNames } = useAssetNames()
     const dispatch = useDispatch()
-
-    const onSelectAsset = useCallback((e) => {
-
+    const onSelectAsset = useCallback(async (e) => {
         dispatch(setSetupData({ name: 'asset', value: e.value }))
-        dispatch(setSetupData({ name: 'field', value: '' }))
+        const asset_ = await getAssetByName(e.value)
+        setAsset(asset_)
         dispatch(setSetupData({ name: 'productionStrings', value: null }))
         dispatch(setSetupData({ name: 'wellsData', value: {} }))
+        dispatch(setSetupData({ name: 'flowstations', value: asset_?.flowStations }))
     }, [dispatch])
+    useEffect(() => {
+        const fetchAssetOnBack = async () => {
+            const asset_ = await getAssetByName(setupData?.asset)
+            setAsset(asset_)
+        }
+        if (setupData?.asset || !asset) fetchAssetOnBack()
+    }, [setupData?.asset])
     const [searchProdString, setSearchProdString] = useState('')
-
     const selectProdString = (productionString) => {
         const prevProductionstring = setupData?.productionStrings || []
         let newlist = []
         if (prevProductionstring.includes(productionString)) { newlist = prevProductionstring.filter(selected => selected !== productionString) }
         else { newlist = [...prevProductionstring, productionString] }
         dispatch(setSetupData({ name: 'productionStrings', value: newlist }))
-
     }
-
+    const selectFlowstations = (e, flowStation) => {
+        const checked = e.target.checked
+        const prevFlowstations = setupData?.flowstations
+        if (prevFlowstations?.length === 1 && !checked) { toast.info('You must have atleast one flowstation'); return; }
+        if (checked) dispatch(setSetupData({ name: 'flowstations', value: [...prevFlowstations, flowStation] }))
+        if (!checked) dispatch(setSetupData({ name: 'flowstations', value: prevFlowstations?.filter(flow => flow !== flowStation) }))
+    }
     return <>
         <Input required defaultValue={{ label: setupData?.asset, value: setupData?.asset }}
             label={'Assets'} type='select' options={assetNames?.map(assetName => ({ value: assetName, label: assetName }))}
-            onChange={onSelectAsset}
+            onChange={(e) => onSelectAsset(e)}
         />
-        <Input key={setupData?.asset + 'fields'} required defaultValue={{ label: setupData?.field, value: setupData?.field }}
-            label={'Field'} type='select' options={assetData.fields}
-            onChange={(e) => dispatch(setSetupData({ name: 'field', value: e?.value }))}
-        />
-       
+        <br />  Flow stations ({setupData?.flowstations?.length}) <br />
+        {
+            asset?.flowStations?.map(flowStation => <> <CheckInput checked={setupData?.flowstations?.includes(flowStation)} onChange={(e) => selectFlowstations(e, flowStation)} label={flowStation} /> </>)
+        }
         <div className="mt-3 p-1 border rounded">
             <Text>Production Strings</Text><br />
             <input type="search" placeholder="Search for production string" className="w-1/2 border py-1 mt-3 px-2 rounded" onChange={(e) => setSearchProdString(e.target.value)} />
             <div className="flex gap-1 mt-3 flex-wrap p-1  rounded">
                 {
-                    assetData.productionStrings?.filter(({ label }) => {
-                        if (!searchProdString) return label
-                        return label?.toLowerCase()?.includes(searchProdString?.toLowerCase())
-                    })?.map(productionString => <Chip onClick={() => selectProdString(productionString?.value)} color="primary" variant={setupData?.productionStrings?.includes(productionString.value) ? "filled" : "outlined"} className="cursor-pointer" label={productionString?.label} />)
+                    asset?.assetData
+                        ?.filter((item) => setupData?.flowstations?.includes(item.flowStation))
+                        ?.filter((item) => {
+                            if (!searchProdString) return item?.wellId
+                            return item?.wellId?.toLowerCase()?.includes(searchProdString?.toLowerCase())
+                        })?.map(item => <Chip onClick={() => selectProdString(item?.wellId)} color="primary" variant={setupData?.productionStrings?.includes(item?.wellId) ? "filled" : "outlined"} className="cursor-pointer" label={item?.wellId} />)
                 }
             </div>
         </div>
@@ -90,17 +84,14 @@ const SelectAsset = () => {
 const DefineSchedule = () => {
     const dispatch = useDispatch()
     const setupData = useSelector(state => state.setup)
-
-    // const { data: assets } = useFetch({ firebaseFunction: 'getAssets' })
-
-    const assets = useAssetByName(setupData?.asset)
-    // console.log({ assets })
-    const assetData = useMemo(() => genList(assets), [assets])
+    const asset = useAssetByName(setupData?.asset)
 
     const getReservoirByProdString = (productionString) => {
-        return assets.assetData?.find(asset => asset?.wellId === productionString)?.reservoir
+        return asset.assetData?.find(asset => asset?.wellId === productionString)?.reservoir
     }
-
+    const getFlowstationByProdString = (productionString) => {
+        return asset.assetData?.find(asset => asset?.wellId === productionString)?.flowstation
+    }
 
     const storeWellChanges = (productionString, name, value, i) => {
         let updates = { ...setupData?.wellsData } || []
@@ -110,7 +101,6 @@ const DefineSchedule = () => {
             ...prev,
             [name]: value
         }
-        // console.log(prev)
         if (prev?.startDate && prev?.endDate) {
             duration = dayjs(prev?.endDate).diff(prev?.startDate, 'hours')
             console.log(duration)
@@ -120,17 +110,21 @@ const DefineSchedule = () => {
 
     useEffect(() => {
         let updates = { ...setupData?.wellsData }
-        assets?.productionStrings?.forEach(productionString => {
-            updates[productionString] = {
-                ...updates[productionString],
-                productionString,
-                reservoir: getReservoirByProdString(productionString),
-                isSelected: setupData?.productionStrings?.includes(productionString)
-            }
-        })
+
+        asset?.assetData
+            ?.filter(item => setupData?.flowstations?.includes(item?.flowstation))
+            .forEach(({ productionString }) => {
+                updates[productionString] = {
+                    ...updates[productionString],
+                    productionString,
+                    reservoir: getReservoirByProdString(productionString),
+                    flowstation: getFlowstationByProdString(productionString),
+                    isSelected: setupData?.productionStrings?.includes(productionString)
+                }
+            })
         dispatch(setSetupData({ name: 'wellsData', value: updates }))
         // eslint-disable-next-line 
-    }, [assets?.productionStrings, setupData?.productionStrings])
+    }, [asset?.productionStrings, setupData?.productionStrings])
 
     return <>
         <div className='flex justify-between !w-[100%]'>
@@ -150,64 +144,68 @@ const DefineSchedule = () => {
                         <th>Fluid Type</th>
                         <th>No of Chokes</th>
                         <th> Chokes Size(/64")</th>
-                        <th > Start Date</th>
-                        <th > End Date</th>
+                        <th> Start Date</th>
+                        <th> End Date</th>
                         <th> Duration (Hrs)</th>
                         <th> Stabilization Duration (Hrs)</th>
                     </tr>
                 </thead>
                 <tbody>
                     {
-                        assetData.productionStrings.map((productionString, i) => {
 
-                            const handleWellChanges = (e) => {
-                                const isCheckBox = (e.target.type === 'checkbox')
-                                const name = (e.target.name)
-                                const value = isCheckBox ? e.target.checked : e.target.value
-                                storeWellChanges(productionString.value, name, value, i)
-                                // storeWellChanges(productionString.value, 'productionString', productionString.value, i)
-                                // storeWellChanges(productionString.value, 'reservior', assetData.reserviors[i].label, i)
-                            }
-                            const handleFluidTypeChange = (e) => {
-                                storeWellChanges(productionString.value, 'fluidType', e.value, i)
-                            }
-                            const col = setupData?.wellsData[productionString.value]
+                        asset?.assetData
+                            ?.filter(item => setupData?.flowstations?.includes(item?.flowstation))
+                            .sort((a, b) => {
+                                return ((setupData?.productionStrings?.includes(b?.productionString) ? 1 : 0) - (setupData?.productionStrings?.includes(a?.productionString) ? 1 : 0))
+                            })
+                            .map(({ productionString, flowStation, flowstation }, i) => {
 
-                            return (
-                                <tr className="border-b " key={col?.productionString} >
-                                    <td className="!min-w-[200px] text-left block pl-2 " >
-                                        <CheckInput key={(col?.isSelected ? 1 : 0) + col?.productionString} name={'isSelected'} defaultChecked={col?.isSelected} onChange={handleWellChanges} label={productionString.label} />
-                                    </td>
-                                    <td>
-                                        {getReservoirByProdString(productionString?.value)}
-                                    </td>
-                                    <td>
-                                        <Input type='select' placeholder={"Select"} required={col?.isSelected} disabled={!col?.isSelected}
-                                            name="fluidType" onChange={handleFluidTypeChange} defaultValue={{ label: col?.fluidType, value: col?.fluidType }}
-                                            options={[{ label: 'Oil', value: 'Oil' }, { label: 'Gas', value: 'Gas' }]} />
-                                    </td>
-                                    <td>
-                                        <input required={col?.isSelected} disabled={!col?.isSelected} type="number" className={styles.inputBox} defaultValue={col?.noOfChokes} name="noOfChokes" onChange={handleWellChanges} />
-                                    </td>
-                                    <td >
-                                        <input required={col?.isSelected} disabled={!col?.isSelected} type="number" className={styles.inputBox} defaultValue={col?.chokeSize} name="chokeSize" onChange={handleWellChanges} />
-                                    </td>
-                                    <td className="min-w-[230px]">
-                                        <input required={col?.isSelected} disabled={!col?.isSelected} min={dayjs().format("YYYY-MM-DDTHH:mm")} type="datetime-local" className={styles.inputBox} defaultValue={col?.startDate} name="startDate" onChange={handleWellChanges} />
-                                    </td>
-                                    <td className="min-w-[230px]">
-                                        <input required={col?.isSelected} disabled={!col?.isSelected} key={col?.startDate} min={dayjs(col?.startDate).format("YYYY-MM-DDTHH:mm")} type="datetime-local" className={styles.inputBox} defaultValue={col?.endDate} name="endDate" onChange={handleWellChanges} />
-                                    </td>
-                                    <td>
-                                        <input className={styles.inputBox} required={col?.isSelected} disabled={!col?.isSelected} type='number' value={dayjs(col?.endDate).diff(col?.startDate, 'hours')} name="duration" />
-                                    </td>
-                                    <td>
-                                        <input className={styles.inputBox} required={col?.isSelected} disabled={!col?.isSelected} type='number' defaultValue={col?.stabilizatonDuration} name="stabilizatonDuration" onChange={handleWellChanges} />
-                                    </td>
-                                </tr>
+                                const handleWellChanges = (e) => {
+                                    const isCheckBox = (e.target.type === 'checkbox')
+                                    const name = (e.target.name)
+                                    const value = isCheckBox ? e.target.checked : e.target.value
+                                    storeWellChanges(productionString, name, value, i)
+                                }
+                                const handleFluidTypeChange = (e) => {
+                                    storeWellChanges(productionString, 'fluidType', e.value, i)
+                                }
+                                const col = setupData?.wellsData[productionString]
+
+                                return (
+                                    <tr className="border-b " key={col?.productionString} >
+                                        <td className="!min-w-[200px] text-left block pl-2 " >
+                                            <CheckInput key={(col?.isSelected ? 1 : 0) + col?.productionString} name={'isSelected'} defaultChecked={col?.isSelected} onChange={handleWellChanges} label={productionString} />
+                                        </td>
+                                        <td>
+                                            {getReservoirByProdString(productionString)} {flowstation}
+                                        </td>
+                                        <td>
+                                            <Input type='select' placeholder={"Select"} required={col?.isSelected} disabled={!col?.isSelected}
+                                                name="fluidType" onChange={handleFluidTypeChange} defaultValue={{ label: col?.fluidType, value: col?.fluidType }}
+                                                options={[{ label: 'Oil', value: 'Oil' }, { label: 'Gas', value: 'Gas' }]} />
+                                        </td>
+                                        <td>
+                                            <input required={col?.isSelected} disabled={!col?.isSelected} type="number" className={styles.inputBox} defaultValue={col?.noOfChokes} name="noOfChokes" onChange={handleWellChanges} />
+                                        </td>
+                                        <td >
+                                            <input required={col?.isSelected} disabled={!col?.isSelected} type="number" className={styles.inputBox} defaultValue={col?.chokeSize} name="chokeSize" onChange={handleWellChanges} />
+                                        </td>
+                                        <td className="min-w-[230px]">
+                                            <input required={col?.isSelected} disabled={!col?.isSelected} min={dayjs().format("YYYY-MM-DDTHH:mm")} type="datetime-local" className={styles.inputBox} defaultValue={col?.startDate} name="startDate" onChange={handleWellChanges} />
+                                        </td>
+                                        <td className="min-w-[230px]">
+                                            <input required={col?.isSelected} disabled={!col?.isSelected} key={col?.startDate} min={dayjs(col?.startDate).format("YYYY-MM-DDTHH:mm")} type="datetime-local" className={styles.inputBox} defaultValue={col?.endDate} name="endDate" onChange={handleWellChanges} />
+                                        </td>
+                                        <td>
+                                            <input className={styles.inputBox} required={col?.isSelected} disabled={!col?.isSelected} type='number' value={dayjs(col?.endDate).diff(col?.startDate, 'hours')} name="duration" />
+                                        </td>
+                                        <td>
+                                            <input className={styles.inputBox} required={col?.isSelected} disabled={!col?.isSelected} type='number' defaultValue={col?.stabilizatonDuration} name="stabilizatonDuration" onChange={handleWellChanges} />
+                                        </td>
+                                    </tr>
+                                )
+                            }
                             )
-                        }
-                        )
                     }
 
 
@@ -253,7 +251,6 @@ const Preview = () => {
                             return (
                                 <tr className="border-b " >
                                     <td className="w-full" >
-                                        {/* <CheckInput name={'isSelected'} defaultChecked={col?.isSelected} disabled label={well.label} /> */}
                                         {col?.productionString}
                                     </td>
                                     <td>
@@ -266,9 +263,7 @@ const Preview = () => {
                                         <input type="number" className={styles.inputBox} defaultValue={col?.noOfChokes} disabled />
                                     </td>
                                     <td  >
-
                                         <input type="number" className={styles.inputBox} defaultValue={col?.chokeSize} disabled />
-
                                     </td>
                                     <td>
                                         <input type="datetime-local" className={styles.inputBox} defaultValue={col?.startDate} disabled />
@@ -288,7 +283,6 @@ const Preview = () => {
                         )
                     }
 
-
                 </tbody>
             </table>
 
@@ -296,8 +290,6 @@ const Preview = () => {
 
     </>
 }
-
-
 const SaveAs = () => {
     const setupData = useSelector(state => state.setup)
     const dispatch = useDispatch()
@@ -309,31 +301,30 @@ const SaveAs = () => {
     )
 }
 const Exists = () => {
-    
+
     const { data } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "wellTestSchedule" } })
-   
+
     return (
         <div className=" flex flex-wrap gap-4 m-5 ">
 
-            <Files  name={(file) => `${createWellTitle(file,'Well Test Schedule')}`}  files={data} actions={[
-                { name: 'Remark', to: (file) =>`/users/fdc/well-test-data/schedule-table?id=${file?.id}` },
+            <Files name={(file) => `${createWellTitle(file, 'Well Test Schedule')}`} files={data} actions={[
+                { name: 'Remark', to: (file) => `/users/fdc/well-test-data/schedule-table?id=${file?.id}` },
                 { name: 'Well Test Result', to: (file) => `/users/fdc/well-test-data/well-test-table?id=${file?.id}` },
             ]} />
-           
+
         </div>
     )
 }
-
 const Schedule = () => {
     // const setupData = useSelector(state => state.setup)
-    const [loading, setLoading] = useState(false)
+    const [loading] = useState(false)
     const dispatch = useDispatch()
     useEffect(() => {
         dispatch(clearSetup())
     }, [dispatch])
     const save = async () => {
         try {
-            setLoading(true)
+            dispatch(setLoadingScreen({ open: true }))
             const setupData = store.getState().setup
             const { data } = await firebaseFunctions('createSetup', { ...setupData, setupType: 'wellTestSchedule' })
 
@@ -344,7 +335,7 @@ const Schedule = () => {
             toast.error(error?.message)
         }
         finally {
-            setLoading(false)
+            dispatch(setLoadingScreen({ open: false }))
         }
     }
     return (

@@ -1,8 +1,10 @@
+/* eslint-disable no-throw-literal */
 const admin = require("firebase-admin");
 const logger = require("firebase-functions/logger");
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
 // const { generateRandomID } = require("../helpers");
 const { computeProdDeduction } = require("./helpers");
+const { generateRandomID } = require("../helpers");
 
 const processIPSC = onCall(async (request) => {
   try {
@@ -10,55 +12,85 @@ const processIPSC = onCall(async (request) => {
     logger.log("Data ----", { data });
     const { flowStation, date, potentialTestData, asset } = data;
     if (!flowStation || !date || !potentialTestData) {
-      throw ({
+      throw {
         code: "cancelled",
         message: "Missing required fields",
-      });
+      };
     }
 
-    // Fetch flowstation volumes for the target date
     const db = admin.firestore();
-    // console.log('-----')
-    // const liquidVolume_ = (
-    //   await db.collection("liquidVolumes").where("date", "==", date).where("asset", "==", asset).get()
-    // )
-    // console.log(liquidVolume_, '000000-----')
-    const liquidVolume = (
-      await db.collection("liquidVolumes").where("date", "==", date).where("asset", "==", asset).get()
-    ).docs.map(doc => doc.data());
 
-    // console.log(liquidVolume)
-    // console.log('--------', liquidVolume.length)
-    const flowstationsData = liquidVolume[liquidVolume.length - 1]
+    const liquidVolume = (
+      await db
+        .collection("liquidVolumes")
+        .where("date", "==", date)
+        .where("asset", "==", asset)
+        .get()
+    ).docs.map((doc) => doc.data());
+
+    const flowstationsData = liquidVolume[liquidVolume.length - 1];
     // console.log({ flowstationsData })
     if (!flowstationsData || flowstationsData === null) {
-      throw ({
+      throw {
         code: "cancelled",
         message: "Missing flowstations data for current date",
-      });
+      };
     }
 
-    const flowstationData = flowstationsData.data.find(
+    const flowstationData = flowstationsData.flowstations.find(
       (flowstation) => flowstation.name === flowStation
     );
 
     if (!flowstationData) {
-      throw ({
+      throw {
         code: "cancelled",
         message: "Missing flowstation data for current date",
-      });
+      };
     }
     // console.log({ flowstationData })
     const result = computeProdDeduction(
       potentialTestData,
       flowstationData.subtotal
     );
-    console.log(result)
 
-    return {status:'success', data :JSON.stringify(result)};
+    // Persit deferment data for the flowstation
+    const defermentId = generateRandomID();
+    const defermentData = {
+      id: defermentId,
+      asset,
+      date,
+      flowStation,
+      deferment: result.deferment,
+    };
+    await db.collection("deferments").doc(defermentId).set(defermentData);
+
+    // Persist actual production data
+    // let batch = db.batch()
+
+    // result.actualProduction.forEach((doc) => {
+    //   var docRef = db.collection("actualProduction").doc(); //automatically generate unique id
+    //   batch.set(docRef, doc)
+    // })
+    // await batch.commit()
+
+    const actualProductionId = generateRandomID();
+    const actualProductionData = {
+      id: defermentId,
+      asset,
+      date,
+      flowStation,
+      productionData: result.deferment,
+    };
+    await db
+      .collection("actualProduction")
+      .doc(actualProductionId)
+      .set(actualProductionData);
+
+    return { status: "success", data: JSON.stringify(result) };
   } catch (error) {
+    console.log({ error });
     if (error.message) throw new HttpsError(error?.code, error?.message);
-    throw error
+    throw error;
   }
 });
 

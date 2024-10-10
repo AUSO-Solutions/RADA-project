@@ -9,20 +9,19 @@ import Text from "Components/Text";
 import RadaTable from "Components/RadaTable";
 import BroadcastCard from "Components/broadcastCard";
 
-
-
-
 const Overview = () => {
+
+  
 
     return (
         <div className="bg-[#FAFAFA]" >
 
             <div className="pt-3  flex flex-row justify-evenly" >
-                <DashboardCard img={assets} title={"Assets"} num={'100'} />
+                <DashboardCard img={assets} title={"Assets"} num={'3'} />
                 <DashboardCard img={activewells} title={"Active Wells"} num={'1000'} />
-                <DashboardCard img={grossprodoil} title={"Gross Prod"} num={'100000'} />
-                <DashboardCard img={grossprodgas} title={"Gross Prod"} num={'100000'} />
-                <DashboardCard img={noofreports} title={"No. of Reports"} num={'10'} />
+                <DashboardCard img={grossprodoil} title={"Total Broadcast"} num={'100000'} />
+                <DashboardCard img={grossprodgas} title={"Total Commit"} num={'100000'} />
+                <DashboardCard img={noofreports} title={"No. of Reports"} num={'0'} />
             </div>
 
             <div className="w-full flex flex-row mt-10 gap-3 ">

@@ -5,11 +5,11 @@ const computeProdDeduction = (potentialData, flowstationData) => {
   let totalUptimeGas = 0;
 
   let uptimeProduction = [];
-  console.log(flowstationData)
+  console.log(flowstationData);
   // Estimate Uptime Production
   potentialData.forEach((prodString) => {
     // Estimate uptime gross
-    const fractionalUptime = parseInt(prodString.uptimeProduction) / 24;
+    const fractionalUptime = parseFloat(prodString.uptimeProduction) / 24;
     const gross = fractionalUptime * parseFloat(prodString.gross);
     const oilRate = fractionalUptime * parseFloat(prodString.oilRate);
     const waterRate = gross - oilRate;
@@ -57,7 +57,19 @@ const computeProdDeduction = (potentialData, flowstationData) => {
   });
 
   // Estimate Deductions
-  const deferment = [];
+  const drainagePoints = [];
+  let totalOilDeferment = 0;
+  let totalGasDeferment = 0;
+  let totalWaterDeferment = 0;
+  let oilScheduledDeferment = { total: 0, subcategories: {} };
+  let gasScheduledDeferment = { total: 0, subcategories: {} };
+  let waterScheduledDeferment = { total: 0, subcategories: {} };
+  let oilUnscheduledDeferment = { total: 0, subcategories: {} };
+  let gasUnscheduledDeferment = { total: 0, subcategories: {} };
+  let waterUnscheduledDeferment = { total: 0, subcategories: {} };
+  let oilThirdPartyDeferment = { total: 0, subcategories: {} };
+  let gasThirdPartyDeferment = { total: 0, subcategories: {} };
+  let waterThirdPartyDeferment = { total: 0, subcategories: {} };
 
   for (let i = 0; i < potentialData.length; i++) {
     const gross = potentialData[i].gross - actualProduction[i].gross;
@@ -70,7 +82,57 @@ const computeProdDeduction = (potentialData, flowstationData) => {
     const reservoir = potentialData[i].reservoir;
     const status = potentialData[i].status;
 
-    deferment.push({
+    // Aggregation for total deferment
+    totalOilDeferment += oilRate;
+    totalGasDeferment += gasRate;
+    totalWaterDeferment += waterRate;
+
+    // Aggrgation for deferment categories and subcategories
+    if (potentialData[i].defermentCategory === "Scheduled") {
+      oilScheduledDeferment.total += oilRate;
+      gasScheduledDeferment.total += gasRate;
+      waterScheduledDeferment.total += waterRate;
+      let subCategory = potentialData[i].defermentSubCategory;
+      if (subCategory in oilScheduledDeferment.deferments) {
+        oilScheduledDeferment.subcategories[subCategory] += oilRate;
+        gasScheduledDeferment.subcategories[subCategory] += gasRate;
+        waterScheduledDeferment.subcategories[subCategory] += waterRate;
+      } else {
+        oilScheduledDeferment.subcategories[subCategory] = oilRate;
+        gasScheduledDeferment.subcategories[subCategory] = gasRate;
+        waterScheduledDeferment.subcategories[subCategory] = waterRate;
+      }
+    } else if (potentialData[i].defermentCategory === "Unscheduled") {
+      oilUnscheduledDeferment.total += oilRate;
+      gasUnscheduledDeferment.total += gasRate;
+      waterUnscheduledDeferment.total += waterRate;
+      let subCategory = potentialData[i].defermentSubCategory;
+      if (subCategory in oilUnscheduledDeferment.deferments) {
+        oilUnscheduledDeferment.subcategories[subCategory] += oilRate;
+        gasUnscheduledDeferment.subcategories[subCategory] += gasRate;
+        waterUnscheduledDeferment.subcategories[subCategory] += waterRate;
+      } else {
+        oilUnscheduledDeferment.subcategories[subCategory] = oilRate;
+        gasUnscheduledDeferment.subcategories[subCategory] = gasRate;
+        waterUnscheduledDeferment.subcategories[subCategory] = waterRate;
+      }
+    } else {
+      oilThirdPartyDeferment.total += oilRate;
+      gasThirdPartyDeferment.total += gasRate;
+      waterThirdPartyDeferment.total += waterRate;
+      let subCategory = potentialData[i].defermentSubCategory;
+      if (subCategory in oilUnscheduledDeferment.deferments) {
+        oilThirdPartyDeferment.subcategories[subCategory] += oilRate;
+        gasThirdPartyDeferment.subcategories[subCategory] += gasRate;
+        waterThirdPartyDeferment.subcategories[subCategory] += waterRate;
+      } else {
+        oilThirdPartyDeferment.subcategories[subCategory] = oilRate;
+        gasThirdPartyDeferment.subcategories[subCategory] = gasRate;
+        waterThirdPartyDeferment.subcategories[subCategory] = waterRate;
+      }
+    }
+
+    drainagePoints.push({
       productionString,
       reservoir,
       status,
@@ -80,6 +142,22 @@ const computeProdDeduction = (potentialData, flowstationData) => {
       gasRate,
     });
   }
+
+  const deferment = {
+    totalOilDeferment,
+    totalGasDeferment,
+    totalWaterDeferment,
+    oilScheduledDeferment,
+    gasScheduledDeferment,
+    waterScheduledDeferment,
+    oilUnscheduledDeferment,
+    gasUnscheduledDeferment,
+    waterUnscheduledDeferment,
+    oilThirdPartyDeferment,
+    gasThirdPartyDeferment,
+    waterThirdPartyDeferment,
+    drainagePoints,
+  };
 
   return { actualProduction, deferment };
 };
@@ -105,6 +183,8 @@ const payload = {
       reservoir: "",
       uptimeProduction: "",
       status: "",
+      defermentCategory: "",
+      defermentSubCategory: "",
     },
     {
       productionString: "",
@@ -114,6 +194,8 @@ const payload = {
       reservoir: "",
       uptimeProduction: "",
       status: "",
+      defermentCategory: "",
+      defermentSubCategory: "",
     },
   ],
 };

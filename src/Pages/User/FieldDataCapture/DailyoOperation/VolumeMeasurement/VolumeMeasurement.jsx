@@ -1,5 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
-// import Setup from '../setup'
+import React, { useEffect, useMemo } from 'react'
 import { Input } from 'Components'
 import { useAssetNames } from 'hooks/useAssetNames'
 import { useDispatch, useSelector } from 'react-redux'
@@ -9,33 +8,24 @@ import Text from 'Components/Text'
 import { useAssetByName } from 'hooks/useAssetByName'
 import { store } from 'Store'
 import { firebaseFunctions } from 'Services'
-
-import { closeModal } from 'Store/slices/modalSlice'
+import { closeModal, openModal } from 'Store/slices/modalSlice'
 import RadioSelect from '../RadioSelect'
-
 import { toast } from 'react-toastify'
-
-
 import { camelize, updateFlowstation, updateFlowstationReading } from './helper'
-
-// import RadaTable from 'Components/RadaTable'
-// import { BsChevronRight } from 'react-icons/bs'
-// import dayjs from 'dayjs'
 import { useFetch } from 'hooks/useFetch'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import Files from 'Partials/Files'
 import dayjs from 'dayjs'
 import Setup from 'Partials/setup'
-
-
+import { setLoadingScreen } from 'Store/slices/loadingScreenSlice'
+import BroadCast from 'Partials/BroadCast'
+import SelectGroup from 'Partials/BroadCast/SelectGroup'
+import Attachment from 'Partials/BroadCast/Attachment'
+import BroadCastSuccessfull from 'Partials/BroadCast/BroadCastSuccessfull'
 
 const gasTypes = ["Gas Flared USM", "Fuel Gas", "Export Gas"].map(type => ({ label: type, value: camelize(type) }))
-
-
 const SelectedReportTypes = ({ list = [] }) => {
   const setupData = useSelector(state => state.setup)
-  // console.log(setupData.reportTypes)
-
   return <div className='rounded flex border my-3 justify-evenly !w-[100%]'>
     {setupData?.reportTypes?.map((item, i) => {
       const isEven = i % 2 === 0
@@ -45,9 +35,20 @@ const SelectedReportTypes = ({ list = [] }) => {
 }
 
 const SelectAsset = () => {
+  const [, setSearchParams] = useSearchParams()
   const { assetNames } = useAssetNames()
   const setupData = useSelector(state => state.setup)
   const dispatch = useDispatch()
+  useEffect(() => {
+    setTimeout(() => {
+      setSearchParams(prev => {
+        prev.delete('autoOpenSetupModal')
+        prev.delete('volume-setup-id')
+        return prev
+      })
+    }, 3000);
+  }, [setSearchParams])
+
   useEffect(() => {
     if (!setupData?.fluidType) dispatch(setSetupData({ name: 'fluidType', value: "Gas" }))
     // eslint-disable-next-line
@@ -93,11 +94,11 @@ const DefineReport = ({ asset, }) => {
     dispatch(setSetupData({ name: 'reportTypes', value: selectedReportTypes }))
   }
 
-  const checkAll = (e) => {
-    const checked = e.target.checked
-    dispatch(setSetupData({ name: 'reportTypes', value: [] }))
-    if (checked) dispatch(setSetupData({ name: 'reportTypes', value: reportTypes.filter(reportType => reportType.value !== 'All').map(reportType => reportType.value) }))
-  }
+  // const checkAll = (e) => {
+  //   const checked = e.target.checked
+  //   dispatch(setSetupData({ name: 'reportTypes', value: [] }))
+  //   if (checked) dispatch(setSetupData({ name: 'reportTypes', value: reportTypes.filter(reportType => reportType.value !== 'All').map(reportType => reportType.value) }))
+  // }
   return <>
     <div className='flex justify-between !w-[100%]'>
       <Input type='select' placeholder={setupData?.asset} containerClass={'h-[39px] !w-[150px]'} defaultValue={asset} disabled />
@@ -108,13 +109,17 @@ const DefineReport = ({ asset, }) => {
     </div>
 
     <div key={setupData?.reportTypes?.length} className='flex flex-col mt-[24px] rounded-[8px] gap-[24px] border'>
-      <div className='flex border-b px-3'>
-        <CheckInput defaultChecked={setupData?.reportTypes?.length === reportTypes.length} onChange={(e) => checkAll(e)} label={'Select All'} />
+      <div className='flex border-b py-3 px-3'>
+        {/* <CheckInput defaultChecked={setupData?.reportTypes?.length === reportTypes.length} onChange={(e) => checkAll(e)} label={'Select'} /> */}
+        Select Liquid Type
 
       </div>
       {
         reportTypes.map(repoortType => <div className='flex border-b px-3'>
-          <CheckInput required={!setupData?.reportTypes?.length} defaultChecked={setupData?.reportTypes?.includes(repoortType.value)} onChange={(e) => handleCheck(repoortType.value, e)} label={repoortType.label} />
+          <CheckInput
+            required={!setupData?.reportTypes?.length} defaultChecked={setupData?.reportTypes?.includes(repoortType.value)}
+            onChange={(e) => handleCheck(repoortType.value, e)} label={repoortType.label}
+            disabled={setupData?.reportTypes?.length && !setupData?.reportTypes?.includes(repoortType.label)} />
         </div>)
       }
     </div>
@@ -287,69 +292,77 @@ const SaveAs = () => {
 }
 
 const Existing = ({ onSelect = () => null }) => {
+  const [, setSearchParams] = useSearchParams()
   const { data } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "volumeMeasurement" } })
-  useEffect(() => {
-    // console.log({data})
-    if (data.length) {
-      const sorted = data.sort((a, b) => a.created - b.created)
-      // console.log(sorted.map)
-      const lastSetup = sorted[sorted.length - 1]
-      console.log(dayjs(lastSetup?.created).format('MMM-DD hh:mm A'))
-    }
-  }, [data])
+  const dispatch = useDispatch()
+
 
   return (
     <div className=" flex flex-wrap gap-4 m-5 ">
       <Files files={data} actions={[
         { name: 'View', to: (file) => `/users/fdc/daily/${file?.reportTypes?.[0] === 'Gas' ? 'gas-table' : 'volume-measurement-table'}?id=${file?.id}` },
+        {
+          name: 'Edit', onClick: file => {
+            dispatch(setWholeSetup(file))
+            setSearchParams(prev => {
+              prev.set('autoOpenSetupModal', 'yes')
+              prev.set('volume-setup-id', file?.id)
+              return prev
+            })
+          }, to: () => null,
+        },
+        {
+          name: 'Broadcast', onClick: (file) => dispatch(openModal({
+            title: '',
+            component: <BroadCast title='Broadcast Volume measurement'
+              steps={['Select Group', 'Attachment', 'Broadcast']} stepsComponents={[<SelectGroup />, <Attachment />,<BroadCastSuccessfull />]} />
+          })), to: (file) => null
+        },
         { name: 'Delete', to: (file) => `` },
       ]} name={(file) => `${file.title || "No title"}/${file?.asset}/${file.fluidType}/${dayjs(file.created).format('MMM-YYYY')}`} />
     </div>
   )
 }
 
-
 const VolumeMeasurement = () => {
-
-
   const dispatch = useDispatch()
-  const [loading, setLoading] = useState(false)
-  // const [showSettings, setShowSettings] = useState(false)
+  const [searchParams] = useSearchParams()
+  useEffect(() => {
+    const volumeSetupId = searchParams.get('volume-setup-id')
+    const getEditSetup = async () => {
+      const { data } = await firebaseFunctions('getSetup', { id: volumeSetupId, setupType: 'volumeMeasurement' })
+      dispatch(setWholeSetup(data))
+    }
+    if (volumeSetupId) getEditSetup()
+  }, [searchParams, dispatch])
+
   const navigate = useNavigate()
   const save = async () => {
     try {
-      setLoading(true)
+      dispatch(setLoadingScreen({ open: true }))
       const setupData = store.getState().setup
-      // console.log(setupData)
-      const { data } = await firebaseFunctions('createSetup', { ...setupData, setupType: 'volumeMeasurement' })
-      // console.log({ data }, '----')
+      const path = searchParams.get('volume-setup-id') ? 'updateSetup' : 'createSetup'
+      const editId = searchParams.get('volume-setup-id') ? { id: searchParams.get('volume-setup-id') } : {}
+      const { data } = await firebaseFunctions(path, { ...setupData, ...editId, setupType: 'volumeMeasurement' })
 
       dispatch(setWholeSetup(data))
       dispatch(closeModal())
-      if (setupData?.reportTypes?.[0] === 'Gas') navigate(`/users/fdc/daily/gas-table?id=${data?.id}`)
-      else { navigate(`/users/fdc/daily/volume-measurement-table?id=${data?.id}`) }
-      // setSetupTable(true)
+      if (setupData?.reportTypes?.[0] === 'Gas') navigate(`/users/fdc/daily/gas-table?id=${data?.id || searchParams.get('volume-setup-id')}`)
+      else { navigate(`/users/fdc/daily/volume-measurement-table?id=${data?.id || searchParams.get('volume-setup-id')}`) }
+
     } catch (error) {
       toast.error(error?.message)
     }
     finally {
-      setLoading(false)
+      dispatch(setLoadingScreen({ open: false }))
     }
 
   }
-  // const setupData = useSelector(state => state.setup)
-  // console.log(setupData?.reportTypes)
 
-  // const [, setCurrReport] = useState(setupData?.reportTypes?.[0])
-  // useEffect(() => {
-  //   // console.log(setupData?.reportTypes?.[0])
-  //   // setCurrReport(setupData?.reportTypes?.[0])
-  // }, [setupData?.reportTypes, setupTable])
-  // const [date, setDate] = useState()
   useEffect(() => {
     dispatch(clearSetup({}))
   }, [dispatch])
-
+  // const { isOpen } = useSelector(state => state?.modal)
 
 
   return (
@@ -357,10 +370,7 @@ const VolumeMeasurement = () => {
       <Setup
         title={'Setup Volume Measurement Parameters'}
         steps={["Select Asset", "Define Report", "Measurement Type", "Select Flowstations", "Preview", "SaveAs"]}
-        // type={'volumeMeasurement'}
         existing={<Existing />}
-        rightBtnLoading={loading}
-        // onSetWholeSetup={}
         stepComponents={
           [
             <SelectAsset />,

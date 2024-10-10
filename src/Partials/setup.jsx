@@ -48,9 +48,6 @@ const Setup = ({ title, steps = [], onBack, onNext, stepComponents = [], onSave 
                         {activeStep === steps.length - 1 ? "Save" : "Next"}
                     </Button>
                 </Box>
-
-
-
             </Box>)
 
     }
@@ -65,7 +62,8 @@ const Setup = ({ title, steps = [], onBack, onNext, stepComponents = [], onSave 
                 component: <SetupModal />
             }))
         }
-    }, [search,dispatch])
+    }, [search, dispatch])
+
     return (<>
         {
             existing ?

@@ -14,6 +14,7 @@ import { firebaseFunctions } from "Services"
 import { closeModal } from "Store/slices/modalSlice"
 import { createWellTitle } from "utils"
 import dayjs from "dayjs"
+import { setLoadingScreen } from "Store/slices/loadingScreenSlice"
 
 
 const SelectAsset = () => {
@@ -34,15 +35,15 @@ const SelectAsset = () => {
 
     return <div className="flex flex-col gap-5">
         <Input value={setupData?.month} name='month' disabled
-            label={'Month'} type='month' 
+            label={'Month'} type='month'
         // onChange={(e) => dispatch(setSetupData({ name: 'month', value: e?.target.value }))}
-        /> 
+        />
         <Input disabled={wellTestResult1?.id} key={wellTestResult1?.id} required={!wellTestResult1?.id} value={{ label: setupData?.wellTestResult1?.title, value: setupData?.wellTestResult1?.id }}
             label={'Well Test Result 1'} type='select' options={wellTestResults?.map(result => ({ label: result.title, value: result.id }))}
             onChange={(e) => dispatch(setSetupData({ name: 'wellTestResult1', value: { id: e.value, title: e.label } }))} name='wellTestResult1'
         />
         <Input required defaultValue={{ label: setupData?.wellTestResult2?.title, value: setupData?.wellTestResult2?.id }}
-            label={'Well Test Result 2'} type='select' options={wellTestResults.filter(result => result.id !== setupData?.wellTestResult1?.id)?.map(result => ({ label: result.title, value: result.id }))}
+            label={'Well Test Result 2'} type='select' options={wellTestResults.filter(result =>(result.id !== setupData?.wellTestResult1?.id )  )?.map(result => ({ label: result.title, value: result.id }))}
             onChange={(e) => dispatch(setSetupData({ name: 'wellTestResult2', value: { id: e.value, title: e.label } }))} name='wellTestResult2'
         />
 
@@ -95,36 +96,30 @@ const Exists = () => {
 }
 
 const Schedule = () => {
-    const [loading, setLoading] = useState(false)
+    const [loading] = useState(false)
     const dispatch = useDispatch()
     useEffect(() => {
         dispatch(clearSetup())
     }, [dispatch])
     const [searchParams] = useSearchParams()
     const wellTestResult1Id = (searchParams.get("well-test-result-id"))
-    // const { data: wellTestResult1 } = useFetch({ firebaseFunction: 'getSetup', payload: { id: wellTestResult1Id, setupType: 'wellTestResult' }, })
-    // console.log(wellTestResult1)
-
-
-    // const { data: IPSCs } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: 'IPSC' } })
-    // console.log(IPSCs)
 
     const save = async () => {
         try {
-            setLoading(true)
+                dispatch(setLoadingScreen({ open: true }))
             const { data: wellTestResult1 } = await firebaseFunctions('getSetup', { id: wellTestResult1Id, setupType: 'wellTestResult' })
             const { data: IPSCs } = await firebaseFunctions('getSetups', { setupType: 'IPSC' })
             // console.log(IPSCs, wellTestResult1)
             const setupData = store.getState().setup
 
-            const created = IPSCs.find(ipsc => ipsc.month === wellTestResult1?.month)
+            const created = IPSCs.find(ipsc => ipsc.month === dayjs(wellTestResult1?.month).add(1, 'month'))
             // console.log(created)
             if (created) {
                 toast.info(`IPSC for the month ${wellTestResult1?.month} is already created`)
                 return
             }
 
-            const { data } = await firebaseFunctions('createSetup', { ...setupData, setupType: 'IPSC', asset: wellTestResult1?.asset, field: wellTestResult1?.field, wellTestResultData: wellTestResult1?.wellTestResultData, })
+            const { data } = await firebaseFunctions('createSetup', { ...setupData, setupType: 'IPSC', asset: wellTestResult1?.asset, flowstations: wellTestResult1?.flowstations, wellTestResultData: wellTestResult1?.wellTestResultData, })
             dispatch(setWholeSetup(data))
             dispatch(closeModal())
 
@@ -132,7 +127,7 @@ const Schedule = () => {
             toast.error(error?.message)
         }
         finally {
-            setLoading(false)
+                dispatch(setLoadingScreen({ open: false }))
         }
     }
     return (

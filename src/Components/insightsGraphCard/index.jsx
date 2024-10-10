@@ -1,12 +1,11 @@
 import React from "react";
 import styles from './insightsgraph.module.scss'
-import Text from "Components/Text";
 
-const InsightsGraphCard = () => {
+const InsightsGraphCard = ({children}) => {
 
     return(
         <div className={styles.body} >
-            <Text>Graph Card</Text>
+            {children}
         </div>
     )
 
