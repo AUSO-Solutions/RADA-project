@@ -12,19 +12,19 @@ const SelectGroup = ({ onChange = () => null }) => {
     const selectAll = () => {
         setSelectedGroups(prev => {
             if (prev.length === groups.length) return []
-            return groups.map(group => group?.id)
+            return groups 
         })
     }
-    const selectGroup = (id) => {
+    const selectGroup = (group) => {
         setSelectedGroups(prev => {
-            if (prev.includes(id)) return prev.filter(groupId => groupId !== id)
-            return [...prev, id]
+            if (prev.map(gr => gr?.id).includes(group?.id)) return prev.filter(group_ => group_?.id !== group?.id)
+            return [...prev, group]
         })
     }
     useEffect(() => {
         onChange(selectedGroups)
-        console.log(selectedGroups)
         dispatch(setFormdata({ name: 'selectedGroups', value: selectedGroups }))
+        // eslint-disable-next-line
     }, [selectedGroups, dispatch])
 
     return (
@@ -40,8 +40,8 @@ const SelectGroup = ({ onChange = () => null }) => {
                 </div>
                 {
                     groups.map(group => <div className='border-b py-2'>
-                        <CheckInput label={group?.groupName} key={group?.id} checked={selectedGroups.includes(group?.id)} onChange={() => {
-                            selectGroup(group?.id)
+                        <CheckInput label={group?.groupName} key={group?.id} checked={selectedGroups?.map(({id})=>id).includes(group?.id)} onChange={() => {
+                            selectGroup(group)
                         }} />
                     </div>)
                 }

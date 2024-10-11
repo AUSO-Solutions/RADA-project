@@ -7,7 +7,7 @@ import React, { useState } from 'react'
 
 
 
-const BroadCast = ({ title = "", steps = [], stepsComponents = [] , onSave=()=>null}) => {
+const BroadCast = ({ title = "", steps = [], stepsComponents = [] , onBroadcast=()=>null}) => {
     const [activeStep, setActiveStep] = useState(0)
 
     const back = () => {
@@ -22,9 +22,9 @@ const BroadCast = ({ title = "", steps = [], stepsComponents = [] , onSave=()=>n
             if (prev !== steps?.length - 1) return prev + 1
             return steps.length - 1
         })
-        if (activeStep === steps.length - 1) {
+        if (activeStep === steps.length - 2) {
             console.log('first')
-            onSave()
+            onBroadcast()
         }
     }
     return (
@@ -39,14 +39,14 @@ const BroadCast = ({ title = "", steps = [], stepsComponents = [] , onSave=()=>n
                 {stepsComponents[activeStep]}
             </div>
 
-            <Box component={'div'} display={'flex'} justifyContent={'space-between'} width={'100%'} mb={4}>
+            {activeStep !== steps.length - 1 && <Box component={'div'} display={'flex'} justifyContent={'space-between'} width={'100%'} mb={4}>
                 <Button bgcolor={'white'} onClick={back} color={colors.rada_blue} style={{ border: `1px solid ${colors.rada_blue} ` }} width={'177px'} height={'55px'}>
                     Back
                 </Button>
                 <Button width={'177px'} height={'55px'} type='submit'  >
-                    {activeStep === steps.length - 1 ? "Broadcast" : "Next"}
+                    {activeStep === steps.length - 2 ? "Broadcast" : "Next"}
                 </Button>
-            </Box>
+            </Box>}
 
 
         </form>

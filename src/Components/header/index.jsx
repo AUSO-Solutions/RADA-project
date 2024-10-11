@@ -3,7 +3,7 @@ import { Button } from 'Components'
 import Text from 'Components/Text'
 import React from 'react'
 
-const Header = ({ name, btns = [] }) => {
+const Header = ({ name, btns = [], right }) => {
   return (
     <div className='w-[100%] items-center justify-between px-[25px]  border-b flex h-[70px]'>
       <Text size={"32px"} weight={500}>
@@ -17,6 +17,7 @@ const Header = ({ name, btns = [] }) => {
           ))
         }
       </Stack>
+   <div>   {right}</div>
     </div>
   )
 }

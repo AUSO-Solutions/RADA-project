@@ -5,7 +5,7 @@ import React, { useState } from 'react'
 import { BsX } from 'react-icons/bs'
 import { useSelector } from 'react-redux'
 
-const Attachment = () => {
+const Attachment = ({details}) => {
   const [file, setFile] = useState(null)
   const formdata = useSelector(state => state?.formdata)
   return (
@@ -16,11 +16,11 @@ const Attachment = () => {
 
         </Text>
         <div>
-          {formdata?.selectedGroups?.map(group => <Text> Petroleum Engineering</Text>)}
+         <Text>  {formdata?.selectedGroups?.map(group => group?.groupName)?.join(', ')}</Text>
         </div>
 
         Report Details : <br />
-        <Text color={colors.rada_blue} weight={600}>Well Test DATA-OML99/Field1/Wells Schedule/July,2024</Text>
+        <Text color={colors.rada_blue} weight={600}>{details}</Text>
 
       </div>
       <input type="file" name="" hidden id="fileIput" onChange={e => setFile(e.target.files[0])} />

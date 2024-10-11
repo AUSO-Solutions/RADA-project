@@ -8,7 +8,7 @@ import Text from 'Components/Text'
 import { useAssetByName } from 'hooks/useAssetByName'
 import { store } from 'Store'
 import { firebaseFunctions } from 'Services'
-import { closeModal, openModal } from 'Store/slices/modalSlice'
+import { closeModal } from 'Store/slices/modalSlice'
 import RadioSelect from '../RadioSelect'
 import { toast } from 'react-toastify'
 import { camelize, updateFlowstation, updateFlowstationReading } from './helper'
@@ -18,10 +18,10 @@ import Files from 'Partials/Files'
 import dayjs from 'dayjs'
 import Setup from 'Partials/setup'
 import { setLoadingScreen } from 'Store/slices/loadingScreenSlice'
-import BroadCast from 'Partials/BroadCast'
-import SelectGroup from 'Partials/BroadCast/SelectGroup'
-import Attachment from 'Partials/BroadCast/Attachment'
-import BroadCastSuccessfull from 'Partials/BroadCast/BroadCastSuccessfull'
+// import BroadCast from 'Partials/BroadCast'
+// import SelectGroup from 'Partials/BroadCast/SelectGroup'
+// import Attachment from 'Partials/BroadCast/Attachment'
+// import BroadCastSuccessfull from 'Partials/BroadCast/BroadCastSuccessfull'
 
 const gasTypes = ["Gas Flared USM", "Fuel Gas", "Export Gas"].map(type => ({ label: type, value: camelize(type) }))
 const SelectedReportTypes = ({ list = [] }) => {
@@ -311,13 +311,7 @@ const Existing = ({ onSelect = () => null }) => {
             })
           }, to: () => null,
         },
-        {
-          name: 'Broadcast', onClick: (file) => dispatch(openModal({
-            title: '',
-            component: <BroadCast title='Broadcast Volume measurement'
-              steps={['Select Group', 'Attachment', 'Broadcast']} stepsComponents={[<SelectGroup />, <Attachment />,<BroadCastSuccessfull />]} />
-          })), to: (file) => null
-        },
+        
         { name: 'Delete', to: (file) => `` },
       ]} name={(file) => `${file.title || "No title"}/${file?.asset}/${file.fluidType}/${dayjs(file.created).format('MMM-YYYY')}`} />
     </div>
