@@ -4,6 +4,7 @@ const logger = require("firebase-functions/logger");
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
 // const { generateRandomID } = require("../helpers");
 const { computeProdDeduction } = require("./helpers");
+const { generateRandomID } = require("../helpers");
 
 const processIPSC = onCall(async (request) => {
   try {
@@ -17,13 +18,8 @@ const processIPSC = onCall(async (request) => {
       };
     }
 
-    // Fetch flowstation volumes for the target date
     const db = admin.firestore();
-    // console.log('-----')
-    // const liquidVolume_ = (
-    //   await db.collection("liquidVolumes").where("date", "==", date).where("asset", "==", asset).get()
-    // )
-    // console.log(liquidVolume_, '000000-----')
+
     const liquidVolume = (
       await db
         .collection("liquidVolumes")
@@ -32,8 +28,6 @@ const processIPSC = onCall(async (request) => {
         .get()
     ).docs.map((doc) => doc.data());
 
-    // console.log(liquidVolume)
-    // console.log('--------', liquidVolume.length)
     const flowstationsData = liquidVolume[liquidVolume.length - 1];
     // console.log({ flowstationsData })
     if (!flowstationsData || flowstationsData === null) {
@@ -58,11 +52,43 @@ const processIPSC = onCall(async (request) => {
       potentialTestData,
       flowstationData.subtotal
     );
-    console.log(result);
+
+    // Persit deferment data for the flowstation
+    const defermentId = generateRandomID();
+    const defermentData = {
+      id: defermentId,
+      asset,
+      date,
+      flowStation,
+      deferment: result.deferment,
+    };
+    await db.collection("deferments").doc(defermentId).set(defermentData);
+
+    // Persist actual production data
+    // let batch = db.batch()
+
+    // result.actualProduction.forEach((doc) => {
+    //   var docRef = db.collection("actualProduction").doc(); //automatically generate unique id
+    //   batch.set(docRef, doc)
+    // })
+    // await batch.commit()
+
+    const actualProductionId = generateRandomID();
+    const actualProductionData = {
+      id: actualProductionId,
+      asset,
+      date,
+      flowStation,
+      productionData: result.actualProduction,
+    };
+    await db
+      .collection("actualProduction")
+      .doc(actualProductionId)
+      .set(actualProductionData);
 
     return { status: "success", data: JSON.stringify(result) };
   } catch (error) {
-    console.log({error})
+    console.log({ error });
     if (error.message) throw new HttpsError(error?.code, error?.message);
     throw error;
   }

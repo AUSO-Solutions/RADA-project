@@ -65,8 +65,10 @@ const validateLiquidFlowstationData = (flowstationsData) => {
           meter.meterFactor;
         if (meterNetProduction !== meter.netProduction) {
           throw {
+          throw {
             code: "cancelled",
             message: `Gross might have been wrongly computed for meter: ${meter.serialNumber} in flowstation: ${flowstation.name}`,
+          };
           };
         }
 
@@ -217,7 +219,6 @@ const validateGasFlowstationData = (flowstationsData) => {
 };
 
 module.exports = {
-  validateGasFlowstationData,
   validateLiquidFlowstationData,
   validateLiquidFlowstationData2,
 };

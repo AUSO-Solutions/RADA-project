@@ -50,6 +50,7 @@ export const firebaseFileUpload = async (file, name = Date.now() + Math.random()
         const storageRef = ref(project_storage, name);
         const snapshot = await uploadBytes(storageRef, file)
         // console.log('Uploaded a blob or file!', snapshot);
+        // console.log('Uploaded a blob or file!', snapshot);
         return snapshot.ref.fullPath
     } catch (error) {
         console.log(error)

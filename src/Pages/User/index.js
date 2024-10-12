@@ -1,4 +1,4 @@
-import ChangePassword from "./Auth/ChangePassword";
+ import ChangePassword from "./Auth/ChangePassword";
 import ForgotPassword from "./Auth/ForgotPassword";
 // import UserLogin from "./Auth/Login";
 import FieldOperatorCTA from "./Auth/fieldOperatorCTA";
