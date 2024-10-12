@@ -1,5 +1,5 @@
 import RadaTable from 'Components/RadaTable'
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useState, useEffect } from 'react'
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -53,7 +53,7 @@ const Summary = () => {
   const { assetNames } = useAssetNames()
   const [showChart, setShowChart] = useState(false);
   const switches = ['Oil/Condensate', 'Gas'];
-  
+
   const data = {
     labels: ["Produced Gas", "Export Gas", "Flared Gas"],
     datasets: [
@@ -237,7 +237,7 @@ const Summary = () => {
             />
           </div>
 
-          <div style={{height:'100%', width:'100%', padding: 20, display: 'flex', justifyContent: 'center', alignItems: 'center', }} >
+          <div style={{ height: '100%', width: '100%', padding: 20, display: 'flex', justifyContent: 'center', alignItems: 'center', }} >
             <Bar data={data} options={options} />
           </div>
 

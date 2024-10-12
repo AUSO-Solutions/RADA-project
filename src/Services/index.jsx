@@ -51,9 +51,9 @@ const apiRequest = async ({
     }
 }
 
-const firebaseFunctions = async (functionName, payload, hideError = false, { loadingScreen = false }) => {
+const firebaseFunctions = async (functionName, payload, hideError = false, options) => {
     try {
-        if (loadingScreen) store.dispatch(setLoadingScreen({ open: true }))
+        if (options?.loadingScreen) store.dispatch(setLoadingScreen({ open: true }))
         const call = httpsCallable(project_functions, functionName)
         const res = (await call(payload)).data
         // toast.success(res?.message)
@@ -63,7 +63,7 @@ const firebaseFunctions = async (functionName, payload, hideError = false, { loa
         if (hideError) handleError(error)
         throw error
     } finally {
-        if (loadingScreen) store.dispatch(setLoadingScreen({ open: false }))
+        if (options?.loadingScreen) store.dispatch(setLoadingScreen({ open: false }))
     }
 }
 

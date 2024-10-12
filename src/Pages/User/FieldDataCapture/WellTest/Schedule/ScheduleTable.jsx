@@ -23,7 +23,7 @@ export default function ScheduleTable() {
 
 
     const { search } = useLocation()
-    const [loading, setLoading] = React.useState(false)
+    const [loading] = React.useState(false)
     const [wellTest, setWellTest] = React.useState({})
     const id = React.useMemo(() => new URLSearchParams(search).get('id'), [search])
     const { data: res } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'wellTestSchedule', id } })

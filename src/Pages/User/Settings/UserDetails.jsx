@@ -1,7 +1,5 @@
 import { Button, Input } from 'Components'
-import Header from 'Components/header'
 import React from 'react'
-import { useSelector } from 'react-redux'
 
 const UserDetails = () => {
 

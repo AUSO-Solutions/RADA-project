@@ -1,31 +1,35 @@
-import { Button, Input } from 'Components'
+
 import Text from 'Components/Text'
 import React, { useState } from 'react'
 import { BsChevronDown } from 'react-icons/bs';
 
 const GlobalSettings = () => {
 
-    const [scheduledItems, setScheduledItems] = useState([
-        { id: 1, name: 'Well Test',  },
-        { id: 2, name: 'Wellhead Maintenance',  },
-        { id: 3, name: 'Flowline Maintenance',  },
-        { id: 4, name: 'Bean Change/Check',  },
-        { id: 5, name: 'Well Services',  },
-        { id: 6, name: 'Data Acquisition',  },
-        { id: 7, name: 'Facility Shutdown',  },
+    const [scheduledItems,
+        // setScheduledItems
+    ] = useState([
+        { id: 1, name: 'Well Test', },
+        { id: 2, name: 'Wellhead Maintenance', },
+        { id: 3, name: 'Flowline Maintenance', },
+        { id: 4, name: 'Bean Change/Check', },
+        { id: 5, name: 'Well Services', },
+        { id: 6, name: 'Data Acquisition', },
+        { id: 7, name: 'Facility Shutdown', },
     ]);
 
-    const [unscheduledItems, setUnscheduledItems] = useState([
-        { id: 1, name: 'Engine Failure',  },
-        { id: 2, name: 'Pump Failure',  },
-        { id: 3, name: 'Well No-Flow',  },
+    const [unscheduledItems,
+        // setUnscheduledItems
+    ] = useState([
+        { id: 1, name: 'Engine Failure', },
+        { id: 2, name: 'Pump Failure', },
+        { id: 3, name: 'Well No-Flow', },
         { id: 4, name: 'Mismatch', },
     ]);
 
-    const [thirdPartyItems, setThirdPartyItems] = useState([
-        { id: 1, name: 'TFP Outage',  },
-        { id: 2, name: 'Export Line Issues',  },
-        { id: 3, name: 'Flowline Issue',  },
+    const [thirdPartyItems, /*setThirdPartyItems*/] = useState([
+        { id: 1, name: 'TFP Outage', },
+        { id: 2, name: 'Export Line Issues', },
+        { id: 3, name: 'Flowline Issue', },
         { id: 4, name: 'Ovade GP', },
         { id: 4, name: 'Community Interruption', },
     ]);
@@ -52,11 +56,11 @@ const GlobalSettings = () => {
 
                 <div>
                     <div onClick={() => setIsScheduledOpen(!isScheduledOpen)}
-                        style={{cursor:'pointer', border: '1px solid rgba(230, 230, 230, 1)', padding: '2px 10px', width: '120px', borderRadius: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: isScheduledOpen ? 'rgba(0, 163, 255, 1)' : 'rgba(230, 230, 230, 1)', gap: 10 }} >
+                        style={{ cursor: 'pointer', border: '1px solid rgba(230, 230, 230, 1)', padding: '2px 10px', width: '120px', borderRadius: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: isScheduledOpen ? 'rgba(0, 163, 255, 1)' : 'rgba(230, 230, 230, 1)', gap: 10 }} >
                         <Text color={isScheduledOpen ? "white" : "#24242480"} weight={500} size={'16px'} >
                             Scheduled
                         </Text>
-                        <BsChevronDown 
+                        <BsChevronDown
                             color={isScheduledOpen ? "white" : "#24242480"}
                             style={{ transform: isScheduledOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s ease' }}
                         />
@@ -76,11 +80,11 @@ const GlobalSettings = () => {
 
                 <div>
                     <div onClick={() => setIsUnscheduledOpen(!isUnscheduledOpen)}
-                        style={{cursor:'pointer', border: '1px solid rgba(230, 230, 230, 1)', padding: '2px 10px', width: '150px', borderRadius: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: isUnscheduledOpen ? 'rgba(0, 163, 255, 1)' : 'rgba(230, 230, 230, 1)', gap: 10 }} >
+                        style={{ cursor: 'pointer', border: '1px solid rgba(230, 230, 230, 1)', padding: '2px 10px', width: '150px', borderRadius: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: isUnscheduledOpen ? 'rgba(0, 163, 255, 1)' : 'rgba(230, 230, 230, 1)', gap: 10 }} >
                         <Text color={isUnscheduledOpen ? "white" : "#24242480"} weight={500} size={'16px'} >
                             Unscheduled
                         </Text>
-                        <BsChevronDown 
+                        <BsChevronDown
                             color={isUnscheduledOpen ? "white" : "#24242480"}
                             style={{ transform: isUnscheduledOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s ease' }}
                         />
@@ -100,11 +104,11 @@ const GlobalSettings = () => {
 
                 <div>
                     <div onClick={() => setIsThirdPartyOpen(!isThirdPartyOpen)}
-                        style={{cursor:'pointer', border: '1px solid rgba(230, 230, 230, 1)', padding: '2px 10px', width: '150px', borderRadius: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: isThirdPartyOpen ? 'rgba(0, 163, 255, 1)' : 'rgba(230, 230, 230, 1)', gap: 10 }} >
+                        style={{ cursor: 'pointer', border: '1px solid rgba(230, 230, 230, 1)', padding: '2px 10px', width: '150px', borderRadius: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: isThirdPartyOpen ? 'rgba(0, 163, 255, 1)' : 'rgba(230, 230, 230, 1)', gap: 10 }} >
                         <Text color={isThirdPartyOpen ? "white" : "#24242480"} weight={500} size={'16px'} >
                             Third Party
                         </Text>
-                        <BsChevronDown 
+                        <BsChevronDown
                             color={isThirdPartyOpen ? "white" : "#24242480"}
                             style={{ transform: isThirdPartyOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s ease' }}
                         />

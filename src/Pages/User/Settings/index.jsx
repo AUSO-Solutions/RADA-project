@@ -1,7 +1,6 @@
 import Header from 'Components/header'
-import React, { useMemo, useState } from 'react'
+import React, { useState } from 'react'
 import Tab from 'Components/tab'
-import { useLocation, useNavigate } from 'react-router-dom'
 import UserDetails from './UserDetails'
 import GlobalSettings from './GlobalSettings'
 
@@ -19,7 +18,6 @@ const tabs = [
 
 
 const Settings = () => {
-    const navigate = useNavigate()
     const [tab, setTab] = useState(0)
 
 
