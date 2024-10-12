@@ -75,11 +75,11 @@ const processIPSC = onCall(async (request) => {
 
     const actualProductionId = generateRandomID();
     const actualProductionData = {
-      id: defermentId,
+      id: actualProductionId,
       asset,
       date,
       flowStation,
-      productionData: result.deferment,
+      productionData: result.actualProduction,
     };
     await db
       .collection("actualProduction")

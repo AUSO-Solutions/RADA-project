@@ -56,14 +56,24 @@ const getInsights = onCall(async (request) => {
       .where("date", ">=", startDate_)
       .where("date", "<=", endDate_)
       .where("asset", "==", asset);
+
+    const defermentStartEndData = db
+      .collection("deferments")
+      .where("date", ">=", startDate_)
+      .where("date", "<=", endDate_)
+      .where("asset", "==", asset);
+
     const oilQuery = (await oilStartEndData.get()).docs.map(
       (doc) => doc?.data() || {}
     );
     const gasQuery = (await gasStartEndData.get()).docs.map(
       (doc) => doc?.data() || {}
     );
-    console.log({ oilQuery, gasQuery });
-    const queryResult = { oilQuery, gasQuery };
+    const defermentQuery = (await defermentStartEndData.get()).docs.map(
+      (doc) => doc?.data() || {}
+    );
+    console.log({ oilQuery, gasQuery, defermentQuery });
+    const queryResult = { oilQuery, gasQuery, defermentQuery };
 
     let result = {
       grossProduction: 0,
@@ -82,7 +92,41 @@ const getInsights = onCall(async (request) => {
       gasUtilizedTarget: 0,
       assetOilProduction: {},
       assetGasProduction: {},
+      totalOilDeferment: 0,
+      totalGasDeferment: 0,
+      oilScheduledDeferment: { total: 0, subcategories: {} },
+      gasScheduledDeferment: { total: 0, subcategories: {} },
+      oilUnscheduledDeferment: { total: 0, subcategories: {} },
+      gasUnscheduledDeferment: { total: 0, subcategories: {} },
+      oilThirdPartyDeferment: { total: 0, subcategories: {} },
+      gasThirdPartyDeferment: { total: 0, subcategories: {} },
     };
+
+    // Get the deferment subcategories and initialise them in the result
+    const scheduledDefermentCategetories = Array.from(
+      new Set(
+        defermentQuery.map((deferment) =>
+          Object.keys(deferment?.oilScheduledDeferment.subcategories)
+        )
+      )
+    );
+
+    const unscheduledDefermentCategetories = Array.from(
+      new Set(
+        defermentQuery.map((deferment) =>
+          Object.keys(deferment?.oilUnscheduledDeferment.subcategories)
+        )
+      )
+    );
+
+    const thirdPartyDefermentCategetories = Array.from(
+      new Set(
+        defermentQuery.map((deferment) =>
+          Object.keys(deferment?.oilThirdPartyDeferment.subcategories)
+        )
+      )
+    );
+
     //flat map all flowstations within the date range and add the capture date to its body- { date: item?.date, ...flowstation }
     let oilFlowstationsData = queryResult.oilQuery
       ?.flatMap((item) =>
@@ -115,6 +159,7 @@ const getInsights = onCall(async (request) => {
     const flowstations = Array.from(
       new Set(oilFlowstationsData?.map((flowstation) => flowstation?.name))
     );
+
     result.flowstations = flowstations;
     //Oil and Oil Target
     result.grossProduction = sum(
@@ -181,6 +226,80 @@ const getInsights = onCall(async (request) => {
           (flowstation) => flowstation?.subtotal?.fuelGasTarget
         )
       ) / gasFlowstationsData.length;
+
+    result.totalOilDeferment = sum(
+      defermentQuery.map((item) => item?.totalOilDeferment)
+    );
+
+    result.totalGasDeferment = sum(
+      defermentQuery.map((item) => item?.totalGasDeferment)
+    );
+
+    result.oilScheduledDeferment.total = sum(
+      defermentQuery.map((item) => item?.oilScheduledDeferment?.total)
+    );
+
+    result.oilUnscheduledDeferment.total = sum(
+      defermentQuery.map((item) => item?.oilUnscheduledDeferment?.total)
+    );
+
+    result.oilThirdPartyDeferment.total = sum(
+      defermentQuery.map((item) => item?.oilThirdPartyDeferment?.total)
+    );
+
+    result.gasScheduledDeferment.total = sum(
+      defermentQuery.map((item) => item?.gasScheduledDeferment?.total)
+    );
+
+    result.gasUnscheduledDeferment.total = sum(
+      defermentQuery.map((item) => item?.gasUnscheduledDeferment?.total)
+    );
+
+    result.gasThirdPartyDeferment.total = sum(
+      defermentQuery.map((item) => item?.gasThirdPartyDeferment?.total)
+    );
+
+    scheduledDefermentCategetories.forEach((category) => {
+      result.oilScheduledDeferment.subcategories[category] = sum(
+        defermentQuery.map(
+          (item) => item?.oilScheduledDeferment.subcategories[category]
+        )
+      );
+
+      result.gasScheduledDeferment.subcategories[category] = sum(
+        defermentQuery.map(
+          (item) => item?.gasScheduledDeferment.subcategories[category]
+        )
+      );
+    });
+
+    unscheduledDefermentCategetories.forEach((category) => {
+      result.oilUnscheduledDeferment.subcategories[category] = sum(
+        defermentQuery.map(
+          (item) => item?.oilUnscheduledDeferment.subcategories[category]
+        )
+      );
+
+      result.gasUnscheduledDeferment.subcategories[category] = sum(
+        defermentQuery.map(
+          (item) => item?.gasUnscheduledDeferment.subcategories[category]
+        )
+      );
+    });
+
+    thirdPartyDefermentCategetories.forEach((category) => {
+      result.oilThirdPartyDeferment.subcategories[category] = sum(
+        defermentQuery.map(
+          (item) => item?.oilThirdPartyDeferment.subcategories[category]
+        )
+      );
+
+      result.gasUnscheduledDeferment.subcategories[category] = sum(
+        defermentQuery.map(
+          (item) => item?.gasThirdPartyDeferment.subcategories[category]
+        )
+      );
+    });
 
     //get data from each day/month in the timeframe
     frame.forEach((time) => {
