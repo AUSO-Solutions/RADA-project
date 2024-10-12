@@ -33,6 +33,7 @@ const RadaForm = ({
             onSuccess(res, payload)
         }
         catch (error) {
+            console.log(error)
             onError(error)
             // throw error
         } finally {

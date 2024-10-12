@@ -52,6 +52,7 @@ const UserLogin = () => {
                     btnText={'Login'}
                     // url={'login'}
                     method={'post'}
+
                     noToken
                     onSubmit={async (data) => {
                         try {
@@ -63,13 +64,18 @@ const UserLogin = () => {
                             const roles = details?.data?.roles?.map(role => role?.roleName)
                             console.log(roles)
                             dispatch(setUser(details))
+                            if (!roles?.length) toast.error('Please request role assignment from admin')
                             if (roles?.includes('Admin')) {
                                 navigate('/admin/users')
                             } else {
                                 navigate('/users/fdc/daily')
                             }
                         } catch (error) {
-
+                            console.log(error?.message)
+                            toast.error(error?.code)
+                            if(error?.code==='auth/invalid-credential'){
+                                toast.error('Invalid credentials!')
+                            }
                         } finally {
                             dispatch(setLoadingScreen({ open: false }))
                         }
@@ -89,12 +95,7 @@ const UserLogin = () => {
 
                         // s01MdWjT
                     }}
-                    onError={err => {
-                        if (err?.response?.status === 401) {
-                            toast.error('Account does not exist!')
-                        }
-                    }}
-
+                 
                     style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', width: '700px', gap: '20px' }}
                 >
 
