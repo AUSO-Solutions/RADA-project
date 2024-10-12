@@ -4,27 +4,51 @@ import { Button } from 'Components'
 import RadaStepper from 'Components/Stepper'
 import Text from 'Components/Text'
 import React, { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { firebaseFunctions } from 'Services'
+import { setLoadingScreen } from 'Store/slices/loadingScreenSlice'
+import { firebaseFileUpload, firebaseGetUploadedFile } from 'utils'
 
 
 
-const BroadCast = ({ title = "", steps = [], stepsComponents = [] , onBroadcast=()=>null}) => {
+const BroadCast = ({ title = "", steps = [], stepsComponents = [], onBroadcast = () => null, link, subject, type, date }) => {
     const [activeStep, setActiveStep] = useState(0)
-
+    const dispatch = useDispatch()
+    const formdata = useSelector(state => state?.formdata)
     const back = () => {
         setActiveStep(prev => {
             if (prev !== 0) return prev - 1
             return 0
         })
     }
-    const next = (e) => {
+    const next = async (e) => {
         e.preventDefault()
-        setActiveStep(prev => {
-            if (prev !== steps?.length - 1) return prev + 1
-            return steps.length - 1
-        })
+
         if (activeStep === steps.length - 2) {
-            console.log('first')
-            onBroadcast()
+
+            dispatch(setLoadingScreen({ open: true }))
+            try {
+                console.log('first', link, formdata)
+
+                const filepath = await firebaseFileUpload(formdata?.file, formdata?.file?.name)
+                const file_url = await firebaseGetUploadedFile(filepath)
+                // console.log(filepath, file_url)
+                await firebaseFunctions('broadcast', { groups: formdata?.selectedGroups, attachment: file_url, pagelink: link, subject, type, date })
+                onBroadcast()
+                setActiveStep(prev => {
+                    if (prev !== steps?.length - 1) return prev + 1
+                    return steps.length - 1
+                })
+            } catch (error) {
+                console.log(error)
+            } finally {
+                dispatch(setLoadingScreen({ open: false }))
+            }
+        } else {
+            setActiveStep(prev => {
+                if (prev !== steps?.length - 1) return prev + 1
+                return steps.length - 1
+            })
         }
     }
     return (

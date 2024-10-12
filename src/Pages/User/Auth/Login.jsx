@@ -10,6 +10,9 @@ import { toast } from 'react-toastify';
 import { Grid } from '@mui/material';
 import Text from 'Components/Text';
 import img from 'Assets/images/newcrossfield.jpg'
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
+import { firebaseFunctions } from 'Services';
+import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
 
 const UserLogin = () => {
 
@@ -47,21 +50,42 @@ const UserLogin = () => {
                     className={'w-[500px] mx-auto text-[black] bg-[white] p-[50px] shadow border rounded-[5px]'}
                     // #0274bd
                     btnText={'Login'}
-                    url={'login'}
+                    // url={'login'}
                     method={'post'}
                     noToken
+                    onSubmit={async (data) => {
+                        try {
+                            dispatch(setLoadingScreen({ open: true }))
+                            const auth = getAuth()
+                            const { user } = await signInWithEmailAndPassword(auth, data?.email, data?.password)
+                            const details = await firebaseFunctions('getUserByUid', { uid: user?.uid })
+                            // console.log(user)
+                            const roles = details?.data?.roles?.map(role => role?.roleName)
+                            console.log(roles)
+                            dispatch(setUser(details))
+                            if (roles?.includes('Admin')) {
+                                navigate('/admin/users')
+                            } else {
+                                navigate('/users/fdc/daily')
+                            }
+                        } catch (error) {
+
+                        } finally {
+                            dispatch(setLoadingScreen({ open: false }))
+                        }
+                    }}
                     onSuccess={(res) => {
-                        const user = (res?.data)
-                        console.log(user)
-                        dispatch(setUser(user))
-                        navigate('/admin/users')
+                        // const user = (res?.data)
+                        // console.log(user)
+                        // dispatch(setUser(user))
+                        // navigate('/admin/users')
                         // const role = res?.data?.roles[0]
                         // const roles_login_paths = {
                         //     "SUPER_ADMIN": "/admin/home",
                         //     "FIELD_OPERATOR": "/data-form",
                         //     "QUALITY_CONTROLLER": '/admin/home'
                         // }
-            // 
+                        // 
 
                         // s01MdWjT
                     }}

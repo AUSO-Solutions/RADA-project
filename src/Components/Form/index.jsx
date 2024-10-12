@@ -20,6 +20,7 @@ const RadaForm = ({
 
     const [loading, setLoading] = useState(false)
     const callApi = async (payload) => {
+        if(!url) return
         // let params = {}
         // if (method === 'get' && payload) {params = { ...payload }}
         setLoading(true)
@@ -55,7 +56,7 @@ const RadaForm = ({
         formValues = { ...formValues, ...extraFields }
         // console.log(formValues)
         onSubmit(formValues)
-        if (validationSchema) {
+        if (validationSchema ) {
             try {
                 await validationSchema.validate(formValues, { abortEarly: false })
                 callApi(formValues)

@@ -5,6 +5,9 @@ import React, { useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify';
 import * as Yup from 'yup';
+import { getAuth, sendPasswordResetEmail } from 'firebase/auth'
+import { useDispatch } from 'react-redux';
+import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
 
 const ForgotPassword = () => {
 
@@ -19,19 +22,33 @@ const ForgotPassword = () => {
     //     email: Yup.string().required(),
     // });
     const { search } = useLocation()
+    const dispatch = useDispatch()
 
     const forms = useMemo(() => {
         return {
             "default": {
                 header: 'Forgot Password',
                 btnText: 'Send',
-                url: '/forgot-password',
+                // url: '/forgot-password',
                 method: 'post',
-                onSuccess: (res, req) => {
-                    console.log({ res, req })
-                    toast.success(`Code sent to your email ${req?.email}`)
-                    navigate(`/forgot-password?page=validate-otp&email=${req?.email}`)
+                onSubmit: async (data) => {
+                    dispatch(setLoadingScreen({ open: true }))
+                    try {
+                        const auth = getAuth()
+                        await sendPasswordResetEmail(auth, data?.email)
+                        toast.success(`Code sent to your email ${data?.email}`)
+                        navigate(`/`)
+                    } catch (error) {
+
+                    } finally {
+                        dispatch(setLoadingScreen({ open: false }))
+                    }
                 },
+                // onSuccess: (res, req) => {
+                //     console.log({ res, req })
+                //     toast.success(`Code sent to your email ${req?.email}`)
+                //     navigate(`/forgot-password?page=validate-otp&email=${req?.email}`)
+                // },
                 schema: Yup.object().shape({
                     email: Yup.string().required(),
                 }),
@@ -73,7 +90,7 @@ const ForgotPassword = () => {
                 ]
             }
         }
-    }, [email, otp, navigate])
+    }, [email, otp, navigate, dispatch])
 
     const currentForm = useMemo(() => {
         const searchParams = new URLSearchParams(search)
@@ -84,31 +101,35 @@ const ForgotPassword = () => {
         // eslint-disable-next-line
     }, [search])
 
-    const formClass = 'w-[500px] mx-auto flex flex-col items-center justify-center bg-[white] p-[50px] shadow-[_5px_5px_4px_rgba(0,0,0,0.25)] rounded-[5px] '
+    const formClass = 'w-[500px] mx-auto flex flex-col items-center justify-center bg-[white] p-[50px] shadow rounded-[5px] '
     return (
-        <RadaForm
-            className={formClass}
-            btnText={currentForm.btnText} url={currentForm.url} onSuccess={currentForm.onSuccess}
-            method={currentForm.method} validationSchema={currentForm.schema}
+        <div className='h-[100vh] flex items-center'>
 
-        >
-            <Text size={20} weight={600} className={'text-center'}>
-                {currentForm.header}
-            </Text>
+            <RadaForm
+                className={formClass}
+                btnClass={'w-[200px]'}
+                btnText={currentForm.btnText} onSubmit={currentForm.onSubmit}
+                method={currentForm.method} validationSchema={currentForm.schema}
 
-            <div className='w-[400px] mt-[30px]'>
-                {
-                    currentForm.fields.map(field => <Input key={field.label} {...field} />)
-                }
-                {
-                    currentForm.Component
-                }
-            </div>
+            >
+                <Text size={20} weight={600} className={'text-center'}>
+                    {currentForm.header}
+                </Text>
 
-            <div className='flex w-[100%] justify-end mt-3'>
-                <Link>login</Link>
-            </div>
-        </RadaForm>
+                <div className='w-[400px] mt-[30px]'>
+                    {
+                        currentForm.fields.map(field => <Input key={field.label} {...field} />)
+                    }
+                    {
+                        currentForm.Component
+                    }
+                </div>
+
+                <div className='flex w-[100%] mt-3'>
+                    <Link to={'/'}>login</Link>
+                </div>
+            </RadaForm>
+        </div>
     )
 }
 

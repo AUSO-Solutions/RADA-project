@@ -1,5 +1,5 @@
 import RadaTable from 'Components/RadaTable'
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Pie } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -13,11 +13,17 @@ import RadioSelect from './RadioSelect';
 import { useFetch } from 'hooks/useFetch';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSetupData } from 'Store/slices/setupSlice';
-import { Input } from 'Components';
+import { Button, Input } from 'Components';
 import DateRangePicker from 'Components/DatePicker';
 import dayjs from 'dayjs';
 import { useAssetByName } from 'hooks/useAssetByName';
 import { useAssetNames } from 'hooks/useAssetNames';
+import BroadCast from 'Partials/BroadCast';
+import Attachment from 'Partials/BroadCast/Attachment';
+import SelectGroup from 'Partials/BroadCast/SelectGroup';
+import BroadCastSuccessfull from 'Partials/BroadCast/BroadCastSuccessfull';
+import { openModal } from 'Store/slices/modalSlice';
+import { useLocation, useSearchParams } from 'react-router-dom';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -25,7 +31,8 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 const createOpt = item => ({ label: item, value: item })
 const Summary = () => {
-
+  const [searchParams, setSearchParams] = useSearchParams()
+  const { pathname, search } = useLocation()
   const setupData = useSelector(state => state?.setup)
   const res = useFetch({
     firebaseFunction: 'getInsights', payload: {
@@ -41,7 +48,7 @@ const Summary = () => {
   const tableData = useMemo(() => {
     return res?.data?.length ? JSON.parse(res?.data) : {}
   }, [res])
-  console.log(tableData)
+  // console.log(tableData)
   const assets = useAssetByName(setupData?.asset)
   const { assetNames } = useAssetNames()
   const [showChart, setShowChart] = useState(false);
@@ -85,9 +92,22 @@ const Summary = () => {
         }
       },
     },
-
   };
 
+
+
+  useEffect(() => {
+    // console.log(searchParams)
+    const asset = searchParams.get('asset')
+    const flowstation = searchParams.get('flowstation')
+    const startDate = searchParams.get('startDate')
+    const endDate = searchParams.get('endDate')
+    // console.log({ asset, flowstation, startDate, endDate })
+    dispatch(setSetupData({ name: 'asset', value: asset }))
+    dispatch(setSetupData({ name: 'flowstation', value: flowstation }))
+    dispatch(setSetupData({ name: 'startDate', value: startDate }))
+    dispatch(setSetupData({ name: 'endDate', value: endDate }))
+  }, [searchParams, dispatch])
 
   return (
     <div className='relative' >
@@ -100,14 +120,19 @@ const Summary = () => {
           Chart
         </div>
         {/* <div className='border-2 border-[#FAFAFA] flex items-center justify-center px-3 rounded-lg' >27-June-2024</div> */}
-        <div className='flex gap-2'>
+        <div className='flex items-center gap-2'>
 
           <div style={{ width: '120px' }} >
             <Input placeholder={'Assets'} required
               type='select' options={assetNames?.map(assetName => ({ value: assetName, label: assetName }))}
               onChange={(e) => {
-                dispatch(setSetupData({ name: 'asset', value: e?.value }))
-                dispatch(setSetupData({ name: 'flowstation', value: '' }))
+                // dispatch(setSetupData({ name: 'asset', value: e?.value }))
+                // dispatch(setSetupData({ name: 'flowstation', value: '' }))
+                setSearchParams(prev => {
+                  prev.set('asset', e?.value)
+                  prev.delete('flowstation')
+                  return prev
+                })
               }}
               defaultValue={{ value: setupData?.asset, label: setupData?.asset }}
             />
@@ -115,15 +140,43 @@ const Summary = () => {
           <div style={{ width: '150px' }}>
             <Input isClearable key={setupData?.asset} placeholder={'Flow Stations'} required
               type='select' options={assets.flowStations?.map(createOpt)}
-              onChange={(e) => dispatch(setSetupData({ name: 'flowstation', value: e?.value }))}
+              onChange={(e) => {
+                // dispatch(setSetupData({ name: 'flowstation', value: e?.value }))
+                setSearchParams(prev => {
+                  prev.set('flowstation', e?.value)
+                  // if (e?.value) prev.delete('flowstation')
+                  return prev
+                })
+              }}
             />
           </div>
           <div  >
             <DateRangePicker onChange={e => {
-              dispatch(setSetupData({ name: 'startDate', value: dayjs(e?.startDate).format('MM/DD/YYYY') }))
-              dispatch(setSetupData({ name: 'endDate', value: dayjs(e?.endDate).format('MM/DD/YYYY') }))
+              // dispatch(setSetupData({ name: 'startDate', value: dayjs(e?.startDate).format('MM/DD/YYYY') }))
+              // dispatch(setSetupData({ name: 'endDate', value: dayjs(e?.endDate).format('MM/DD/YYYY') }))
+              setSearchParams(prev => {
+                prev.set('startDate', dayjs(e?.startDate).format('MM/DD/YYYY'))
+                prev.set('endDate', dayjs(e?.endDate).format('MM/DD/YYYY'))
+                return prev
+              })
             }} />
           </div>
+          <Button onClick={(file) => dispatch(openModal({
+            title: '',
+            component: <BroadCast
+              link={pathname + search}
+              type={'Daily Production/Operation Report '}
+              date={dayjs(setupData?.startDate).format('DD/MMM/YYYY')}
+              title='Broadcast Volume measurement'
+              subject={`${setupData?.asset} Daily Production/Operation Report ${dayjs(setupData?.startDate).format('DD/MMM/YYYY')}`}
+              steps={['Select Group', 'Attachment', 'Broadcast']}
+              stepsComponents={[
+                <SelectGroup />,
+                <Attachment details={`${setupData?.asset} Daily Production/Operation Report ${dayjs(setupData?.startDate).format('DD/MMM/YYYY')}`} />,
+                <BroadCastSuccessfull details={`${setupData?.asset} Daily Production/Operation Report ${dayjs(setupData?.startDate).format('DD/MMM/YYYY')}`} />]} />
+          }))}>
+            Broadcast
+          </Button>
         </div>
       </div>
 
@@ -145,19 +198,19 @@ const Summary = () => {
           ]}
 
           data={[
-            { name: "Gross Liquid (bbls/day)", target: parseFloat(tableData.grossTarget).toFixed(3), actual: parseFloat(tableData.grossProduction).toFixed(3) },
-            { name: "BS&W (%)", target: 100, actual: parseFloat(tableData.bsw).toFixed(3) },
-            { name: "Net Oil (bbls/day)", target: parseFloat(tableData.oilTarget).toFixed(3), actual: parseFloat(tableData.oilProduced).toFixed(3) },
-            { name: "Produced Gas (mmscf)", target: parseFloat(tableData.gasProducedTarget).toFixed(3), actual: parseFloat(tableData.gasProduced).toFixed(3) },
-            { name: "Export Gas (mmscf)", target: parseFloat(tableData.exportGasTarget).toFixed(3), actual: parseFloat(tableData.gasExported).toFixed(3) },
-            { name: "Fuel Gas Consumed (mmscf)", target: parseFloat(tableData.gasUtilizedTarget).toFixed(3), actual: parseFloat(tableData.gasUtilized).toFixed(3) },
-            { name: "Flare Gas (mmscf)", target: parseFloat(tableData.gasFlaredTarget).toFixed(3), actual: parseFloat(tableData.gasFlared).toFixed(3) },
-            { name: "Condensate Produced (bbls)" },
-            { name: "Barged Crude (bbls)" },
-            { name: "Export Gas (BOE)" },
-            { name: "Total bopd + BOE" },
-            { name: "Condensate Shipped (bbls)" },
-            { name: "Cumulative Offtake (bbls)" },
+            { name: "Gross Liquid (bbls/day)", target: parseFloat(tableData.grossTarget || 0).toFixed(3), actual: parseFloat(tableData.grossProduction || 0).toFixed(3) },
+            { name: "BS&W (%)", target: 100, actual: parseFloat(tableData.bsw || 0).toFixed(3) },
+            { name: "Net Oil (bbls/day)", target: parseFloat(tableData.oilTarget || 0).toFixed(3), actual: parseFloat(tableData.oilProduced || 0).toFixed(3) },
+            { name: "Produced Gas (mmscf)", target: parseFloat(tableData.gasProducedTarget || 0).toFixed(3), actual: parseFloat(tableData.gasProduced || 0).toFixed(3) },
+            { name: "Export Gas (mmscf)", target: parseFloat(tableData.exportGasTarget || 0).toFixed(3), actual: parseFloat(tableData.gasExported || 0).toFixed(3) },
+            { name: "Fuel Gas Consumed (mmscf)", target: parseFloat(tableData.gasUtilizedTarget || 0).toFixed(3), actual: parseFloat(tableData.gasUtilized || 0).toFixed(3) },
+            { name: "Flare Gas (mmscf)", target: parseFloat(tableData.gasFlaredTarget || 0).toFixed(3), actual: parseFloat(tableData.gasFlared || 0).toFixed(3) },
+            // { name: "Condensate Produced (bbls)" },
+            // { name: "Barged Crude (bbls)" },
+            // { name: "Export Gas (BOE)" },
+            // { name: "Total bopd + BOE" },
+            // { name: "Condensate Shipped (bbls)" },
+            // { name: "Cumulative Offtake (bbls)" },
 
           ]} />
 

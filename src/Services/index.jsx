@@ -4,6 +4,7 @@ import axios from 'axios'
 import { project_functions } from 'firebase-config';
 import { httpsCallable } from 'firebase/functions';
 import handleError from './handleError';
+import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
 // import { toast } from 'react-toastify';
 
 const baseURL = process.env.REACT_APP_BASE_URL
@@ -50,8 +51,9 @@ const apiRequest = async ({
     }
 }
 
-const firebaseFunctions = async (functionName, payload,hideError = false)  => {
+const firebaseFunctions = async (functionName, payload, hideError = false, { loadingScreen = false }) => {
     try {
+        if (loadingScreen) store.dispatch(setLoadingScreen({ open: true }))
         const call = httpsCallable(project_functions, functionName)
         const res = (await call(payload)).data
         // toast.success(res?.message)
@@ -60,6 +62,8 @@ const firebaseFunctions = async (functionName, payload,hideError = false)  => {
         // console.log(error)
         if (hideError) handleError(error)
         throw error
+    } finally {
+        if (loadingScreen) store.dispatch(setLoadingScreen({ open: false }))
     }
 }
 

@@ -115,7 +115,7 @@ const createUsers = onCall(async (request) => {
         throw new HttpsError(error?.code, error?.message)
     }
 });
-const login = onCall(async ({ data }) => {
+const login = onCall(async ({ data, auth }) => {
 
     try {
         const { email, password } = data
@@ -123,10 +123,16 @@ const login = onCall(async ({ data }) => {
         const passwordHash = hash(password)
         // logger.log({ uid, passwordHash, passwordSalt, password_Hash })  
         const db = admin.firestore()
+        // const auth = admin.auth()
+
         const user = (await db.collection('users').where("email", "==", email).where("passwordHash", "==", passwordHash).get())?.docs[0]
-        if (!user.exists) throw ({ code: "permission-denied", message: "Account does not exist" })
+        if (!user?.exists) throw ({ code: "permission-denied", message: "Account does not exist" })
         logger.log("user => ", user)
-        return { status: 'success', data: user.data() }
+
+        // const userauth = (await auth.getUser(user?.data().uid))
+        return {
+            status: 'success', data: user.data(), userauth
+        }
     } catch (error) {
         logger.log("error => ", error)
         throw new HttpsError(error?.code, error?.message)
@@ -149,10 +155,10 @@ const getUsers = onCall(async ({ }) => {
                 userRole[i] = roles.filter(role => roleIds.includes(role?.id))
             }
         })
-        logger.log(userRole,'ddd')
+        logger.log(userRole, 'ddd')
         const result = data?.map((user, i) => ({ ...user, roles: userRole[i] }))
 
-        return { status: 'success', data : result }
+        return { status: 'success', data: result }
     } catch (error) {
         logger.log('error=>', error)
         return { status: 'failed', error }
@@ -167,8 +173,25 @@ const getUserByUid = onCall(async ({ data }) => {
         if (uid) {
             const db = admin.firestore()
             const res = await db.collection('users').doc(uid).get()
+
             const data = res.data()
-            return { status: 'success', data }
+            // const roles = [...data?.roles]?.map(async (role) => {
+            //     return
+            // })
+
+            let roles = []
+            for (let roleIndex = 0; roleIndex < data?.roles.length; roleIndex++) {
+                try {
+                    const role = data?.roles[roleIndex];
+                    roles.push((await db.collection('roles').doc(role).get()).data())
+                } catch (error) {
+                    console.log(error)
+                    throw error
+                }
+            }
+
+
+            return { status: 'success', data: { ...data, roles } }
         }
     } catch (error) {
         logger.log('error=>', error)
@@ -215,15 +238,15 @@ const deleteUserByUid = onCall(async (request) => {
     }
 });
 
-const resetPassword = onCall(async (request) => {
+const forgotPassword = onCall(async (request) => {
     try {
-        let { uid } = request
+        let { email } = request.data
         // logger.log('data ----', { data })
         // const { uid } = data
         // const db = admin.firestore()
         const defaultPassword = "password123"
-        if (uid) {
-            // await admin.auth().deleteUser(uid)
+        if (email) {
+            await admin.auth().generatePasswordResetLink(email)
             // await db.collection("users").doc(uid).delete()
             // return { status: 'success', message: 'User deleted successfully' }
         } else {

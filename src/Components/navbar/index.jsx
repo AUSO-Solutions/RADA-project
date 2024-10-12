@@ -5,50 +5,46 @@ import { Box, Typography } from '@mui/material';
 import ClickAway from '../clickaway';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { logout } from 'Store/slices/auth';
-// import { logOutUser } from "../../store/reducers/user";
-// import ClickAwayListener from 'react-click-away-listener';
-
-
+import { getAuth, signOut } from 'firebase/auth';
+import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
 
 function Navbar() {
-    // const user = useSelector(state => state.auth.user.data)
     const [drop, setDrop] = useState(false)
-    // console.log(user)
     const dispatch = useDispatch()
     const navigate = useNavigate()
-
-    const logout_ = () => {
-        dispatch(logout())
-        // dispatch(setId(null))
-        navigate('/')
-    }
+    const user = useSelector(state => state.auth.user)
     // console.log(user)
 
-    // const initials = useMemo(() => `${[...user?.firstName][0]} ${[...user?.lastName][0]}`.toUpperCase(), [user?.firstName, user?.lastName])
-
+    const logout_ = async () => {
+        console.log('first')
+        try {
+            dispatch(setLoadingScreen({ open: true }))
+            dispatch(logout())
+            const auth = getAuth()
+            await signOut(auth)
+            navigate('/')
+        } catch (error) {
+            console.log(error)
+        } finally {
+            dispatch(setLoadingScreen({ open: false }))
+        }
+    }
 
     return (
         <div className={` ${styles.body}`}>
-            {/* <Typography size='17px' weight='500' > {`Welcome ${'Jane Doe'}!`} </Typography>
-            <Box sx={{ width: '30%' }}>
-               
-            </Box> */}
-            <Typography fontSize={"24px"} fontWeight={600} style={{ color: '#000000' }} >Welcome Kehinde</Typography>
+            <Typography fontSize={"24px"} fontWeight={600} style={{ color: '#000000' }} >Welcome {user?.data?.firstName}</Typography>
             <Box className={styles.rightContain} >
-                {/* <Box className={`${styles.right}`}>
-
-                </Box> */}
-                <div className={styles.circle} onClick={() => setDrop(true)} > { } </div><BsChevronDown onClick={() => setDrop(true)} />
+                <div className={styles.circle} onClick={() => setDrop(true)}  > {user?.data?.firstName[0] + user?.data?.lastName[0]} </div>
+                <BsChevronDown onClick={() => setDrop(true)} />
                 {drop && <ClickAway onClickAway={() => setDrop(false)} showshadow={true}
                 >
-                    <div
+                    <div onClick={() => logout_()}
                         className={`shadow ${styles.dropdown}`}
                     >
+                        <Typography className='font-bold cursor-pointer py-1 relative  z-[100]'
 
-                        <Typography className='font-bold cursor-pointer py-1 relative z-[100]'
-                            onClick={() => logout_()}
                         >
                             Logout</Typography>
                     </div>

@@ -15,6 +15,8 @@ import { useFetch } from 'hooks/useFetch';
 import dayjs from 'dayjs';
 import { firebaseFunctions } from 'Services';
 import { toast } from 'react-toastify';
+import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
+import { useDispatch } from 'react-redux';
 
 
 export default function ScheduleTable() {
@@ -26,8 +28,9 @@ export default function ScheduleTable() {
     const id = React.useMemo(() => new URLSearchParams(search).get('id'), [search])
     const { data: res } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'wellTestSchedule', id } })
     React.useEffect(() => { setWellTest(res) }, [res])
+    const dispatch = useDispatch()
     const save = async () => {
-        setLoading(true)
+        dispatch(setLoadingScreen({ open: true }))
         try {
             await firebaseFunctions('updateSetup', { id, setupType: 'wellTestSchedule', ...wellTest })
             toast.success("Remark saved successfully")
@@ -35,7 +38,7 @@ export default function ScheduleTable() {
         } catch (error) {
 
         } finally {
-            setLoading(false)
+            dispatch(setLoadingScreen({ open: false }))
         }
     }
 

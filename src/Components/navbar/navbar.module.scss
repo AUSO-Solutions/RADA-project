@@ -12,9 +12,10 @@
 .rightContain {
     align-items: center;
     justify-content: space-between;
-    width: 152px;
+    width: 100px;
     height: 48px;
     padding: 0 10px;
+    position: relative;
     // top: 16px;
     // left: 1298px;
     gap: 0px;
@@ -44,11 +45,14 @@
     justify-content: center;
     font-weight: 700;
     color: black;
+    text-transform: capitalize;
 }
 
 .dropdown {
-    // position: absolute;
-    // top: 8vh;
+    position: absolute;
+    top: 50px;
+    background-color: #a09d9d;
+    right: 0;
     // right: 20px;
     width: fit-content;
     height: fit-content;
@@ -56,6 +60,8 @@
     border: 1px solid #a09d9d;
     justify-content: center;
     align-items: center;
-    padding: 10px 10px;
+    padding: 5px 15px;
+    box-shadow: inset grey;
+    z-index: 1000;
     // border: 1px solid #000;
 }
