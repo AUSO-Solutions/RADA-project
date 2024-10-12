@@ -17,6 +17,8 @@ import WellTest from "./FieldDataCapture/WellTest";
 import IPSCTable from "./FieldDataCapture/WellTest/IPSC/IPSCTable";
 import ScheduleTable from "./FieldDataCapture/WellTest/Schedule/ScheduleTable";
 import WellTestDataTable from "./FieldDataCapture/WellTest/WellTest/WellTestDataTable";
+import Settings from "./Settings";
+import GlobalSettings from "./Settings/GlobalSettings";
 // import UserRegister from "./Auth/register";
 import DataForm from "./dataform/dataform";
 import Homepage from "./homepage";
@@ -25,6 +27,8 @@ export const user_routes = [
 
     { path: '/', Component: <Homepage />, layout: false },
     { path: '/users/dashboard', Component: <Dashboard />, layout: true },
+    { path: '/users/settings', Component: <Settings />, layout: true },
+    // { path: '/users/settings/global-settings', Component: <GlobalSettings />, layout: true },
     { path: '/users/fdc/daily', Component: <FDC />, layout: true },
     { path: '/users/fdc/daily/volume-measurement-table', Component: <VolumeMeasurementTable />, layout: true },
     { path: '/users/fdc/daily/gas-table', Component: <GasTable />, layout: true },

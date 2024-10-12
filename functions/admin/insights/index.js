@@ -316,7 +316,7 @@ const getInsight = onCall(async (request) => {
         let runningExportGas = 0;
 
         for (let date of dates) {
-          const oilVolumes = db
+          const oilVolumes = await db
             .collection("liquidVolumes")
             .where("date", "==", date)
             .where("asset", "==", asset)
@@ -327,7 +327,10 @@ const getInsight = onCall(async (request) => {
           let dailyNetOil = 0;
           let oilAggregate = [];
 
-          for (let flowstation of oilVolumes?.flowstations) {
+          // for (let flowstation of oilVolumes?.flowstations) {
+            
+          // }
+          oilVolumes?.flowstations.forEach(flowstation => {
             const oilProduction = flowstation?.subtotal?.netProduction;
             const targetOil = flowstation?.subtotal?.netTarget;
             dailyTargetOil += targetOil;
@@ -337,7 +340,7 @@ const getInsight = onCall(async (request) => {
               netOil: oilProduction,
               targetOil,
             });
-          }
+          });
 
           let dailyTargetTotalGas = 0;
           let dailyTargetFuelGas = 0;
