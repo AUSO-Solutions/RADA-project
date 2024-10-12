@@ -25,6 +25,8 @@ export const user_routes = [
 
     { path: '/', Component: <Homepage />, layout: false, isPublic: true },
     { path: '/users/dashboard', Component: <Dashboard />, layout: true, isPublic: false },
+    { path: '/users/settings', Component: <Settings />, layout: true },
+    // { path: '/users/settings/global-settings', Component: <GlobalSettings />, layout: true },
     { path: '/users/fdc/daily', Component: <FDC />, layout: true, isPublic: false },
     { path: '/users/fdc/daily/volume-measurement-table', Component: <VolumeMeasurementTable />, layout: true, isPublic: false },
     { path: '/users/fdc/daily/gas-table', Component: <GasTable />, layout: true, isPublic: false },

@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 
 import { images } from "Assets";
 import Text from "Components/Text";
-import { Bubble, Edit, FolderOpen, Home, User, People,Lock, Book, Driver } from 'iconsax-react';
+import { Bubble, Edit, FolderOpen, Home, User, People,Lock, Book, Driver, Setting2 } from 'iconsax-react';
 
 // import { ROLES } from "./roles.ts";
 
@@ -93,6 +93,11 @@ function Sidenav() {
         name: "Database",
         icon: <Bubble variant={sidebar.parent === "database"?"Bold":"Linear"} />,
         path: "/users/database",
+      },
+      {
+        name: "Settings",
+        icon: <Setting2 variant={sidebar.parent === "settings"?"Bold":"Linear"} />,
+        path: "/users/settings",
       },
 
     ]

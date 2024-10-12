@@ -1,6 +1,6 @@
 import RadaTable from 'Components/RadaTable'
-import React, { useEffect, useMemo, useState } from 'react'
-import { Pie } from "react-chartjs-2";
+import React, { useMemo, useState } from 'react'
+import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -53,12 +53,13 @@ const Summary = () => {
   const { assetNames } = useAssetNames()
   const [showChart, setShowChart] = useState(false);
   const switches = ['Oil/Condensate', 'Gas'];
+  
   const data = {
     labels: ["Produced Gas", "Export Gas", "Flared Gas"],
     datasets: [
       {
         label: "Gas Distribution",
-        data: [60, 30, 10],
+        data: [800, 390, 510],
         backgroundColor: [
           "#29A2CC",
           "#D31E1E",
@@ -92,6 +93,7 @@ const Summary = () => {
         }
       },
     },
+
   };
 
 
@@ -235,8 +237,8 @@ const Summary = () => {
             />
           </div>
 
-          <div style={{ padding: 90, display: 'flex', justifyContent: 'center', alignItems: 'center', }} >
-            <Pie data={data} options={options} />
+          <div style={{height:'100%', width:'100%', padding: 20, display: 'flex', justifyContent: 'center', alignItems: 'center', }} >
+            <Bar data={data} options={options} />
           </div>
 
         </div>
