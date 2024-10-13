@@ -87,12 +87,12 @@ const computeProdDeduction = (potentialData, flowstationData) => {
     totalWaterDeferment += water;
 
     // Aggrgation for deferment categories and subcategories
-    if (potentialData[i].defermentCategory === "Scheduled") {
+    if (potentialData[i].defermentCategory === "Scheduled Deferment") { 
       oilScheduledDeferment.total += oil;
       gasScheduledDeferment.total += gas;
       waterScheduledDeferment.total += water;
       let subCategory = potentialData[i].defermentSubCategory;
-      if (subCategory in oilScheduledDeferment.deferments) {
+      if (subCategory in oilScheduledDeferment.subcategories) {
         oilScheduledDeferment.subcategories[subCategory] += oil;
         gasScheduledDeferment.subcategories[subCategory] += gas;
         waterScheduledDeferment.subcategories[subCategory] += water;
@@ -101,12 +101,12 @@ const computeProdDeduction = (potentialData, flowstationData) => {
         gasScheduledDeferment.subcategories[subCategory] = gas;
         waterScheduledDeferment.subcategories[subCategory] = water;
       }
-    } else if (potentialData[i].defermentCategory === "Unscheduled") {
+    } else if (potentialData[i].defermentCategory === "Unscheduled Deferment") {
       oilUnscheduledDeferment.total += oil;
       gasUnscheduledDeferment.total += gas;
       waterUnscheduledDeferment.total += water;
       let subCategory = potentialData[i].defermentSubCategory;
-      if (subCategory in oilUnscheduledDeferment.deferments) {
+      if (subCategory in oilUnscheduledDeferment.subcategories) {
         oilUnscheduledDeferment.subcategories[subCategory] += oil;
         gasUnscheduledDeferment.subcategories[subCategory] += gas;
         waterUnscheduledDeferment.subcategories[subCategory] += water;
@@ -120,7 +120,7 @@ const computeProdDeduction = (potentialData, flowstationData) => {
       gasThirdPartyDeferment.total += gas;
       waterThirdPartyDeferment.total += water;
       let subCategory = potentialData[i].defermentSubCategory;
-      if (subCategory in oilUnscheduledDeferment.deferments) {
+      if (subCategory in oilThirdPartyDeferment.subcategories) {
         oilThirdPartyDeferment.subcategories[subCategory] += oil;
         gasThirdPartyDeferment.subcategories[subCategory] += gas;
         waterThirdPartyDeferment.subcategories[subCategory] += water;

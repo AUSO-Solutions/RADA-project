@@ -158,7 +158,7 @@ export default function GasTable() {
     }))
     // console.log(flowStations)
     const payload = {
-      date: dayjs().toISOString(),
+      date: dayjs().format('YYYY-MM-DD'),
       asset: setup.asset,
       fluidType: 'gas',
       totalGasProduced: totals.totalGasProduced,

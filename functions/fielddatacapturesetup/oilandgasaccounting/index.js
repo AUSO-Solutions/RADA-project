@@ -4,13 +4,14 @@ const logger = require("firebase-functions/logger");
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
 // const { generateRandomID } = require("../helpers");
 const { computeProdDeduction } = require("./helpers");
-const { generateRandomID } = require("../helpers");
+const { generateRandomID } = require("../../helpers");
+// const { generateRandomID } = require("../helpers");
 
 const processIPSC = onCall(async (request) => {
   try {
     const { data } = request;
     logger.log("Data ----", { data });
-    const { flowStation, date, potentialTestData, asset } = data;
+    const { flowStation, date, potentialTestData, asset, type = 'calculate' } = data;
     if (!flowStation || !date || !potentialTestData) {
       throw {
         code: "cancelled",
@@ -33,7 +34,7 @@ const processIPSC = onCall(async (request) => {
     if (!flowstationsData || flowstationsData === null) {
       throw {
         code: "cancelled",
-        message: "Missing flowstations data for current date",
+        message: "No volume capture for this flowstation on this day",
       };
     }
 
@@ -62,7 +63,7 @@ const processIPSC = onCall(async (request) => {
       flowStation,
       deferment: result.deferment,
     };
-    await db.collection("deferments").doc(defermentId).set(defermentData);
+    if (type === 'save') await db.collection("deferments").doc(defermentId).set(defermentData);
 
     // Persist actual production data
     // let batch = db.batch()
@@ -81,7 +82,7 @@ const processIPSC = onCall(async (request) => {
       flowStation,
       productionData: result.actualProduction,
     };
-    await db
+    if (type === 'save') await db
       .collection("actualProduction")
       .doc(actualProductionId)
       .set(actualProductionData);

@@ -28,16 +28,8 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
         'Third-Party Deferment': [
             'TFP Outage', 'Export Line Issues', 'Flowline Issue', 'Ovade GP', 'Community Interruption'
         ],
-        'N/A': [
 
-        ]
     }
-
-
-
-
-
-
 
     const [wellTestResultData, setWellTestResultData] = useState({})
     // const []
@@ -46,14 +38,23 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
 
     useEffect(() => {
         setWellTestResultData(IPSC?.wellTestResultData)
+        setWellTestResultData(prev => {
+            let updated = IPSC?.wellTestResultData
+            for (const key in IPSC?.wellTestResultData) {
+                const element = IPSC?.wellTestResultData[key];
+                console.log(element)
+                updated[key].defermentCategory = 'Unscheduled Deferment'
+                updated[key].defermentSubCategory = 'Mismatch'
+            }
+            return updated
+        })
     }, [IPSC])
 
     // const viewPotential = () => {
     //     setCalculated(!calculated)
     //     setWellTestResultData(IPSC?.wellTestResultData)
     // }
-    const viewResult = async (e) => {
-        e.preventDefault()
+    const viewResult = async (type) => {
         try {
             if (!flowStation) {
                 toast.error('Flowstation must be provided')
@@ -61,8 +62,9 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
             }
             const payload = {
                 flowStation: flowStation,
-                date: dayjs(date).format("DD/MM/YYYY"),
+                date: dayjs(date).format('YYYY-MM-DD'),
                 asset: IPSC.asset,
+                type,
                 potentialTestData: Object.values(IPSC?.wellTestResultData || {}).map(result => ({
                     productionString: result?.productionString,
                     gross: result?.gross || 0,
@@ -70,18 +72,30 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
                     gasRate: result?.gasRate || 0,
                     reservoir: result?.reservoir,
                     uptimeProduction: wellTestResultData?.[result?.productionString]?.uptimeProduction || 0,
-                    status: result?.status
+                    status: result?.status,
+                    defermentCategory: wellTestResultData?.[result?.productionString]?.defermentCategory,
+                    defermentSubCategory: wellTestResultData?.[result?.productionString]?.defermentSubCategory,
                 }))
             };
             // console.log(payload)
-            const { data } = await firebaseFunctions('processIPSC', payload)
+            const { data } = await firebaseFunctions('processIPSC', payload, false, { loadingScreen: true })
             setResults(JSON.parse(data))
             console.log(JSON.parse(data))
+            toast.success(`Data ${type}d successfully!`)
         } catch (error) {
             console.log(error)
-            toast.error(error)
+            toast.error(error?.message)
         }
     }
+
+    const onSave = (e) => {
+        e.preventDefault()
+        viewResult('save')
+    }
+    const onCalculate = () => {
+        viewResult('calculate')
+    }
+    
 
     const getTotalOf = (key) => {
         const res = Object.values(wellTestResultData || {})
@@ -90,10 +104,9 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
     }
 
     useEffect(() => {
-
         if (results) {
             const actualProduction = results?.actualProduction || []
-            const deferment = results?.deferment || []
+            const deferment = results?.deferment?.drainagePoints || []
             if (searchParams.get('table') === 'actual-production') {
                 const res = Object.fromEntries(actualProduction.map(data => {
                     return [data?.productionString, { ...wellTestResultData[data?.productionString], ...data }]
@@ -110,8 +123,9 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
         // eslint-disable-next-line
     }, [results, searchParams])
 
+
     return (
-        <TableContainer component={'form'} onSubmit={viewResult} className={`m-auto  ${tableStyles.borderedMuiTable}`}>
+        <TableContainer component={'form'} onSubmit={onSave} className={`m-auto  ${tableStyles.borderedMuiTable}`}>
             <Table sx={{ minWidth: 700 }} >
                 <TableHead >
                     <TableRow sx={{ bgcolor: `rgba(239, 239, 239, 1) !important`, color: 'black', fontWeight: 'bold  !important' }}>
@@ -182,12 +196,12 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
                             {searchParams.get('table') === 'actual-production' && <TableCell rowSpan={1} align="center">{'No Remark'}</TableCell>}
                             {
                                 searchParams.get('table') === 'deferred-production' && <> <TableCell style={{ background: '#D9E3F9' }} align="center">
-                                    <select className='bg-[inherit] outline-none' onChange={handleChange} name='defermentCategory'>
+                                    <select className='bg-[inherit] outline-none' defaultValue='Unscheduled Deferment' onChange={handleChange} name='defermentCategory' >
                                         {defermentCategoryArray?.map(category => <option value={category}>{category}</option>)}
                                     </select>
                                 </TableCell>
                                     <TableCell style={{ background: '#E6E4F9' }} align="center">
-                                        <select className='bg-[inherit] outline-none'>
+                                        <select className='bg-[inherit] outline-none' name='defermentSubCategory' value={well.defermentSubCategory} onChange={handleChange}>
                                             {Description[well?.defermentCategory]?.map(desc => <option value={desc}>{desc}</option>)}
                                         </select>
                                     </TableCell></>
@@ -213,8 +227,9 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
                 </TableBody>
 
             </Table>
-            <div className='justify-end flex my-2'>
-                <Button className={'my-3'} type='submit' width={150}>Calculate</Button>
+            <div className='justify-end flex gap-2 my-2'>
+                <Button className={'my-3'} type='button' onClick={onCalculate} width={150}>Calculate</Button>
+                <Button className={'my-3'} type='submit' width={150}>Save</Button>
             </div>
         </TableContainer >
 

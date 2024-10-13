@@ -30,10 +30,10 @@ const validateLiquidFlowstationData = (flowstationsData) => {
         }
 
         // For metering, multiply gross by meterFactor. For Tank dipping, gross stays same
-        computedGross += meterGross;
-        // flowstation.measurementType === "metering"
-        //   ? meterGross * meter.meterFactor
-        //   : meterGross
+        computedGross += meterGross
+          // flowstation.measurementType === "metering"
+          //   ? meterGross * meter.meterFactor
+          //   : meterGross
       }
 
       // For tank dipping, account for export line or deduction
@@ -64,12 +64,12 @@ const validateLiquidFlowstationData = (flowstationsData) => {
           Math.abs(meter.finalReading - meter.initialReading) *
           meter.meterFactor;
         if (meterNetProduction !== meter.netProduction) {
-          throw {
+    
           throw {
             code: "cancelled",
             message: `Gross might have been wrongly computed for meter: ${meter.serialNumber} in flowstation: ${flowstation.name}`,
           };
-          };
+          
         }
 
         // For metering, multiply gross by meterFactor. For Tank dipping, gross stays same

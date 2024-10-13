@@ -16,7 +16,7 @@ import { useSelector } from "react-redux";
 
 const Insights = () => {
     const querys = useSelector(state => state?.setup)
-    console.log(querys)
+    // console.log(querys)
     const res = useFetch({
         firebaseFunction: 'getInsights', payload: {
             asset: querys?.asset,
@@ -30,7 +30,7 @@ const Insights = () => {
         if (res?.data.length) return (JSON.parse(res?.data))
         return {}
     }, [res?.data])
-    // console.log(data)
+    console.log(data)
     const OilProdData = useMemo(() => Object.values(data.assetOilProduction || {}), [data]);
     const GasProdData = useMemo(() => Object.values(data.assetGasProduction || {}), [data]);
     const OilProductionChart = () => {
@@ -86,7 +86,7 @@ const Insights = () => {
 
             <div className="pt-5 flex flex-row flex-wrap justify-evenly shadow rounded" style={{ rowGap: "12px" }}>
                 <InsightsGraphCard>{<OilProductionChart />}</InsightsGraphCard>
-                <InsightsGraphCard >{<OilProductionVariantChart />}</InsightsGraphCard>
+                <InsightsGraphCard >{<OilProductionVariantChart data={data} />}</InsightsGraphCard>
                 <InsightsGraphCard>{<GasProductionChart />}</InsightsGraphCard>
                 <InsightsGraphCard />
             </div>

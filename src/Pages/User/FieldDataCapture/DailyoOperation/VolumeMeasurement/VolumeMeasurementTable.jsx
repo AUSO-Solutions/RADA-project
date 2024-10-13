@@ -199,7 +199,7 @@ export default function VolumeMeasurementTable() {
       "Gross Liquid": "gross", "Net Oil/ Condensate": "netProduction"
     }
     const payload = {
-      date: dayjs().toISOString(),
+      date: dayjs().format('YYYY-MM-DD'),
       asset: setup.asset,
       fluidType: currReport,
       totals,

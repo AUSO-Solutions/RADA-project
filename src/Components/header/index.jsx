@@ -17,7 +17,7 @@ const Header = ({ name, btns = [], right }) => {
           ))
         }
       </Stack>
-   <div>   {right}</div>
+  {right &&  <div>   {right}</div>}
     </div>
   )
 }

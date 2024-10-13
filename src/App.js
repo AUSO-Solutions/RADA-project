@@ -14,6 +14,12 @@ import Loading from "Components/Loading";
 
 function App() {
 
+  const PrivateRoute = ({ children }) => {
+    const uid = store.getState().auth.user?.data?.uid
+    if (uid) return children
+    return <Navigate to={'/'} />
+  }
+
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
@@ -22,20 +28,15 @@ function App() {
             <ToastContainer />
             <Modal />
             <Loading />
-            {/* <Refresh/> */}
             <Routes>
               {routes.map(route => {
                 const layout = route.layout
                 const path = route.path
                 const isPublic = route.isPublic
-                if (!isPublic) {
-                  const uid = store.getState().auth.user?.data?.uid
-                  console.log( uid )
-                  if (!uid) return <Route path={path} element={<Navigate to={'/'} />} key={path} />
-                }
                 const Component = layout ? <Layout>{route.Component}</Layout> : route.Component
+                const Protect = isPublic ? Component : <PrivateRoute>{Component}</PrivateRoute>
                 return (
-                  <Route path={path} element={Component} key={path} />
+                  <Route path={path} element={Protect} key={path} />
                 )
               })}
             </Routes>

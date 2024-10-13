@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 // import Table from '@mui/material/Table';
 // import TableBody from '@mui/material/TableBody';
 // import TableCell from '@mui/material/TableCell';
@@ -37,6 +37,9 @@ export default function OilGasAccountingTable() {
     // console.log({ wellTestResult })
     const { flowStations } = useAssetByName(matchingIPSC?.asset)
     const [flowStation, setFlowStation] = useState('')
+    useEffect(() => {
+        setFlowStation(flowStations[0])
+    }, [flowStations])
     const [date, setDate] = useState(dayjs())
     // console.log(flowStations)
 
@@ -51,7 +54,7 @@ export default function OilGasAccountingTable() {
                 </div>
                 <div className='flex gap-2 items-center'>
                     <RadaDatePicker onChange={setDate} />
-                    <Input containerClass='!w-[200px]' type='select' options={flowStations?.map(flowStation => ({ label: flowStation, value: flowStation }))} onChange={e => setFlowStation(e.value)} />
+                    <Input disabled={flowStations.length === 1} value={{ label: flowStations[0], value: flowStations[0] }} containerClass='!w-[200px]' type='select' options={flowStations?.map(flowStation => ({ label: flowStation, value: flowStation }))} onChange={e => setFlowStation(e.value)} />
                 </div>
             </div>
 

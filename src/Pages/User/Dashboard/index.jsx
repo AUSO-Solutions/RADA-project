@@ -64,8 +64,8 @@ const Dashboard = () => {
                 </div>
                 <div  >
                   <DateRangePicker onChange={e => {
-                    dispatch(setSetupData({ name: 'startDate', value: dayjs(e?.startDate).format('MM/DD/YYYY') }))
-                    dispatch(setSetupData({ name: 'endDate', value: dayjs(e?.endDate).format('MM/DD/YYYY') }))
+                    dispatch(setSetupData({ name: 'startDate', value: dayjs(e?.startDate).format('YYYY-MM-DD') }))
+                    dispatch(setSetupData({ name: 'endDate', value: dayjs(e?.endDate).format('YYYY-MM-DD') }))
                   }} />
                 </div>
               </>
