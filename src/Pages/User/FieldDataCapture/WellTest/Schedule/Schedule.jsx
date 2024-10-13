@@ -7,7 +7,7 @@ import { useCallback, useEffect, useState } from "react"
 import styles from '../welltest.module.scss'
 import { useFetch } from "hooks/useFetch"
 import Text from "Components/Text"
-import { closeModal } from "Store/slices/modalSlice"
+import { closeModal, openModal } from "Store/slices/modalSlice"
 import { store } from "Store"
 import { firebaseFunctions } from "Services"
 import { toast } from "react-toastify"
@@ -18,6 +18,11 @@ import dayjs from "dayjs"
 import Files from "Partials/Files"
 import { createWellTitle } from "utils"
 import { setLoadingScreen } from "Store/slices/loadingScreenSlice"
+import BroadCast from "Partials/BroadCast"
+import BroadCastSuccessfull from "Partials/BroadCast/BroadCastSuccessfull"
+import SelectGroup from "Partials/BroadCast/SelectGroup"
+import Attachment from "Partials/BroadCast/Attachment"
+import { useLocation } from "react-router-dom"
 
 const SelectAsset = () => {
 
@@ -303,6 +308,7 @@ const SaveAs = () => {
 const Exists = () => {
 
     const { data } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "wellTestSchedule" } })
+    const dispatch = useDispatch()
 
     return (
         <div className=" flex flex-wrap gap-4 m-5 ">
@@ -310,6 +316,22 @@ const Exists = () => {
             <Files name={(file) => `${createWellTitle(file, 'Well Test Schedule')}`} files={data} actions={[
                 { name: 'Remark', to: (file) => `/users/fdc/well-test-data/schedule-table?id=${file?.id}` },
                 { name: 'Well Test Result', to: (file) => `/users/fdc/well-test-data/well-test-table?id=${file?.id}` },
+                {
+                    name: 'Broadcast', to: (file) => null, onClick: (file) => dispatch(openModal({
+                        title: '',
+                        component: <BroadCast
+                            link={`/users/fdc/well-test-data/well-test-table?id=${file?.id}`}
+                            type={'MER Data'}
+                            date={dayjs(file?.month).format('MMM/YYYY')}
+                            title='Broadcast Well Test Schedule'
+                            subject={`${file?.asset} Well Test ${dayjs(file?.month).format('MMM/YYYY')}`}
+                            steps={['Select Group', 'Attachment', 'Broadcast']}
+                            stepsComponents={[
+                                <SelectGroup />,
+                                <Attachment details={`${file?.asset} Well Test ${dayjs(file?.startDate).format('MMM/YYYY')}`} />,
+                                <BroadCastSuccessfull details={`${file?.asset} Well Test ${dayjs(file?.startDate).format('MMM/YYYY')}`} />]} />
+                    }))
+                },
             ]} />
 
         </div>

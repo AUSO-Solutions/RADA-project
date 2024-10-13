@@ -4,7 +4,7 @@ import { Input } from "Components"
 import { useEffect, useState } from "react"
 import { useFetch } from "hooks/useFetch"
 import Text from "Components/Text"
-import { closeModal } from "Store/slices/modalSlice"
+import { closeModal, openModal } from "Store/slices/modalSlice"
 import { store } from "Store"
 import { firebaseFunctions } from "Services"
 import { toast } from "react-toastify"
@@ -14,9 +14,14 @@ import { createWellTitle } from "utils"
 import { BsPlus } from "react-icons/bs"
 import dayjs from "dayjs"
 import ExcelToCsv from "Partials/ExcelToCSV"
-import {  TickCircle } from "iconsax-react"
+import { TickCircle } from "iconsax-react"
 import { colors } from "Assets"
 import { setLoadingScreen } from "Store/slices/loadingScreenSlice"
+import BroadCast from "Partials/BroadCast"
+import SelectGroup from "Partials/BroadCast/SelectGroup"
+import Attachment from "Partials/BroadCast/Attachment"
+import BroadCastSuccessfull from "Partials/BroadCast/BroadCastSuccessfull"
+import { useLocation } from "react-router-dom"
 
 
 const ImporFiles = () => {
@@ -85,12 +90,30 @@ const SaveAs = () => {
 const Exists = () => {
 
     const { data } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "merSchedule" } })
+    const dispatch = useDispatch()
 
     return (
         <div className=" flex flex-wrap gap-4 m-5 ">
             <Files name={(file) => `${createWellTitle(file, 'MER Data Schedule')}`} files={data} actions={[
                 { name: 'Remark', to: (file) => `/users/fdc/mer-data/schedule-table?id=${file?.id}` },
                 { name: 'MER DATA Result', to: (file) => `/users/fdc/mer-data/mer-data-result-table?scheduleId=${file?.id}` },
+                {
+                    name: 'Broadcast', to: (file) => null, onClick: (file) => dispatch(openModal({
+                        title: '',
+                        component: <BroadCast
+                            link={`/users/fdc/mer-data/mer-data-result-table?scheduleId=${file?.id}`}
+                            type={'MER Data'}
+                            date={dayjs(file?.month).format('MMM/YYYY')}
+                            title='Broadcast MER Data'
+                            subject={`${file?.asset} MER Data ${dayjs(file?.month).format('MMM/YYYY')}`}
+                            steps={['Select Group', 'Attachment', 'Broadcast']}
+                            stepsComponents={[
+                                <SelectGroup />,
+                                <Attachment details={`${file?.asset} MER Data ${dayjs(file?.startDate).format('MMM/YYYY')}`} />,
+                                <BroadCastSuccessfull details={`${file?.asset} MER Data ${dayjs(file?.startDate).format('MMM/YYYY')}`} />]} />
+                    }))
+                },
+
             ]} />
         </div>
     )
@@ -104,7 +127,7 @@ const Schedule = () => {
     }, [dispatch])
     const save = async () => {
         try {
-            dispatch(setLoadingScreen({open:true}))
+            dispatch(setLoadingScreen({ open: true }))
             const setupData = store.getState().setup
             const chokeSizes = setupData?.chokeSizes
             const staticParameters = setupData?.staticParameters
@@ -119,7 +142,7 @@ const Schedule = () => {
             toast.error(error?.message)
         }
         finally {
-            dispatch(setLoadingScreen({open:false}))
+            dispatch(setLoadingScreen({ open: false }))
         }
     }
     return (

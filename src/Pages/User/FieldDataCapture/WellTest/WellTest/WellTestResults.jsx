@@ -1,7 +1,14 @@
 
+import dayjs from 'dayjs'
 import { useFetch } from 'hooks/useFetch'
+import BroadCast from 'Partials/BroadCast'
+import Attachment from 'Partials/BroadCast/Attachment'
+import BroadCastSuccessfull from 'Partials/BroadCast/BroadCastSuccessfull'
+import SelectGroup from 'Partials/BroadCast/SelectGroup'
 import Files from 'Partials/Files'
 import React from 'react'
+import { useDispatch } from 'react-redux'
+import { openModal } from 'Store/slices/modalSlice'
 import { createWellTitle } from 'utils'
 
 
@@ -9,6 +16,7 @@ import { createWellTitle } from 'utils'
 
 const WellTestResults = () => {
 
+    const dispatch = useDispatch()
     const { data } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "wellTestResult" } })
 
     return (
@@ -18,8 +26,26 @@ const WellTestResults = () => {
                 { name: 'Edit', to: (file) => `/users/fdc/well-test-data/well-test-table?id=${file?.id}&scheduleId=${file?.wellTestScheduleId}` },
                 { name: 'Create IPSC', to: (file) => `/users/fdc/well-test-data?page=ipsc&well-test-result-id=${file?.id}&autoOpenSetupModal=yes` },
                 { name: 'Delete', to: (file) => `` },
-            ]} name={(file) => `${createWellTitle(file,'Well Test Result')}`} />
-          
+                {
+                    name: 'Broadcast', to: (file) => null, onClick: (file) => dispatch(openModal({
+                        title: '',
+                        component: <BroadCast
+                            link={`/users/fdc/well-test-data?page=ipsc&well-test-result-id=${file?.id}`}
+                            type={'Well Test Result'}
+                            date={dayjs(file?.month).format('MMM/YYYY')}
+                            title='Broadcast Well Test Result'
+                            subject={`${file?.asset} MER Data ${dayjs(file?.month).format('MMM/YYYY')}`}
+                            steps={['Select Group', 'Attachment', 'Broadcast']}
+                            stepsComponents={[
+                                <SelectGroup />,
+                                <Attachment details={`${file?.asset} Well Test Result ${dayjs(file?.startDate).format('MMM/YYYY')}`} />,
+                                <BroadCastSuccessfull details={`${file?.asset} Well Test Result ${dayjs(file?.startDate).format('MMM/YYYY')}`} />]} />
+                    }))
+                },
+            ]} name={(file) => `${createWellTitle(file, 'Well Test Result')}`}
+
+            />
+
         </div>
     )
 
