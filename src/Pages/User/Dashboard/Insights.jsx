@@ -10,6 +10,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import OilProductionVariantChart from "./OilProductionVariantChart";
 import { useFetch } from "hooks/useFetch";
 import { useSelector } from "react-redux";
+import GasProductionVariantChart from "./GasProductionVariantChart";
 // import { useAssetNames } from "hooks/useAssetNames";
 // import { useAssetByName } from "hooks/useAssetByName";
 
@@ -88,6 +89,7 @@ const Insights = () => {
                 <InsightsGraphCard>{<OilProductionChart />}</InsightsGraphCard>
                 <InsightsGraphCard >{<OilProductionVariantChart data={data} />}</InsightsGraphCard>
                 <InsightsGraphCard>{<GasProductionChart />}</InsightsGraphCard>
+                <InsightsGraphCard >{<GasProductionVariantChart data={data} />}</InsightsGraphCard>
                 <InsightsGraphCard />
             </div>
         </div>

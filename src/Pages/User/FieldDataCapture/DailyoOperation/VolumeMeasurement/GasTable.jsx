@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -22,11 +22,11 @@ import { useFetch } from 'hooks/useFetch';
 import { setWholeSetup } from 'Store/slices/setupSlice';
 import { useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
-import { firebaseFunctions } from 'Services';
 import { store } from 'Store';
 import AttachSetup from './AttachSetup';
 import { Alert } from '@mui/material';
 import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
+import { firebaseFunctions } from 'Services';
 
 
 const TableInput = ({ type = '', ...props }) => {
@@ -36,15 +36,15 @@ const TableInput = ({ type = '', ...props }) => {
 export default function GasTable() {
   const { search } = useLocation()
   const dispatch = useDispatch()
-  const [setup, setSetup] = React.useState({})
-  const [showSettings, setShowSettings] = React.useState(false)
-  const [ , setDate] = React.useState(dayjs().format("DD/MM/YYYY"))
-  const id = React.useMemo(() => new URLSearchParams(search).get('id'), [search])
+  const [setup, setSetup] = useState({})
+  const [showSettings, setShowSettings] = useState(false)
+  const [date, setDate] = useState(dayjs().format("YYYY-MM-DD"))
+  const id = useMemo(() => new URLSearchParams(search).get('id'), [search])
   const { data: res } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'volumeMeasurement', id } })
   const { data: attacmentSetup } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'volumeMeasurement', id: res?.attachmentId }, dontFetch: !res?.attachmentId/* */ })
 
-  React.useEffect(() => { setSetup(res) }, [res])
-  React.useEffect(() => {
+  useEffect(() => { setSetup(res) }, [res])
+  useEffect(() => {
     dispatch(setWholeSetup(setup))
   }, [setup, dispatch])
 
@@ -53,15 +53,15 @@ export default function GasTable() {
   }
 
   const { data: IPSCs } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: 'IPSC' } })
-  const IPSC = React.useMemo(()=>IPSCs?.find(IPSC => IPSC?.month === dayjs().format('YYYY-MM') && IPSC?.asset === setup?.asset),[IPSCs,setup?.asset])
+  const IPSC = useMemo(() => IPSCs?.find(IPSC => IPSC?.month === dayjs().format('YYYY-MM') && IPSC?.asset === setup?.asset), [IPSCs, setup?.asset])
 
   const flowstationsTargets = IPSC?.flowstationsTargets
   const averageTarget = IPSC?.averageTarget
   // console.log(flowstationsTargets)
 
-  const [tableValues, setTableValues] = React.useState({})
-  // const [loading, setLoading] = React.useState(false)
-  const [totals, setTotals] = React.useState({
+  const [tableValues, setTableValues] = useState({})
+  // const [loading, setLoading] = useState(false)
+  const [totals, setTotals] = useState({
     totalGasProduced: 0,
   })
   const gasTypes = ["Gas Flared USM", "Fuel Gas", "Export Gas"].map(type => ({ label: type, value: camelize(type) }))
@@ -115,7 +115,7 @@ export default function GasTable() {
     })
 
   }
-  React.useEffect(() => {
+  useEffect(() => {
     const values = (Object.values(tableValues))
     const calcs = {
       totalGasProduced: sum(Object.values(values || {}).map(item => item?.totalGas || 0))?.toFixed(5),
@@ -123,7 +123,40 @@ export default function GasTable() {
     setTotals(calcs)
   }, [tableValues])
 
-  React.useEffect(() => {
+  useEffect(() => {
+    const getDayCapture = async () => {
+      try {
+        const { data } = await firebaseFunctions('getGasVolumeByDateAndAsset', { asset: setup?.asset, date }, false, { loadingScreen: true })
+        console.log(JSON.stringify(tableValues), data?.flowstations)
+        const dayTableValues = Object.fromEntries((data?.flowstations || [])?.map(flowstation => {
+          return [flowstation?.name, {
+            "meters": Object.fromEntries(Object.entries(flowstation?.meters || {}).map(meter => (
+              [
+                meter[0],
+                {
+                  "finalReading": meter[1]?.finalReading || null,
+                  "meterTotal": meter[1]?.meterTotal,
+                  "gasType": meter[1]?.gasType,
+                  "serialNumber": meter[1]?.serialNumber || null,
+                  "initialReading": meter[1]?.initialReading || null
+                }
+              ]
+            )))
+            ,
+            "totalGas": flowstation?.subtotal?.totalGas
+          }]
+        }))
+        setTableValues(dayTableValues)
+
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    if (setup?.asset) getDayCapture()
+  }, [date, setup?.asset])
+
+
+  useEffect(() => {
     setup?.flowStations?.forEach((flowStation, flowStationIndex) => {
       const readings = flowStation?.readings || []
       readings.forEach((reading, readingIndex) => {
@@ -151,14 +184,14 @@ export default function GasTable() {
         fuelGas: Object.values(value[1]?.meters || {})?.find(meter => meter?.gasType === 'fuelGas')?.meterTotal,
         exportGas: Object.values(value[1]?.meters || {})?.find(meter => meter?.gasType === 'exportGas')?.meterTotal,
         gasFlaredUSM: Object.values(value[1]?.meters || {})?.find(meter => meter?.gasType === 'gasFlaredUSM')?.meterTotal,
-        totalGasTarget:flowstationsTargets?.[value[0]]?.gasFlaredUSM + flowstationsTargets?.[value[0]]?.exportGas + flowstationsTargets?.[value[0]]?.fuelGas,
+        totalGasTarget: flowstationsTargets?.[value[0]]?.gasFlaredUSM + flowstationsTargets?.[value[0]]?.exportGas + flowstationsTargets?.[value[0]]?.fuelGas,
         totalGas: value[1]?.totalGas
       },
       ...value[1]
     }))
     // console.log(flowStations)
     const payload = {
-      date: dayjs().format('YYYY-MM-DD'),
+      date: dayjs(date).format('YYYY-MM-DD'),
       asset: setup.asset,
       fluidType: 'gas',
       totalGasProduced: totals.totalGasProduced,
@@ -183,7 +216,7 @@ export default function GasTable() {
   const onSelectReportType = (e) => {
     if (e !== 'Gas') navigate(`/users/fdc/daily/volume-measurement-table?id=${attacmentSetup?.id}&reportType=${e}`)
   }
-  const reportTypes__ = React.useMemo(() => {
+  const reportTypes__ = useMemo(() => {
     return (attacmentSetup?.reportTypes || [])?.concat(setup?.reportTypes)
   }, [attacmentSetup?.reportTypes, setup?.reportTypes])
   return (
@@ -195,7 +228,7 @@ export default function GasTable() {
       <div className='flex items-center gap-2 '>
         <AttachSetup setup={setup} />
         <Link to={'/users/fdc/daily?tab=volume-measurement'}>   <Text className={'cursor-pointer'} color={colors.rada_blue}>View setups</Text></Link>
-        <RadaDatePicker onChange={setDate} disabled />
+        <RadaDatePicker onChange={setDate} />
         <div onClick={() => setShowSettings(true)} style={{ borderColor: 'rgba(0, 163, 255, 1)' }} className='border cursor-pointer px-3 py-1 rounded-[8px]'>
           <MdOutlineSettings color='rgba(0, 163, 255, 1)' />
         </div>
@@ -205,7 +238,7 @@ export default function GasTable() {
 
       < form className='px-3 ' onSubmit={save} >
         <TableContainer className={`m-auto border ${tableStyles.borderedMuiTable}`}>
-        {!IPSC && <Alert severity='error' className='my-2' hidden={!IPSC}>
+          {!IPSC && <Alert severity='error' className='my-2' hidden={!IPSC}>
             No IPSC for this {setup?.asset} this month
           </Alert>}
           <Table sx={{ minWidth: 700 }} >
@@ -252,6 +285,7 @@ export default function GasTable() {
                           const initialReading = tableValues?.[name]?.meters?.[readingIndex]?.initialReading
                           const finalReading = tableValues?.[name]?.meters?.[readingIndex]?.finalReading
                           const meterTotal = tableValues?.[name]?.meters?.[readingIndex]?.meterTotal
+                          // console.log(tableValues?.[name]?.meters?.[readingIndex])
                           return (<TableRow  >
                             <TableCell align="center">
                               {gasType.label}
@@ -277,9 +311,9 @@ export default function GasTable() {
                               />
                             </TableCell>
                             <TableCell align="center" colSpan={2}>
-                              {readingAtIndex ? meterTotal :
+                              {readingAtIndex ? meterTotal || 0 :
                                 <TableInput
-                                  disabled={readingAtIndex} type={'number'}
+                                  disabled={readingAtIndex} type={'number'} value={meterTotal || 0}
                                   onChange={(e) => handleChange({ flowStation: name, field: `meterTotal`, value: e.target.value, readingIndex, gasType: gasType.value })} />}
                             </TableCell>
 
@@ -293,8 +327,6 @@ export default function GasTable() {
                           </TableCell>
                         </TableRow>
                       </>
-
-
                     </TableBody>
                   )
                 }

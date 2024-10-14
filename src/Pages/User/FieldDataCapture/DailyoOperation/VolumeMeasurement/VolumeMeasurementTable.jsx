@@ -54,8 +54,7 @@ export default function VolumeMeasurementTable() {
   const [currReport, setCurrReport] = useState(setup?.reportTypes?.[0])
   const [searchParams, setSearchParams] = useSearchParams()
 
-
-  const [, setDate] = useState(dayjs().format(""))
+  const [date, setDate] = useState(dayjs().format("YYYY-MM-DD"))
 
   useEffect(() => {
     const currReport__ = searchParams.get('reportType')
@@ -74,7 +73,6 @@ export default function VolumeMeasurementTable() {
     bswTotal: 0,
     grossTotal: 0,
   })
-
 
   const handleChange = ({ flowStation, field, value, readingIndex, flowStationField }) => {
     //careful, to also have the value updated before calculated
@@ -145,6 +143,7 @@ export default function VolumeMeasurementTable() {
     })
 
   }
+
   useEffect(() => {
     const values = (Object.values(tableValues))
     const calcs = {
@@ -155,6 +154,43 @@ export default function VolumeMeasurementTable() {
     }
     setTotals(calcs)
   }, [tableValues])
+
+  useEffect(() => {
+    const getDayCapture = async () => {
+      try {
+        const { data } = await firebaseFunctions('getOilOrCondensateVolumeByDateAndAsset', { asset: setup?.asset, date }, false, { loadingScreen: true })
+        // console.log(JSON.stringify(tableValues), data?.flowstations)
+        const dayTableValues = Object.fromEntries((data?.flowstations || [])?.map(flowstation => {
+          return [flowstation?.name, {
+            "meters": flowstation?.meters?.map(meter => ({
+              "finalReading": meter?.finalReading || 0,
+              "netProduction": meter?.netProduction ||0,
+              "gross": meter?.gross || 0,
+              "serialNumber": meter?.serialNumber || 0,
+              "reportType": flowstation?.reportType === "netProduction" ? "Net Oil/ Condensate" : 'Gross Liquid',
+              "meterFactor": meter?.meterFactor || 1,
+              "deductionFinalReading": 0,
+              "initialReading": meter?.initialReading || 0
+            })),
+            "deductionTotal": flowstation?.deduction?.netProduction || 0,
+            "subTotal": flowstation?.reportType === "netProduction" ? flowstation?.subtotal?.netProduction : flowstation?.subtotal?.gross,
+            "reportType": flowstation?.reportType === "netProduction" ? "Net Oil/ Condensate" : 'Gross Liquid',
+            "measurementType": flowstation?.measurementType,
+            "deductionInitialReading": flowstation?.deduction?.initialReading,
+            "deduction": flowstation?.deduction,
+            "deductionFinalReading": flowstation?.deduction?.finalReading,
+            "bsw": flowstation?.subtotal?.bsw || 0
+          }]
+        }))
+        setTableValues(dayTableValues)
+
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    if (setup?.asset) getDayCapture()
+  }, [date, setup?.asset])
+
 
   useEffect(() => {
     setup?.flowStations?.forEach((flowStation, flowStationIndex) => {
@@ -169,10 +205,11 @@ export default function VolumeMeasurementTable() {
         if (isNum(deductionInitialReading) || isNum(deductionFinalReading)) handleChange({ flowStation: flowStation?.name, field: 'deductionFinalReading', value: deductionFinalReading, readingIndex })
 
       });
-
     });
     // eslint-disable-next-line
   }, [setup])
+
+
   const calculatedGrossOrnNet = (subTotal, bsw, type = 'net') => {
     let netResult = subTotal / ((1 - (0.01 * bsw))).toFixed(3) //for net
     let grossResult = subTotal * ((1 - (0.01 * bsw))).toFixed(3) //for gross
@@ -190,6 +227,7 @@ export default function VolumeMeasurementTable() {
     // if(!flowstationsTargets?.oilRate || flowstationsTargets?.gross)
 
     e.preventDefault()
+
     const setup = store.getState().setup
     const flowStations = Object.entries(tableValues).map(value => ({
       name: value[0],
@@ -199,7 +237,7 @@ export default function VolumeMeasurementTable() {
       "Gross Liquid": "gross", "Net Oil/ Condensate": "netProduction"
     }
     const payload = {
-      date: dayjs().format('YYYY-MM-DD'),
+      date: dayjs(date).format('YYYY-MM-DD'),
       asset: setup.asset,
       fluidType: currReport,
       totals,
@@ -247,7 +285,7 @@ export default function VolumeMeasurementTable() {
     } catch (error) {
       console.log(error)
       toast.error(error?.message)
-    }finally{
+    } finally {
       dispatch(setLoadingScreen({ open: false }))
     }
   }
@@ -273,7 +311,7 @@ export default function VolumeMeasurementTable() {
           <Link to={'/users/fdc/daily?tab=volume-measurement'}>
             <Text className={'cursor-pointer'} color={colors.rada_blue}>View setups</Text>
           </Link>
-          <RadaDatePicker onChange={setDate} disabled />
+          <RadaDatePicker onChange={setDate} />
           <div onClick={() => setShowSettings(true)} style={{ borderColor: 'rgba(0, 163, 255, 1)' }} className='border cursor-pointer px-3 py-1 rounded-[8px]'>
             <MdOutlineSettings color='rgba(0, 163, 255, 1)' />
           </div>
@@ -334,8 +372,12 @@ export default function VolumeMeasurementTable() {
                                   onChange={(e) => updateFlowstationReading(flowStationIndex, readingIndex, 'serialNumber', e.target.value)}
                                 />
                               </TableCell>
-                              <TableCell align="center"><TableInput type='number' onChange={(e) => handleChange({ flowStation: name, field: 'initialReading', value: e.target.value, readingIndex: readingIndex })} /></TableCell>
-                              <TableCell align="center"><TableInput type='number' onChange={(e) => handleChange({ flowStation: name, field: 'finalReading', value: e.target.value, readingIndex: readingIndex })} /></TableCell>
+                              <TableCell align="center">
+                                <TableInput type='number' value={tableValues?.[name]?.meters?.[readingIndex]?.initialReading} onChange={(e) => handleChange({ flowStation: name, field: 'initialReading', value: e.target.value, readingIndex: readingIndex })} />
+                              </TableCell>
+                              <TableCell align="center">
+                                <TableInput type='number' value={tableValues?.[name]?.meters?.[readingIndex]?.finalReading} onChange={(e) => handleChange({ flowStation: name, field: 'finalReading', value: e.target.value, readingIndex: readingIndex })} />
+                              </TableCell>
                               <TableCell align="center"> {isNet ? tableValues?.[name]?.meters?.[readingIndex]?.netProduction : "-"} </TableCell>
                               <TableCell align="center">-</TableCell>
                               <TableCell align="center">-</TableCell>
@@ -349,11 +391,13 @@ export default function VolumeMeasurementTable() {
                           <TableCell align="center">Deduction</TableCell>
                           <TableCell align="center">
                             <TableInput type='number'
+                              value={tableValues?.[name]?.deductionInitialReading}
                               onChange={(e) => handleChange({ flowStation: name, flowStationField: 'deductionInitialReading', value: e.target.value, readingIndex: null })}
                             />
                           </TableCell>
                           <TableCell align="center">
                             <TableInput type='number'
+                              value={tableValues?.[name]?.deductionFinalReading}
                               onChange={(e) => handleChange({ flowStation: name, flowStationField: 'deductionFinalReading', value: e.target.value, readingIndex: null })}
                             />
                           </TableCell>
@@ -371,7 +415,9 @@ export default function VolumeMeasurementTable() {
                           {isNet ? (tableValues?.[name]?.subTotal || 0) : calculatedGrossOrnNet(tableValues?.[name]?.subTotal, tableValues?.[name]?.bsw, 'gross')}
                         </TableCell>
                         <TableCell align="center"><TableInput type='number' disabled value={isNet ? flowstationsTargets?.[name]?.oilRate : flowstationsTargets?.[name]?.gross} /></TableCell>
-                        <TableCell align="center"><TableInput type='number' onChange={(e) => handleChange({ flowStation: name, flowStationField: 'bsw', value: e.target.value, readingIndex: null })} /></TableCell>
+                        <TableCell align="center">
+                          <TableInput type='number' value={tableValues?.[name]?.bsw} onChange={(e) => handleChange({ flowStation: name, flowStationField: 'bsw', value: e.target.value, readingIndex: null })} />
+                        </TableCell>
                         <TableCell align="center">
                           {isGross ? (tableValues?.[name]?.subTotal || 0) : calculatedGrossOrnNet(tableValues?.[name]?.subTotal, tableValues?.[name]?.bsw, 'net')}
                         </TableCell>

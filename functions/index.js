@@ -9,7 +9,7 @@ const { getGroups, createGroup, addMembersToGroup, deleteGroupMember, deleteGrou
 const { createAsset, getAssetByName, updateAssetById, deleteAssetById, getAssets, getAssetsName, importMasterXY } = require('./admin/assets')
 const { createRole, updateRole, deleteRole, getRoles, getRole, assignPermissionToRole } = require('./admin/rolesandpermissions');
 const { createSetup, deleteSetup, getSetups, updateSetup, getSetup } = require("./fielddatacapturesetup/volumemeasurementsetup");
-const { captureOilOrCondensate, captureGas, updateOilOrCondensate, getOilOrCondensateVolumeByID, deleteOilOrCondensateVolumeByID, getOilOrCondensateVolumesByAsset } = require("./fielddatacapturesetup/volume.measurement");
+const { captureOilOrCondensate, captureGas, updateOilOrCondensate, getGasVolumeByDateAndAsset, deleteOilOrCondensateVolumeByID, getOilOrCondensateVolumeByDateAndAsset } = require("./fielddatacapturesetup/volume.measurement");
 const { createMerSchedule } = require("./fielddatacapturesetup/merdataSetup");
 const { processIPSC } = require('./fielddatacapturesetup/oilandgasaccounting/')
 const { getInsight } = require('./admin/insights')
@@ -39,8 +39,8 @@ module.exports = {
   captureOilOrCondensate,
   captureGas,
   updateOilOrCondensate,
-  getOilOrCondensateVolumeByID,
-  getOilOrCondensateVolumesByAsset,
+  getOilOrCondensateVolumeByDateAndAsset,
+  getGasVolumeByDateAndAsset,
   deleteOilOrCondensateVolumeByID,
 
   createMerSchedule,
