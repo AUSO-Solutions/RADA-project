@@ -19,7 +19,7 @@ const broadcast = onCall(async (request) => {
     try {
         const { data } = request;
         logger.log("Data ----", { data });
-        const { attachment, groups, pagelink, subject, type, date } = data;
+        const { attachment, groups, pagelink, subject, type, date, users } = data;
         const db = admin.firestore()
         // console.log(typeof groups, groups?.length)
         const members = groups.flatMap(group => (group?.members.map(member => ({ group: group?.groupName, ...member }))))

@@ -150,8 +150,10 @@ export const getIntersectionBetweenTwoLines = (line1, line2, at1 = 0, at2 = 1) =
 
 }
 export const bsw = ({ gross, oil, water }) => {
-    let water__ = (water || 0) || (gross || 0) - (oil || 0)
-    const result = ((water__ / (oil + water__)) * 100).toFixed(4)
+    let water__ = (water || 0) || parseFloat(gross || 0) - parseFloat(oil || 0)
+    const result = ((water__ / (parseFloat(oil || 0) + water__)) * 100).toFixed(4)
+
+
     return isNaN(result) ? '' : result
 
 }

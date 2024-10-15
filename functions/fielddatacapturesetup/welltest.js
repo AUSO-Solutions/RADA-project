@@ -133,20 +133,14 @@ const validateReservoirStaticParameters = async (JSONs, masterxy) => {
 };
 
 
-const createMerSchedule = onCall(async (request) => {
+const createWellTestSchedule = onCall(async (request) => {
     try {
         const db = admin.firestore()
         let { data } = request;
         const { title, chokeSizes, staticParameters, date, month } = data
-
-        // const bucket = admin.storage().bucket('ped-application-4d196.appspot.com');// initialize storage as admin
-        // const chokesSizeStream = bucket.file(chokeSizesFileName).createReadStream();//create stream of the file in bucket
-        // const staticParameterStream = bucket.file(reservoirStaticParametersFileName).createReadStream();//create stream of the file in bucket
         const masterxy = (await db.collectionGroup("assetList").get()).docs.map(doc => doc.data())
         const res = await validateProductionStringsChokeSizesFile(chokeSizes, masterxy)
         const res2 = await validateReservoirStaticParameters(staticParameters, masterxy)
-        // await bucket.file(chokeSizesFileName).delete()
-        // await bucket.file(reservoirStaticParametersFileName).delete()
         const id = generateRandomID()
         const combined =Object.fromEntries( Object.values(res.merScheduleData || {}).map(item => ([
             item?.productionString,
@@ -180,5 +174,5 @@ const createMerSchedule = onCall(async (request) => {
 })
 
 module.exports = {
-    createMerSchedule,
+    createWellTestSchedule,
 };

@@ -2,12 +2,12 @@ import { useDispatch, useSelector } from "react-redux"
 import { useAssetNames } from "hooks/useAssetNames"
 import { clearSetup, setSetupData, setWholeSetup } from "Store/slices/setupSlice"
 import CheckInput from "Components/Input/CheckInput"
-import { Input } from "Components"
-import { useCallback, useEffect, useState } from "react"
+import { Button, Input } from "Components"
+import { useCallback, useEffect, useRef, useState } from "react"
 import styles from '../welltest.module.scss'
 import { useFetch } from "hooks/useFetch"
 import Text from "Components/Text"
-import { closeModal } from "Store/slices/modalSlice"
+import { closeModal, openModal } from "Store/slices/modalSlice"
 import { store } from "Store"
 import { firebaseFunctions } from "Services"
 import { toast } from "react-toastify"
@@ -18,6 +18,8 @@ import dayjs from "dayjs"
 import Files from "Partials/Files"
 import { createWellTitle } from "utils"
 import { setLoadingScreen } from "Store/slices/loadingScreenSlice"
+import ExcelToCsv from "Partials/ExcelToCSV"
+import { AttachFile } from "@mui/icons-material"
 
 const SelectAsset = () => {
 
@@ -315,6 +317,21 @@ const Exists = () => {
         </div>
     )
 }
+const ImportWellTestSchedule = () => {
+    const scheduleJson = useRef()
+    const fileRef = useRef()
+    console.log(scheduleJson.current)
+    
+    return (
+        <div className="w-[450px] p-2">
+            <ExcelToCsv className={'border p-3 rounded flex items-center border-dashed justify-between'} onComplete={f=>scheduleJson.current =  f} onSelectFile={f => fileRef.current = f}>
+
+                {fileRef.current?.name || <> <Text>         Import Well Test Scedule</Text> <AttachFile /></>}
+            </ExcelToCsv> <br />
+            <Button className={'px-3'}>Proceed</Button>
+        </div>
+    )
+}
 const Schedule = () => {
     // const setupData = useSelector(state => state.setup)
     const [loading] = useState(false)
@@ -355,6 +372,9 @@ const Schedule = () => {
                     ]}
                 />
             }
+            {/* <Button className={'m-4'} onClick={() => dispatch(openModal({ component: <ImportWellTestSchedule />, title: "Import well test schedule" }))}>
+                Import well test schedule
+            </Button> */}
         </>
     )
 

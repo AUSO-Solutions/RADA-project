@@ -4,7 +4,7 @@ import { read, utils } from "xlsx";
 // import csvToJson from "utils/cvsToJson";
 // import { toast } from "react-toastify";
 // import dayjs from "dayjs";
-function ExcelToCsv({ onComplete = () => null, children, className }) {
+function ExcelToCsv({ onComplete = () => null, children, className, onSelectFile }) {
     // const [, setCsvData] = useState("");
 
     // const handleFileUpload = (event) => {
@@ -34,6 +34,7 @@ function ExcelToCsv({ onComplete = () => null, children, className }) {
     const readUploadFile = (e) => {
         e.preventDefault();
         if (e.target.files) {
+            onSelectFile(e.target.files[0])
             const reader = new FileReader();
             reader.onload = (e) => {
                 const data = e.target.result;

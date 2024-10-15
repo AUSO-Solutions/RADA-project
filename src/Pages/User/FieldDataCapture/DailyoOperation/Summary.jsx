@@ -24,6 +24,7 @@ import SelectGroup from 'Partials/BroadCast/SelectGroup';
 import BroadCastSuccessfull from 'Partials/BroadCast/BroadCastSuccessfull';
 import { openModal } from 'Store/slices/modalSlice';
 import { useLocation, useSearchParams } from 'react-router-dom';
+import { bsw } from 'utils';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -201,7 +202,7 @@ const Summary = () => {
 
           data={[
             { name: "Gross Liquid (bbls/day)", target: parseFloat(tableData.grossTarget || 0).toFixed(3), actual: parseFloat(tableData.grossProduction || 0).toFixed(3) },
-            { name: "BS&W (%)", target: 100, actual: parseFloat(tableData.bsw || 0).toFixed(3) },
+            { name: "BS&W (%)", target: bsw({gross:tableData.grossTarget,oil:tableData.oilTarget}), actual: bsw({gross:tableData.grossProduction,oil:tableData.oilProduced}) },
             { name: "Net Oil (bbls/day)", target: parseFloat(tableData.oilTarget || 0).toFixed(3), actual: parseFloat(tableData.oilProduced || 0).toFixed(3) },
             { name: "Produced Gas (mmscf)", target: parseFloat(tableData.gasProducedTarget || 0).toFixed(3), actual: parseFloat(tableData.gasProduced || 0).toFixed(3) },
             { name: "Export Gas (mmscf)", target: parseFloat(tableData.exportGasTarget || 0).toFixed(3), actual: parseFloat(tableData.gasExported || 0).toFixed(3) },
