@@ -9,7 +9,8 @@ export const useAssetByName = (name) => {
         flowStations: [],
         fields: [],
         productionStrings: [],
-        wells: []
+        wells: [],
+        reservoirs:[]
     })
 
     const [loading, setLoading] = useState(false)

@@ -11,19 +11,18 @@ import { ArrowBack } from '@mui/icons-material';
 import Text from 'Components/Text';
 import { Button, Input } from 'Components';
 import { Setting2 } from 'iconsax-react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useFetch } from 'hooks/useFetch';
 import dayjs from 'dayjs';
 import { firebaseFunctions } from 'Services';
 import { closeModal, openModal } from 'Store/slices/modalSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { bsw, createWellTitle, sum } from 'utils';
 import Actions from 'Partials/Actions/Actions';
 import { Query } from 'Partials/Actions/Query';
 import { Approve } from 'Partials/Actions/Approve';
 import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
-
 
 const TableInput = (props) => {
     return <input className='p-1 text-center w-[80px] h-[100%] border outline-none ' required {...props} />
@@ -45,21 +44,32 @@ const SaveAs = ({ defaultValue, onSave = () => null, loading }) => {
 
 export default function WellTestDataTable() {
 
-    const { search } = useLocation()
+    // const { search } = useLocation()
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const [loading] = useState(false)
     const [wellTest, setWellTest] = useState({})
     const [wellTestResult, setWellTestResult] = useState({})
-    const id = useMemo(() => new URLSearchParams(search).get('id'), [search])
-    const scheduleId = useMemo(() => new URLSearchParams(search).get('scheduleId'), [search])
-    const { data: res } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'wellTestSchedule', id: scheduleId || id } })
-    const { data: res2 } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'wellTestResult', id } })
-    const [, setTitle] = useState('')
-    const isEdit = useMemo(() => { return scheduleId }, [scheduleId])
-    useEffect(() => { setWellTest(res) }, [res])
-    useEffect(() => { if (!isEdit) setWellTestResult(wellTest?.wellsData) }, [wellTest?.wellsData, isEdit])
-    useEffect(() => { if (isEdit) setWellTestResult(res2?.wellTestResultData); setTitle(res2?.title) }, [res2, isEdit])
+    const [searchParams,] = useSearchParams()
+    const id = searchParams.get('id')
+    // const scheduleId = useMemo(() => new URLSearchParams(search).get('scheduleId'), [search])
+    const { data: scheduleData } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'wellTestSchedule', id } })
+    const { data: resultData } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'wellTestResult', id } })
+    const isEdit = useMemo(() => { return resultData ? true : false }, [resultData])
+    const setupData = useSelector(state => state?.setup)
+    useEffect(() => {
+        if (searchParams.get('from-file')) {
+            setWellTest({
+                asset: setupData?.asset,
+                wellTestResultData:setupData?.wellsData
+            })
+            setWellTestResult(setupData?.wellsData)
+            // setWellTestResult(isEdit ? resultData?.wellTestResultData : scheduleData?.wellsData);
+        } else {
+            setWellTest(isEdit ? resultData : scheduleData)
+            setWellTestResult(isEdit ? resultData?.wellTestResultData : scheduleData?.wellsData);
+        }
+    }, [resultData, scheduleData, isEdit,searchParams])
 
     const save = async (title) => {
         if (!title) {
@@ -68,7 +78,6 @@ export default function WellTestDataTable() {
         }
         dispatch(setLoadingScreen({ open: true }))
         try {
-
             const arr = Object.values(wellTestResult || {})
             console.log(arr)
             const totals = {
@@ -126,14 +135,10 @@ export default function WellTestDataTable() {
         { name: 'sand', type: "number", fn: () => null, required: false },
     ]
 
-    useEffect(() => {
-        // set
-    }, [])
-
     return (
         < form className=' w-[80vw] px-3' onSubmit={(e) => {
             e.preventDefault()
-            dispatch(openModal({ component: <SaveAs defaultValue={res2?.title} onSave={save} loading={loading} /> }))
+            dispatch(openModal({ component: <SaveAs defaultValue={resultData?.title} onSave={save} loading={loading} /> }))
 
         }}>
             <div className='flex justify-between items-center'>
@@ -173,9 +178,7 @@ export default function WellTestDataTable() {
                             <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Water Rate</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Gas Rate</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >BS&W</TableCell>
-                            {/* <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >WGR</TableCell> */}
                             <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >GOR</TableCell>
-                            {/* <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Total Gas</TableCell> */}
                             <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >FTHP</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >FLP</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >CHP</TableCell>
@@ -196,9 +199,7 @@ export default function WellTestDataTable() {
                             <TableCell style={{ fontWeight: '600' }} align="center">(bwpd)</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center">(MMscf/day)</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center">(%)</TableCell>
-                            {/* <TableCell style={{ fontWeight: '600' }} align="center">(Stb/MMscf)</TableCell> */}
                             <TableCell style={{ fontWeight: '600' }} align="center">(Scf/Stb)</TableCell>
-                            {/* <TableCell style={{ fontWeight: '600' }} align="center">(MMscf/day)</TableCell> */}
                             <TableCell style={{ fontWeight: '600' }} align="center">(Psia)</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center">(Psia)</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center">(Psia)</TableCell>

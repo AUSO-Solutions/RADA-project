@@ -2,12 +2,12 @@ import { useDispatch, useSelector } from "react-redux"
 import { useAssetNames } from "hooks/useAssetNames"
 import { clearSetup, setSetupData, setWholeSetup } from "Store/slices/setupSlice"
 import CheckInput from "Components/Input/CheckInput"
-import { Button, Input } from "Components"
-import { useCallback, useEffect, useRef, useState } from "react"
+import {  Input } from "Components"
+import { useCallback, useEffect, useState } from "react"
 import styles from '../welltest.module.scss'
 import { useFetch } from "hooks/useFetch"
 import Text from "Components/Text"
-import { closeModal, openModal } from "Store/slices/modalSlice"
+import { closeModal } from "Store/slices/modalSlice"
 import { store } from "Store"
 import { firebaseFunctions } from "Services"
 import { toast } from "react-toastify"
@@ -18,8 +18,7 @@ import dayjs from "dayjs"
 import Files from "Partials/Files"
 import { createWellTitle } from "utils"
 import { setLoadingScreen } from "Store/slices/loadingScreenSlice"
-import ExcelToCsv from "Partials/ExcelToCSV"
-import { AttachFile } from "@mui/icons-material"
+import { ImportWellTestSchedule } from "../ImportWellTestFile"
 
 const SelectAsset = () => {
 
@@ -41,6 +40,7 @@ const SelectAsset = () => {
             setAsset(asset_)
         }
         if (setupData?.asset || !asset) fetchAssetOnBack()
+        // eslint-disable-next-line
     }, [setupData?.asset])
     const [searchProdString, setSearchProdString] = useState('')
     const selectProdString = (productionString) => {
@@ -62,6 +62,8 @@ const SelectAsset = () => {
             label={'Assets'} type='select' options={assetNames?.map(assetName => ({ value: assetName, label: assetName }))}
             onChange={(e) => onSelectAsset(e)}
         />
+        <ImportWellTestSchedule />
+      
         <br />  Flow stations ({setupData?.flowstations?.length}) <br />
         {
             asset?.flowStations?.map(flowStation => <> <CheckInput checked={setupData?.flowstations?.includes(flowStation)} onChange={(e) => selectFlowstations(e, flowStation)} label={flowStation} /> </>)
@@ -193,10 +195,10 @@ const DefineSchedule = () => {
                                             <input required={col?.isSelected} disabled={!col?.isSelected} type="number" className={styles.inputBox} defaultValue={col?.chokeSize} name="chokeSize" onChange={handleWellChanges} />
                                         </td>
                                         <td className="min-w-[230px]">
-                                            <input required={col?.isSelected} disabled={!col?.isSelected} min={dayjs().format("YYYY-MM-DDTHH:mm")} type="datetime-local" className={styles.inputBox} defaultValue={col?.startDate} name="startDate" onChange={handleWellChanges} />
+                                            <input required={col?.isSelected} disabled={!col?.isSelected} /* min={dayjs().format("YYYY-MM-DDTHH:mm")} */ type="datetime-local" className={styles.inputBox} defaultValue={col?.startDate} name="startDate" onChange={handleWellChanges} />
                                         </td>
                                         <td className="min-w-[230px]">
-                                            <input required={col?.isSelected} disabled={!col?.isSelected} key={col?.startDate} min={dayjs(col?.startDate).format("YYYY-MM-DDTHH:mm")} type="datetime-local" className={styles.inputBox} defaultValue={col?.endDate} name="endDate" onChange={handleWellChanges} />
+                                            <input required={col?.isSelected} disabled={!col?.isSelected} key={col?.startDate} /* min={dayjs(col?.startDate).format("YYYY-MM-DDTHH:mm")} */ type="datetime-local" className={styles.inputBox} defaultValue={col?.endDate} name="endDate" onChange={handleWellChanges} />
                                         </td>
                                         <td>
                                             <input className={styles.inputBox} required={col?.isSelected} disabled={!col?.isSelected} type='number' value={dayjs(col?.endDate).diff(col?.startDate, 'hours')} name="duration" />
@@ -219,11 +221,7 @@ const DefineSchedule = () => {
     </>
 }
 const Preview = () => {
-
     const setupData = useSelector(state => state.setup)
-
-
-
     return <>
         <div className='flex justify-between !w-[100%]'>
             <Input type='select' placeholder={setupData?.asset} containerClass={'h-[39px] !w-[150px]'} disabled />
@@ -247,7 +245,10 @@ const Preview = () => {
                 </thead>
                 <tbody>
                     {
-                        Object.values(setupData?.wellsData || {}).map((wellData, i) => {
+                        Object.values(setupData?.wellsData || {})?.filter(item => setupData?.flowstations?.includes(item?.flowstation))
+                        .sort((a, b) => {
+                            return ((setupData?.productionStrings?.includes(b?.productionString) ? 1 : 0) - (setupData?.productionStrings?.includes(a?.productionString) ? 1 : 0))
+                        }).map((wellData, i) => {
                             const col = wellData
                             // if (!col?.isSelected) return null
                             return (
@@ -310,28 +311,14 @@ const Exists = () => {
         <div className=" flex flex-wrap gap-4 m-5 ">
 
             <Files name={(file) => `${createWellTitle(file, 'Well Test Schedule')}`} files={data} actions={[
-                { name: 'Remark', to: (file) => `/users/fdc/well-test-data/schedule-table?id=${file?.id}` },
+                { name: 'Remark Schedule', to: (file) => `/users/fdc/well-test-data/schedule-table?id=${file?.id}` },
                 { name: 'Well Test Result', to: (file) => `/users/fdc/well-test-data/well-test-table?id=${file?.id}` },
             ]} />
 
         </div>
     )
 }
-const ImportWellTestSchedule = () => {
-    const scheduleJson = useRef()
-    const fileRef = useRef()
-    console.log(scheduleJson.current)
-    
-    return (
-        <div className="w-[450px] p-2">
-            <ExcelToCsv className={'border p-3 rounded flex items-center border-dashed justify-between'} onComplete={f=>scheduleJson.current =  f} onSelectFile={f => fileRef.current = f}>
 
-                {fileRef.current?.name || <> <Text>         Import Well Test Scedule</Text> <AttachFile /></>}
-            </ExcelToCsv> <br />
-            <Button className={'px-3'}>Proceed</Button>
-        </div>
-    )
-}
 const Schedule = () => {
     // const setupData = useSelector(state => state.setup)
     const [loading] = useState(false)
@@ -372,9 +359,7 @@ const Schedule = () => {
                     ]}
                 />
             }
-            {/* <Button className={'m-4'} onClick={() => dispatch(openModal({ component: <ImportWellTestSchedule />, title: "Import well test schedule" }))}>
-                Import well test schedule
-            </Button> */}
+
         </>
     )
 
