@@ -11,10 +11,14 @@ import Setup from "Partials/setup"
 import Files from "Partials/Files"
 import { useLocation, useSearchParams } from "react-router-dom"
 import { firebaseFunctions } from "Services"
-import { closeModal } from "Store/slices/modalSlice"
+import { closeModal, openModal } from "Store/slices/modalSlice"
 import { createWellTitle } from "utils"
 import dayjs from "dayjs"
 import { setLoadingScreen } from "Store/slices/loadingScreenSlice"
+import BroadCast from "Partials/BroadCast"
+import SelectGroup from "Partials/BroadCast/SelectGroup"
+import Attachment from "Partials/BroadCast/Attachment"
+import BroadCastSuccessfull from "Partials/BroadCast/BroadCastSuccessfull"
 
 
 const SelectAsset = () => {
@@ -43,7 +47,7 @@ const SelectAsset = () => {
             onChange={(e) => dispatch(setSetupData({ name: 'wellTestResult1', value: { id: e.value, title: e.label } }))} name='wellTestResult1'
         />
         <Input required defaultValue={{ label: setupData?.wellTestResult2?.title, value: setupData?.wellTestResult2?.id }}
-            label={'Well Test Result 2'} type='select' options={wellTestResults.filter(result =>(result.id !== setupData?.wellTestResult1?.id )  )?.map(result => ({ label: result.title, value: result.id }))}
+            label={'Well Test Result 2'} type='select' options={wellTestResults.filter(result => (result.id !== setupData?.wellTestResult1?.id))?.map(result => ({ label: result.title, value: result.id }))}
             onChange={(e) => dispatch(setSetupData({ name: 'wellTestResult2', value: { id: e.value, title: e.label } }))} name='wellTestResult2'
         />
 
@@ -84,13 +88,31 @@ const SaveAs = () => {
 const Exists = () => {
 
     const { data } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "IPSC" } })
+    const dispatch = useDispatch()
 
     return (
         <div className=" flex flex-wrap gap-4 m-5 ">
             <Files files={data} actions={[
                 { name: 'View', to: (file) => `/users/fdc/well-test-data/ipsc-table?id=${file?.id}` },
                 { name: 'Edit', to: (file) => `/users/fdc/well-test-data/well-test-table?id=${file?.id}` },
-            ]} name={(file) => `${createWellTitle(file, 'Well Test Result')}`} />
+                {
+                    name: 'Broadcast', to: (file) => null, onClick: (file) => dispatch(openModal({
+                        title: '',
+                        component: <BroadCast
+                            link={`/users/fdc/well-test-data/ipsc-table?id=${file?.id}`}
+                            type={'Well Test IPSC'}
+                            date={dayjs(file?.month).format('MMM/YYYY')}
+                            title='Broadcast Well Test IPSC'
+                            subject={`${file?.asset} Well Test IPSC ${dayjs(file?.month).format('MMM/YYYY')}`}
+                            steps={['Select Group', 'Attachment', 'Broadcast']}
+                            stepsComponents={[
+                                <SelectGroup />,
+                                <Attachment details={`${file?.asset} Well Test IPSC ${dayjs(file?.startDate).format('MMM/YYYY')}`} />,
+                                <BroadCastSuccessfull details={`${file?.asset} Well Test IPSC ${dayjs(file?.startDate).format('MMM/YYYY')}`} />]} />
+                    }))
+                },
+            ]} name={(file) => `${createWellTitle(file, 'Well Test Result')}`}
+            />
         </div>
     )
 }
@@ -106,7 +128,7 @@ const Schedule = () => {
 
     const save = async () => {
         try {
-                dispatch(setLoadingScreen({ open: true }))
+            dispatch(setLoadingScreen({ open: true }))
             const { data: wellTestResult1 } = await firebaseFunctions('getSetup', { id: wellTestResult1Id, setupType: 'wellTestResult' })
             const { data: IPSCs } = await firebaseFunctions('getSetups', { setupType: 'IPSC' })
             // console.log(IPSCs, wellTestResult1)
@@ -127,7 +149,7 @@ const Schedule = () => {
             toast.error(error?.message)
         }
         finally {
-                dispatch(setLoadingScreen({ open: false }))
+            dispatch(setLoadingScreen({ open: false }))
         }
     }
     return (
