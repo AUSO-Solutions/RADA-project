@@ -61,7 +61,7 @@ export default function WellTestDataTable() {
         if (searchParams.get('from-file')) {
             setWellTest({
                 asset: setupData?.asset,
-                wellTestResultData:setupData?.wellsData
+                wellTestResultData: setupData?.wellsData
             })
             setWellTestResult(setupData?.wellsData)
             // setWellTestResult(isEdit ? resultData?.wellTestResultData : scheduleData?.wellsData);
@@ -69,7 +69,8 @@ export default function WellTestDataTable() {
             setWellTest(isEdit ? resultData : scheduleData)
             setWellTestResult(isEdit ? resultData?.wellTestResultData : scheduleData?.wellsData);
         }
-    }, [resultData, scheduleData, isEdit,searchParams])
+        // eslint-disable-next-line 
+    }, [resultData, scheduleData, isEdit, searchParams])
 
     const save = async (title) => {
         if (!title) {
@@ -153,7 +154,7 @@ export default function WellTestDataTable() {
                 <div className='flex justify-end py-2 items-center gap-3'>
                     <div className='flex gap-2' >
                         {isEdit && <Actions actions={[
-                            { name: 'Query Result', onClick: () => dispatch(openModal({ component: <Query /> })) },
+                            { name: 'Query Result', onClick: () => dispatch(openModal({ component: <Query title={createWellTitle(wellTest)} /> })) },
                             { name: 'Approve', onClick: () => dispatch(openModal({ component: <Approve /> })) },
 
                         ]} />}

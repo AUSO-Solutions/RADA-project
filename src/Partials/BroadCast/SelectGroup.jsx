@@ -29,12 +29,12 @@ const SelectGroup = ({ onChange = () => null }) => {
     const [searchWord,setSearchWord] = useState('')
 
     return (
-        <div>
+        <div className='min-w-[400px]'>
 
             <input className='bg-[lightgray] rounded border outline-none p-2   w-[300px]' placeholder='Search group' onChange={e => setSearchWord(e.target.value)} />
             <div className='flex flex-col'>
                 <div className='border-b py-2'>
-                    <CheckInput label={'Selete all'} checked={selectedGroups.length === groups.length} onChange={() => {
+                    <CheckInput label={'Select all'} checked={selectedGroups.length === groups.length} onChange={() => {
                         selectAll()
                         onChange(selectedGroups)
                     }} />

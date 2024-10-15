@@ -2,18 +2,7 @@
 const admin = require("firebase-admin");
 const logger = require("firebase-functions/logger");
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
-const nodemailer = require("nodemailer")
-
-var transporter = nodemailer.createTransport({
-    service: 'gmail',
-    // host: "smtp.example.com",
-    // port: 587,
-    // secure: false, // upgrade later with STARTTLS
-    auth: {
-        user: 'kehindesalaudeen222@gmail.com',
-        pass: 'nffa llda lyrf jzle'
-    }
-});
+const { transporter, sender } = require("../helpers");
 
 const broadcast = onCall(async (request) => {
     try {
@@ -30,7 +19,7 @@ const broadcast = onCall(async (request) => {
 
         const link = 'https://ped-application-4d196.web.app'
         var msg = {
-            from: "kehindesalaudeen222@gmail.com'", // sender address
+            from: sender, // sender address
             to: maillist,
             subject, // Subject line
             // text: " Hello you are receiving this broadcast from Rada Application ", // plaintext body
@@ -44,10 +33,10 @@ const broadcast = onCall(async (request) => {
     <br> <br>
     You are receiving this email because you are registered to the PED Application 
 
-</p>` // html body
+</p>` 
         }
 
-        await transporter.sendMail(msg, function (error, info) {
+         transporter.sendMail(msg, function (error, info) {
             if (error) {
                 console.log(error);
             } else {

@@ -23,7 +23,6 @@ import BroadCast from "Partials/BroadCast"
 import BroadCastSuccessfull from "Partials/BroadCast/BroadCastSuccessfull"
 import SelectGroup from "Partials/BroadCast/SelectGroup"
 import Attachment from "Partials/BroadCast/Attachment"
-import { useLocation } from "react-router-dom"
 
 const SelectAsset = () => {
 

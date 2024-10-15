@@ -21,7 +21,7 @@ import BroadCast from "Partials/BroadCast"
 import SelectGroup from "Partials/BroadCast/SelectGroup"
 import Attachment from "Partials/BroadCast/Attachment"
 import BroadCastSuccessfull from "Partials/BroadCast/BroadCastSuccessfull"
-import { useLocation } from "react-router-dom"
+
 
 
 const ImporFiles = () => {
@@ -120,7 +120,7 @@ const Exists = () => {
 }
 
 const Schedule = () => {
-    const [loading, setLoading] = useState(false)
+    const [loading, ] = useState(false)
     const dispatch = useDispatch()
     useEffect(() => {
         dispatch(clearSetup())
