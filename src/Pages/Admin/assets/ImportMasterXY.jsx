@@ -11,7 +11,7 @@ import { closeModal } from 'Store/slices/modalSlice'
 
 
 const ImportMasterXY = () => {
-    const [file,] = useState()
+    const [file, setFile] = useState()
     const [loading, setLoading] = useState(false)
     const [jsonData, setJsonData] = useState([])
     const firstCharToLowerCase = (str) => {
@@ -20,7 +20,7 @@ const ImportMasterXY = () => {
     }
     const dispatch = useDispatch()
 
-    const saveImport = async() => {
+    const saveImport = async () => {
         console.log({ jsonData })
         if (!jsonData.length) {
             toast.info('Please select a file')
@@ -61,10 +61,10 @@ const ImportMasterXY = () => {
 
     return (
         <div className='w-[400px]'>
-            <ExcelToCsv onComplete={setJsonData}>
-                <div   className='flex flex-col items-center font-bold justify-center border h-[100px] w-full rounded p-3'>
-                    Please select a file <FileUpload />
-                    <div>      {file?.name}</div>
+            <ExcelToCsv onComplete={setJsonData} onSelectFile={setFile} >
+                <div className='flex flex-col items-center font-bold justify-center border h-[100px] w-full rounded p-3'>
+                    {file?.name || <>Please select a file <FileUpload /></>}
+
                 </div>
             </ExcelToCsv>
             {/* <input type="file" onChange={(e) => setFile(e.target.files[0])} className='hidden' id='fileInput' /> */}
