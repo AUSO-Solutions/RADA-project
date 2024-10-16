@@ -143,16 +143,15 @@ const getGroups = onCall(async (request) => {
         }
 
         let groups = res?.docs.map(doc => doc?.data())
-        let groupMembersFullDetails = {}, groupAssetsFullDetails = {}
+        let groupMembersFullDetails = {};
 
         // logger.log('groupMembersFullDetails => ', groupMembersFullDetails)
         for (let groupIndex = 0; groupIndex < groups.length; groupIndex++) {
             const group = groups[groupIndex]
             const members = group?.members || []
-            const assets = group?.assets || []
+            // const assets = group?.assets || []
             groupMembersFullDetails[groupIndex] = []
-            groupAssetsFullDetails[groupIndex] = []
-
+            // groupAssetsFullDetails[groupIndex] = []
             if (members?.length) for (let i = 0; i < members?.length; i++) {
                 const member = members[i];
                 const memberDetails = member ? (await db.collection('users').doc(member).get()).data() : {}
@@ -165,14 +164,14 @@ const getGroups = onCall(async (request) => {
                     })
                 }
             }
-            if (assets?.length) for (let i = 0; i < assets?.length; i++) {
-                const asset = assets[i];
-                const assetDetails = asset ? (await db.collection('assets').doc(asset).get()).data() : {}
-                logger.log('assetDetails => ', assetDetails)
-                if (assetDetails?.id) {
-                    groupAssetsFullDetails[groupIndex].push(assetDetails)
-                }
-            }
+            // if (assets?.length) for (let i = 0; i < assets?.length; i++) {
+            //     const asset = assets[i];
+            //     const assetDetails = asset ? (await db.collection('assets').doc(asset).get()).data() : {}
+            //     logger.log('assetDetails => ', assetDetails)
+            //     if (assetDetails?.id) {
+            //         groupAssetsFullDetails[groupIndex].push(assetDetails)
+            //     }
+            // }
 
         }
         let result = []
@@ -180,13 +179,13 @@ const getGroups = onCall(async (request) => {
             result = {
                 ...groups[0],
                 members: groupMembersFullDetails[0],
-                assets: groupAssetsFullDetails[0]
+                // assets: groupAssetsFullDetails[0]
             }
         } else {
             result = groups.map((group, i) => ({
                 ...group,
                 members: groupMembersFullDetails[i],
-                assets: groupAssetsFullDetails[i]
+                // assets: groupAssetsFullDetails[i]
             }))
         }
         return {

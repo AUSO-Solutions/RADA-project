@@ -22,26 +22,29 @@ import { useAssetByName } from 'hooks/useAssetByName';
 const tables = ['IPSC', 'Actual Production', 'Deferred Production']
 
 export default function OilGasAccountingTable() {
+
     const [searchParams, setSearchParams] = useSearchParams()
-
-
-    // const [searchParams,] = useSearchParams()
+    const [flowStation, setFlowStation] = useState('')
     const { data: res } = useFetch({ firebaseFunction: 'getSetup', payload: { id: searchParams.get('id'), setupType: 'oilAndGasAccounting' } })
     const { data: IPSCs } = useFetch({ firebaseFunction: 'getSetups', payload: { id: searchParams.get('id'), setupType: 'IPSC' } })
 
     const matchingIPSC = React.useMemo(() => {
-        return IPSCs.find(IPSC => IPSC.asset === res.asset && IPSC.month === dayjs().format("YYYY-MM"))
-    }, [res, IPSCs])
+        const gotten = IPSCs.find(IPSC => IPSC.asset === res.asset && IPSC.month === dayjs().format("YYYY-MM"))
+        const wellTestResultData = Object.values(gotten?.wellTestResultData || {}).filter(item => item?.flowstation === flowStation)
 
-    // const { data: wellTestResult } = useFetch({ firebaseFunction: 'getSetup', payload: { id: matchingIPSC?.wellTestResult1?.id, setupType: 'wellTestResult', }, dontFetch: !matchingIPSC?.wellTestResult1?.id })
-    // console.log({ wellTestResult })
+        const newWellTestResultData = Object.fromEntries(
+            wellTestResultData
+            .sort((a, b) =>  a?.productionString.localeCompare(b?.productionString))
+                ?.map(item => ([item?.productionString, item])))
+        return { ...gotten, wellTestResultData: newWellTestResultData }
+    }, [res, IPSCs, flowStation])
+
     const { flowStations } = useAssetByName(matchingIPSC?.asset)
-    const [flowStation, setFlowStation] = useState('')
+
     useEffect(() => {
         setFlowStation(flowStations[0])
     }, [flowStations])
     const [date, setDate] = useState(dayjs())
-    // console.log(flowStations)
 
     return (
         < div className='px-3 w-full'>
@@ -54,7 +57,7 @@ export default function OilGasAccountingTable() {
                 </div>
                 <div className='flex gap-2 items-center'>
                     <RadaDatePicker onChange={setDate} />
-                    <Input disabled={flowStations.length === 1} value={{ label: flowStations[0], value: flowStations[0] }} containerClass='!w-[200px]' type='select' options={flowStations?.map(flowStation => ({ label: flowStation, value: flowStation }))} onChange={e => setFlowStation(e.value)} />
+                    <Input disabled={flowStations.length === 1} value={{ label: flowStation, value: flowStation }} containerClass='!w-[200px]' type='select' options={flowStations?.map(flowStation => ({ label: flowStation, value: flowStation }))} onChange={e => setFlowStation(e.value)} />
                 </div>
             </div>
 

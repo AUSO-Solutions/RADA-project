@@ -42,7 +42,7 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
             let updated = IPSC?.wellTestResultData
             for (const key in IPSC?.wellTestResultData) {
                 const element = IPSC?.wellTestResultData[key];
-                console.log(element)
+                // console.log(element)
                 updated[key].defermentCategory = 'Unscheduled Deferment'
                 updated[key].defermentSubCategory = 'Mismatch'
             }
@@ -95,7 +95,7 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
     const onCalculate = () => {
         viewResult('calculate')
     }
-    
+
 
     const getTotalOf = (key) => {
         const res = Object.values(wellTestResultData || {})
@@ -163,7 +163,7 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
                 </TableHead>
 
                 <TableBody>
-                    {Object.values(wellTestResultData || {}).sort((a, b) => ((b?.isSelected ? 1 : 0) - (a?.isSelected ? 1 : 0)))?.map((well, i) => {
+                    {Object.values(wellTestResultData || {})?.sort((a, b) => a?.productionString - b?.productionString)?.map((well, i) => {
                         const handleChange = (e) => {
                             const name = e.target.name
                             const value = e.target.value

@@ -10,7 +10,7 @@ import { sum } from 'utils';
 import { Button } from 'Components';
 import { toast } from 'react-toastify';
 import { camelize } from './helper';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import RadioSelect from '../RadioSelect';
 import RadaDatePicker from 'Components/Input/RadaDatePicker';
 import { MdOutlineSettings } from 'react-icons/md';
@@ -29,16 +29,28 @@ import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
 import { firebaseFunctions } from 'Services';
 
 
-const TableInput = ({ type = '', ...props }) => {
-  return <input className='p-1 text-center w-[70px] border outline-none' step="any" type={type} {...props} />
+// const TableInput = ({ type = '', ...props }) => {
+//   return <input className='p-1 text-center w-[70px] border outline-none' step="any" type={type} {...props} />
+// }
+const TableInput = (props) => {
+  return <input className='p-1 text-center w-[70px] border outline-none' required {...props} step={'any'}
+    onKeyPress={(e) => {
+      const reg = e.target.value?.includes('.') ? /[0-9]/ : /^[0-9]*\.?[0-9]*$/
+      if (!reg.test(e.key) && props.type === 'number') {
+        e.preventDefault();
+      }
+    }}
+  />
 }
 
 export default function GasTable() {
   const { search } = useLocation()
   const dispatch = useDispatch()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [setup, setSetup] = useState({})
   const [showSettings, setShowSettings] = useState(false)
-  const [date, setDate] = useState(dayjs().format("YYYY-MM-DD"))
+  // const [date, setDate] = useState(dayjs().format("YYYY-MM-DD"))
+  const date = useMemo(() => searchParams.get('date'), [searchParams])
   const id = useMemo(() => new URLSearchParams(search).get('id'), [search])
   const { data: res } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'volumeMeasurement', id } })
   const { data: attacmentSetup } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'volumeMeasurement', id: res?.attachmentId }, dontFetch: !res?.attachmentId/* */ })
@@ -126,8 +138,7 @@ export default function GasTable() {
   useEffect(() => {
     const getDayCapture = async () => {
       try {
-        const { data } = await firebaseFunctions('getGasVolumeByDateAndAsset', { asset: setup?.asset, date }, false, { loadingScreen: true })
-        console.log(JSON.stringify(tableValues), data?.flowstations)
+        const { data } = await firebaseFunctions('getGasVolumeByDateAndAsset', { asset: setup?.asset, date: date }, false, { loadingScreen: true })
         const dayTableValues = Object.fromEntries((data?.flowstations || [])?.map(flowstation => {
           return [flowstation?.name, {
             "meters": Object.fromEntries(Object.entries(flowstation?.meters || {}).map(meter => (
@@ -155,7 +166,18 @@ export default function GasTable() {
     if (setup?.asset) getDayCapture()
   }, [date, setup?.asset])
 
-
+  useEffect(() => {
+    setSearchParams(prev => {
+      if (!prev.get("date")) prev.set('date', dayjs().subtract(1, 'days').format("YYYY-MM-DD"))
+      return prev
+    })
+  }, [setSearchParams])
+  const onDateChange = (value) => {
+    setSearchParams(prev => {
+      prev.set('date', value)
+      return prev
+    })
+  }
   useEffect(() => {
     setup?.flowStations?.forEach((flowStation, flowStationIndex) => {
       const readings = flowStation?.readings || []
@@ -191,7 +213,7 @@ export default function GasTable() {
     }))
     // console.log(flowStations)
     const payload = {
-      date: dayjs(date).format('YYYY-MM-DD'),
+      date: date,
       asset: setup.asset,
       fluidType: 'gas',
       totalGasProduced: totals.totalGasProduced,
@@ -214,8 +236,10 @@ export default function GasTable() {
   }
   const navigate = useNavigate()
   const onSelectReportType = (e) => {
-    if (e !== 'Gas') navigate(`/users/fdc/daily/volume-measurement-table?id=${attacmentSetup?.id}&reportType=${e}`)
-  }
+    if (e !== 'Gas') { 
+       const proceed = window.confirm("Proceed without saving changes ?")
+      if (proceed)navigate(`/users/fdc/daily/volume-measurement-table?id=${attacmentSetup?.id}&reportType=${e}&date=${date}`)
+  }}
   const reportTypes__ = useMemo(() => {
     return (attacmentSetup?.reportTypes || [])?.concat(setup?.reportTypes)
   }, [attacmentSetup?.reportTypes, setup?.reportTypes])
@@ -228,7 +252,7 @@ export default function GasTable() {
       <div className='flex items-center gap-2 '>
         <AttachSetup setup={setup} />
         <Link to={'/users/fdc/daily?tab=volume-measurement'}>   <Text className={'cursor-pointer'} color={colors.rada_blue}>View setups</Text></Link>
-        <RadaDatePicker onChange={setDate} />
+        <RadaDatePicker onChange={onDateChange} value={date} max={dayjs().format('YYYY-MM-DD')}/>
         <div onClick={() => setShowSettings(true)} style={{ borderColor: 'rgba(0, 163, 255, 1)' }} className='border cursor-pointer px-3 py-1 rounded-[8px]'>
           <MdOutlineSettings color='rgba(0, 163, 255, 1)' />
         </div>

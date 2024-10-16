@@ -10,7 +10,7 @@ export const sum = (array = []) => {
 }
 export const createWellTitle = (setup, type) => {
     const field = setup?.field ? `/${setup?.field}/` : '/'
-    return `${setup?.title} ${setup?.asset}${field}${dayjs(setup?.month).format("MMM-YYYY")}`
+    return `${setup?.title || ""} ${setup?.asset}${field}${dayjs(setup?.month).format("MMM-YYYY")}`
 }
 
 export const getWellLastTestResult = (wellTestResults, wellTestResult, productionString) => {

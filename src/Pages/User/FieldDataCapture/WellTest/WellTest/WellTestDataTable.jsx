@@ -55,13 +55,16 @@ export default function WellTestDataTable() {
     // const scheduleId = useMemo(() => new URLSearchParams(search).get('scheduleId'), [search])
     const { data: scheduleData } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'wellTestSchedule', id } })
     const { data: resultData } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'wellTestResult', id } })
-    const isEdit = useMemo(() => { return resultData ? true : false }, [resultData])
+    const isEdit = useMemo(() => { return resultData?.asset ? true : false }, [resultData])
+    console.log({isEdit})
     const setupData = useSelector(state => state?.setup)
     useEffect(() => {
         if (searchParams.get('from-file')) {
             setWellTest({
                 asset: setupData?.asset,
-                wellTestResultData: setupData?.wellsData
+                wellTestResultData: setupData?.wellsData,
+                month: setupData?.month,
+                flowstations: setupData?.flowstations
             })
             setWellTestResult(setupData?.wellsData)
             // setWellTestResult(isEdit ? resultData?.wellTestResultData : scheduleData?.wellsData);
@@ -132,7 +135,7 @@ export default function WellTestDataTable() {
         { name: 'flp', type: "number", fn: () => null, required: true },
         { name: 'chp', type: "number", fn: () => null, required: false },
         { name: 'staticPressure', type: "number", fn: () => null, required: false },
-        { name: 'orificePlateSize', type: "number", fn: () => null, required: false },
+        { name: 'orificePlateSize', type: "text", fn: () => null, required: false },
         { name: 'sand', type: "number", fn: () => null, required: false },
     ]
 
@@ -243,7 +246,7 @@ export default function WellTestDataTable() {
                                     </TableCell>
                                     {
                                         fields.map(field => <TableCell align="center">
-                                            <TableInput type='number' required={well.isSelected && field.required} defaultValue={field?.fn(well) || well?.[field.name]} disabled={field?.disabled} onChange={(e) => handleChange(field.name, e.target.value)} />
+                                            <TableInput type={field.type || 'number'} required={well.isSelected && field.required} defaultValue={field?.fn(well) || well?.[field.name]} disabled={field?.disabled} onChange={(e) => handleChange(field.name, e.target.value)} />
                                         </TableCell>)
                                     }
                                     <TableCell align="center" sx={{ minWidth: '200px' }} colSpan={3}>

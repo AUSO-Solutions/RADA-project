@@ -264,50 +264,50 @@ export default function IPSCTable() {
                                 Object.values(ipscData?.wellTestResultData || {})
                                     .sort((a, b) => ((b?.isSelected ? 1 : 0) - (a?.isSelected ? 1 : 0)))
                                     ?.filter(well => well?.flowstation === currFlowstation)
-                                    ?.map((well, i) => { 
+                                    ?.map((well, i) => {
 
-                                    return <TableRow key={well?.productionString}>
-                                        <TableCell align="center">
-                                            {well?.reservoir}
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            {well?.productionString}
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            {well?.chokeSize}
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            {dayjs(well?.endDate).format("DD/MMM/YYYY")}
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            {well?.fluidType}
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            NF
-                                        </TableCell>
-                                        {
-                                            fields.map(field => <TableCell align="center">
+                                        return <TableRow key={well?.productionString}>
+                                            <TableCell align="center">
+                                                {well?.reservoir}
+                                            </TableCell>
+                                            <TableCell align="center">
+                                                {well?.productionString}
+                                            </TableCell>
+                                            <TableCell align="center">
+                                                {well?.chokeSize}
+                                            </TableCell>
+                                            <TableCell align="center">
+                                                {dayjs(well?.endDate).format("DD/MMM/YYYY")}
+                                            </TableCell>
+                                            <TableCell align="center">
+                                                {well?.fluidType}
+                                            </TableCell>
+                                            <TableCell align="center">
+                                                NF
+                                            </TableCell>
+                                            {
+                                                fields.map(field => <TableCell align="center">
                                                     {field.fn(well) || (well?.[field.name] ?? "-")}
-                                                {/* <TableInput type='number' defaultValue={well?.[field.name]} onChange={(e) => handleChange(field.name, e.target.value)} /> */}
-                                            </TableCell>)
-                                        }
-                                        <TableCell align="center" sx={{ minWidth: '200px' }} colSpan={3}>
-                                            {well?.remark || "No remark"}
-                                            {/* <textarea defaultValue={well.remark} onChange={(e) => handleChange("remark", e.target.value)} className='border outline-none p-1' rows={2} cols={20}>
+                                                    {/* <TableInput type='number' defaultValue={well?.[field.name]} onChange={(e) => handleChange(field.name, e.target.value)} /> */}
+                                                </TableCell>)
+                                            }
+                                            <TableCell align="center" sx={{ minWidth: '200px' }} colSpan={3}>
+                                                {well?.remark || "No remark"}
+                                                {/* <textarea defaultValue={well.remark} onChange={(e) => handleChange("remark", e.target.value)} className='border outline-none p-1' rows={2} cols={20}>
                                         </textarea> */}
-                                        </TableCell>
-                                        <TableCell align="center" colSpan={1}>
-                                            <Actions actions={[
-                                                { name: `Forward from ${getWellLastTestResult(wellTestResults, wellTestResult, well.productionString)?.wellTestResult?.month || "-"}`, onClick: () => bringForward(wellTestResults, wellTestResult, well.productionString) },
-                                            ]} >
+                                            </TableCell>
+                                            <TableCell align="center" colSpan={1}>
+                                                <Actions actions={[
+                                                    { name: `Forward from ${getWellLastTestResult(wellTestResults, wellTestResult, well.productionString)?.wellTestResult?.month || "-"}`, onClick: () => bringForward(wellTestResults, wellTestResult, well.productionString) },
+                                                ]} >
 
-                                                {
-                                                    well?.isSelected ? '-' : <Tooltip title="Delete"><BsThreeDots className='cursor-pointer w-full ' /></Tooltip>
-                                                }
-                                            </Actions>
-                                        </TableCell>
-                                    </TableRow>
-                                })
+                                                    {
+                                                        well?.isSelected ? '-' : <Tooltip title="Delete"><BsThreeDots className='cursor-pointer w-full ' /></Tooltip>
+                                                    }
+                                                </Actions>
+                                            </TableCell>
+                                        </TableRow>
+                                    })
                             }
 
                             <TableRow sx={{ backgroundColor: '#00A3FF4D' }}>
@@ -316,7 +316,7 @@ export default function IPSCTable() {
                                 <TableCell style={{ fontWeight: '600' }} align="center">{getTotalOf('oilRate', currFlowstation)}</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center">{getTotalOf('gross', currFlowstation) - getTotalOf('oilRate', currFlowstation)}</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('gasRate', currFlowstation)}</TableCell>
-                                <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('bsw', currFlowstation)}</TableCell>
+                                <TableCell style={{ fontWeight: '600' }} align="center" >{bsw({ oil: getTotalOf('oilRate', currFlowstation), gross: getTotalOf('gross', currFlowstation) })}</TableCell>
 
                                 <TableCell align="center" colSpan={10}></TableCell>
                                 <TableCell style={{ fontWeight: '600', minWidth: '200px' }} colSpan={3} align="center"></TableCell>

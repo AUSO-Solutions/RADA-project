@@ -31,9 +31,9 @@ export const ImportWellTestSchedule = ({ type = 'wellTestSchedule', btnText, onC
                 flp: json['FLP (PSI)'],
                 chp: json['CHP (PSI)'] || null,
                 staticPressure: json['STATIC Pressure (psi)'],
-                orificePlateSize: 0,
+                orificePlateSize: json['Orifice plate size'],
                 sand: 0,
-                remark:json['REMARKS']
+                remark: json['REMARKS']
             } : {}
             return {
                 productionString: json['Producing Strings'],
@@ -47,13 +47,20 @@ export const ImportWellTestSchedule = ({ type = 'wellTestSchedule', btnText, onC
                 startDate: dayjs(json['DATE']).format("YYYY-MM-DDTHH:mm"),
                 endDate: dayjs(json['DATE']).add(json['Duration'], 'hours').format("YYYY-MM-DDTHH:mm"),
                 ...testResultsFields,
-            
+
             }
         })
         const flowstationExist = tests?.every(test => asset?.flowStations?.includes(test?.flowstation))
-        const stringExist = tests?.every(test => asset?.productionStrings?.includes(test?.productionString))
+        const stringExist = tests?.every(test => {
+            // console.log(test?.productionString, asset?.productionStrings?.includes(test?.productionString), asset?.productionStrings.find(str => str === test?.productionStrings))
+            return asset?.productionStrings?.includes(test?.productionString)
+        })
         const reservoirExist = tests?.every(test => asset?.reservoirs?.includes(test?.reservoir))
-        const fieldExist = tests?.every(test => asset?.fields.includes(test?.field))
+        const fieldExist = tests?.every(test => {
+            return asset?.fields.includes(test?.field)
+            // return false
+        })
+        
         if (!flowstationExist) { toast.error('Some flowstations do not match MasterXY'); return }
         if (!stringExist) { toast.error('Some production strings do not match MasterXY'); return }
         if (!reservoirExist) { toast.error('Some reservoirs do not match MasterXY'); return }
@@ -76,9 +83,9 @@ export const ImportWellTestSchedule = ({ type = 'wellTestSchedule', btnText, onC
                 flp: toNum(thisData?.flp),
                 chp: toNum(thisData?.chp),
                 staticPressure: toNum(thisData?.staticPressure),
-                orificePlateSize: 0,
+                orificePlateSize: thisData?.orificePlateSize,
                 sand: 0,
-                remark:thisData?.remark,
+                remark: thisData?.remark,
             } : {}
             return [
                 productionString, {
@@ -95,7 +102,7 @@ export const ImportWellTestSchedule = ({ type = 'wellTestSchedule', btnText, onC
                     isSelected: thisData ? true : false,
                     fluidType: thisData ? 'Oil' : null,
                     ...testResultsFields,
-                
+
                 }
             ]
         })

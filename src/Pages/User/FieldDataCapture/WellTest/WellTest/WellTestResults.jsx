@@ -23,18 +23,13 @@ const WellTestResults = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const { assetNames } = useAssetNames()
-    return (
+    return (<>
         <div className=" flex flex-wrap gap-4 m-5 ">
-
 
             <Files files={data} actions={[
                 { name: 'Edit', to: (file) => `/users/fdc/well-test-data/well-test-table?id=${file?.id}&scheduleId=${file?.wellTestScheduleId}` },
-                //     { name: 'Create IPSC', to: (file) => `/users/fdc/well-test-data?page=ipsc&well-test-result-id=${file?.id}&autoOpenSetupModal=yes` },
-                //     { name: 'Delete', to: (file) => `` },
-                // ]} name={(file) => `${createWellTitle(file, 'Well Test Result')}`} 
-
-
-
+                // { name: 'Create IPSC', to: (file) => `/users/fdc/well-test-data?page=ipsc&autoOPenSetupModal=yes` },
+                { name: 'Create IPSC', to: (file) => `/users/fdc/well-test-data?page=ipsc&well-test-result-id=${file?.id}&autoOpenSetupModal=yes` },
                 {
                     name: 'Broadcast', to: (file) => null, onClick: (file) => dispatch(openModal({
                         title: '',
@@ -54,26 +49,30 @@ const WellTestResults = () => {
             ]} name={(file) => `${createWellTitle(file, 'Well Test Result')}`}
 
             />
-    <Button onClick={() => dispatch(openModal({
-                component: <div>
+        </div>
+        <div className=''>
+            <Button onClick={() => dispatch(openModal({
+                component: <div className='flex flex-col gap-3 w-[400px]'>
                     <Input required defaultValue={{ label: setupData?.asset, value: setupData?.asset }}
                         label={'Assets'} type='select' options={assetNames?.map(assetName => ({ value: assetName, label: assetName }))}
                         onChange={(e) => dispatch(setSetupData({ name: 'asset', value: e.value }))}
                     />
+                    <Input type='month' placeholder="Daily" label={'Month'} containerClass={'!w-[150px]'}
+                        defaultValue={setupData?.month} required
+                        onChange={(e) => dispatch(setSetupData({ name: 'month', value: e.target.value }))} />
+                    <br />
                     <ImportWellTestSchedule type='wellTestResult' btnText={'Proceed'} onComplete={() => {
                         dispatch(closeModal())
                         navigate(`/users/fdc/well-test-data/well-test-table?from-file=yes`)
                     }} />
                     <br />
 
-
-                    {/* <Button onClick={}>Submit</Button> */}
-
                 </div>, title: 'Import WellTest Result'
             }))}>
                 Import Well test result
             </Button>
         </div>
+    </>
     )
 
 

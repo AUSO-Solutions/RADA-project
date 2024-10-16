@@ -7,7 +7,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { store } from 'Store';
 import tableStyles from '../table.module.scss'
-import { sum } from 'utils';
+import { bsw, sum } from 'utils';
 import { Button } from 'Components';
 import { camelize, updateFlowstationReading } from './helper';
 import { toast } from 'react-toastify';
@@ -30,12 +30,13 @@ import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
 
 
 const TableInput = (props) => {
-  return <input className='p-1 text-center w-[70px] border outline-none' required {...props}
-  // onKeyPress={(e) => {
-  //   if (!/[0-9]/.test(e.key) && props.type === 'number') {
-  //     e.preventDefault();
-  //   }
-  // }}
+  return <input className='p-1 text-center w-[70px] border outline-none' required {...props} step={'any'}
+    onKeyPress={(e) => {
+      const reg = e.target.value?.includes('.') ? /[0-9]/ : /^[0-9]*\.?[0-9]*$/
+      if (!reg.test(e.key) && props.type === 'number') {
+        e.preventDefault();
+      }
+    }}
   />
 }
 
@@ -53,9 +54,8 @@ export default function VolumeMeasurementTable() {
   const [showSettings, setShowSettings] = useState(false)
   const [currReport, setCurrReport] = useState(setup?.reportTypes?.[0])
   const [searchParams, setSearchParams] = useSearchParams()
-
-  const [date, setDate] = useState(dayjs().format("YYYY-MM-DD"))
-
+  const [changesMade, setChangesMade] = useState(false)
+  const date = searchParams.get('date')
   useEffect(() => {
     const currReport__ = searchParams.get('reportType')
     setCurrReport(currReport__ || setup?.reportTypes?.[0])
@@ -66,6 +66,11 @@ export default function VolumeMeasurementTable() {
   const isNet = currReport === "Net Oil/ Condensate"
   const isGross = currReport === 'Gross Liquid'
 
+
+  const { data: IPSCs } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: 'IPSC' } })
+  const IPSC = IPSCs?.find(IPSC => IPSC?.month === dayjs().format('YYYY-MM') && IPSC?.asset === setup?.asset)
+  const flowstationsTargets = IPSC?.flowstationsTargets
+
   const [tableValues, setTableValues] = useState({})
   const [totals, setTotals] = useState({
     netProductionTotal: 0,
@@ -75,12 +80,12 @@ export default function VolumeMeasurementTable() {
   })
 
   const handleChange = ({ flowStation, field, value, readingIndex, flowStationField }) => {
+    // set
     //careful, to also have the value updated before calculated
 
     const flowStationSetup = setup?.flowStations?.find(({ name }) => name === flowStation)
     const meterFactor = parseFloat(flowStationSetup?.readings?.[readingIndex]?.meterFactor || 1)
     const deductionMeterFactor = parseFloat(flowStationSetup?.deductionMeterFactor || 1)
-
     setTableValues(prev => {
       const prevFlowStation = prev?.[flowStation]
       const prevFlowStationList = prevFlowStation?.meters
@@ -133,7 +138,6 @@ export default function VolumeMeasurementTable() {
           ...updatedFlowStation,
           [flowStationField]: parseFloat(value),
           deduction
-
         }
       }
       return {
@@ -146,25 +150,31 @@ export default function VolumeMeasurementTable() {
 
   useEffect(() => {
     const values = (Object.values(tableValues))
+    console.log(values, sum(values.map(value => calculatedGrossOrnNet(value?.subTotal, value?.bsw, 'gross'))))
+    const netProductionTotal = isNet ? sum(Object.values(values || {}).map(item => item?.subTotal || 0)) : sum(values.map(value => calculatedGrossOrnNet(value?.subTotal, value?.bsw, 'gross')));
+    const grossTotal = isGross ? sum(Object.values(values || {}).map(item => item?.subTotal || 0)) : sum(values.map(value => calculatedGrossOrnNet(value?.subTotal, value?.bsw, 'net')))
+    const netTargetTotal = sum(Object.values(flowstationsTargets || {}).map(target => target?.oilRate))
+    const grossTargetTotal = sum(Object.values(flowstationsTargets || {}).map(target => target?.gross))
     const calcs = {
-      netProductionTotal: sum(Object.values(values || {}).map(item => item?.subTotal || 0)),
-      netTargetTotal: sum(Object.values(values || {}).map(item => item?.netTarget || 0)),
-      bswTotal: sum(Object.values(values || {}).map(item => item?.bsw || 0)),
-      grossTotal: sum(Object.values(values || {}).map(item => item?.subTotal || 0)),
+      netProductionTotal,
+      netTargetTotal,
+      grossTargetTotal,
+      bswTotal: bsw({ gross: grossTotal, oil: netProductionTotal }),
+      grossTotal,
     }
     setTotals(calcs)
-  }, [tableValues])
+  }, [tableValues, isGross, isNet, flowstationsTargets])
 
   useEffect(() => {
     const getDayCapture = async () => {
       try {
-        const { data } = await firebaseFunctions('getOilOrCondensateVolumeByDateAndAsset', { asset: setup?.asset, date }, false, { loadingScreen: true })
+        const { data } = await firebaseFunctions('getOilOrCondensateVolumeByDateAndAsset', { asset: setup?.asset, date: date }, false, { loadingScreen: true })
         // console.log(JSON.stringify(tableValues), data?.flowstations)
         const dayTableValues = Object.fromEntries((data?.flowstations || [])?.map(flowstation => {
           return [flowstation?.name, {
             "meters": flowstation?.meters?.map(meter => ({
               "finalReading": meter?.finalReading || 0,
-              "netProduction": meter?.netProduction ||0,
+              "netProduction": meter?.netProduction || 0,
               "gross": meter?.gross || 0,
               "serialNumber": meter?.serialNumber || 0,
               "reportType": flowstation?.reportType === "netProduction" ? "Net Oil/ Condensate" : 'Gross Liquid',
@@ -210,24 +220,19 @@ export default function VolumeMeasurementTable() {
   }, [setup])
 
 
+
   const calculatedGrossOrnNet = (subTotal, bsw, type = 'net') => {
-    let netResult = subTotal / ((1 - (0.01 * bsw))).toFixed(3) //for net
-    let grossResult = subTotal * ((1 - (0.01 * bsw))).toFixed(3) //for gross
-    if (type === 'net') return netResult
-    if (type === 'gross') return grossResult
+    let netResult = (subTotal * (1 - bsw / 100)).toFixed(3) //for net (Gross* (1-bsw/100))
+    let grossResult = (subTotal / (1 - bsw / 100)).toFixed(3) //for gross
+    if (type === 'gross') return netResult
+    if (type === 'net') return grossResult
     if (isNaN(netResult || netResult)) return 0
   }
 
-  const { data: IPSCs } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: 'IPSC' } })
-  // console.log(IPSCs)
-  const IPSC = IPSCs?.find(IPSC => IPSC?.month === dayjs().format('YYYY-MM') && IPSC?.asset === setup?.asset)
-  const flowstationsTargets = IPSC?.flowstationsTargets
+  console.log(tableValues)
   const averageTarget = IPSC?.averageTarget
   const save = async (e) => {
-    // if(!flowstationsTargets?.oilRate || flowstationsTargets?.gross)
-
     e.preventDefault()
-
     const setup = store.getState().setup
     const flowStations = Object.entries(tableValues).map(value => ({
       name: value[0],
@@ -237,7 +242,7 @@ export default function VolumeMeasurementTable() {
       "Gross Liquid": "gross", "Net Oil/ Condensate": "netProduction"
     }
     const payload = {
-      date: dayjs(date).format('YYYY-MM-DD'),
+      date: date,
       asset: setup.asset,
       fluidType: currReport,
       totals,
@@ -291,7 +296,10 @@ export default function VolumeMeasurementTable() {
   }
   const navigate = useNavigate()
   const onSelectReportType = (e) => {
-    if (e === 'Gas') navigate(`/users/fdc/daily/gas-table?id=${attacmentSetup?.id}`)
+    if (e === 'Gas') {
+      const proceed = window.confirm("Proceed without saving changes ?")
+      if (proceed) navigate(`/users/fdc/daily/gas-table?id=${attacmentSetup?.id}&date=${date}`)
+    }
     else {
       setCurrReport(e)
       setSearchParams(prev => {
@@ -299,6 +307,18 @@ export default function VolumeMeasurementTable() {
         return prev
       })
     }
+  }
+  useEffect(() => {
+    setSearchParams(prev => {
+      if (!prev.get("date")) prev.set('date', dayjs().subtract(1, 'days').format("YYYY-MM-DD"))
+      return prev
+    })
+  }, [setSearchParams])
+  const onDateChange = (value) => {
+    setSearchParams(prev => {
+      prev.set('date', value)
+      return prev
+    })
   }
   return (
     <>
@@ -311,7 +331,7 @@ export default function VolumeMeasurementTable() {
           <Link to={'/users/fdc/daily?tab=volume-measurement'}>
             <Text className={'cursor-pointer'} color={colors.rada_blue}>View setups</Text>
           </Link>
-          <RadaDatePicker onChange={setDate} />
+          <RadaDatePicker onChange={onDateChange} value={date} max={dayjs().format('YYYY-MM-DD')} />
           <div onClick={() => setShowSettings(true)} style={{ borderColor: 'rgba(0, 163, 255, 1)' }} className='border cursor-pointer px-3 py-1 rounded-[8px]'>
             <MdOutlineSettings color='rgba(0, 163, 255, 1)' />
           </div>
@@ -430,10 +450,10 @@ export default function VolumeMeasurementTable() {
             <TableBody>
               <TableRow >
                 <TableCell align="left" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} className='bg-[rgba(0, 163, 255, 0.3)]' colSpan={6}>{"Total Net Production"}</TableCell>
-                <TableCell align="center" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} >{isNet ? totals?.netProductionTotal : calculatedGrossOrnNet(totals?.netProductionTotal, totals?.bswTotal, 'gross')}</TableCell>
-                <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{isNet ? averageTarget?.oilRate : averageTarget?.gross}</TableCell>
+                <TableCell align="center" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} >{totals?.netProductionTotal}</TableCell>
+                <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{isNet ? sum(Object.values(flowstationsTargets || {}).map(target => target?.oilRate)) : sum(Object.values(flowstationsTargets || {}).map(target => target?.gross))}</TableCell>
                 <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{totals?.bswTotal}</TableCell>
-                <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{isGross ? totals?.grossTotal : calculatedGrossOrnNet(totals?.grossTotal, totals?.bswTotal, 'net')}</TableCell>
+                <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{totals?.grossTotal}</TableCell>
               </TableRow>
             </TableBody>
           </Table>

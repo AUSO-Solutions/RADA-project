@@ -90,7 +90,7 @@ export default function IPSCAnalytics() {
                                     {
                                         fields.map(field => {
                                             const difference = diff(well?.[field.name], wellTestResult2?.wellTestResultData?.[well.productionString]?.[field.name])
-                                            const tolerate = (ipsc?.toleranceValues?.[field.name] ?? 0) <= difference
+                                            const tolerate = (ipsc?.toleranceValues?.[field.name] ?? 10) <= difference
                                             return showTolerance ?
                                                 <TableCell style={{ backgroundColor: tolerate ? '#FF5252' : '#A7EF6F', width: '97%', height: '97% !important' }} align="center">
                                                     <div style={{ backgroundColor: tolerate ? '#FF5252' : '#A7EF6F', width: '97%', height: '97% !important' }}>

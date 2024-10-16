@@ -29,7 +29,7 @@ const Groups = () => {
         firebaseApi='getGroups'
         columns={[
           { name: 'Group Name', key: 'groupName' },
-          { name: 'Date created', key: 'dateCreated' },
+          { name: 'Date created', key: 'dateCreated', render:(data)=>data?.created?.pretty || data?.dateCreated},
           {
             name: 'Members', render: (data) => {
               const memberslist = data?.members?.map(member => member.name).slice(0, 2).join(', ') + "..."

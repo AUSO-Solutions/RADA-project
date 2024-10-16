@@ -40,8 +40,8 @@ const captureOilOrCondensate = onCall(async (request) => {
     const quer = db.collection("liquidVolumes").where('date', "==", date).where('asset', '==', asset)
     const prev = (await quer.get())?.docs[0]
     console.log({ prev })
-    if (!prev.exists) await db.collection("liquidVolumes").doc(id).set(dbData);
-    if (prev.exists) await db.collection("liquidVolumes").doc(prev?.id).set(dbData);
+    if (!prev?.exists) await db.collection("liquidVolumes").doc(id).set(dbData);
+    if (prev?.exists) await db.collection("liquidVolumes").doc(prev?.id).set(dbData);
     return id;
   } catch (error) {
     logger.log("error ===> ", error);
@@ -191,8 +191,8 @@ const captureGas = onCall(async (request) => {
     const quer = db.collection("gasVolumes").where('date', "==", date).where('asset', '==', asset)
     const prev = (await quer.get())?.docs[0];
     console.log({prev})
-    if (!prev.exists) await db.collection("gasVolumes").doc(id).set(dbData);
-    if (prev.exists) await db.collection("gasVolumes").doc(prev?.id).set(dbData);
+    if (!prev?.exists) await db.collection("gasVolumes").doc(id).set(dbData);
+    if (prev?.exists) await db.collection("gasVolumes").doc(prev?.id).set(dbData);
 
     return id;
   } catch (error) {

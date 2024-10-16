@@ -7,10 +7,11 @@ import { toast } from 'react-toastify';
 import { useUsers } from 'hooks/useUsers';
 import Text from 'Components/Text';
 import { Box, Divider } from '@mui/material';
-import { IoCloseCircle,  } from 'react-icons/io5';
+import { IoCloseCircle, } from 'react-icons/io5';
 import { firebaseFunctions } from 'Services';
 import { useParams } from 'react-router-dom';
 import { useFetch } from 'hooks/useFetch';
+import { useAssetNames } from 'hooks/useAssetNames';
 
 
 
@@ -18,6 +19,7 @@ const Group = () => {
     const { groupId } = useParams()
 
     const { data: group } = useFetch({ firebaseFunction: 'getGroups', payload: { groupId } })
+    const { assetNames } = useAssetNames()
 
     console.log(groupId, group)
     // const schema = Yup.object().shape({
@@ -64,16 +66,12 @@ const Group = () => {
                 ?.map(member => member?.uid)
                 ?.includes(user?.uid))
             .map(user => ({ label: user?.firstName + " " + user?.lastName, value: user?.uid }))
-    }, [group,users])
+    }, [group, users])
     const assetsAddable = useMemo(() => {
-
-        return assets
-            .filter(asset => !group?.assets
-                ?.map(asset => asset?.id)
-                ?.includes(asset?.id))
-            .map(asset => ({ label: asset?.name + " " + asset?.well, value: asset?.id }))
-
-    }, [group,assets])
+        return assetNames
+            .filter(assetName => !group?.assets?.includes(assetName))
+            .map(assetName => ({ label: assetName, value: assetName }))
+    }, [group, assets])
 
 
     const [members, setMembers] = useState(group?.members)
@@ -116,12 +114,12 @@ const Group = () => {
             </div>
             <div className='flex flex-wrap mt-1 gap-2 max-w-[800px]'>
                 {groupDetails?.assets?.length ?
-                    groupDetails?.assets?.map(({ name, well, id }) => {
+                    groupDetails?.assets?.map((assetName) => {
                         return (
                             <>
                                 <Text className={' rounded p-1 items-center gap-3  !flex border'}>
-                                    {name} {well} {
-                                        deleteLoading ? null : <IoCloseCircle onDoubleClick={() => deleteAsset({ groupId: group?.id, asset: id })} className='cursor-pointer' />
+                                    {assetName} {
+                                        deleteLoading ? null : <IoCloseCircle onDoubleClick={() => deleteAsset({ groupId: group?.id, assetName: assetName })} className='cursor-pointer' />
                                     }
                                 </Text>
 
@@ -171,7 +169,7 @@ const Group = () => {
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', width: '600px', gap: '20px' }} >
                 {/* <Text size={'20px'} weight={600}>{group?.groupName}</Text> */}
                 <Input name='groupId' hidden value={group?.id} />
-                <Input label={'Assets'} name='assets' type='select' isMulti options={assetsAddable} />
+                <Input label={'Assets'} name='assets' type='select' isMulti options={assetsAddable} defaultValue={group?.assets?.map(assetName => ({ label: assetName, value: assetName }))} />
 
             </RadaForm>
         </Box>
