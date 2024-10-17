@@ -11,7 +11,7 @@ const { createRole, updateRole, deleteRole, getRoles, getRole, assignPermissionT
 const { createSetup, deleteSetup, getSetups, updateSetup, getSetup } = require("./fielddatacapturesetup/volumemeasurementsetup");
 const { captureOilOrCondensate, captureGas, updateOilOrCondensate, getGasVolumeByDateAndAsset, deleteOilOrCondensateVolumeByID, getOilOrCondensateVolumeByDateAndAsset } = require("./fielddatacapturesetup/volume.measurement");
 const { createMerSchedule } = require("./fielddatacapturesetup/merdataSetup");
-const { processIPSC } = require('./fielddatacapturesetup/oilandgasaccounting/')
+const { processIPSC , getOilAndGasAccounting} = require('./fielddatacapturesetup/oilandgasaccounting/')
 const { getInsight } = require('./admin/insights')
 const { getInsights } = require('./admin/insights/index2')
 const { broadcast } = require('./broadcast/index')
@@ -44,6 +44,6 @@ module.exports = {
   deleteOilOrCondensateVolumeByID,
 
   createMerSchedule,
-  processIPSC,
+  processIPSC,getOilAndGasAccounting,
   getInsight, getInsights , broadcast
 }

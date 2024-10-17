@@ -54,7 +54,7 @@ export default function VolumeMeasurementTable() {
   const [showSettings, setShowSettings] = useState(false)
   const [currReport, setCurrReport] = useState(setup?.reportTypes?.[0])
   const [searchParams, setSearchParams] = useSearchParams()
-  const [changesMade, setChangesMade] = useState(false)
+ 
   const date = searchParams.get('date')
   useEffect(() => {
     const currReport__ = searchParams.get('reportType')

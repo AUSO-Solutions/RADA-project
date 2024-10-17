@@ -32,8 +32,6 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
     }
 
     const [wellTestResultData, setWellTestResultData] = useState({})
-    // const []
-    // const [calculated, setCalculated] = useState(false)
     const [results, setResults] = useState(null)
 
     useEffect(() => {
@@ -41,7 +39,7 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
         setWellTestResultData(prev => {
             let updated = IPSC?.wellTestResultData
             for (const key in IPSC?.wellTestResultData) {
-                const element = IPSC?.wellTestResultData[key];
+                // const element = IPSC?.wellTestResultData[key];
                 // console.log(element)
                 updated[key].defermentCategory = 'Unscheduled Deferment'
                 updated[key].defermentSubCategory = 'Mismatch'
@@ -70,11 +68,14 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
                     gross: result?.gross || 0,
                     oilRate: result?.oilRate || 0,
                     gasRate: result?.gasRate || 0,
+                    bsw: result?.bsw || 0,
                     reservoir: result?.reservoir,
                     uptimeProduction: wellTestResultData?.[result?.productionString]?.uptimeProduction || 0,
+                    // downtime: 24 - wellTestResultData?.[result?.productionString]?.uptimeProduction || 0,
                     status: result?.status,
                     defermentCategory: wellTestResultData?.[result?.productionString]?.defermentCategory,
                     defermentSubCategory: wellTestResultData?.[result?.productionString]?.defermentSubCategory,
+                    remark: wellTestResultData?.[result?.productionString]?.remark
                 }))
             };
             // console.log(payload)
@@ -105,6 +106,7 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
 
     useEffect(() => {
         if (results) {
+            console.log({ results })
             const actualProduction = results?.actualProduction || []
             const deferment = results?.deferment?.drainagePoints || []
             if (searchParams.get('table') === 'actual-production') {
@@ -124,19 +126,38 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
         // eslint-disable-next-line
     }, [results, searchParams])
 
-    console.log(results)
+    useEffect(() => {
+        const getSavedResult = async () => {
+            setResults(null)
+            try {
+                const res = await firebaseFunctions('getOilAndGasAccounting', { asset: IPSC?.asset, flowStation, date }, false, { loadingScreen: true })
+                const account = (JSON.parse(res?.data))
+                const savedResult = {
+                    actualProduction: account?.actualProduction?.productionData,
+                    deferment: account?.deferment?.deferment
+                }
+                // console.log({savedResult})actualProduction
+                if (res) setResults(savedResult)
+            } catch (error) {
+                setResults(null)
+            }
+        }
+        getSavedResult()
+    }, [IPSC, flowStation, date, searchParams])
+
+    // console.log(results)
     return (
-        <TableContainer component={'form'} onSubmit={onSave} className={`m-auto  ${tableStyles.borderedMuiTable}`}>
-            <Table sx={{ minWidth: 700 }} >
+        <TableContainer sx={{ maxHeight: 700 }} component={'form'} onSubmit={onSave} className={`m-auto  ${tableStyles.borderedMuiTable}`}>
+            <Table stickyHeader sx={{ minWidth: 700 }} >
                 <TableHead >
                     <TableRow sx={{ bgcolor: `rgba(239, 239, 239, 1) !important`, color: 'black', fontWeight: 'bold  !important' }}>
                         <TableCell style={{ fontWeight: '600' }} align="center" colSpan={2} >
                             Flow stations ID
                         </TableCell>
                         <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >
-                            Uptime Production
+                            {searchParams.get('table') === 'deferred-production' ? "Downtime" : "Uptime"} Production
                         </TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center" colSpan={7} >
+                        <TableCell style={{ fontWeight: '600' }} align="center" colSpan={searchParams.get('table') === 'actual-production' ? 9 : 7} >
                             {searchParams.get('table') === 'actual-production' && "Actual Production "}
                             {searchParams.get('table') === 'deferred-production' && "Deferred Production "}
                             {/* <Text size={14} onClick={viewPotential} className={'cursor-pointer'} color='blue'>View Test Data</Text> */}
@@ -155,11 +176,11 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
                         <TableCell style={{ fontWeight: '600' }} align="center">Gross<br /> (bbls)</TableCell>
                         <TableCell style={{ fontWeight: '600' }} align="center">Net Oil<br />  (bbls)</TableCell>
                         <TableCell style={{ fontWeight: '600' }} align="center">Gas<br />  (mmscf/)</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center">Water rate<br />  (bbls)</TableCell>
+                        {searchParams.get('table') === 'actual-production' && <TableCell style={{ fontWeight: '600' }} align="center">Water rate<br />  (bbls)</TableCell>}
                         {searchParams.get('table') === 'actual-production' && <TableCell style={{ fontWeight: '600' }} align="center">Status</TableCell>}
+                        <> <TableCell style={{ fontWeight: '600' }} align="center">Deferment Category</TableCell>
+                            <TableCell style={{ fontWeight: '600' }} align="center">Deferment Description</TableCell></>
                         {searchParams.get('table') === 'actual-production' && <TableCell style={{ fontWeight: '600' }} align="center">Remarks</TableCell>}
-                        {searchParams.get('table') === 'deferred-production' && <> <TableCell style={{ fontWeight: '600' }} align="center">Deferment Category</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center">Deferment Description</TableCell></>}
                     </TableRow>
                 </TableHead>
 
@@ -184,29 +205,36 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
                             <TableCell align="center">
                                 {well?.reservoir}
                             </TableCell>
-                            <TableCell align="center">
-                                <input onChange={handleChange} defaultValue={0} required name='uptimeProduction' className='border outline-none px-2 w-[100px] text-center' type='number' max={24} min={0} />
-                            </TableCell>
+                            {searchParams.get('table') === 'actual-production' && <TableCell align="center">
+                                <input onChange={handleChange} value={well?.uptimeProduction} required name='uptimeProduction' className='border outline-none px-2 w-[100px] text-center' type='number' max={24} min={0} />
+                            </TableCell>}
+                            {searchParams.get('table') === 'deferred-production' && <TableCell align="center">
+                                <input disabled value={well?.downtime} required className='border outline-none px-2 w-[100px] text-center' type='number' max={24} min={0} />
+                            </TableCell>}
                             <TableCell align="center">{results ? well?.gross || 0 : 0}</TableCell>
                             <TableCell align="center">{results ? well?.oil || 0 : 0}</TableCell>
                             <TableCell align="center">{results ? well?.gas || 0 : 0}</TableCell>
-                            <TableCell align="center">{results ? well?.gross - well?.oil || 0 : 0}</TableCell>
+                            {searchParams.get('table') === 'actual-production' && <TableCell align="center">{results ? well?.water || 0 : 0}</TableCell>}
                             {searchParams.get('table') === 'actual-production' && <TableCell style={{ color: 'white', fontWeight: "600", background: parseInt(well?.uptimeProduction) === 0 || !well?.uptimeProduction ? '#FF5252' : '#A0E967' }} align="center">
                                 {(parseInt(well?.uptimeProduction) === 0 || !well?.uptimeProduction) ? 'Closed In' : 'Producing'}
                             </TableCell>}
-                            {searchParams.get('table') === 'actual-production' && <TableCell rowSpan={1} align="center">{'No Remark'}</TableCell>}
+
                             {
-                                searchParams.get('table') === 'deferred-production' && <> <TableCell style={{ background: '#D9E3F9' }} align="center">
-                                    <select className='bg-[inherit] outline-none' defaultValue='Unscheduled Deferment' onChange={handleChange} name='defermentCategory' >
+                                <> <TableCell style={{ background: '#D9E3F9' }} align="center">
+                                    <select disabled={searchParams.get('table') === 'deferred-production'} className='bg-[inherit] outline-none' defaultValue='Unscheduled Deferment' onChange={handleChange} name='defermentCategory' >
                                         {defermentCategoryArray?.map(category => <option value={category}>{category}</option>)}
                                     </select>
                                 </TableCell>
                                     <TableCell style={{ background: '#E6E4F9' }} align="center">
-                                        <select className='bg-[inherit] outline-none' name='defermentSubCategory' value={well.defermentSubCategory} onChange={handleChange}>
+                                        <select disabled={searchParams.get('table') === 'deferred-production'} className='bg-[inherit] outline-none' name='defermentSubCategory' value={well.defermentSubCategory} onChange={handleChange}>
                                             {Description[well?.defermentCategory]?.map(desc => <option value={desc}>{desc}</option>)}
                                         </select>
                                     </TableCell></>
-                            }
+                            }           {searchParams.get('table') === 'actual-production' && <TableCell rowSpan={1} align="center">
+                                <textarea onChange={handleChange} name='remark' className='border outline-none p-2' value={well?.remark}>
+
+                                </textarea>
+                            </TableCell>}
                         </TableRow>
                     })}
 
@@ -216,7 +244,7 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
                         <TableCell style={{ fontWeight: '600' }} align="center">{results ? getTotalOf('gross') : 0}</TableCell>
                         <TableCell style={{ fontWeight: '600' }} align="center">{results ? getTotalOf('oil') : 0}</TableCell>
                         <TableCell style={{ fontWeight: '600' }} align="center" >{results ? getTotalOf('gas') : 0}</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center" >{results ? getTotalOf('gross') - getTotalOf('oil') : 0} </TableCell>
+                        {/* <TableCell style={{ fontWeight: '600' }} align="center" >{results ? getTotalOf('gross') - getTotalOf('oil') : 0} </TableCell> */}
                         <TableCell style={{ fontWeight: '600' }} align="center" >-</TableCell>
                         <TableCell style={{ fontWeight: '600' }} align="center" >-</TableCell>
                         {/* <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('bsw')}</TableCell>

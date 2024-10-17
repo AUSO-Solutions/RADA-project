@@ -37,7 +37,7 @@ export default function OilGasAccountingTable() {
                 .sort((a, b) => a?.productionString.localeCompare(b?.productionString))
                 ?.map(item => ([item?.productionString, item])))
         return { ...gotten, wellTestResultData: newWellTestResultData }
-    }, [res, IPSCs, flowStation])
+    }, [res, IPSCs, flowStation,date])
 
     const { flowStations } = useAssetByName(matchingIPSC?.asset)
 
@@ -47,7 +47,7 @@ export default function OilGasAccountingTable() {
 
 
     return (
-        < div className='px-3 w-full'>
+        < div className='px-3 w-full overflow-hidden'>
             <div className='flex justify-between items-center'>
                 <div className='flex gap-4 items-center'>
                     <RadioSelect list={tables} defaultValue={tables.find(table => searchParams.get('table') === table.replaceAll(' ', '-').toLowerCase()) || tables[0]} onChange={(value) => setSearchParams(prev => {

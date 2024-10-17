@@ -118,11 +118,11 @@ export const getIntersectionBetweenTwoLines = (line1, line2, at1 = 0, at2 = 1) =
         numerator2 = ((line1EndX - line1StartX) * a) - ((line1EndY - line1StartY) * b);
         a = numerator1 / denominator;
         b = numerator2 / denominator;
-    
+
         // if we cast these lines infinitely in both directions, they intersect here:
         result.x = line1StartX + (a * (line1EndX - line1StartX));
         result.y = line1StartY + (a * (line1EndY - line1StartY));
-    
+
         // if line1 is a segment and line2 is infinite, they intersect if:
         if (a > 0 && a < 1) {
             result.onLine1 = true;
@@ -134,7 +134,7 @@ export const getIntersectionBetweenTwoLines = (line1, line2, at1 = 0, at2 = 1) =
         // if line1 and line2 are segments, they intersect if both of the above are true
         return result;
     };
-    console.log({line1, line2})
+    console.log({ line1, line2 })
     const res = checkLineIntersection(line1[0].x, line1[0].y, line1[1].x, line1[1].y, line2[0].x, line2[0].y, line2[1].x, line2[1].y)
     console.log(res)
 
@@ -156,4 +156,11 @@ export const bsw = ({ gross, oil, water }) => {
 
     return isNaN(result) ? '' : result
 
+}
+
+export const getHeights = () => {
+    const wH = window.innerHeight
+    const pH = window.parent.innerHeight
+    const tH = window.top.innerHeight
+    return { wH, pH, tH }
 }

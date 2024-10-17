@@ -95,9 +95,9 @@ const processIPSC = onCall(async (request) => {
       const quer = db.collection("deferments").where('date', "==", date).where('asset', '==', asset).where('flowStation', '==', flowStation)
       const prev = (await quer.get()).docs[0]
       const exists = prev?.exists
-      console.log("-------", exists ,prev?.data())
-      // if (exists) await db.collection("deferments").doc(prev.id).set({ defermentData, id: prev?.id });
-      // if (!exists) await db.collection("deferments").doc(defermentId).set({ defermentData });
+      console.log("-------", exists, prev?.data())
+      if (exists) await db.collection("deferments").doc(prev.id).set({ ...defermentData, id: prev?.id });
+      if (!exists) await db.collection("deferments").doc(defermentId).set({ ...defermentData });
     }
 
     // Persist actual production data
@@ -121,9 +121,9 @@ const processIPSC = onCall(async (request) => {
       const quer = db.collection("actualProduction").where('date', "==", date).where('asset', '==', asset).where('flowStation', '==', flowStation)
       const prev = (await quer.get())?.docs[0]
       const exists = prev?.exists
-      console.log("-------", exists ,prev?.data())
-      if (exists) await db.collection("actualProduction").doc(prev.id).set({ actualProductionData, id: prev?.id });
-      if (!exists) await db.collection("actualProduction").doc(actualProductionId).set({ actualProductionData });
+      console.log("-------", exists, prev?.data())
+      if (exists) await db.collection("actualProduction").doc(prev.id).set({ ...actualProductionData, id: prev?.id });
+      if (!exists) await db.collection("actualProduction").doc(actualProductionId).set({ ...actualProductionData });
     }
 
     return { status: "success", data: JSON.stringify(result) };
@@ -134,6 +134,36 @@ const processIPSC = onCall(async (request) => {
   }
 });
 
+
+const getOilAndGasAccounting = onCall(async (request) => {
+  const { date, asset, flowStation } = request.data;
+
+  try {
+    console.log({ date, asset, flowStation })
+    const db = admin.firestore();
+
+
+
+    const querB = db.collection("deferments").where('date', "==", date).where('asset', '==', asset).where('flowStation', '==', flowStation)
+    const deferment = (await querB.get())?.docs[0]?.data()
+
+
+    const querA = db.collection("actualProduction").where('date', "==", date).where('asset', '==', asset).where('flowStation', '==', flowStation)
+    const actualProduction = (await querA.get())?.docs[0]?.data()
+
+
+    if (!actualProduction) {
+      throw ({ code: "not-found", message: "Record not found" });
+    }
+    const record = {
+      deferment, actualProduction
+    }
+    return { status: "success", data: JSON.stringify(record) };
+  } catch (error) {
+    logger.log("error ===> ", error);
+    throw new HttpsError(error?.code, error?.message);
+  }
+});
 module.exports = {
-  processIPSC,
+  processIPSC, getOilAndGasAccounting
 };

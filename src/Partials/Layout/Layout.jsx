@@ -31,7 +31,7 @@ const Layout = ({ children }) => {
                         <Text weight={'600'} color={'#0274bd'} size={'18px'} > {state?.email} </Text>
                     </div> */}
                 </div>
-                <div className=' flex flex-col  justify-center items-center w-[100%] !h-[100%]' >
+                <div className=' flex flex-col  justify-center items-center w-[100%] !overflow_hidden !h-[100%]' >
                     {children}
                 </div>
             </div>
