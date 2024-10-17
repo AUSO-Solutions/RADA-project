@@ -6,7 +6,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import tableStyles from '../table.module.scss'
-import { sum } from 'utils';
+import { bsw, sum } from 'utils';
 
 
 export default function OilGasAccountingIPSCTable({ IPSC }) {
@@ -88,13 +88,14 @@ export default function OilGasAccountingIPSCTable({ IPSC }) {
                     })}
                     <TableRow sx={{ backgroundColor: '#00A3FF4D' }}>
                         <TableCell style={{ fontWeight: '600' }} align="center" colSpan={2} >Totals </TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('fthp')}</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" colSpan={5} ></TableCell>
+                        {/* <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('fthp')}</TableCell>
                         <TableCell style={{ fontWeight: '600' }} align="center">{getTotalOf('chp')}</TableCell>
                         <TableCell style={{ fontWeight: '600' }} align="center">{getTotalOf('flp')}</TableCell>
                         <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('staticPressure')}</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('chokeSize')}</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('chokeSize')}</TableCell> */}
                         <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('gross')}</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('bsw')}</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" >{bsw({gross:getTotalOf('gross') , oil:getTotalOf('oilRate')})}</TableCell>
                         <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('oilRate')}</TableCell>
                         <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('gasRate')}</TableCell>
                     </TableRow>

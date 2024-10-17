@@ -210,8 +210,8 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
                     })}
 
                     <TableRow sx={{ backgroundColor: '#00A3FF4D' }}>
-                        <TableCell style={{ fontWeight: '600' }} align="center" colSpan={2} >Totals </TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('uptimeProduction')}</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" colSpan={3} >Totals </TableCell>
+                        {/* <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('uptimeProduction')}</TableCell> */}
                         <TableCell style={{ fontWeight: '600' }} align="center">{getTotalOf('gross')}</TableCell>
                         <TableCell style={{ fontWeight: '600' }} align="center">{getTotalOf('oilRate')}</TableCell>
                         <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('gasRate')}</TableCell>

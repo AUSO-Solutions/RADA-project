@@ -27,14 +27,14 @@ export default function OilGasAccountingTable() {
     const [flowStation, setFlowStation] = useState('')
     const { data: res } = useFetch({ firebaseFunction: 'getSetup', payload: { id: searchParams.get('id'), setupType: 'oilAndGasAccounting' } })
     const { data: IPSCs } = useFetch({ firebaseFunction: 'getSetups', payload: { id: searchParams.get('id'), setupType: 'IPSC' } })
-
+    const [date, setDate] = useState(dayjs().subtract(1, 'day').format('YYYY-MM-DD'))
     const matchingIPSC = React.useMemo(() => {
-        const gotten = IPSCs.find(IPSC => IPSC.asset === res.asset && IPSC.month === dayjs().format("YYYY-MM"))
+        const gotten = IPSCs.find(IPSC => IPSC.asset === res.asset && IPSC.month === dayjs(date).format("YYYY-MM"))
         const wellTestResultData = Object.values(gotten?.wellTestResultData || {}).filter(item => item?.flowstation === flowStation)
 
         const newWellTestResultData = Object.fromEntries(
             wellTestResultData
-            .sort((a, b) =>  a?.productionString.localeCompare(b?.productionString))
+                .sort((a, b) => a?.productionString.localeCompare(b?.productionString))
                 ?.map(item => ([item?.productionString, item])))
         return { ...gotten, wellTestResultData: newWellTestResultData }
     }, [res, IPSCs, flowStation])
@@ -44,7 +44,7 @@ export default function OilGasAccountingTable() {
     useEffect(() => {
         setFlowStation(flowStations[0])
     }, [flowStations])
-    const [date, setDate] = useState(dayjs())
+
 
     return (
         < div className='px-3 w-full'>
@@ -56,7 +56,7 @@ export default function OilGasAccountingTable() {
                     })} /> <RadaSwitch label="Edit Table" labelPlacement="left" />
                 </div>
                 <div className='flex gap-2 items-center'>
-                    <RadaDatePicker onChange={setDate} />
+                    <RadaDatePicker onChange={setDate} value={date} max={dayjs().format('YYYY-MM-DD')} />
                     <Input disabled={flowStations.length === 1} value={{ label: flowStation, value: flowStation }} containerClass='!w-[200px]' type='select' options={flowStations?.map(flowStation => ({ label: flowStation, value: flowStation }))} onChange={e => setFlowStation(e.value)} />
                 </div>
             </div>
