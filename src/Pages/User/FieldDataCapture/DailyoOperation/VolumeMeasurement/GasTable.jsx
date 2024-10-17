@@ -290,7 +290,9 @@ export default function GasTable() {
               </TableRow>
             </TableHead>
             {
-              setup?.flowStations?.map(
+              setup?.flowStations
+              ?.toSorted((a, b) => a?.name?.localeCompare(b?.name))
+              ?.map(
                 ({ name, numberOfUnits, measurementType, readings, ...rest }, flowStationIndex) => {
                   return (
                     <TableBody>

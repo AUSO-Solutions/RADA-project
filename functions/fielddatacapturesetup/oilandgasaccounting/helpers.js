@@ -9,10 +9,10 @@ const computeProdDeduction = (potentialData, flowstationData) => {
   // Estimate Uptime Production
   potentialData.forEach((prodString) => {
     // Estimate uptime gross
-    const fractionalUptime = parseFloat(prodString.uptimeProduction) / 24;
+    const fractionalUptime = parseFloat(prodString.uptimeProduction || 0) / 24;
     const gross = fractionalUptime * parseFloat(prodString.gross);
     const oil = fractionalUptime * parseFloat(prodString.oilRate);
-    const water = gross - oil;
+    const water = fractionalUptime * (parseFloat(prodString.gross) - parseFloat(prodString.oilRate))
     const gas = fractionalUptime * parseFloat(prodString.gasRate);
 
     // Get the running subtotal
@@ -32,6 +32,7 @@ const computeProdDeduction = (potentialData, flowstationData) => {
       water,
     });
   });
+  console.log(uptimeProduction)
 
   let actualProduction = [];
   // Estimate Actual Production
@@ -42,7 +43,7 @@ const computeProdDeduction = (potentialData, flowstationData) => {
     const water =
       (prodString.water / totalUptimeWater) *
       (flowstationData.gross - flowstationData.netProduction);
-    const gas = (prodString.gas / totalUptimeGas) * 100;
+    const gas = (prodString.gas / totalUptimeGas) * flowstationData.gas;
 
     // Push the data into the array
     actualProduction.push({
@@ -87,7 +88,7 @@ const computeProdDeduction = (potentialData, flowstationData) => {
     totalWaterDeferment += water;
 
     // Aggrgation for deferment categories and subcategories
-    if (potentialData[i].defermentCategory === "Scheduled Deferment") { 
+    if (potentialData[i].defermentCategory === "Scheduled Deferment") {
       oilScheduledDeferment.total += oil;
       gasScheduledDeferment.total += gas;
       waterScheduledDeferment.total += water;

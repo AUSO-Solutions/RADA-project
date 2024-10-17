@@ -85,6 +85,7 @@ export default function ScheduleTable() {
 
                         {
                             Object.values(wellTest?.wellsData || {})
+                            .sort((a, b) => a?.productionString.localeCompare(b?.productionString))
                                 .sort((a, b) => ((b?.isSelected ? 1 : 0) - (a?.isSelected ? 1 : 0)))?.map((well, i) => {
                                     return <TableRow>
                                         <TableCell align="center">

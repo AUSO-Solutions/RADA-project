@@ -111,6 +111,7 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
                 const res = Object.fromEntries(actualProduction.map(data => {
                     return [data?.productionString, { ...wellTestResultData[data?.productionString], ...data }]
                 }))
+                // console.log(res)
                 setWellTestResultData(res)
             }
             if (searchParams.get('table') === 'deferred-production') {
@@ -123,7 +124,7 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
         // eslint-disable-next-line
     }, [results, searchParams])
 
-
+    console.log(results)
     return (
         <TableContainer component={'form'} onSubmit={onSave} className={`m-auto  ${tableStyles.borderedMuiTable}`}>
             <Table sx={{ minWidth: 700 }} >
@@ -186,10 +187,10 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
                             <TableCell align="center">
                                 <input onChange={handleChange} defaultValue={0} required name='uptimeProduction' className='border outline-none px-2 w-[100px] text-center' type='number' max={24} min={0} />
                             </TableCell>
-                            <TableCell align="center">{well?.gross || 0}</TableCell>
-                            <TableCell align="center">{well?.oilRate || 0}</TableCell>
-                            <TableCell align="center">{well?.gasRate || 0}</TableCell>
-                            <TableCell align="center">{well?.gross - well?.oilRate || 0}</TableCell>
+                            <TableCell align="center">{results ? well?.gross || 0 : 0}</TableCell>
+                            <TableCell align="center">{results ? well?.oil || 0 : 0}</TableCell>
+                            <TableCell align="center">{results ? well?.gas || 0 : 0}</TableCell>
+                            <TableCell align="center">{results ? well?.gross - well?.oil || 0 : 0}</TableCell>
                             {searchParams.get('table') === 'actual-production' && <TableCell style={{ color: 'white', fontWeight: "600", background: parseInt(well?.uptimeProduction) === 0 || !well?.uptimeProduction ? '#FF5252' : '#A0E967' }} align="center">
                                 {(parseInt(well?.uptimeProduction) === 0 || !well?.uptimeProduction) ? 'Closed In' : 'Producing'}
                             </TableCell>}
@@ -212,10 +213,10 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
                     <TableRow sx={{ backgroundColor: '#00A3FF4D' }}>
                         <TableCell style={{ fontWeight: '600' }} align="center" colSpan={3} >Totals </TableCell>
                         {/* <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('uptimeProduction')}</TableCell> */}
-                        <TableCell style={{ fontWeight: '600' }} align="center">{getTotalOf('gross')}</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center">{getTotalOf('oilRate')}</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('gasRate')}</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('gross') - getTotalOf('oilRate')} </TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center">{results ? getTotalOf('gross') : 0}</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center">{results ? getTotalOf('oil') : 0}</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" >{results ? getTotalOf('gas') : 0}</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" >{results ? getTotalOf('gross') - getTotalOf('oil') : 0} </TableCell>
                         <TableCell style={{ fontWeight: '600' }} align="center" >-</TableCell>
                         <TableCell style={{ fontWeight: '600' }} align="center" >-</TableCell>
                         {/* <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('bsw')}</TableCell>

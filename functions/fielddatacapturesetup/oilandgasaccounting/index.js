@@ -29,29 +29,56 @@ const processIPSC = onCall(async (request) => {
         .get()
     ).docs.map((doc) => doc.data());
 
-    const flowstationsData = liquidVolume[liquidVolume.length - 1];
-    // console.log({ flowstationsData })
+
+    const gasVolume = (
+      await db
+        .collection("gasVolumes")
+        .where("date", "==", date)
+        .where("asset", "==", asset)
+        .get()
+    ).docs.map((doc) => doc.data());
+
+    const flowstationsData = liquidVolume[0];
+    const flowstationsDataGas = gasVolume[0];
     if (!flowstationsData || flowstationsData === null) {
       throw {
         code: "cancelled",
-        message: "No volume capture for this flowstation on this day",
+        message: "No volume capture for oil this flowstation on this day",
       };
     }
-
+    if (!flowstationsDataGas || flowstationsDataGas === null) {
+      throw {
+        code: "cancelled",
+        message: "No volume capture for gas this flowstation on this day",
+      };
+    }
     const flowstationData = flowstationsData.flowstations.find(
+      (flowstation) => flowstation.name === flowStation
+    );
+    const flowstationDataGas = flowstationsDataGas.flowstations.find(
       (flowstation) => flowstation.name === flowStation
     );
 
     if (!flowstationData) {
       throw {
         code: "cancelled",
-        message: "Missing flowstation data for current date",
+        message: "Missing flowstation oil data for current date",
       };
+    }
+    if (!flowstationDataGas) {
+      throw {
+        code: "cancelled",
+        message: "Missing flowstation gas data for current date",
+      };
+    }
+    const subtotal = {
+      ...flowstationData?.subtotal,
+      gas: flowstationDataGas?.subtotal?.totalGas
     }
     // console.log({ flowstationData })
     const result = computeProdDeduction(
       potentialTestData,
-      flowstationData.subtotal
+      subtotal
     );
 
     // Persit deferment data for the flowstation
@@ -63,7 +90,15 @@ const processIPSC = onCall(async (request) => {
       flowStation,
       deferment: result.deferment,
     };
-    if (type === 'save') await db.collection("deferments").doc(defermentId).set(defermentData);
+    console.log(type)
+    if (type === 'save') {
+      const quer = db.collection("deferments").where('date', "==", date).where('asset', '==', asset).where('flowStation', '==', flowStation)
+      const prev = (await quer.get()).docs[0]
+      const exists = prev?.exists
+      console.log("-------", exists ,prev?.data())
+      // if (exists) await db.collection("deferments").doc(prev.id).set({ defermentData, id: prev?.id });
+      // if (!exists) await db.collection("deferments").doc(defermentId).set({ defermentData });
+    }
 
     // Persist actual production data
     // let batch = db.batch()
@@ -82,10 +117,14 @@ const processIPSC = onCall(async (request) => {
       flowStation,
       productionData: result.actualProduction,
     };
-    if (type === 'save') await db
-      .collection("actualProduction")
-      .doc(actualProductionId)
-      .set(actualProductionData);
+    if (type === 'save') {
+      const quer = db.collection("actualProduction").where('date', "==", date).where('asset', '==', asset).where('flowStation', '==', flowStation)
+      const prev = (await quer.get())?.docs[0]
+      const exists = prev?.exists
+      console.log("-------", exists ,prev?.data())
+      if (exists) await db.collection("actualProduction").doc(prev.id).set({ actualProductionData, id: prev?.id });
+      if (!exists) await db.collection("actualProduction").doc(actualProductionId).set({ actualProductionData });
+    }
 
     return { status: "success", data: JSON.stringify(result) };
   } catch (error) {

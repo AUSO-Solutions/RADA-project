@@ -262,6 +262,7 @@ export default function IPSCTable() {
                         <TableBody>
                             {
                                 Object.values(ipscData?.wellTestResultData || {})
+                                .sort((a, b) => a?.productionString.localeCompare(b?.productionString))
                                     .sort((a, b) => ((b?.isSelected ? 1 : 0) - (a?.isSelected ? 1 : 0)))
                                     ?.filter(well => well?.flowstation === currFlowstation)
                                     ?.map((well, i) => {

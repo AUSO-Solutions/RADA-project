@@ -81,7 +81,7 @@ export default function OilGasAccountingIPSCTable({ IPSC }) {
                             {/* <TableCell align="center">{well?.whTemperature}</TableCell> */}
                             {/* <TableCell align="center">{well?.CITHP}</TableCell> */}
                             <TableCell align="center">{well?.gross}</TableCell>
-                            <TableCell align="center">{well?.gross - well?.oilRate}</TableCell>
+                            <TableCell align="center">{well?.bsw}</TableCell>
                             <TableCell align="center">{well?.oilRate}</TableCell>
                             <TableCell align="center">{well?.gasRate}</TableCell>
                         </TableRow>
