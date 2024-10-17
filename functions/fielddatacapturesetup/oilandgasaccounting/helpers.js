@@ -91,6 +91,8 @@ const computeProdDeduction = (potentialData, flowstationData) => {
 
 
     const productionString = potentialData[i].productionString;
+    const defermentCategory = potentialData[i].defermentCategory;
+    const defermentSubCategory = potentialData[i].defermentSubCategory;
     const reservoir = potentialData[i].reservoir;
     const status = potentialData[i].status;
 
@@ -147,6 +149,8 @@ const computeProdDeduction = (potentialData, flowstationData) => {
     drainagePoints.push({
       productionString,
       reservoir,
+      defermentCategory,
+      defermentSubCategory,
       status,
       downtime,
       gross,

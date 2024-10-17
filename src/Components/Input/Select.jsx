@@ -39,7 +39,8 @@ const RadaSelect = ({ name, placeholder, onChange, options, isMulti, ...rest }) 
                     // container: (baseStyles) => ({ ...baseStyles, height: 'auto', padding: 0, }),
                     valueContainer: (baseStyles) => ({ ...baseStyles, height: '40px', padding: 0, paddingLeft: 10 }),
                     indicatorSeparator: (baseStyles) => ({ display: 'none' }),
-                    input: (baseStyles) => ({ ...baseStyles, padding: 0, })
+                    input: (baseStyles) => ({ ...baseStyles, padding: 0, }),
+                    menu: base => ({ ...base, zIndex: "100000 !important" })
                 }} />
         </>
     )

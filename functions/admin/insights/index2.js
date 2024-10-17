@@ -22,8 +22,8 @@ const getInsights = onCall(async (request) => {
             throw { code: "cancelled", message: "Invalid start or end dates" };
 
         const db = admin.firestore();
-        const startDate_ = dayjs(startDate).toISOString();
-        const endDate_ = dayjs(endDate).toISOString();
+        const startDate_ = dayjs(startDate).format("YYYY-MM-DD");
+        const endDate_ = dayjs(endDate).format("YYYY-MM-DD");
 
         let noOfDays = dayjs(endDate).diff(startDate, "days"); // get the number of days
         let noOfMonths = dayjs(endDate).diff(startDate, "months"); // get the number of months
@@ -165,67 +165,65 @@ const getInsights = onCall(async (request) => {
         result.flowstations = flowstations;
         //Oil and Oil Target
         result.grossProduction = sum(
-            oilFlowstationsData.map((flowstation) => flowstation?.subtotal?.gross)
+            oilFlowstationsData.map((flowstation) => flowstation?.subtotal?.gross || 0)
         );
         result.grossTarget =
             sum(
                 oilFlowstationsData.map(
-                    (flowstation) => flowstation?.subtotal?.grossTarget
+                    (flowstation) => flowstation?.subtotal?.grossTarget || 0
                 )
             ) / oilFlowstationsData.length;
         result.oilProduced = sum(
             oilFlowstationsData.map(
-                (flowstation) => flowstation?.subtotal?.netProduction
+                (flowstation) => flowstation?.subtotal?.netProduction || 0
             )
         );
         result.oilTarget =
             sum(
                 oilFlowstationsData.map(
-                    (flowstation) => flowstation?.subtotal?.netTarget
+                    (flowstation) => flowstation?.subtotal?.netTarget || 0
                 )
             ) / oilFlowstationsData.length;
         //BSW
         result.bsw = sum(
-            oilFlowstationsData.map((flowstation) => flowstation?.subtotal?.bsw)
+            oilFlowstationsData.map((flowstation) => flowstation?.subtotal?.bsw || 0)
         );
         //Gases
         result.gasProduced = sum(
-            gasFlowstationsData.map((flowstation) => flowstation?.subtotal?.totalGas)
+            gasFlowstationsData.map((flowstation) => flowstation?.subtotal?.totalGas || 0)
         );
         result.gasExported = sum(
-            gasFlowstationsData.map((flowstation) => flowstation?.subtotal?.exportGas)
+            gasFlowstationsData.map((flowstation) => flowstation?.subtotal?.exportGas || 0)
         );
         result.gasFlared = sum(
-            gasFlowstationsData.map(
-                (flowstation) => flowstation?.subtotal?.gasFlaredUSM
-            )
+            gasFlowstationsData.map((flowstation) => flowstation?.subtotal?.gasFlaredUSM || 0)
         );
         result.gasUtilized = sum(
-            gasFlowstationsData.map((flowstation) => flowstation?.subtotal?.fuelGas)
+            gasFlowstationsData.map((flowstation) => flowstation?.subtotal?.fuelGas || 0)
         );
         //Gases Targets
         result.gasProducedTarget =
             sum(
                 gasFlowstationsData.map(
-                    (flowstation) => flowstation?.subtotal?.totalGasTarget
+                    (flowstation) => flowstation?.subtotal?.totalGasTarget || 0
                 )
             ) / gasFlowstationsData.length;
         result.exportGasTarget =
             sum(
                 gasFlowstationsData.map(
-                    (flowstation) => flowstation?.subtotal?.exportGasTarget
+                    (flowstation) => flowstation?.subtotal?.exportGasTarget || 0
                 )
             ) / gasFlowstationsData.length;
         result.gasFlaredTarget =
             sum(
                 gasFlowstationsData.map(
-                    (flowstation) => flowstation?.subtotal?.gasFlaredUSMTarget
+                    (flowstation) => flowstation?.subtotal?.gasFlaredUSMTarget || 0
                 )
             ) / gasFlowstationsData.length;
         result.gasUtilizedTarget =
             sum(
                 gasFlowstationsData.map(
-                    (flowstation) => flowstation?.subtotal?.fuelGasTarget
+                    (flowstation) => flowstation?.subtotal?.fuelGasTarget || 0
                 )
             ) / gasFlowstationsData.length;
         //Deferments
@@ -326,17 +324,17 @@ const getInsights = onCall(async (request) => {
                 "Export Gas": sum(
                     gasFlowstationsData
                         .filter(filterByTimeFrameFormat)
-                        .map((flowstation) => flowstation?.subtotal?.exportGas)
+                        .map((flowstation) => flowstation?.subtotal?.exportGas || 0)
                 ),
                 "Flared Gas": sum(
                     gasFlowstationsData
                         .filter(filterByTimeFrameFormat)
-                        .map((flowstation) => flowstation?.subtotal?.gasFlaredUSM)
+                        .map((flowstation) => flowstation?.subtotal?.gasFlaredUSM || 0)
                 ),
                 "Fuel Gas": sum(
                     gasFlowstationsData
                         .filter(filterByTimeFrameFormat)
-                        .map((flowstation) => flowstation?.subtotal?.fuelGas)
+                        .map((flowstation) => flowstation?.subtotal?.fuelGas || 0)
                 ),
                 x: time.format(format),
             };

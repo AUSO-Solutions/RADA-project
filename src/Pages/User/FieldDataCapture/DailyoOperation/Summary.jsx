@@ -28,8 +28,6 @@ import { bsw } from 'utils';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-
-
 const createOpt = item => ({ label: item, value: item })
 const Summary = () => {
   const [searchParams, setSearchParams] = useSearchParams()

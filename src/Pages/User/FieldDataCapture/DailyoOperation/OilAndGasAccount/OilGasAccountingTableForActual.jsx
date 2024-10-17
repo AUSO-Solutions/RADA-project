@@ -35,18 +35,21 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
     const [results, setResults] = useState(null)
 
     useEffect(() => {
-        setWellTestResultData(IPSC?.wellTestResultData)
-        setWellTestResultData(prev => {
-            let updated = IPSC?.wellTestResultData
-            for (const key in IPSC?.wellTestResultData) {
-                // const element = IPSC?.wellTestResultData[key];
-                // console.log(element)
-                updated[key].defermentCategory = 'Unscheduled Deferment'
-                updated[key].defermentSubCategory = 'Mismatch'
-            }
-            return updated
-        })
-    }, [IPSC])
+        if (!results) {
+            setWellTestResultData(IPSC?.wellTestResultData)
+            setWellTestResultData(prev => {
+                let updated = IPSC?.wellTestResultData
+                for (const key in IPSC?.wellTestResultData) {
+                    updated[key].defermentCategory = 'Unscheduled Deferment'
+                    updated[key].defermentSubCategory = 'Mismatch'
+                    updated[key].uptimeProduction = '0'
+                    updated[key].remark = ''
+                }
+                return updated
+            })
+        }
+        console.log('-----')
+    }, [IPSC, results])
 
     // const viewPotential = () => {
     //     setCalculated(!calculated)
@@ -190,6 +193,7 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
                             const name = e.target.name
                             const value = e.target.value
                             let status = name === 'uptimeProduction' ? { status: parseInt(value) === 0 ? 'Closed In' : 'Producing' } : {}
+                            console.log({name,value})
                             setWellTestResultData(prev => ({
                                 ...prev,
                                 [well?.productionString]: {
@@ -206,7 +210,7 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
                                 {well?.reservoir}
                             </TableCell>
                             {searchParams.get('table') === 'actual-production' && <TableCell align="center">
-                                <input onChange={handleChange} value={well?.uptimeProduction} required name='uptimeProduction' className='border outline-none px-2 w-[100px] text-center' type='number' max={24} min={0} />
+                                <input onChange={handleChange} step={'any'} value={well?.uptimeProduction} required name='uptimeProduction' className='border outline-none px-2 w-[100px] text-center' type='number' max={24} min={0} />
                             </TableCell>}
                             {searchParams.get('table') === 'deferred-production' && <TableCell align="center">
                                 <input disabled value={well?.downtime} required className='border outline-none px-2 w-[100px] text-center' type='number' max={24} min={0} />
@@ -221,7 +225,7 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
 
                             {
                                 <> <TableCell style={{ background: '#D9E3F9' }} align="center">
-                                    <select disabled={searchParams.get('table') === 'deferred-production'} className='bg-[inherit] outline-none' defaultValue='Unscheduled Deferment' onChange={handleChange} name='defermentCategory' >
+                                    <select disabled={searchParams.get('table') === 'deferred-production'} className='bg-[inherit] outline-none' value={well?.defermentCategory} defaultValue='Unscheduled Deferment' onChange={handleChange} name='defermentCategory' >
                                         {defermentCategoryArray?.map(category => <option value={category}>{category}</option>)}
                                     </select>
                                 </TableCell>
@@ -244,9 +248,10 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
                         <TableCell style={{ fontWeight: '600' }} align="center">{results ? getTotalOf('gross') : 0}</TableCell>
                         <TableCell style={{ fontWeight: '600' }} align="center">{results ? getTotalOf('oil') : 0}</TableCell>
                         <TableCell style={{ fontWeight: '600' }} align="center" >{results ? getTotalOf('gas') : 0}</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" >{results ? getTotalOf('water') : 0}</TableCell>
                         {/* <TableCell style={{ fontWeight: '600' }} align="center" >{results ? getTotalOf('gross') - getTotalOf('oil') : 0} </TableCell> */}
-                        <TableCell style={{ fontWeight: '600' }} align="center" >-</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center" >-</TableCell>
+                        <TableCell style={{ fontWeight: '600' }} align="center" colSpan={5}></TableCell>
+                        {/* <TableCell style={{ fontWeight: '600' }} align="center" >-</TableCell> */}
                         {/* <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('bsw')}</TableCell>
                         <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('oilRate')}</TableCell>
                         <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('gasRate')}</TableCell> */}
