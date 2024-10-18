@@ -119,7 +119,7 @@ const Group = () => {
                             <>
                                 <Text className={' rounded p-1 items-center gap-3  !flex border'}>
                                     {assetName} {
-                                        deleteLoading ? null : <IoCloseCircle onDoubleClick={() => deleteAsset({ groupId: group?.id, assetName: assetName })} className='cursor-pointer' />
+                                        deleteLoading ? null : <IoCloseCircle onDoubleClick={() => deleteAsset({ groupId: group?.id, asset: assetName })} className='cursor-pointer' />
                                     }
                                 </Text>
 

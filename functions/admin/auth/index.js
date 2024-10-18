@@ -146,19 +146,26 @@ const getUsers = onCall(async ({ }) => {
     try {
         const db = admin.firestore()
         const res = await db.collection('users').get()
-        const data = res?.docs?.map(doc => doc.data()) || []
-        const roles = (await db.collection("roles").get()).docs.map(doc => doc.data())
-        let userRole = [], lastSigned = []
-        data.forEach(async (user, i) => {
-            const roleIds = user?.roles
-            if (roleIds?.length) {
-                userRole[i] = roles.filter(role => roleIds.includes(role?.id))
-            }
-            lastSigned[i] = (await admin.auth().getUserByEmail(user?.email)).metadata.lastSignInTime
-        })
-        logger.log(userRole, 'ddd')
-        const result = data?.map((user, i) => ({ ...user, roles: userRole[i], lastSigned: lastSigned[i] }))
+        // const groups = (await db.collection('groups').get()).docs.map(doc => doc?.data())
+        const data = res?.docs?.map(doc => doc?.data()) || []
+        const roles = (await db.collection("roles").get()).docs.map(doc => doc?.data())
+        const uids = data?.map(user => user?.uid)
+        const groups = (await db.collection('groups').where('members', 'array-contains-any', uids).get())?.docs?.map(doc => doc?.data())
 
+
+        const result = data.map((user, i) => {
+            const roleIds = user?.roles
+            const userRoles = roles.filter(role => roleIds?.includes(role?.id))
+            const myGroups = groups.filter(group => group?.members?.includes(user?.uid))
+            const myGroupsNames = myGroups?.map(group => group?.groupName)
+            const assets = Array.from(new Set(myGroups?.flatMap(group => group?.assets)))
+            return {
+                ...user,
+                groups: myGroupsNames,
+                assets,
+                roles: userRoles
+            }
+        })
         return { status: 'success', data: result }
     } catch (error) {
         logger.log('error=>', error)
@@ -174,12 +181,8 @@ const getUserByUid = onCall(async ({ data }) => {
         if (uid) {
             const db = admin.firestore()
             const res = await db.collection('users').doc(uid).get()
-
+            const groups = (await db.collection('groups').where('members', 'array-contains', uid).get())?.docs?.map(doc => doc?.data()) || []
             const data = res.data()
-            // const roles = [...data?.roles]?.map(async (role) => {
-            //     return
-            // })
-
             let roles = []
             for (let roleIndex = 0; roleIndex < data?.roles.length; roleIndex++) {
                 try {
@@ -191,8 +194,11 @@ const getUserByUid = onCall(async ({ data }) => {
                 }
             }
 
+            const myGroups = groups?.filter(group => group?.members?.includes(uid))
+            const myGroupsNames = myGroups?.map(group => group?.groupName)
+            const assets = Array.from(new Set(myGroups?.flatMap(group => group?.assets)))
 
-            return { status: 'success', data: { ...data, roles } }
+            return { status: 'success', data: { ...data, roles, assets, groups: myGroupsNames } }
         }
     } catch (error) {
         logger.log('error=>', error)

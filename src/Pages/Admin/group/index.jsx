@@ -39,8 +39,8 @@ const Groups = () => {
           },
           {
             name: 'Assets', render: (data) => {
-              const memberslist = data?.assets?.map(asset => `${asset.name} ${asset.well}`).slice(0, 2).join(', ') + "..."
-              if (data?.assets?.length) return memberslist
+              // const memberslist = data?.assets?.map(asset => `${asset.name} ${asset.well}`).slice(0, 2).join(', ') + "..."
+              if (data?.assets?.length) return data?.assets?.join(', ')
               return 'No asset present'
             }
           },

@@ -65,7 +65,7 @@ const UserLogin = () => {
                             const roles = details?.data?.roles?.map(role => role?.roleName)
                             console.log(roles)
                             dispatch(setUser(details))
-                            if (!roles?.length) toast.error('Please request role assignment from admin')
+                            // if (!roles?.length) toast.error('Please request role assignment from admin')
                                 updateStatus("online")
                             if (roles?.includes('Admin')) {
                                 navigate('/admin/users')

@@ -10,7 +10,7 @@ export const updateStatus = async (status, logoutUid) => {
     if (uid)
         if (uid) {
             console.log(status);
-            document.title = status;
+            // document.title = status;
             firebaseFunctions('updateUserStatusByUid', { status, uid })
         }
 
@@ -36,7 +36,7 @@ document.addEventListener('visibilitychange', handleVisibilityChange, false);
 
 
 window.addEventListener('beforeunload', function (e) {
-    e.preventDefault();
+    // e.preventDefault();
     // window.prompt('Are you sure you want to leave')
     updateStatus("offline")
     // e.returnValue = ‘’;
