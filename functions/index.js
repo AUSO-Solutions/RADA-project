@@ -3,7 +3,7 @@ const admin = require("firebase-admin");
 // const { getFirestore } = require("firebase-admin/firestore");
 // const logger = require("firebase-functions/logger");
 // const { onCall } = require("firebase-functions/v2/https");
-const { login, createUser, getUsers, getUserByUid, deleteUserByUid, updateUserByUid, createUsers } = require("./admin/auth");
+const { login, createUser, getUsers, getUserByUid, deleteUserByUid, updateUserByUid, createUsers, updateUserStatusByUid } = require("./admin/auth");
 
 const { getGroups, createGroup, addMembersToGroup, deleteGroupMember, deleteGroup, deleteGroupAsset, assignAssetsToGroup } = require("./admin/auth/group");
 const { createAsset, getAssetByName, updateAssetById, deleteAssetById, getAssets, getAssetsName, importMasterXY } = require('./admin/assets')
@@ -11,7 +11,7 @@ const { createRole, updateRole, deleteRole, getRoles, getRole, assignPermissionT
 const { createSetup, deleteSetup, getSetups, updateSetup, getSetup } = require("./fielddatacapturesetup/volumemeasurementsetup");
 const { captureOilOrCondensate, captureGas, updateOilOrCondensate, getGasVolumeByDateAndAsset, deleteOilOrCondensateVolumeByID, getOilOrCondensateVolumeByDateAndAsset } = require("./fielddatacapturesetup/volume.measurement");
 const { createMerSchedule } = require("./fielddatacapturesetup/merdataSetup");
-const { processIPSC , getOilAndGasAccounting} = require('./fielddatacapturesetup/oilandgasaccounting/')
+const { processIPSC, getOilAndGasAccounting } = require('./fielddatacapturesetup/oilandgasaccounting/')
 const { getInsight } = require('./admin/insights')
 const { getInsights } = require('./admin/insights/index2')
 const { broadcast } = require('./broadcast/index')
@@ -24,7 +24,7 @@ firestore.settings({ ignoreUndefinedProperties: true });
 
 
 module.exports = {
-  createUser, login, getUsers, getUserByUid, deleteUserByUid, updateUserByUid, createUsers,
+  createUser, login, getUsers, getUserByUid, deleteUserByUid, updateUserByUid, createUsers, updateUserStatusByUid,
 
   createGroup, addMembersToGroup, getGroups, deleteGroup, deleteGroupMember, assignAssetsToGroup, deleteGroupAsset,
 
@@ -44,6 +44,6 @@ module.exports = {
   deleteOilOrCondensateVolumeByID,
 
   createMerSchedule,
-  processIPSC,getOilAndGasAccounting,
-  getInsight, getInsights , broadcast
+  processIPSC, getOilAndGasAccounting,
+  getInsight, getInsights, broadcast
 }

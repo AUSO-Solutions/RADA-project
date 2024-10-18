@@ -148,15 +148,16 @@ const getUsers = onCall(async ({ }) => {
         const res = await db.collection('users').get()
         const data = res?.docs?.map(doc => doc.data()) || []
         const roles = (await db.collection("roles").get()).docs.map(doc => doc.data())
-        let userRole = []
+        let userRole = [], lastSigned = []
         data.forEach(async (user, i) => {
             const roleIds = user?.roles
             if (roleIds?.length) {
                 userRole[i] = roles.filter(role => roleIds.includes(role?.id))
             }
+            lastSigned[i] = (await admin.auth().getUserByEmail(user?.email)).metadata.lastSignInTime
         })
         logger.log(userRole, 'ddd')
-        const result = data?.map((user, i) => ({ ...user, roles: userRole[i] }))
+        const result = data?.map((user, i) => ({ ...user, roles: userRole[i], lastSigned: lastSigned[i] }))
 
         return { status: 'success', data: result }
     } catch (error) {
@@ -219,6 +220,26 @@ const updateUserByUid = onCall(async (request) => {
 });
 
 
+const updateUserStatusByUid = onCall(async (request) => {
+    try {
+        let { data } = request
+        logger.log('data ----', { data })
+        const { uid, status } = data
+        const db = admin.firestore()
+        if (uid) {
+            await db.collection("users").doc(uid).update({ status })
+            return { status: 'success', data, message: 'User updated successfully' }
+        } else {
+            throw { code: 'cancelled', message: 'Error updating user.' }
+        }
+    } catch (error) {
+        logger.log('error ===> ', error)
+        throw new HttpsError(error?.code, error?.message)
+    }
+});
+
+
+
 const deleteUserByUid = onCall(async (request) => {
     try {
         let { data } = request
@@ -261,4 +282,4 @@ const forgotPassword = onCall(async (request) => {
 
 
 
-module.exports = { login, createUser, getUsers, updateUserByUid, deleteUserByUid, getUserByUid, createUsers }
+module.exports = { login, createUser, getUsers, updateUserByUid, deleteUserByUid, getUserByUid, createUsers, updateUserStatusByUid }

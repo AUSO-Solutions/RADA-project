@@ -19,7 +19,6 @@ function App() {
     if (uid) return children
     return <Navigate to={'/'} />
   }
-
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>

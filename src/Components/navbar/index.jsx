@@ -4,33 +4,19 @@ import { BsChevronDown } from 'react-icons/bs'
 import { Box, Typography } from '@mui/material';
 import ClickAway from '../clickaway';
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
-import { useDispatch, useSelector } from 'react-redux';
-import { logout } from 'Store/slices/auth';
-import { getAuth, signOut } from 'firebase/auth';
-import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
+// import { useNavigate } from 'react-router';
+import {  useSelector } from 'react-redux';
+// import { logout } from 'Store/slices/auth';
+// import { getAuth, signOut } from 'firebase/auth';
+// import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
+import { logout_ } from 'utils/logout';
 
 function Navbar() {
     const [drop, setDrop] = useState(false)
-    const dispatch = useDispatch()
-    const navigate = useNavigate()
+    // const dispatch = useDispatch()
+    // const navigate = useNavigate()
     const user = useSelector(state => state.auth.user)
     // console.log(user)
-
-    const logout_ = async () => {
-        console.log('first')
-        try {
-            dispatch(setLoadingScreen({ open: true }))
-            dispatch(logout())
-            const auth = getAuth()
-            await signOut(auth)
-            navigate('/')
-        } catch (error) {
-            console.log(error)
-        } finally {
-            dispatch(setLoadingScreen({ open: false }))
-        }
-    }
 
     return (
         <div className={` ${styles.body}`}>

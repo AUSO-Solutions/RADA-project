@@ -13,6 +13,7 @@ import img from 'Assets/images/newcrossfield.jpg'
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import { firebaseFunctions } from 'Services';
 import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
+import { updateStatus } from 'utils/updateUserStatus';
 
 const UserLogin = () => {
 
@@ -65,11 +66,13 @@ const UserLogin = () => {
                             console.log(roles)
                             dispatch(setUser(details))
                             if (!roles?.length) toast.error('Please request role assignment from admin')
+                                updateStatus("online")
                             if (roles?.includes('Admin')) {
                                 navigate('/admin/users')
                             } else {
                                 navigate('/users/fdc/daily')
                             }
+                        
                         } catch (error) {
                             console.log(error?.message)
                             toast.error(error?.code)
