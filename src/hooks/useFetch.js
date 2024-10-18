@@ -1,7 +1,7 @@
 import { firebaseFunctions } from "Services"
 import { useEffect, useState } from "react"
 
-export const useFetch = ({ firebaseFunction = '', payload = {}, dontFetch, refetch }) => {
+export const useFetch = ({ firebaseFunction = '', payload = {}, dontFetch, refetch, loadingScreen = false }) => {
 
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
@@ -9,7 +9,7 @@ export const useFetch = ({ firebaseFunction = '', payload = {}, dontFetch, refet
         const getData = async () => {
             setLoading(true)
             try {
-                const res = await firebaseFunctions(firebaseFunction, payload)
+                const res = await firebaseFunctions(firebaseFunction, payload, false, { loadingScreen })
                 setData(res?.data)
 
             } catch (error) {
@@ -20,7 +20,7 @@ export const useFetch = ({ firebaseFunction = '', payload = {}, dontFetch, refet
         }
         if (!dontFetch) getData()
         // eslint-disable-next-line
-    }, [dontFetch,refetch])
+    }, [dontFetch, refetch])
 
     return {
         data,

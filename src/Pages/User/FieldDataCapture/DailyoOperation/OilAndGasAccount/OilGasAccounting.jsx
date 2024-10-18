@@ -169,7 +169,7 @@ const Preview = () => {
 }
 
 const Existing = ({ onSelect = () => null }) => {
-  const { data } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "oilAndGasAccounting" } })
+  const { data } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "oilAndGasAccounting" },loadingScreen: true })
 
   return (
     <div className=" flex flex-wrap gap-4 m-5 ">

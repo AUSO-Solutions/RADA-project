@@ -14,7 +14,6 @@ import { useFetch } from 'hooks/useFetch';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSetupData } from 'Store/slices/setupSlice';
 import { Button, Input } from 'Components';
-import DateRangePicker from 'Components/DatePicker';
 import dayjs from 'dayjs';
 import { useAssetByName } from 'hooks/useAssetByName';
 import { useAssetNames } from 'hooks/useAssetNames';
@@ -152,15 +151,15 @@ const Summary = () => {
             />
           </div>
           <div  >
-            <DateRangePicker onChange={e => {
-              // dispatch(setSetupData({ name: 'startDate', value: dayjs(e?.startDate).format('MM/DD/YYYY') }))
-              // dispatch(setSetupData({ name: 'endDate', value: dayjs(e?.endDate).format('MM/DD/YYYY') }))
+            <input type="date" name="" className='border p-2  rounded-[12px]' id="" onChange={e => {
+              console.log(e.target.value)
               setSearchParams(prev => {
-                prev.set('startDate', dayjs(e?.startDate).format('MM/DD/YYYY'))
-                prev.set('endDate', dayjs(e?.endDate).format('MM/DD/YYYY'))
+                prev.set('startDate', dayjs(e.target.value).format('MM/DD/YYYY'))
+                prev.set('endDate', dayjs(e.target.value).format('MM/DD/YYYY'))
                 return prev
               })
             }} />
+          
           </div>
           <Button onClick={(file) => dispatch(openModal({
             title: '',
@@ -200,7 +199,7 @@ const Summary = () => {
 
           data={[
             { name: "Gross Liquid (bbls/day)", target: parseFloat(tableData.grossTarget || 0).toFixed(3), actual: parseFloat(tableData.grossProduction || 0).toFixed(3) },
-            { name: "BS&W (%)", target: bsw({gross:tableData.grossTarget,oil:tableData.oilTarget}), actual: bsw({gross:tableData.grossProduction,oil:tableData.oilProduced}) },
+            { name: "BS&W (%)", target: bsw({ gross: tableData.grossTarget, oil: tableData.oilTarget }), actual: bsw({ gross: tableData.grossProduction, oil: tableData.oilProduced }) },
             { name: "Net Oil (bbls/day)", target: parseFloat(tableData.oilTarget || 0).toFixed(3), actual: parseFloat(tableData.oilProduced || 0).toFixed(3) },
             { name: "Produced Gas (mmscf)", target: parseFloat(tableData.gasProducedTarget || 0).toFixed(3), actual: parseFloat(tableData.gasProduced || 0).toFixed(3) },
             { name: "Export Gas (mmscf)", target: parseFloat(tableData.exportGasTarget || 0).toFixed(3), actual: parseFloat(tableData.gasExported || 0).toFixed(3) },

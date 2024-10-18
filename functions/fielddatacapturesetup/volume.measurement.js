@@ -41,7 +41,7 @@ const captureOilOrCondensate = onCall(async (request) => {
     const prev = (await quer.get())?.docs[0]
     console.log({ prev })
     if (!prev?.exists) await db.collection("liquidVolumes").doc(id).set(dbData);
-    if (prev?.exists) await db.collection("liquidVolumes").doc(prev?.id).set(dbData);
+    if (prev?.exists) await db.collection("liquidVolumes").doc(prev?.id).update(dbData);
     return id;
   } catch (error) {
     logger.log("error ===> ", error);
@@ -89,14 +89,14 @@ const getOilOrCondensateVolumeByDateAndAsset = onCall(async (request) => {
   const { date, asset } = request.data;
 
   try {
-    console.log({date,asset})
+    console.log({ date, asset })
     const db = admin.firestore();
-    const record = (await db.collection("liquidVolumes").
-      where('date', "==", date).where('asset', '==', asset).get())?.docs[0]?.data();
-    if (!record) {
+    const data = (await db.collection("liquidVolumes").
+      where('date', "==", date).where('asset', '==', asset).get())?.docs[0];
+    if (!data?.exists) {
       throw ({ code: "not-found", message: "Record not found" });
     }
-
+    const record = { ...data?.data(), id: data.id }
     return { status: "success", data: record };
   } catch (error) {
     logger.log("error ===> ", error);
@@ -108,9 +108,10 @@ const getGasVolumeByDateAndAsset = onCall(async (request) => {
 
   try {
     const db = admin.firestore();
-    const record = (await db.collection("gasVolumes").
-      where('date', "==", date).where('asset', '==', asset).get())?.docs[0]?.data();
-    if (!record) {
+    const data = (await db.collection("gasVolumes").
+      where('date', "==", date).where('asset', '==', asset).get())?.docs[0];
+    const record = { ...data?.data(), id: data.id }
+    if (!data?.exists) {
       throw ({ code: "not-found", message: "Record not found" });
     }
 
@@ -163,7 +164,7 @@ const captureGas = onCall(async (request) => {
   try {
     let { data } = request;
     logger.log("data ----", { data });
-    const { date, asset, flowstations, averageTarget, setupId, totalGasProduced, subtotal } = data;
+    const { date, asset, flowstations, averageTarget, setupId, totalGasProduced, subtotal, } = data;
     if (!date || !asset || !flowstations) {
       throw new Error({
         code: "cancelled",
@@ -184,15 +185,15 @@ const captureGas = onCall(async (request) => {
       averageTarget,
       setupId,
       totalGasProduced,
-      subtotal
+      subtotal,
     };
     const db = admin.firestore();
 
     const quer = db.collection("gasVolumes").where('date', "==", date).where('asset', '==', asset)
     const prev = (await quer.get())?.docs[0];
-    console.log({prev})
+    console.log({ prev })
     if (!prev?.exists) await db.collection("gasVolumes").doc(id).set(dbData);
-    if (prev?.exists) await db.collection("gasVolumes").doc(prev?.id).set(dbData);
+    if (prev?.exists) await db.collection("gasVolumes").doc(prev?.id).update(dbData);
 
     return id;
   } catch (error) {
@@ -201,6 +202,27 @@ const captureGas = onCall(async (request) => {
   }
 });
 
+const addNoteToVolumeCapture = onCall(async (request) => {
+  try {
+    let { data } = request;
+    logger.log("data ----", { data });
+    const { oilCaputeId, gasCaptureId, note } = data;
+    if (!oilCaputeId && !gasCaptureId) {
+      throw {
+        code: "cancelled",
+        message: "Please provide oil or gas capture id",
+      };
+    }
+
+    const db = admin.firestore();
+    if (oilCaputeId) await db.collection("liquidVolumes").doc(oilCaputeId).update({ note });
+    if (gasCaptureId) await db.collection("gasVolumes").doc(gasCaptureId).update({ note });
+    return id;
+  } catch (error) {
+    logger.log("error ===> ", error);
+    throw new HttpsError(error?.code, error?.message);
+  }
+});
 // Just a guide
 // const demo = {
 //   date: "12/12/2024",

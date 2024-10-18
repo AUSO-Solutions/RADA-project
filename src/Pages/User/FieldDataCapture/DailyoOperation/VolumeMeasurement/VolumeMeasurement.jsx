@@ -293,7 +293,7 @@ const SaveAs = () => {
 
 const Existing = ({ onSelect = () => null }) => {
   const [, setSearchParams] = useSearchParams()
-  const { data } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "volumeMeasurement" } })
+  const { data } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "volumeMeasurement" }, loadingScreen: true })
   const dispatch = useDispatch()
 
 
@@ -311,7 +311,7 @@ const Existing = ({ onSelect = () => null }) => {
             })
           }, to: () => null,
         },
-        
+
         { name: 'Delete', to: (file) => `` },
       ]} name={(file) => `${file.title || "No title"}/${file?.asset}/${file.fluidType}/${dayjs(file.created).format('MMM-YYYY')}`} />
     </div>
