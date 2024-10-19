@@ -181,9 +181,9 @@ const getAssetsName = onCall(async (request) => {
     const db = admin.firestore();
     let names = []
     if (getAll) {
-      const docs = (await db.collection("assets").get()).docs;
-      console.log(docs.map((doc) => doc.id))
-      names = docs.map((doc) => doc.id)
+      const docs = (await db.collectionGroup("assetList").get()).docs;
+      console.log(docs.map((doc) => doc.data()))
+      names = docs.map((doc) => doc.data()).map(item => item?.assetName)
     } else {
       const uid = (await admin.auth().verifyIdToken(idToken)).uid
       const groups = (await db.collection('groups').where('members', 'array-contains', uid).get()).docs.map(doc => doc.data())

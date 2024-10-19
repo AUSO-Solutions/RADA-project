@@ -47,6 +47,7 @@ export default function RadaTable({ data = [], columns = [], noNumbers, fn = () 
         return fn() ? fn(columns) : columns
     }, [columns, fn])
     const [showAction, setShowAction] = React.useState(false)
+    // console.log(showAction)
     const [search, setSearch] = React.useState('')
     const [resFromBackend, setResFromBackend] = React.useState([])
     // const []
@@ -93,12 +94,12 @@ export default function RadaTable({ data = [], columns = [], noNumbers, fn = () 
                                     </StyledTableCell>)
 
                                 }
-                                {!noaction && <StyledTableCell align="right">
+                                {!noaction && <StyledTableCell sx={{position:'relative !important'}} align="right">
                                     <BsThreeDots color='black' className='cursor-pointer' onClick={() => setShowAction(i)} />
                                     {
                                         (showAction === i) && <>
-                                            <div className='h-[100vh] w-[100vw] top-0 left-0  fixed' onClick={() => setShowAction(false)}></div>
-                                            <div className='absolute flex flex-col bg-white shadow-md rounded-[8px]  min-w-[100px] text-left right-[50px]'>
+                                            <div className='h-[100vh] w-[100vw] top-0 left-0  !fixed' onClick={() => setShowAction(false)}></div>
+                                            <div className='!absolute flex flex-col !top-0 bg-white shadow-md rounded-[8px]  min-w-[100px] text-left right-[50px]'>
 
                                                 {actions(row, i)}
 

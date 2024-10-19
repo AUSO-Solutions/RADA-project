@@ -1,11 +1,11 @@
 import { store } from 'Store';
 import { reuse } from 'Store/slices/auth';
 import axios from 'axios'
-import { project_functions } from 'firebase-config';
+import {  project_functions } from 'firebase-config';
 import { httpsCallable } from 'firebase/functions';
 import handleError from './handleError';
 import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
-import { getIdToken, getAuth } from 'firebase/auth';
+import { getIdToken, getAuth, onAuthStateChanged } from 'firebase/auth';
 // import { toast } from 'react-toastify';
 
 const baseURL = process.env.REACT_APP_BASE_URL
@@ -54,15 +54,16 @@ const apiRequest = async ({
 
 const firebaseFunctions = async (functionName, payload, hideError = false, options) => {
     try {
-        const user = getAuth().currentUser
-        const token = options?.useToken ? { idToken: await getIdToken(user) } : {}
+        // const currentUser =
+        // console.log({ currentUser })
+        const token = options?.useToken ? { idToken: await getAuth().currentUser.getIdToken(false) } : {}
         if (options?.loadingScreen) store.dispatch(setLoadingScreen({ open: true }))
         const call = httpsCallable(project_functions, functionName)
         const res = (await call({ ...payload, ...token })).data
         // toast.success(res?.message)
         return res
     } catch (error) {
-        // console.log(error)
+        console.log(error)
         if (hideError) handleError(error)
         throw error
     } finally {

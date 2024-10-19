@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Overview from './Overview'
 import Insights from './Insights'
 import Tab from 'Components/tab'
@@ -32,6 +32,11 @@ const Dashboard = () => {
   const setupData = useSelector(state => state.setup)
   const assets = useAssetByName(setupData?.asset)
   const { assetNames } = useAssetNames()
+  useEffect(() => {
+
+    dispatch(setSetupData({ name: 'startDate', value: dayjs(e?.startDate).format('YYYY-MM-DD') }))
+    dispatch(setSetupData({ name: 'endDate', value: dayjs(e?.endDate).format('YYYY-MM-DD') }))
+  }, [])
   return (
     <div className='h-full'>
       <Header
@@ -57,16 +62,18 @@ const Dashboard = () => {
                   />
                 </div>
                 <div style={{ width: '150px' }}>
-                  <Input isClearable key={setupData?.asset} placeholder={'Flow Stations'} required
-                    type='select' options={assets.flowStations?.map(createOpt)}
+                  <Input isClearable key={setupData?.asset} placeholder={'Flow Stations'} required defaultValue={{ label: 'All', value: '' }}
+                    type='select' options={[{ label: 'All', value: '' }].concat(assets.flowStations?.map(createOpt))}
                     onChange={(e) => dispatch(setSetupData({ name: 'flowstation', value: e?.value }))}
                   />
                 </div>
                 <div  >
-                  <DateRangePicker onChange={e => {
-                    dispatch(setSetupData({ name: 'startDate', value: dayjs(e?.startDate).format('YYYY-MM-DD') }))
-                    dispatch(setSetupData({ name: 'endDate', value: dayjs(e?.endDate).format('YYYY-MM-DD') }))
-                  }} />
+                  <DateRangePicker defaultStartDate={new Date(dayjs().startOf('month').format('YYYY-MM-DD'))}
+                    defaultEndDate={new Date(dayjs().subtract(1, "day").format('YYYY-MM-DD'))}
+                    onChange={e => {
+                      dispatch(setSetupData({ name: 'startDate', value: dayjs(e?.startDate).format('YYYY-MM-DD') }))
+                      dispatch(setSetupData({ name: 'endDate', value: dayjs(e?.endDate).format('YYYY-MM-DD') }))
+                    }} />
                 </div>
               </>
             }

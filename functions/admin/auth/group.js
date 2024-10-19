@@ -4,7 +4,7 @@ const logger = require("firebase-functions/logger");
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const crypto = require('crypto');
 const dayjs = require("dayjs");
-const { currentTime } = require("../../helpers");
+const { currentTime, transporter, sender } = require("../../helpers");
 
 
 const createGroup = onCall(async (request) => {
@@ -28,6 +28,32 @@ const createGroup = onCall(async (request) => {
         throw new HttpsError(error?.code, error?.message)
     }
 });
+
+const sendAddedToGroupEmail =  (group, user) => {
+    var msg = {
+        from: sender, // sender address
+        to: user?.email,
+        subject: `Addition to Group  `, // Subject line
+        html: `<b>Hello ${user?.firstName} ${user?.lastName}</b> <br>
+            <p>
+           Your successfully been added to ${group?.groupName} in the RADA PED Application <br> <br>
+
+            you now have access to ${group?.assets?.join(', ')}. <br />
+            Kindly login to see the changes effect 
+
+            <br> <br>
+            You are receiving this email because you are registered to the PED Application.
+            </p>`
+    }
+
+     transporter.sendMail(msg, function (error, info) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+}
 const addMembersToGroup = onCall(async ({ data }) => {
 
     try {
@@ -43,6 +69,8 @@ const addMembersToGroup = onCall(async ({ data }) => {
             if (!groupMembers.includes(member)) groupMembers.push(member)
         });
         await db.collection("groups").doc(groupId).update({ members: groupMembers })
+        const users = (await db.collection('users').where('uid', 'in', members).get()).docs.map(doc => doc?.data())
+        const sendMails = users.map(user=>sendAddedToGroupEmail(res,user))
         return { status: 'success', data: {}, message: 'Members added successfully' }
     } catch (error) {
         logger.log("error => ", error)

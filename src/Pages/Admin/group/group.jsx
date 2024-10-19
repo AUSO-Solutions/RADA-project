@@ -17,8 +17,9 @@ import { useAssetNames } from 'hooks/useAssetNames';
 
 const Group = () => {
     const { groupId } = useParams()
+    const [refetch,setRefetch]=useState(null)
 
-    const { data: group } = useFetch({ firebaseFunction: 'getGroups', payload: { groupId } })
+    const { data: group } = useFetch({ firebaseFunction: 'getGroups', payload: { groupId },refetch })
     const { assetNames } = useAssetNames({getAll:true})
     const { users } = useUsers()
     const [deleteLoading, setDeleteLoading] = useState(false)
@@ -28,7 +29,7 @@ const Group = () => {
         try {
             await firebaseFunctions('deleteGroupMember', { groupId, member })
             setMembers(prev => prev.filter(prev => prev?.uid !== member))
-
+            setRefetch(Math.random())
         } catch (error) {
 
         } finally {
@@ -42,7 +43,8 @@ const Group = () => {
         try {
             await firebaseFunctions('deleteGroupAsset', { groupId, asset })
             // setMembers(prev => prev.filter(prev => prev?.id !== asset))
-            setGroupDetail(prev => ({ ...prev, assets: prev?.assets?.filter(assetDetail => assetDetail?.id !== asset) }))
+            setRefetch(Math.random())
+            setGroupDetail(prev => ({ ...prev, assets: prev?.assets?.filter(assetDetail => assetDetail !== asset) }))
 
         } catch (error) {
 
@@ -126,7 +128,8 @@ const Group = () => {
             <br /> <br />
             <Text weight={'600'} size={'16px'}> Add member </Text>
             <RadaForm
-                // validationSchema={schema}
+                // validationSchema={schema} 
+                key={group?.members?.length}
                 noToken
                 btnText={'Submit'}
                 btnClass={'w-[100%] flex justify-center'}
@@ -135,6 +138,7 @@ const Group = () => {
                 method={'post'}
                 className={'w-[400px]'}
                 onSuccess={() => {
+                    setRefetch(Math.random())
                     toast.success('Successful')
                     dispatch(closeModal())
                 }}
@@ -149,6 +153,7 @@ const Group = () => {
             <Text weight={'600'} size={'16px'}> Assign asset </Text>
             <RadaForm
                 // validationSchema={schema}
+                key={group?.assets?.length}
                 noToken
                 btnText={'Submit'}
                 btnClass={'w-[100%] flex justify-center'}
@@ -157,13 +162,14 @@ const Group = () => {
                 method={'post'}
                 className={'w-[400px]'}
                 onSuccess={() => {
+                    setRefetch(Math.random())
                     toast.success('Successful')
                     dispatch(closeModal())
                 }}
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', width: '600px', gap: '20px' }} >
                 {/* <Text size={'20px'} weight={600}>{group?.groupName}</Text> */}
                 <Input name='groupId' hidden value={group?.id} />
-                <Input label={'Assets'} name='assets' type='select' isMulti options={assetsAddable} defaultValue={group?.assets?.map(assetName => ({ label: assetName, value: assetName }))} />
+                <Input label={'Assets'} name='assets' type='select' isMulti options={assetsAddable} />
 
             </RadaForm>
         </Box>

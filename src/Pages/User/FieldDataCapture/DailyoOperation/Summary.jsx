@@ -98,16 +98,16 @@ const Summary = () => {
 
   useEffect(() => {
     // console.log(searchParams)
-    const asset = searchParams.get('asset')
-    const flowstation = searchParams.get('flowstation')
-    const startDate = searchParams.get('startDate')
-    const endDate = searchParams.get('endDate')
+    const asset = searchParams.get('asset') || assetNames[0]
+    const flowstation = searchParams.get('flowstation') || ""
+    const startDate = searchParams.get('startDate') || dayjs().subtract(1,"day").format('YYYY-MM-DD')
+    const endDate = searchParams.get('endDate')|| dayjs().subtract(1,"day").format('YYYY-MM-DD')
     // console.log({ asset, flowstation, startDate, endDate })
     dispatch(setSetupData({ name: 'asset', value: asset }))
     dispatch(setSetupData({ name: 'flowstation', value: flowstation }))
     dispatch(setSetupData({ name: 'startDate', value: startDate }))
     dispatch(setSetupData({ name: 'endDate', value: endDate }))
-  }, [searchParams, dispatch])
+  }, [searchParams, dispatch,assetNames])
 
   return (
     <div className='relative' >
@@ -124,6 +124,7 @@ const Summary = () => {
 
           <div style={{ width: '120px' }} >
             <Input placeholder={'Assets'} required
+            // defaultValue={{}}
               type='select' options={assetNames?.map(assetName => ({ value: assetName, label: assetName }))}
               onChange={(e) => {
                 // dispatch(setSetupData({ name: 'asset', value: e?.value }))
@@ -134,12 +135,12 @@ const Summary = () => {
                   return prev
                 })
               }}
-              defaultValue={{ value: setupData?.asset, label: setupData?.asset }}
+              value={{ value: setupData?.asset, label: setupData?.asset }}
             />
           </div>
           <div style={{ width: '150px' }}>
             <Input isClearable key={setupData?.asset} placeholder={'Flow Stations'} required
-              type='select' options={assets.flowStations?.map(createOpt)}
+              type='select' options={[{ label: 'All', value: '' }].concat(assets.flowStations?.map(createOpt))}
               onChange={(e) => {
                 // dispatch(setSetupData({ name: 'flowstation', value: e?.value }))
                 setSearchParams(prev => {
@@ -151,15 +152,16 @@ const Summary = () => {
             />
           </div>
           <div  >
-            <input type="date" name="" className='border p-2  rounded-[12px]' id="" onChange={e => {
+            <input type="date" name="" className='border p-2  rounded-[12px]' id=""   value={setupData?.startDate} onChange={e => {
               console.log(e.target.value)
+            
               setSearchParams(prev => {
                 prev.set('startDate', dayjs(e.target.value).format('MM/DD/YYYY'))
                 prev.set('endDate', dayjs(e.target.value).format('MM/DD/YYYY'))
                 return prev
               })
             }} />
-          
+
           </div>
           <Button onClick={(file) => dispatch(openModal({
             title: '',

@@ -3,7 +3,7 @@ const admin = require("firebase-admin");
 const logger = require("firebase-functions/logger");
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const crypto = require('crypto');
-const { currentTime } = require("../../helpers");
+const { currentTime, transporter, sender, frontendUrl } = require("../../helpers");
 // const { getAuth, createUserWithEmailAndPassword } = require("firebase/auth");
 
 
@@ -48,6 +48,34 @@ const saveUserInDb = async (data, uid) => {
     return { user }
 }
 
+const sendCreationEmail = (data) => {
+    var msg = {
+        from: sender, // sender address
+        to: data?.email,
+        subject: 'RADA Appliation Account Creation!', // Subject line
+        html: `<b>Hello ${data?.firstName} ${data?.lastName}</b> <br>
+            <p>
+           Your successfully been added to the RADA PED Application <br> <br>
+
+            <a href="${frontendUrl}">Login via this url ${frontendUrl}  </a><br><br>
+            Your login details are <br />
+            Username: ${data?.email} <br />
+            Password: ${data?.password} 
+
+            <br> <br>
+            You are receiving this email because you are registered to the PED Application.
+            </p>`
+    }
+
+    transporter.sendMail(msg, function (error, info) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+}
+
 const createUser = onCall(async (request) => {
     try {
         let { data } = request
@@ -55,9 +83,11 @@ const createUser = onCall(async (request) => {
         logger.log('data ----', { data })
         const { email, password } = data
 
+
         const db = admin.firestore()
         const { uid } = await genUid(email, password)
         logger.log({ uid })
+        sendCreationEmail(data)
         const { user } = await saveUserInDb(data, uid)
         return { status: 'success', message: 'User created successfully', data: user }
 

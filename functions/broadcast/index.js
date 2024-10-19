@@ -22,7 +22,6 @@ const broadcast = onCall(async (request) => {
             from: sender, // sender address
             to: maillist,
             subject, // Subject line
-            // text: " Hello you are receiving this broadcast from Rada Application ", // plaintext body
             html: `<b>Hello</b> <br>
 <p>
     This is ${type} broadcast for ${date} <br> <br>
@@ -33,10 +32,10 @@ const broadcast = onCall(async (request) => {
     <br> <br>
     You are receiving this email because you are registered to the PED Application 
 
-</p>` 
+</p>`
         }
 
-         transporter.sendMail(msg, function (error, info) {
+        transporter.sendMail(msg, function (error, info) {
             if (error) {
                 console.log(error);
             } else {
