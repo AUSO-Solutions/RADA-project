@@ -37,7 +37,7 @@ const Insights = () => {
     const OilProductionChart = () => {
         return (
             // <div style={{ width: '100%', height: '300px !important', margin: '10px auto' }}>
-             <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={350}>
                 <BarChart width={'100%'} height={'100%'} data={OilProdData} margin={{ top: 20, right: 20, left: 0, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="x" />
@@ -52,7 +52,7 @@ const Insights = () => {
 
 
                 </BarChart>
-                </ResponsiveContainer>
+            </ResponsiveContainer>
             // </div>
         );
     };
@@ -60,8 +60,8 @@ const Insights = () => {
     const GasProductionChart = () => {
 
         return (
-            // <div style={{ width: '100%', height: '300px !important', margin: '10px auto' }}>
-                <ResponsiveContainer width="100%" height={300}>
+            // <div style={{ width: '100%', height: '350px !important', margin: '10px auto' }}>
+            <ResponsiveContainer width="100%" height={350}>
                 <BarChart width={'100%'} height={'100%'} data={GasProdData} margin={{ top: 20, right: 20, left: 0, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="x" />
@@ -74,19 +74,36 @@ const Insights = () => {
                     <Bar dataKey="Flared Gas" stackId="a" fill="#F4B184" name="Flared Gas" />
                     <ReferenceLine y={data?.gasProducedTarget} label="Prod. Gas Target" stroke="#A5A5A5" strokeDasharray="4 4" strokeWidth={2} />
                 </BarChart>
-                </ResponsiveContainer>
+            </ResponsiveContainer>
             // </div>
         );
     };
+    const getStatus = (target, actual) => {
+        const percent = ((Math.abs(parseFloat(target) - parseFloat(actual)) / parseFloat(actual)) * 100).toFixed(1)
+        if (parseFloat(target) > parseFloat(actual)) {
+            return {
+                color: 'red',
+                status: 'negative',
+                percent
+            }
+        } else {
+            return {
+                color: 'green',
+                status: 'positive',
+                percent
+            }
+        }
+    }
+
 
     return (
         <div className="bg-[#FAFAFA]" >
             <div className="mx-5 pt-3 flex flex-row  gap-5 " >
-                <DashboardCard targetVal={`Target: ${parseFloat(data?.oilTarget || 0)?.toFixed(3)}kbbls`} img={assets} title={"Oil Produced"} num={`${parseFloat(data?.oilProduced || 0)?.toFixed(3)} Kbbls`} />
-                <DashboardCard targetVal={`Target: ${parseFloat(data?.gasProducedTarget || 0)?.toFixed(3)} MMscf`} img={grossprodgas} title={"Gas Produced"} num={`${parseFloat(data?.gasProduced || 0)?.toFixed(3)} MMscf`} />
-                <DashboardCard targetVal={`Target: ${parseFloat(data?.exportGasTarget || 0)?.toFixed(3)} MMscf`} img={gasexported} title={"Gas Exported"} num={`${parseFloat(data?.gasExported || 0)?.toFixed(3)} MMscf`} />
-                <DashboardCard targetVal={`${parseFloat(data?.gasFlaredTarget || 0)?.toFixed(3)} MMscf`} img={gasflared} title={"Gas Flared"} num={`${parseFloat(data?.gasFlared || 0)?.toFixed(3)} MMscf`} />
-                <DashboardCard targetVal={`${parseFloat(data?.gasUtilizedTarget || 0)?.toFixed(3)} MMscf`} img={gasutilized} title={"Gas Utilized"} num={`${parseFloat(data?.gasUtilized || 0)?.toFixed(3)} MMscf`} />
+                <DashboardCard variance={getStatus(data?.oilTarget, data?.oilProduced)} targetVal={`Target: ${parseFloat(data?.oilTarget || 0)?.toFixed(3)}kbbls`} img={assets} title={"Oil Produced"} num={`${parseFloat(data?.oilProduced || 0)?.toFixed(3)} Kbbls`} />
+                <DashboardCard variance={getStatus(data?.gasProducedTarget, data?.gasProduced)} targetVal={`Target: ${parseFloat(data?.gasProducedTarget || 0)?.toFixed(3)} MMscf`} img={grossprodgas} title={"Gas Produced"} num={`${parseFloat(data?.gasProduced || 0)?.toFixed(3)} MMscf`} />
+                <DashboardCard variance={getStatus(data?.exportGasTarget, data?.gasExported)} targetVal={`Target: ${parseFloat(data?.exportGasTarget || 0)?.toFixed(3)} MMscf`} img={gasexported} title={"Gas Exported"} num={`${parseFloat(data?.gasExported || 0)?.toFixed(3)} MMscf`} />
+                <DashboardCard variance={getStatus(data?.gasFlaredTarget, data?.gasFlared)} targetVal={`${parseFloat(data?.gasFlaredTarget || 0)?.toFixed(3)} MMscf`} img={gasflared} title={"Gas Flared"} num={`${parseFloat(data?.gasFlared || 0)?.toFixed(3)} MMscf`} />
+                <DashboardCard variance={getStatus(data?.gasUtilizedTarget, data?.gasUtilized)} targetVal={`${parseFloat(data?.gasUtilizedTarget || 0)?.toFixed(3)} MMscf`} img={gasutilized} title={"Gas Utilized"} num={`${parseFloat(data?.gasUtilized || 0)?.toFixed(3)} MMscf`} />
             </div>
 
             <div className="pt-5 flex flex-row flex-wrap justify-evenly shadow rounded" style={{ rowGap: "12px" }}>
