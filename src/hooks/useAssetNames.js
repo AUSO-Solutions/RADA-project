@@ -23,7 +23,7 @@ export const useAssetNames = (options) => {
             }
         }
         getData()
-    }, [])
+    }, [options?.getAll])
 
     return {
         assetNames

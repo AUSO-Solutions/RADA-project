@@ -245,6 +245,7 @@ const updateUserByUid = onCall(async (request) => {
         const db = admin.firestore()
         if (uid) {
             await db.collection("users").doc(uid).update({ firstName, lastName, email, roles })
+            await admin.auth().updateUser(uid, { email, displayName: `${firstName} ${lastName}` })
             return { status: 'success', data, message: 'User updated successfully' }
         } else {
             throw { code: 'cancelled', message: 'Error updating user.' }

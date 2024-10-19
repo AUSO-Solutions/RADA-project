@@ -5,7 +5,7 @@ import {  project_functions } from 'firebase-config';
 import { httpsCallable } from 'firebase/functions';
 import handleError from './handleError';
 import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
-import { getIdToken, getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getAuth } from 'firebase/auth';
 // import { toast } from 'react-toastify';
 
 const baseURL = process.env.REACT_APP_BASE_URL

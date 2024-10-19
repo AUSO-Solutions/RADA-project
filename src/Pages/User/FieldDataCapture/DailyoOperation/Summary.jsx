@@ -9,7 +9,6 @@ import {
 } from 'chart.js';
 import Text from 'Components/Text';
 import { Close } from '@mui/icons-material';
-import RadioSelect from './RadioSelect';
 import { useFetch } from 'hooks/useFetch';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSetupData } from 'Store/slices/setupSlice';

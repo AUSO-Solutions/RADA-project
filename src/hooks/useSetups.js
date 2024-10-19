@@ -16,7 +16,7 @@ export const useGetSetups = (setupType, extras) => {
             setRefetch(Math.random())
         });
         return () => unsubscribe()
-    }, [])
+    }, [setupType])
 
     const { data } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType, ...extras }, useToken: true, refetch })
     useEffect(() => {

@@ -36,7 +36,7 @@ const Dashboard = () => {
     dispatch(setSetupData({ name: 'asset', value: setupData?.asset || assetNames[0] }))
     dispatch(setSetupData({ name: 'startDate', value: (dayjs().startOf('month').format('YYYY-MM-DD')) }))
     dispatch(setSetupData({ name: 'endDate', value: (dayjs().subtract(1, "day").format('YYYY-MM-DD')) }))
-  }, [assetNames])
+  }, [assetNames,dispatch,setupData?.asset])
   return (
     <div className='h-full'>
       <Header
