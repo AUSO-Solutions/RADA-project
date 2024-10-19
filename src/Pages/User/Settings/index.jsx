@@ -2,7 +2,9 @@ import Header from 'Components/header'
 import React, { useState } from 'react'
 import Tab from 'Components/tab'
 import UserDetails from './UserDetails'
-import GlobalSettings from './GlobalSettings'
+// import GlobalSettings from './GlobalSettings'
+import ChangePassword from './ChangePassword'
+
 
 
 const tabs = [
@@ -11,9 +13,13 @@ const tabs = [
         Component: <UserDetails />
     },
     {
-        title: 'Global Settings',
-        Component: <GlobalSettings />
+        title: 'Change password',
+        Component: <ChangePassword />
     },
+    // {
+    //     title: 'Global Settings',
+    //     Component: <GlobalSettings />
+    // },
 ]
 
 

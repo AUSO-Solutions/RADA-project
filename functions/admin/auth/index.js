@@ -255,6 +255,24 @@ const updateUserByUid = onCall(async (request) => {
         throw new HttpsError(error?.code, error?.message)
     }
 });
+const changePassword = onCall(async (request) => {
+    try {
+        let { data } = request
+        logger.log('data ----', { data })
+        const { email, uid, oldPassword, newPassword} = data
+        const db = admin.firestore()
+        if (uid) {
+            // await db.collection("users").doc(uid).update({ firstName, lastName, email, roles })
+            await admin.auth().updateUser(uid, { password:newPassword })
+            return { status: 'success', data, message: 'User updated successfully' }
+        } else {
+            throw { code: 'cancelled', message: 'Error updating user.' }
+        }
+    } catch (error) {
+        logger.log('error ===> ', error)
+        throw new HttpsError(error?.code, error?.message)
+    }
+});
 
 
 const updateUserStatusByUid = onCall(async (request) => {
@@ -319,4 +337,4 @@ const forgotPassword = onCall(async (request) => {
 
 
 
-module.exports = { login, createUser, getUsers, updateUserByUid, deleteUserByUid, getUserByUid, createUsers, updateUserStatusByUid }
+module.exports = { login, createUser, getUsers, updateUserByUid, deleteUserByUid, getUserByUid, createUsers, updateUserStatusByUid, changePassword }

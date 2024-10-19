@@ -15,13 +15,18 @@ import DateRangePicker from 'Components/DatePicker'
 
 const tabs = [
   {
+    title: 'Business intelligence',
+    Component: <Insights />
+  },
+  {
     title: 'Overview',
     Component: <Overview />
   },
   {
-    title: 'Insights',
+    title: 'Production Surveillance ',
     Component: <Insights />
   },
+  
 ]
 
 const Dashboard = () => {
