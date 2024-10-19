@@ -2,7 +2,6 @@ import { useDispatch, useSelector } from "react-redux"
 import { clearSetup, setSetupData } from "Store/slices/setupSlice"
 import { Input } from "Components"
 import { useEffect, useState } from "react"
-import { useFetch } from "hooks/useFetch"
 import Text from "Components/Text"
 import { closeModal, openModal } from "Store/slices/modalSlice"
 import { store } from "Store"
@@ -21,6 +20,7 @@ import BroadCast from "Partials/BroadCast"
 import SelectGroup from "Partials/BroadCast/SelectGroup"
 import Attachment from "Partials/BroadCast/Attachment"
 import BroadCastSuccessfull from "Partials/BroadCast/BroadCastSuccessfull"
+import { useGetSetups } from "hooks/useSetups"
 
 
 
@@ -89,7 +89,7 @@ const SaveAs = () => {
 }
 const Exists = () => {
 
-    const { data } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "merSchedule" } })
+    const { setups: data } = useGetSetups("merSchedule")
     const dispatch = useDispatch()
 
     return (

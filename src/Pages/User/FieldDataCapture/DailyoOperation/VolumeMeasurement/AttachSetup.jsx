@@ -1,6 +1,6 @@
 import { Attachment } from '@mui/icons-material'
 import { Button, Input } from 'Components'
-import { useFetch } from 'hooks/useFetch'
+import { useGetSetups } from 'hooks/useSetups'
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { toast } from 'react-toastify'
@@ -9,10 +9,9 @@ import { closeModal, openModal } from 'Store/slices/modalSlice'
 
 const AttachSetup = ({ setup }) => {
     const Attach = () => {
-        // const fluidType = setup?.fluidType
-        // const isGas = setup?.fluidType === 'Gas'
-
-        const { data } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "volumeMeasurement" } })
+        
+        const { setups: data } = useGetSetups("volumeMeasurement")
+        
         const [loading, setLoading] = useState(false)
 
         // console.log(data)

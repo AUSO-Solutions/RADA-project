@@ -6,10 +6,10 @@ import { store } from "Store";
 let offlinetimer = null, onlinetime = null
 export const updateStatus = async (status, logoutUid) => {
     const uid = store.getState().auth.user?.data?.uid
-    console.log(uid)
+    // console.log(uid)
     if (uid)
         if (uid) {
-            console.log(status);
+            // console.log(status);
             // document.title = status;
             firebaseFunctions('updateUserStatusByUid', { status, uid })
         }

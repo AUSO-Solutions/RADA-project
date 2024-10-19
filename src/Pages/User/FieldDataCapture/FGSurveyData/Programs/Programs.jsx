@@ -5,7 +5,7 @@ import { clearSetup, setSetupData, setWholeSetup } from "Store/slices/setupSlice
 import { Input } from "Components"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import styles from '../surveydata.module.scss'
-import { useFetch } from "hooks/useFetch"
+// import { useFetch } from "hooks/useFetch" 
 import Text from "Components/Text"
 import { closeModal } from "Store/slices/modalSlice"
 import { store } from "Store"
@@ -17,6 +17,7 @@ import { Chip } from "@mui/material"
 
 import Files from "Partials/Files"
 import { createWellTitle } from "utils"
+import { useGetSetups } from "hooks/useSetups"
 
 
 
@@ -294,8 +295,7 @@ const SaveAs = () => {
 }
 const Exists = () => {
 
-    const { data } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "wellTestSchedule" } })
-
+    const { setups: data } = useGetSetups("wellTestSchedule")
     return (
         <div className=" flex flex-wrap gap-4 m-5 ">
 

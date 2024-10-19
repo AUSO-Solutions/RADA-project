@@ -12,12 +12,13 @@ import { closeModal } from 'Store/slices/modalSlice'
 import RadioSelect from '../RadioSelect'
 import { toast } from 'react-toastify'
 import { camelize, updateFlowstation, updateFlowstationReading } from './helper'
-import { useFetch } from 'hooks/useFetch'
+// import { useFetch } from 'hooks/useFetch'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import Files from 'Partials/Files'
 import dayjs from 'dayjs'
 import Setup from 'Partials/setup'
 import { setLoadingScreen } from 'Store/slices/loadingScreenSlice'
+import { useGetSetups } from 'hooks/useSetups'
 // import BroadCast from 'Partials/BroadCast'
 // import SelectGroup from 'Partials/BroadCast/SelectGroup'
 // import Attachment from 'Partials/BroadCast/Attachment'
@@ -293,7 +294,8 @@ const SaveAs = () => {
 
 const Existing = ({ onSelect = () => null }) => {
   const [, setSearchParams] = useSearchParams()
-  const { data } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "volumeMeasurement" }, loadingScreen: true })
+  const { setups: data } = useGetSetups("volumeMeasurement")
+  
   const dispatch = useDispatch()
 
 

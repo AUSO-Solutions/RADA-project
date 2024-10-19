@@ -27,6 +27,7 @@ import AttachSetup from './AttachSetup';
 import { Alert } from '@mui/material';
 import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
 import { firebaseFunctions } from 'Services';
+import { useGetSetups } from 'hooks/useSetups';
 
 
 // const TableInput = ({ type = '', ...props }) => {
@@ -64,7 +65,8 @@ export default function GasTable() {
     return Math.round(num * 10000) / 10000
   }
 
-  const { data: IPSCs } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: 'IPSC' } })
+  const { setups: IPSCs } = useGetSetups("IPSC")
+  
   const IPSC = useMemo(() => IPSCs?.find(IPSC => IPSC?.month === dayjs().format('YYYY-MM') && IPSC?.asset === setup?.asset), [IPSCs, setup?.asset])
 
   const flowstationsTargets = IPSC?.flowstationsTargets

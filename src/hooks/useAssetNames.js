@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react"
 import { useFetch } from "./useFetch"
-import { store } from "Store"
 
-export const useAssetNames = () => {
-    const user = store.getState().auth.user
+export const useAssetNames = (options) => {
     // const myAssets = (user?.data?.assets)
-    const { data } = useFetch({ firebaseFunction: 'getAssets' })
+    const { data } = useFetch({ firebaseFunction: 'getAssetsName', useToken: true, payload: { getAll: options?.getAll } })
+    // console.log(',,,,,',data)
     const [assetNames, setAssetames] = useState([])
     useEffect(() => {
-        const names = data?.map(datum => datum.assetName)
+        const names = data?.map(datum => datum)
         // console.log(names)
         const set = new Set(names)
         setAssetames(Array.from(set))

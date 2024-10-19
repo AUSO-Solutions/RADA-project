@@ -154,11 +154,13 @@ const getAssets2 = onCall(async () => {
 
 const getAssets = onCall(async (request) => {
   // const limit = 10;
-  console.log('---', request?.auth)
+  const idToken = request.data?.idToken
   try {
     const db = admin.firestore();
-    // const max =  
-    const res = await db.collectionGroup("assetList").get()
+    const uid = (await admin.auth().verifyIdToken(idToken)).uid
+    const groups = (await db.collection('groups').where('members', 'array-contains', uid).get()).docs.map(doc => doc.data())
+    const assets = Array.from(new Set(groups.flatMap(group => group?.assets)))
+    const res = await db.collectionGroup("assetList").where('asset', 'in', assets).get()
     // const size = res.size
     // const perpage = size / count
     const docs = res.docs;
@@ -170,15 +172,28 @@ const getAssets = onCall(async (request) => {
     return { status: "failed", error };
   }
 });
-const getAssetsName = onCall(async ({ }) => {
+const getAssetsName = onCall(async (request) => {
   const limit = 10;
   logger.log("------");
+  const idToken = request.data?.idToken
+  const getAll = request.data?.getAll
   try {
     const db = admin.firestore();
-    const docs = (await db.collectionGroup("assets").get()).docs;
-    const list = docs.map((doc) => doc.id);
+    let names = []
+    if (getAll) {
+      const docs = (await db.collection("assets").get()).docs;
+      console.log(docs.map((doc) => doc.id))
+      names = docs.map((doc) => doc.id)
+    } else {
+      const uid = (await admin.auth().verifyIdToken(idToken)).uid
+      const groups = (await db.collection('groups').where('members', 'array-contains', uid).get()).docs.map(doc => doc.data())
+      const assets = Array.from(new Set(groups.flatMap(group => group?.assets)))
+      names = assets
+    }
 
-    return { status: "success", data: list };
+    // const list = getAll ?  : ;
+
+    return { status: "success", data: names };
   } catch (error) {
     logger.log("error=>", error);
     return { status: "failed", error };

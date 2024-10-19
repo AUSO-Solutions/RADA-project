@@ -15,9 +15,10 @@ import { useAssetByName } from 'hooks/useAssetByName'
 import { Chip } from '@mui/material'
 import { firebaseFunctions } from 'Services'
 import Files from 'Partials/Files'
-import { useFetch } from 'hooks/useFetch'
+// import { useFetch } from 'hooks/useFetch'
 import dayjs from 'dayjs'
 import { setLoadingScreen } from 'Store/slices/loadingScreenSlice'
+import { useGetSetups } from 'hooks/useSetups'
 
 
 // const SelectAsset = () => {
@@ -169,8 +170,7 @@ const Preview = () => {
 }
 
 const Existing = ({ onSelect = () => null }) => {
-  const { data } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "oilAndGasAccounting" },loadingScreen: true })
-
+  const { setups: data } = useGetSetups("oilAndGasAccounting")
   return (
     <div className=" flex flex-wrap gap-4 m-5 ">
       <Files files={data} actions={[

@@ -5,6 +5,7 @@ import { project_functions } from 'firebase-config';
 import { httpsCallable } from 'firebase/functions';
 import handleError from './handleError';
 import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
+import { getIdToken, getAuth } from 'firebase/auth';
 // import { toast } from 'react-toastify';
 
 const baseURL = process.env.REACT_APP_BASE_URL
@@ -53,9 +54,11 @@ const apiRequest = async ({
 
 const firebaseFunctions = async (functionName, payload, hideError = false, options) => {
     try {
+        const user = getAuth().currentUser
+        const token = options?.useToken ? { idToken: await getIdToken(user) } : {}
         if (options?.loadingScreen) store.dispatch(setLoadingScreen({ open: true }))
         const call = httpsCallable(project_functions, functionName)
-        const res = (await call(payload)).data
+        const res = (await call({ ...payload, ...token })).data
         // toast.success(res?.message)
         return res
     } catch (error) {

@@ -25,6 +25,7 @@ import { firebaseFunctions } from 'Services';
 import Actions from 'Partials/Actions/Actions';
 import { Box, Tooltip } from '@mui/material';
 import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
+import { useGetSetups } from 'hooks/useSetups';
 
 // const TableInput = (props) => {
 //     return <input className='p-1 text-center w-[80px] h-[100%] border outline-none ' required {...props} />
@@ -62,7 +63,8 @@ export default function IPSCTable() {
     // console.log(res)
     useEffect(() => { setIpscData(res); setFlowstationTragets(res?.flowstationsTargets) }, [res])
     const { data: wellTestResult___ } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'wellTestResult', id: res?.wellTestResult1?.id, }, dontFetch: !res?.wellTestResult1?.id })
-    const { data: wellTestResults } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: 'wellTestResult', } })
+
+    const { setups: wellTestResults } = useGetSetups("wellTestResult")
     const [showSettings, setShowSettings] = useState(false)
     const [wellTestResult, setWellTestResult] = useState(wellTestResult___)
     useEffect(() => { setWellTestResult(wellTestResult___) }, [wellTestResult___])

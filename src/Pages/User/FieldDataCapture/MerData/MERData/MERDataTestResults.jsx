@@ -1,6 +1,6 @@
 
 import dayjs from 'dayjs'
-import { useFetch } from 'hooks/useFetch'
+import { useGetSetups } from 'hooks/useSetups'
 import BroadCast from 'Partials/BroadCast'
 import Attachment from 'Partials/BroadCast/Attachment'
 import BroadCastSuccessfull from 'Partials/BroadCast/BroadCastSuccessfull'
@@ -12,11 +12,8 @@ import { openModal } from 'Store/slices/modalSlice'
 import { createWellTitle } from 'utils'
 
 
-
-
 const MERDataTestResults = () => {
-
-    const { data } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "merResult" } })
+    const { setups: data } = useGetSetups("merResult")
     const dispatch = useDispatch();
 
     return (

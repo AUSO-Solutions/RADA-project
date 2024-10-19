@@ -34,7 +34,6 @@ module.exports = {
 
   createSetup, deleteSetup, getSetups, updateSetup, getSetup,
 
-  // setupWellTestData, getSetups, updateWellTestData, deleteWellTestDataSetup,
 
   captureOilOrCondensate,
   captureGas,

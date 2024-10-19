@@ -1,6 +1,5 @@
 
 import dayjs from 'dayjs'
-import { useFetch } from 'hooks/useFetch'
 import BroadCast from 'Partials/BroadCast'
 import Attachment from 'Partials/BroadCast/Attachment'
 import BroadCastSuccessfull from 'Partials/BroadCast/BroadCastSuccessfull'
@@ -16,10 +15,11 @@ import { closeModal } from 'Store/slices/modalSlice'
 import { setSetupData } from 'Store/slices/setupSlice'
 import { useAssetNames } from 'hooks/useAssetNames'
 import { useNavigate } from 'react-router-dom'
+import { useGetSetups } from 'hooks/useSetups'
 
 const WellTestResults = () => {
     const setupData = useSelector(state => state?.setup)
-    const { data } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "wellTestResult" } })
+    const { setups: data } = useGetSetups("wellTestResult")
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const { assetNames } = useAssetNames()

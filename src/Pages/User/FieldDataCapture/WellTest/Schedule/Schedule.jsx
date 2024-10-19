@@ -5,7 +5,6 @@ import CheckInput from "Components/Input/CheckInput"
 import {  Input } from "Components"
 import { useCallback, useEffect, useState } from "react"
 import styles from '../welltest.module.scss'
-import { useFetch } from "hooks/useFetch"
 import Text from "Components/Text"
 import { closeModal, openModal } from "Store/slices/modalSlice"
 import { store } from "Store"
@@ -23,6 +22,7 @@ import BroadCast from "Partials/BroadCast"
 import BroadCastSuccessfull from "Partials/BroadCast/BroadCastSuccessfull"
 import SelectGroup from "Partials/BroadCast/SelectGroup"
 import Attachment from "Partials/BroadCast/Attachment"
+import { useGetSetups } from "hooks/useSetups"
 
 const SelectAsset = () => {
 
@@ -309,7 +309,7 @@ const SaveAs = () => {
 }
 const Exists = () => {
 
-    const { data } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "wellTestSchedule" } })
+    const { setups: data } = useGetSetups("wellTestSchedule")
     const dispatch = useDispatch()
 
     return (

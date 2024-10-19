@@ -18,6 +18,7 @@ import dayjs from 'dayjs';
 import { Alert } from '@mui/material';
 import { Input } from 'Components';
 import { useAssetByName } from 'hooks/useAssetByName';
+import { useGetSetups } from 'hooks/useSetups';
 
 const tables = ['IPSC', 'Actual Production', 'Deferred Production']
 
@@ -26,7 +27,7 @@ export default function OilGasAccountingTable() {
     const [searchParams, setSearchParams] = useSearchParams()
     const [flowStation, setFlowStation] = useState('')
     const { data: res } = useFetch({ firebaseFunction: 'getSetup', payload: { id: searchParams.get('id'), setupType: 'oilAndGasAccounting' } })
-    const { data: IPSCs } = useFetch({ firebaseFunction: 'getSetups', payload: { id: searchParams.get('id'), setupType: 'IPSC' } })
+    const { setups: IPSCs } = useGetSetups("IPSC")
     const [date, setDate] = useState(dayjs().subtract(1, 'day').format('YYYY-MM-DD'))
     const matchingIPSC = React.useMemo(() => {
         const gotten = IPSCs.find(IPSC => IPSC.asset === res.asset && IPSC.month === dayjs(date).format("YYYY-MM"))

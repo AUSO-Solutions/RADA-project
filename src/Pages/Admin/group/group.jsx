@@ -19,7 +19,7 @@ const Group = () => {
     const { groupId } = useParams()
 
     const { data: group } = useFetch({ firebaseFunction: 'getGroups', payload: { groupId } })
-    const { assetNames } = useAssetNames()
+    const { assetNames } = useAssetNames({getAll:true})
     const { users } = useUsers()
     const [deleteLoading, setDeleteLoading] = useState(false)
 

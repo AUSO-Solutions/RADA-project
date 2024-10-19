@@ -19,13 +19,14 @@ import BroadCast from "Partials/BroadCast"
 import SelectGroup from "Partials/BroadCast/SelectGroup"
 import Attachment from "Partials/BroadCast/Attachment"
 import BroadCastSuccessfull from "Partials/BroadCast/BroadCastSuccessfull"
+import { useGetSetups } from "hooks/useSetups"
 
 
 const SelectAsset = () => {
     const dispatch = useDispatch()
     const setupData = useSelector(state => state.setup)
-    const { data: wellTestResults } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "wellTestResult" } })
 
+    const { setups: wellTestResults } = useGetSetups("wellTestResult")
     const { search } = useLocation()
 
     const wellTestResult1Id = useMemo(() => new URLSearchParams(search).get("well-test-result-id"), [search])
@@ -57,7 +58,7 @@ const SelectAsset = () => {
 const Preview = () => {
 
     const setupData = useSelector(state => state.setup)
-    const { data: wellTestResults } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "wellTestResult" } })
+    const { setups: wellTestResults } = useGetSetups("wellTestResult")
     return <div className="flex flex-col gap-5">
         <Input key={setupData?.asset + 'fields'} disabled defaultValue={setupData?.month}
             label={'Month'} type='month' options={wellTestResults?.map(result => ({ label: result.title, value: result.id }))}
@@ -86,8 +87,7 @@ const SaveAs = () => {
     )
 }
 const Exists = () => {
-
-    const { data } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "IPSC" } })
+    const { setups: data } = useGetSetups("IPSC")
     const dispatch = useDispatch()
 
     return (
@@ -125,12 +125,12 @@ const Schedule = () => {
     }, [dispatch])
     const [searchParams] = useSearchParams()
     const wellTestResult1Id = (searchParams.get("well-test-result-id"))
-
+    const { setups: IPSCs } = useGetSetups("IPSC")
     const save = async () => {
         try {
             dispatch(setLoadingScreen({ open: true }))
             const { data: wellTestResult1 } = await firebaseFunctions('getSetup', { id: wellTestResult1Id, setupType: 'wellTestResult' })
-            const { data: IPSCs } = await firebaseFunctions('getSetups', { setupType: 'IPSC' })
+            
             // console.log(IPSCs, wellTestResult1)
             const setupData = store.getState().setup
 

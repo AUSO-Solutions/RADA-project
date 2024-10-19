@@ -28,6 +28,7 @@ import AttachSetup from './AttachSetup';
 import { Alert } from '@mui/material';
 import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
 import Note from '../Note';
+import { useGetSetups } from 'hooks/useSetups';
 
 
 const TableInput = (props) => {
@@ -67,8 +68,7 @@ export default function VolumeMeasurementTable() {
   const isNet = currReport === "Net Oil/ Condensate"
   const isGross = currReport === 'Gross Liquid'
 
-
-  const { data: IPSCs } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: 'IPSC' } })
+  const { setups: IPSCs } = useGetSetups("IPSC")
   const IPSC = IPSCs?.find(IPSC => IPSC?.month === dayjs().format('YYYY-MM') && IPSC?.asset === setup?.asset)
   const flowstationsTargets = IPSC?.flowstationsTargets
 

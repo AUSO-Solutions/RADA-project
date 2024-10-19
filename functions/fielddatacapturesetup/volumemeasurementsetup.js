@@ -8,7 +8,7 @@ const createSetup = onCall(async (request) => {
 
     try {
         let { data } = request;
-
+        // delete data.idToken
         const { asset, setupType, ...rest } = data;
         // const validAssets = ['OML 24', 'OML 155', 'OML 147', "OML 45"];
         // if (!validAssets.includes(asset)) {
@@ -86,11 +86,19 @@ const deleteSetup = onCall(async (request) => {
 });
 
 const getSetups = onCall(async (request) => {
-    const { data } = request
-    const setupType = data?.setupType
-    const db = admin.firestore();
-    const res = await db.collection('setups').doc(setupType).collection('setupList').get()
-    return { message: "Successful ", data: res.docs.sort((a, b) => b.created - a.created).map(doc => ({ ...doc.data() })) }
+    try {
+        const { data } = request
+        const setupType = data?.setupType
+        const db = admin.firestore();
+
+        const uid = (await admin.auth().verifyIdToken(data?.idToken)).uid
+        const groups = (await db.collection('groups').where('members', 'array-contains', uid).get()).docs.map(doc => doc.data())
+        const assets = Array.from(new Set(groups.flatMap(group => group?.assets)))
+        const res = await db.collection('setups').doc(setupType).collection('setupList').where('asset', 'in', assets).get()
+        return { message: "Successful ", data: res.docs.sort((a, b) => b.created - a.created).map(doc => ({ ...doc.data() })) }
+    } catch (error) {
+
+    }
 })
 const getSetup = onCall(async (request) => {
     const { data } = request

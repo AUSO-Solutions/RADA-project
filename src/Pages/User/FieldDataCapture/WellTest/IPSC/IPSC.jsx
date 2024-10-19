@@ -1,5 +1,5 @@
 
-import { useFetch } from 'hooks/useFetch'
+import { useGetSetups } from 'hooks/useSetups'
 import Files from 'Partials/Files'
 import React from 'react'
 
@@ -8,7 +8,7 @@ import React from 'react'
 
 const IPSC = () => {
 
-    const { data } = useFetch({ firebaseFunction: 'getSetups', payload: { setupType: "wellTestResult" } })
+    const { setups: data } = useGetSetups("wellTestResult")
 
     return (
         <div className=" flex flex-wrap gap-4 m-5 ">

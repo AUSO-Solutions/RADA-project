@@ -12,16 +12,6 @@ import { Paper } from '@mui/material';
 
 
 export default function OilGasAccountingIPSCTable({ IPSC }) {
-    // const [searchParams,] = useSearchParams()
-    // const { data: res } = useFetch({ firebaseFunction: 'getSetup', payload: { id: searchParams.get('id'), setupType: 'oilAndGasAccounting' } })
-    // const { data: IPSCs } = useFetch({ firebaseFunction: 'getSetups', payload: { id: searchParams.get('id'), setupType: 'IPSC' } })
-
-    // const matchingIPSC = useMemo(() => {
-    //     return IPSCs.find(IPSC => IPSC.asset === res.asset && IPSC.month === dayjs().format("YYYY-MM"))
-    // }, [res, IPSCs])
-
-    // const { data: wellTestResult } = useFetch({ firebaseFunction: 'getSetup', payload: { id: matchingIPSC?.wellTestResult1?.id, setupType: 'wellTestResult', }, dontFetch: !matchingIPSC?.wellTestResult1?.id })
-    // console.log(wellTestResult)
 
     const getTotalOf = (key) => {
         const res = Object.values(IPSC?.wellTestResultData || {})
