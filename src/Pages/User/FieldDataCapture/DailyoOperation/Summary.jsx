@@ -153,11 +153,9 @@ const Summary = () => {
           </div>
           <div  >
             <input type="date" name="" className='border p-2  rounded-[12px]' id=""   value={setupData?.startDate} onChange={e => {
-              console.log(e.target.value)
-            
               setSearchParams(prev => {
-                prev.set('startDate', dayjs(e.target.value).format('MM/DD/YYYY'))
-                prev.set('endDate', dayjs(e.target.value).format('MM/DD/YYYY'))
+                prev.set('startDate', dayjs(e.target.value).format('YYYY-MM-DD'))
+                prev.set('endDate', dayjs(e.target.value).format('YYYY-MM-DD'))
                 return prev
               })
             }} />

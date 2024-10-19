@@ -26,18 +26,19 @@ const Insights = () => {
             endDate: querys?.endDate
         }, refetch: querys
     });
-    
+
     const data = useMemo(() => {
         if (res?.data.length) return (JSON.parse(res?.data))
         return {}
     }, [res?.data])
-    console.log(data)
+    // console.log(data)
     const OilProdData = useMemo(() => Object.values(data.assetOilProduction || {}), [data]);
     const GasProdData = useMemo(() => Object.values(data.assetGasProduction || {}), [data]);
     const OilProductionChart = () => {
         return (
-            <ResponsiveContainer width="100%" height={'100%'}>
-                <BarChart data={OilProdData} margin={{ top: 20, right: 20, left: 0, bottom: 0 }}>
+            // <div style={{ width: '100%', height: '300px !important', margin: '10px auto' }}>
+             <ResponsiveContainer width="100%" height={300}>
+                <BarChart width={'100%'} height={'100%'} data={OilProdData} margin={{ top: 20, right: 20, left: 0, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="x" />
                     <YAxis domain={[0, data?.oilTarget]} />
@@ -47,19 +48,21 @@ const Insights = () => {
                         data.flowstations?.map(flowstation => <Bar dataKey={flowstation} stackId="a" fill="#8884d8" />)
                     }
 
-                    <ReferenceLine y={data?.oilTarget} label="NCEP Target" stroke="#A5A5A5" strokeDasharray="4 4" strokeWidth={2} />
+                    <ReferenceLine y={data?.oilTarget} label="Prod Oil Target" stroke="#A5A5A5" strokeDasharray="4 4" strokeWidth={2} />
 
 
                 </BarChart>
-            </ResponsiveContainer>
+                </ResponsiveContainer>
+            // </div>
         );
     };
 
     const GasProductionChart = () => {
 
         return (
-            <ResponsiveContainer width="100%" height={'100%'}>
-                <BarChart data={GasProdData} margin={{ top: 20, right: 20, left: 0, bottom: 0 }}>
+            // <div style={{ width: '100%', height: '300px !important', margin: '10px auto' }}>
+                <ResponsiveContainer width="100%" height={300}>
+                <BarChart width={'100%'} height={'100%'} data={GasProdData} margin={{ top: 20, right: 20, left: 0, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="x" />
                     <YAxis domain={[0, data?.gasProducedTarget]} />
@@ -71,7 +74,8 @@ const Insights = () => {
                     <Bar dataKey="Flared Gas" stackId="a" fill="#F4B184" name="Flared Gas" />
                     <ReferenceLine y={data?.gasProducedTarget} label="Prod. Gas Target" stroke="#A5A5A5" strokeDasharray="4 4" strokeWidth={2} />
                 </BarChart>
-            </ResponsiveContainer>
+                </ResponsiveContainer>
+            // </div>
         );
     };
 
@@ -86,10 +90,10 @@ const Insights = () => {
             </div>
 
             <div className="pt-5 flex flex-row flex-wrap justify-evenly shadow rounded" style={{ rowGap: "12px" }}>
-                <InsightsGraphCard>{<OilProductionChart />}</InsightsGraphCard>
-                <InsightsGraphCard >{<OilProductionVariantChart data={data} />}</InsightsGraphCard>
-                <InsightsGraphCard>{<GasProductionChart />}</InsightsGraphCard>
-                <InsightsGraphCard >{<GasProductionVariantChart data={data} />}</InsightsGraphCard>
+                <InsightsGraphCard title={`${querys?.asset} Oil Production (Kbbls)`}>{<OilProductionChart />}</InsightsGraphCard>
+                <InsightsGraphCard title={`${querys?.asset} Oil Variant (Kbbls)`}>{<OilProductionVariantChart data={data} />}</InsightsGraphCard>
+                <InsightsGraphCard title={`${querys?.asset} Gas Production (MMscf)`}>{<GasProductionChart />}</InsightsGraphCard>
+                <InsightsGraphCard title={`${querys?.asset} Gas Variant (MMscf)`}>{<GasProductionVariantChart data={data} />}</InsightsGraphCard>
                 <InsightsGraphCard />
             </div>
         </div>

@@ -33,10 +33,10 @@ const Dashboard = () => {
   const assets = useAssetByName(setupData?.asset)
   const { assetNames } = useAssetNames()
   useEffect(() => {
-
-    dispatch(setSetupData({ name: 'startDate', value: dayjs(e?.startDate).format('YYYY-MM-DD') }))
-    dispatch(setSetupData({ name: 'endDate', value: dayjs(e?.endDate).format('YYYY-MM-DD') }))
-  }, [])
+    dispatch(setSetupData({ name: 'asset', value: setupData?.asset || assetNames[0] }))
+    dispatch(setSetupData({ name: 'startDate', value: (dayjs().startOf('month').format('YYYY-MM-DD')) }))
+    dispatch(setSetupData({ name: 'endDate', value: (dayjs().subtract(1, "day").format('YYYY-MM-DD')) }))
+  }, [assetNames])
   return (
     <div className='h-full'>
       <Header
@@ -68,8 +68,9 @@ const Dashboard = () => {
                   />
                 </div>
                 <div  >
-                  <DateRangePicker defaultStartDate={new Date(dayjs().startOf('month').format('YYYY-MM-DD'))}
-                    defaultEndDate={new Date(dayjs().subtract(1, "day").format('YYYY-MM-DD'))}
+                  <DateRangePicker
+                    startDate={setupData?.startDate}
+                    endDate={setupData?.endDate}
                     onChange={e => {
                       dispatch(setSetupData({ name: 'startDate', value: dayjs(e?.startDate).format('YYYY-MM-DD') }))
                       dispatch(setSetupData({ name: 'endDate', value: dayjs(e?.endDate).format('YYYY-MM-DD') }))

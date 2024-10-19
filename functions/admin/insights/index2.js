@@ -172,7 +172,7 @@ const getInsights = onCall(async (request) => {
                 oilFlowstationsData.map(
                     (flowstation) => flowstation?.subtotal?.grossTarget || 0
                 )
-            ) / oilFlowstationsData.length;
+            ) ;
         result.oilProduced = sum(
             oilFlowstationsData.map(
                 (flowstation) => flowstation?.subtotal?.netProduction || 0
@@ -183,7 +183,7 @@ const getInsights = onCall(async (request) => {
                 oilFlowstationsData.map(
                     (flowstation) => flowstation?.subtotal?.netTarget || 0
                 )
-            ) / oilFlowstationsData.length;
+            ) ;
         //BSW
         result.bsw = sum(
             oilFlowstationsData.map((flowstation) => flowstation?.subtotal?.bsw || 0)
@@ -207,25 +207,25 @@ const getInsights = onCall(async (request) => {
                 gasFlowstationsData.map(
                     (flowstation) => flowstation?.subtotal?.totalGasTarget || 0
                 )
-            ) / gasFlowstationsData.length;
+            ) ;
         result.exportGasTarget =
             sum(
                 gasFlowstationsData.map(
                     (flowstation) => flowstation?.subtotal?.exportGasTarget || 0
                 )
-            ) / gasFlowstationsData.length;
+            ) ;
         result.gasFlaredTarget =
             sum(
                 gasFlowstationsData.map(
                     (flowstation) => flowstation?.subtotal?.gasFlaredUSMTarget || 0
                 )
-            ) / gasFlowstationsData.length;
+            ) ;
         result.gasUtilizedTarget =
             sum(
                 gasFlowstationsData.map(
                     (flowstation) => flowstation?.subtotal?.fuelGasTarget || 0
                 )
-            ) / gasFlowstationsData.length;
+            ) ;
         //Deferments
         result.totalOilDeferment = sum(
             defermentQuery.map((item) => item?.deferment?.totalOilDeferment)
