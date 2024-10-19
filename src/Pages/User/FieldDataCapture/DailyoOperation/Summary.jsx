@@ -73,11 +73,11 @@ const Summary = () => {
 
   const data = useMemo(() => {
     return {
-      labels: [`Target (${curr?.target})`, `Actual  (${curr?.actual})`],
+      labels: [ `Actual  (${curr?.actual})`,`Target (${curr?.target})`],
       datasets: [
         {
           label: curr?.name,
-          data: [curr?.actual, curr?.target],
+          data: [curr?.target,curr?.actual,],
           backgroundColor: [
             "#29A2CC",
             "#D31E1E",

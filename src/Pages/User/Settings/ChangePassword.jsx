@@ -1,5 +1,4 @@
 import { Input, RadaForm } from 'Components'
-import Text from 'Components/Text'
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import React from 'react'
 import { useSelector } from 'react-redux'

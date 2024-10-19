@@ -12,25 +12,24 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useAssetByName } from 'hooks/useAssetByName'
 import { setSetupData } from 'Store/slices/setupSlice'
 import DateRangePicker from 'Components/DatePicker'
+import ProductionSurveilance from './ProductionSurveilance'
 
 const tabs = [
   {
-    title: 'Business intelligence',
+    title: 'Business Intelligence',
     Component: <Insights />
+  },
+  {
+    title: 'Production Surveillance ',
+    Component: <ProductionSurveilance />
   },
   {
     title: 'Overview',
     Component: <Overview />
-  },
-  {
-    title: 'Production Surveillance ',
-    Component: <Insights />
-  },
-  
+  }
 ]
 
 const Dashboard = () => {
-
   const dispatch = useDispatch();
   const createOpt = item => ({ label: item, value: item })
   const [tab, setTab] = useState(0)
@@ -54,7 +53,7 @@ const Dashboard = () => {
             {tabs.map((x, i) => <Tab key={i} text={x.title} active={i === tab} onClick={() => setTab(i)} />)}
           </ tabs>
           <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 20 }}>
-            {tabs[tab]?.title === 'Insights' &&
+            {tabs[tab]?.title === 'Business Intelligence' &&
               <>
                 <div style={{ width: '120px' }} >
                   <Input placeholder={'Assets'} required
@@ -83,7 +82,6 @@ const Dashboard = () => {
                 </div>
               </>
             }
-            {/* <div style={{ border: '1px solid #9DA0A7', padding: '5px 20px', borderRadius: 5 }}>{dayjs().format('DD/MM/YY')}</div> */}
           </div>
         </div>
         {

@@ -108,9 +108,9 @@ const Insights = () => {
 
             <div className="pt-5 flex flex-row flex-wrap justify-evenly shadow rounded" style={{ rowGap: "12px" }}>
                 <InsightsGraphCard title={`${querys?.asset} Oil Production (Kbbls)`}>{<OilProductionChart />}</InsightsGraphCard>
-                <InsightsGraphCard title={`${querys?.asset} Oil Variant (Kbbls)`}>{<OilProductionVariantChart data={data} />}</InsightsGraphCard>
+                <InsightsGraphCard title={`${querys?.asset} Oil Variance (Kbbls)`}>{<OilProductionVariantChart data={data} />}</InsightsGraphCard>
                 <InsightsGraphCard title={`${querys?.asset} Gas Production (MMscf)`}>{<GasProductionChart />}</InsightsGraphCard>
-                <InsightsGraphCard title={`${querys?.asset} Gas Variant (MMscf)`}>{<GasProductionVariantChart data={data} />}</InsightsGraphCard>
+                <InsightsGraphCard title={`${querys?.asset} Gas Variance (MMscf)`}>{<GasProductionVariantChart data={data} />}</InsightsGraphCard>
                 <InsightsGraphCard />
             </div>
         </div>
