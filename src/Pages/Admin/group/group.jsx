@@ -20,13 +20,7 @@ const Group = () => {
 
     const { data: group } = useFetch({ firebaseFunction: 'getGroups', payload: { groupId } })
     const { assetNames } = useAssetNames()
-
-    console.log(groupId, group)
-    // const schema = Yup.object().shape({
-    //     groupName: Yup.string().required(),
-    // })
     const { users } = useUsers()
-    const { data: assets } = useFetch({ firebaseFunction: 'getAssets' })
     const [deleteLoading, setDeleteLoading] = useState(false)
 
     const deleteMember = async ({ groupId, member }) => {
@@ -71,7 +65,7 @@ const Group = () => {
         return assetNames
             .filter(assetName => !group?.assets?.includes(assetName))
             .map(assetName => ({ label: assetName, value: assetName }))
-    }, [group, assets])
+    }, [group, assetNames])
 
 
     const [members, setMembers] = useState(group?.members)

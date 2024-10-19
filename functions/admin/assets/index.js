@@ -152,17 +152,17 @@ const getAssets2 = onCall(async () => {
   }
 });
 
-const getAssets = onCall(async ({ count = 1, page = 1 }) => {
+const getAssets = onCall(async (request) => {
   // const limit = 10;
-
+  console.log('---', request?.auth)
   try {
     const db = admin.firestore();
     // const max =  
     const res = await db.collectionGroup("assetList").get()
-    const size = res.size
-    const perpage = size / count
+    // const size = res.size
+    // const perpage = size / count
     const docs = res.docs;
-    const paginated = await db.collectionGroup("assetList").orderBy().startAt(page).limit(perpage).get()
+    // const paginated = await db.collectionGroup("assetList").orderBy().startAt(page).limit(perpage).get()
 
     return { status: "success", data: docs.map((doc) => doc.data()) };
   } catch (error) {
