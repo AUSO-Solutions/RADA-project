@@ -56,10 +56,11 @@ const firebaseFunctions = async (functionName, payload, hideError = false, optio
     try {
         // const currentUser =
         // console.log({ currentUser })
-        const token = options?.useToken ? { idToken: await getAuth().currentUser.getIdToken(false) } : {}
+        const token = store.getState().auth?.user?.token
+        console.log(token)
         if (options?.loadingScreen) store.dispatch(setLoadingScreen({ open: true }))
         const call = httpsCallable(project_functions, functionName)
-        const res = (await call({ ...payload, ...token })).data
+        const res = (await call({ ...payload,idToken:token })).data
         // toast.success(res?.message)
         return res
     } catch (error) {

@@ -36,7 +36,7 @@ function Navbar() {
         <div className={` ${styles.body}`}>
             <Typography fontSize={"24px"} fontWeight={600} style={{ color: '#000000' }} >Welcome {user?.data?.firstName}</Typography>
             <div className='flex gap-3 items-center'>
-                {user?.data?.roles?.map(role => role?.roleName)?.includes('Admin') &&<Box borderColor={colors.rada_blue} className='p-1 border rounded border-[${}]' onClick={onGo}>{isAdmin?<Chart color={colors.rada_blue} />:<GrUserAdmin size={20}  color={colors.rada_blue}/>}</Box>}
+                {user?.data?.roles?.map(role => role?.roleName)?.includes('Admin') &&<Box borderColor={colors.rada_blue} className='p-1 border rounded' onClick={onGo}>{isAdmin?<Chart color={colors.rada_blue} />:<GrUserAdmin size={20}  color={colors.rada_blue}/>}</Box>}
                 <Box className={styles.rightContain} >
                     <div onClick={() => setDrop(true)} className={styles.circle}  > {user?.data?.firstName[0] + user?.data?.lastName[0]} </div>
                     <BsChevronDown onClick={() => setDrop(true)} />

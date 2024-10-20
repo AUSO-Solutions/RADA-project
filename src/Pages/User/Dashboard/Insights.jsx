@@ -34,6 +34,13 @@ const Insights = () => {
     // console.log(data)
     const OilProdData = useMemo(() => Object.values(data.assetOilProduction || {}), [data]);
     const GasProdData = useMemo(() => Object.values(data.assetGasProduction || {}), [data]);
+    const colors = {
+        'Ekulama 1 Flowstation': 'green',
+        'Ekulama 2 Flowstation': 'blue',
+        'Awoba Flowstation': 'red',
+        'EFE Flowstation':'pink',
+        "OML 147 Flowstation":'yellow'
+    }
     const OilProductionChart = () => {
         return (
             // <div style={{ width: '100%', height: '300px !important', margin: '10px auto' }}>
@@ -45,7 +52,7 @@ const Insights = () => {
                     <Tooltip />
                     <Legend verticalAlign="bottom" align="center" height={36} />
                     {
-                        data.flowstations?.map(flowstation => <Bar dataKey={flowstation} stackId="a" fill="#8884d8" />)
+                        data.flowstations?.map(flowstation => <Bar dataKey={flowstation} stackId="a" fill={colors[flowstation]}/>)
                     }
 
                     <ReferenceLine y={data?.oilTarget} label="Prod Oil Target" stroke="#A5A5A5" strokeDasharray="4 4" strokeWidth={2} />
@@ -99,7 +106,7 @@ const Insights = () => {
     return (
         <div className="bg-[#FAFAFA]" >
             <div className="mx-5 pt-3 flex flex-row  gap-5 " >
-                <DashboardCard variance={getStatus(data?.oilTarget, data?.oilProduced)} targetVal={`Target: ${parseFloat(data?.oilTarget || 0)?.toFixed(3)}kbbls`} img={assets} title={"Oil Produced"} num={`${parseFloat(data?.oilProduced || 0)?.toFixed(3)} Kbbls`} />
+                <DashboardCard variance={getStatus(data?.oilTarget / 1000, data?.oilProduced / 1000)} targetVal={`Target: ${parseFloat(data?.oilTarget || 0)?.toFixed(3) / 1000}kbbls`} img={assets} title={"Oil Produced"} num={`${parseFloat(data?.oilProduced || 0)?.toFixed(3) / 1000} Kbbls`} />
                 <DashboardCard variance={getStatus(data?.gasProducedTarget, data?.gasProduced)} targetVal={`Target: ${parseFloat(data?.gasProducedTarget || 0)?.toFixed(3)} MMscf`} img={grossprodgas} title={"Gas Produced"} num={`${parseFloat(data?.gasProduced || 0)?.toFixed(3)} MMscf`} />
                 <DashboardCard variance={getStatus(data?.exportGasTarget, data?.gasExported)} targetVal={`Target: ${parseFloat(data?.exportGasTarget || 0)?.toFixed(3)} MMscf`} img={gasexported} title={"Gas Exported"} num={`${parseFloat(data?.gasExported || 0)?.toFixed(3)} MMscf`} />
                 <DashboardCard variance={getStatus(data?.gasFlaredTarget, data?.gasFlared)} targetVal={`${parseFloat(data?.gasFlaredTarget || 0)?.toFixed(3)} MMscf`} img={gasflared} title={"Gas Flared"} num={`${parseFloat(data?.gasFlared || 0)?.toFixed(3)} MMscf`} />
@@ -107,10 +114,10 @@ const Insights = () => {
             </div>
 
             <div className="pt-5 flex flex-row flex-wrap justify-evenly shadow rounded" style={{ rowGap: "12px" }}>
-                <InsightsGraphCard title={`${querys?.asset} Oil Production (Kbbls)`}>{<OilProductionChart />}</InsightsGraphCard>
-                <InsightsGraphCard title={`${querys?.asset} Oil Variance (Kbbls)`}>{<OilProductionVariantChart data={data} />}</InsightsGraphCard>
-                <InsightsGraphCard title={`${querys?.asset} Gas Production (MMscf)`}>{<GasProductionChart />}</InsightsGraphCard>
-                <InsightsGraphCard title={`${querys?.asset} Gas Variance (MMscf)`}>{<GasProductionVariantChart data={data} />}</InsightsGraphCard>
+                <InsightsGraphCard title={`${querys?.asset} Oil Production (bopd)`}>{<OilProductionChart />}</InsightsGraphCard>
+                <InsightsGraphCard title={`${querys?.asset} Oil Production Variance Analysis`}>{<OilProductionVariantChart data={data} />}</InsightsGraphCard>
+                <InsightsGraphCard title={`${querys?.asset} Gas Production (MMscf/d)`}>{<GasProductionChart />}</InsightsGraphCard>
+                <InsightsGraphCard title={`${querys?.asset} Gas Production Variance Analysis `}>{<GasProductionVariantChart data={data} />}</InsightsGraphCard>
                 <InsightsGraphCard />
             </div>
         </div>

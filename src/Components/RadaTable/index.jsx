@@ -55,7 +55,7 @@ export default function RadaTable({ data = [], columns = [], noNumbers, fn = () 
     React.useEffect(() => {
         const fetch = async () => {
             if (firebaseApi) {
-                const res = await firebaseFunctions(firebaseApi,{})
+                const res = await firebaseFunctions(firebaseApi,{},false,{useToken:true})
                 if (res?.data?.length) setResFromBackend(res?.data)
             }
         }

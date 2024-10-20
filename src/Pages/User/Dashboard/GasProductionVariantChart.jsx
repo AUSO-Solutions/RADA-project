@@ -19,26 +19,27 @@ const GasProductionVariantChart = ({ data: data_ }) => {
         return {
             gasProducedTarget: data_?.gasProducedTarget,
             totalOilDeferment :data_?.totalOilDeferment,
-            gasScheduledDeferment: data_?.gasScheduledDeferment?.total,
-            gasUnscheduledDeferment: data_?.gasUnscheduledDeferment?.total,
-            gasThirdPartyDeferment: data_?.gasThirdPartyDeferment?.total,
+            totalGasDeferment:data_?.totalGasDeferment,
+            gasUtilized: data_?.gasUtilized,
+            gasFlared: data_?.gasFlared,
+            gasExported: data_?.gasExported,
             gasActual: data_?.gasProduced
         }
     }, [data_])
 
     const data = useMemo(() => {
         return {
-            labels: ['Target','Oil Deferment Impact' , 'Scheduled Deferment', 'Unscheduled Deferment', 'Third-Party Deferment', 'Actual'],
+            labels: ['Target','Oil Deferment Impact' , 'Unitlized Gas', 'Flared Gas', 'Export', 'Actual'],
             datasets: [
                 {
                     label: 'Gas Production Variant (Kbbls)',
-                    data: [chartData.gasProducedTarget, chartData.totalOilDeferment, chartData.gasScheduledDeferment, chartData.gasUnscheduledDeferment, chartData.gasThirdPartyDeferment, chartData.gasActual], // Six values for each column
+                    data: [chartData.gasProducedTarget, chartData.totalGasDeferment, chartData.gasUtilized, chartData.gasFlared, chartData.gasExported, chartData.gasActual], // Six values for each column
                     backgroundColor: [
                         'rgba(75, 192, 192, 0.6)', // Increase
                         'rgba(255, 99, 132, 0.6)', // Decrease
                         'rgba(255, 99, 132, 0.6)', // Decrease
                         'rgba(255, 99, 132, 0.6)', // Decrease
-                        'rgba(255, 99, 132, 0.6)', // Decrease
+                        'rgba(75, 192, 192, 0.6)', // Increase
                         'rgba(75, 192, 192, 0.6)', // Actual
                     ],
                     borderColor: [
@@ -46,8 +47,30 @@ const GasProductionVariantChart = ({ data: data_ }) => {
                         'rgba(255, 99, 132, 1)', // Decrease border
                         'rgba(255, 99, 132, 1)', // Decrease border
                         'rgba(255, 99, 132, 1)', // Decrease border
-                        'rgba(255, 99, 132, 1)', // Decrease border
+                        'rgba(75, 192, 192, 1)', // Increase border
                         'rgba(75, 192, 192, 1)', // Actual border
+                    ],
+                    borderWidth: 1,
+                    borderDash: [0, [5, 5], [5, 5], [5, 5], 0], // Make bars dashed where appropriate
+                },
+                {
+                    label: '',
+                    data: [chartData.gasProducedTarget, chartData.totalGasDeferment, chartData.gasUtilized, chartData.gasFlared, chartData.gasExported, chartData.gasActual], // Six values for each column
+                    backgroundColor: [
+                        'white', // Increase
+                        'white', // Decrease
+                        'white', // Decrease
+                        'white', // Decrease
+                        'white', // Increase
+                        'white', // Actual
+                    ],
+                    borderColor: [
+                        'white', // Target border
+                        'white', // Decrease border
+                        'white', // Decrease border
+                        'white', // Decrease border
+                        'white', // Increase border
+                        'white', // Actual border
                     ],
                     borderWidth: 1,
                     borderDash: [0, [5, 5], [5, 5], [5, 5], 0], // Make bars dashed where appropriate
@@ -85,6 +108,7 @@ const GasProductionVariantChart = ({ data: data_ }) => {
                         size: 8, // Adjust font size for better fit
                     },
                 },
+                stacked:true,
             },
             y: {
                 beginAtZero: true,
@@ -96,7 +120,7 @@ const GasProductionVariantChart = ({ data: data_ }) => {
                     callback: function (value) {
                         return value.toLocaleString(); // Format y-axis numbers with commas
                     },
-                },
+                },stacked:true,
             },
         },
         plugins: {

@@ -70,6 +70,8 @@ const Assets = () => {
             />
             <RadaTable
                 firebaseApi='getAssets'
+
+                
                 columns={[
                     { name: 'OML', key: 'assetName' },
                     { name: 'Field', key: 'field' },

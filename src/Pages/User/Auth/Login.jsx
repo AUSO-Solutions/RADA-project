@@ -61,10 +61,10 @@ const UserLogin = () => {
                             const auth = getAuth()
                             const { user } = await signInWithEmailAndPassword(auth, data?.email, data?.password)
                             const details = await firebaseFunctions('getUserByUid', { uid: user?.uid })
-                            // console.log(user)
+                            const token = (await user.getIdToken())
                             const roles = details?.data?.roles?.map(role => role?.roleName)
                             console.log(roles)
-                            dispatch(setUser(details))
+                            dispatch(setUser({...details,token}))
                             // if (!roles?.length) toast.error('Please request role assignment from admin')
                                 updateStatus("online")
                             if (roles?.includes('Admin')) {
