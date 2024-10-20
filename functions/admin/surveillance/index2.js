@@ -21,7 +21,8 @@ const getSurveillanceData = onCall(async (request) => {
     const productionData = db
       .collection("actualProduction")
       .where("asset", "==", asset)
-      .where("flowstaion", "==", flowstation);
+      .where("flowstaion", "==", flowstation)
+      .orderBy("date", "asc");
     const productionQuery = (await productionData.get()).docs.map(
       (doc) => doc?.data() || {}
     );
