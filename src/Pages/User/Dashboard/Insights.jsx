@@ -48,7 +48,9 @@ const Insights = () => {
                 <BarChart width={'100%'} height={'100%'} data={OilProdData} margin={{ top: 20, right: 20, left: 0, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="x" />
-                    <YAxis domain={[0, data?.oilTarget]} />
+                    <YAxis
+                    //  domain={[0, data?.oilTarget]} 
+                     />
                     <Tooltip />
                     <Legend verticalAlign="bottom" align="center" height={36} />
                     {
@@ -72,7 +74,9 @@ const Insights = () => {
                 <BarChart width={'100%'} height={'100%'} data={GasProdData} margin={{ top: 20, right: 20, left: 0, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="x" />
-                    <YAxis domain={[0, data?.gasProducedTarget]} />
+                    <YAxis 
+                    // domain={[0, data?.gasProducedTarget]} 
+                    />
                     <Tooltip />
 
                     <Legend verticalAlign="bottom" align="center" height={36} />
@@ -106,7 +110,7 @@ const Insights = () => {
     return (
         <div className="bg-[#FAFAFA]" >
             <div className="mx-5 pt-3 flex flex-row  gap-5 " >
-                <DashboardCard variance={getStatus(data?.oilTarget / 1000, data?.oilProduced / 1000)} targetVal={`Target: ${parseFloat(data?.oilTarget || 0)?.toFixed(3) / 1000}kbbls`} img={assets} title={"Oil Produced"} num={`${parseFloat(data?.oilProduced || 0)?.toFixed(3) / 1000} Kbbls`} />
+                <DashboardCard variance={getStatus(data?.oilTarget / 1000, data?.oilProduced / 1000)} targetVal={`Target: ${parseFloat(data?.oilTarget || 0)?.toFixed(3) / 1000} kbbls`} img={assets} title={"Oil Produced"} num={`${parseFloat(data?.oilProduced || 0)?.toFixed(3) / 1000} Kbbls`} />
                 <DashboardCard variance={getStatus(data?.gasProducedTarget, data?.gasProduced)} targetVal={`Target: ${parseFloat(data?.gasProducedTarget || 0)?.toFixed(3)} MMscf`} img={grossprodgas} title={"Gas Produced"} num={`${parseFloat(data?.gasProduced || 0)?.toFixed(3)} MMscf`} />
                 <DashboardCard variance={getStatus(data?.exportGasTarget, data?.gasExported)} targetVal={`Target: ${parseFloat(data?.exportGasTarget || 0)?.toFixed(3)} MMscf`} img={gasexported} title={"Gas Exported"} num={`${parseFloat(data?.gasExported || 0)?.toFixed(3)} MMscf`} />
                 <DashboardCard variance={getStatus(data?.gasFlaredTarget, data?.gasFlared)} targetVal={`${parseFloat(data?.gasFlaredTarget || 0)?.toFixed(3)} MMscf`} img={gasflared} title={"Gas Flared"} num={`${parseFloat(data?.gasFlared || 0)?.toFixed(3)} MMscf`} />

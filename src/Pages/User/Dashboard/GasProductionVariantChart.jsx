@@ -32,7 +32,7 @@ const GasProductionVariantChart = ({ data: data_ }) => {
             labels: ['Target','Oil Deferment Impact' , 'Unitlized Gas', 'Flared Gas', 'Export', 'Actual'],
             datasets: [
                 {
-                    label: 'Gas Production Variant (Kbbls)',
+                    label: 'Gas Production Variance (MMscf)',
                     data: [chartData.gasProducedTarget, chartData.totalGasDeferment, chartData.gasUtilized, chartData.gasFlared, chartData.gasExported, chartData.gasActual], // Six values for each column
                     backgroundColor: [
                         'rgba(75, 192, 192, 0.6)', // Increase
@@ -116,7 +116,7 @@ const GasProductionVariantChart = ({ data: data_ }) => {
                     color: 'rgba(200, 200, 200, 0.3)', // Light gridlines
                 },
                 ticks: {
-                    stepSize: 200000, // Adjust the y-axis step size
+                    // stepSize: 200000, // Adjust the y-axis step size
                     callback: function (value) {
                         return value.toLocaleString(); // Format y-axis numbers with commas
                     },

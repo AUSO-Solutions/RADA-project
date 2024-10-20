@@ -111,6 +111,17 @@ const getSetup = onCall(async (request) => {
         .doc(id).get()
     return { message: "Successful ", data: res?.data() }
 })
+const getSetupByMonth = onCall(async (request) => {
+    const { data } = request
+    const { setupType, month } = data
+    const db = admin.firestore();
+    const res = await db.
+        collection('setups')
+        .doc(setupType)
+        .collection('setupList').where("month",'==',month)
+        .get()
+    return { message: "Successful ", data: res?.docs?.map(doc => doc.data()) }
+})
 
 
-module.exports = { createSetup, getSetups, updateSetup, getSetup, deleteSetup }
+module.exports = { createSetup, getSetups, updateSetup, getSetup, deleteSetup, getSetupByMonth }

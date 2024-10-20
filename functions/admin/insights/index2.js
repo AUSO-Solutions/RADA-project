@@ -64,6 +64,8 @@ const getInsights = onCall(async (request) => {
             .where("date", "<=", endDate_)
             .where("asset", "==", asset);
 
+        const ipscTarget = (await db.collection('IPSC').where('month', '==', dayjs(startDate).format("YYYY-MM")).get())?.docs[0]?.data()
+
         const oilQuery = (await oilStartEndData.get()).docs.map(
             (doc) => doc?.data() || {}
         );
@@ -101,6 +103,7 @@ const getInsights = onCall(async (request) => {
             gasUnscheduledDeferment: { total: 0, subcategories: {} },
             oilThirdPartyDeferment: { total: 0, subcategories: {} },
             gasThirdPartyDeferment: { total: 0, subcategories: {} },
+            ipscTarget: {}
         };
 
         // Get the deferment subcategories and initialise them in the result
@@ -172,7 +175,7 @@ const getInsights = onCall(async (request) => {
                 oilFlowstationsData.map(
                     (flowstation) => flowstation?.subtotal?.grossTarget || 0
                 )
-            ) ;
+            );
         result.oilProduced = sum(
             oilFlowstationsData.map(
                 (flowstation) => flowstation?.subtotal?.netProduction || 0
@@ -183,7 +186,7 @@ const getInsights = onCall(async (request) => {
                 oilFlowstationsData.map(
                     (flowstation) => flowstation?.subtotal?.netTarget || 0
                 )
-            ) ;
+            );
         //BSW
         result.bsw = sum(
             oilFlowstationsData.map((flowstation) => flowstation?.subtotal?.bsw || 0)
@@ -207,25 +210,25 @@ const getInsights = onCall(async (request) => {
                 gasFlowstationsData.map(
                     (flowstation) => flowstation?.subtotal?.totalGasTarget || 0
                 )
-            ) ;
+            );
         result.exportGasTarget =
             sum(
                 gasFlowstationsData.map(
                     (flowstation) => flowstation?.subtotal?.exportGasTarget || 0
                 )
-            ) ;
+            );
         result.gasFlaredTarget =
             sum(
                 gasFlowstationsData.map(
                     (flowstation) => flowstation?.subtotal?.gasFlaredUSMTarget || 0
                 )
-            ) ;
+            );
         result.gasUtilizedTarget =
             sum(
                 gasFlowstationsData.map(
                     (flowstation) => flowstation?.subtotal?.fuelGasTarget || 0
                 )
-            ) ;
+            );
         //Deferments
         result.totalOilDeferment = sum(
             defermentQuery.map((item) => item?.deferment?.totalOilDeferment)
@@ -339,6 +342,9 @@ const getInsights = onCall(async (request) => {
                 x: time.format(format),
             };
         });
+        if(ipscTarget){
+            result.ipscTarget = ipscTarget
+        }
 
         /* 
               oil subtotal format

@@ -30,7 +30,7 @@ const OilProductionVariantChart = ({ data: data_ }) => {
             labels: ['Target', 'Scheduled Deferment', 'Unscheduled Deferment', 'Third-Party Deferment', 'Actual'],
             datasets: [
                 {
-                    label: 'Oil Production Variant (Kbbls)',
+                    label: 'Oil Production Variance (bbls)',
                     data: [chartData.oilTarget, chartData.oilScheduledDeferment, chartData.oilUnscheduledDeferment, chartData.oilThirdPartyDeferment, chartData.oilActual], // Six values for each column
                     backgroundColor: [
                         'rgba(75, 192, 192, 0.6)', // Increase
