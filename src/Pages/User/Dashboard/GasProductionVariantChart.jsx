@@ -14,7 +14,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 
 const GasProductionVariantChart = ({ data: data_ }) => {
-    console.log({ data_ })
+    // console.log({ data_ })
     const chartData = useMemo(() => {
         return {
             gasProducedTarget: data_?.gasProducedTarget,

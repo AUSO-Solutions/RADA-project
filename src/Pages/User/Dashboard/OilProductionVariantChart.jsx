@@ -14,7 +14,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 
 const OilProductionVariantChart = ({ data: data_ }) => {
-    console.log({ data_ })
+    // console.log({ data_ })
     const chartData = useMemo(() => {
         return {
             oilTarget: data_?.oilTarget,

@@ -48,7 +48,7 @@ const SelectAsset = () => {
             onChange={(e) => dispatch(setSetupData({ name: 'wellTestResult1', value: { id: e.value, title: e.label } }))} name='wellTestResult1'
         />
         <Input required defaultValue={{ label: setupData?.wellTestResult2?.title, value: setupData?.wellTestResult2?.id }}
-            label={'Well Test Result 2'} type='select' options={wellTestResults.filter(result => (result.id !== setupData?.wellTestResult1?.id))?.map(result => ({ label: result.title, value: result.id }))}
+            label={'Well Test Result 2'} type='select' options={wellTestResults.filter(result => (result.id !== setupData?.wellTestResult1?.id))?.map(result => ({ label:  `${createWellTitle(result, 'Well Test Result')}`, value: result.id }))}
             onChange={(e) => dispatch(setSetupData({ name: 'wellTestResult2', value: { id: e.value, title: e.label } }))} name='wellTestResult2'
         />
 
@@ -67,7 +67,7 @@ const Preview = () => {
             label={'Well Test Result 1'} type='select' options={wellTestResults?.map(result => ({ label: result.title, value: result.id }))}
         />
         <Input key={setupData?.asset + 'fields'} disabled defaultValue={{ label: setupData?.wellTestResult2?.title, value: setupData?.wellTestResult2?.id }}
-            label={'Well Test Result 2'} type='select' options={wellTestResults?.map(result => ({ label: result.title, value: result.id }))}
+            label={'Well Test Result 2'} type='select' options={wellTestResults?.map(result => ({ label: `${createWellTitle(result, 'Well Test Result')}`, value: result.id }))}
         />
 
     </div>

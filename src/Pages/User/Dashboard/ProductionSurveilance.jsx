@@ -1,8 +1,19 @@
 import Text from 'Components/Text'
-import React from 'react'
-import LineChart from './Line'
+import { useFetch } from 'hooks/useFetch'
+import React, { useMemo } from 'react'
+// import LineChart from './Line'
 
 const ProductionSurveilance = () => {
+  const { data } = useFetch({ firebaseFunction: 'getSurveillanceData', payload: { asset: 'OML 24', flowstation: 'Awoba Flowstation', } })
+  const result = useMemo(() => data.length ? JSON.parse(data) : [], [data])
+  const liquidOil = useMemo(() => {
+    const data = result
+    console.log(data)
+    return {
+      data
+    }
+  }, [result])
+  console.log(liquidOil)
   // const liquidOil = {
   //   data: [
   //     {

@@ -14,6 +14,7 @@ const { createMerSchedule } = require("./fielddatacapturesetup/merdataSetup");
 const { processIPSC, getOilAndGasAccounting } = require('./fielddatacapturesetup/oilandgasaccounting/')
 const { getInsight } = require('./admin/insights')
 const { getInsights } = require('./admin/insights/index2')
+const {getSurveillanceData} = require('./admin/surveillance/index2')
 const { broadcast } = require('./broadcast/index')
 // const { setupWellTestData, getSetups, updateWellTestData, deleteWellTestDataSetup } = require('./fielddatacapturesetup/welltestsetup')
 
@@ -44,5 +45,5 @@ module.exports = {
 
   createMerSchedule,
   processIPSC, getOilAndGasAccounting,
-  getInsight, getInsights, broadcast, 
+  getInsight, getInsights, broadcast, getSurveillanceData
 }

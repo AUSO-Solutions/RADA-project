@@ -11,6 +11,7 @@ import OilProductionVariantChart from "./OilProductionVariantChart";
 import { useFetch } from "hooks/useFetch";
 import { useSelector } from "react-redux";
 import GasProductionVariantChart from "./GasProductionVariantChart";
+import { sum } from "utils";
 // import { useAssetNames } from "hooks/useAssetNames";
 // import { useAssetByName } from "hooks/useAssetByName";
 
@@ -38,9 +39,20 @@ const Insights = () => {
         'Ekulama 1 Flowstation': 'green',
         'Ekulama 2 Flowstation': 'blue',
         'Awoba Flowstation': 'red',
-        'EFE Flowstation':'pink',
-        "OML 147 Flowstation":'yellow'
+        'EFE Flowstation': 'purple',
+        "OML 147 Flowstation": 'orange'
     }
+    const targetForthisMonth = useMemo(() => {
+        const oil = sum(Object.values(data?.ipscTarget?.flowstationsTargets || {})?.map(target => target?.oilRate));
+        const gas = sum(Object.values(data?.ipscTarget?.flowstationsTargets || {})?.map(target => target?.gasRate));
+               return {
+            oil, gas,
+            // oilDomain: 
+
+        }
+    }, [data])
+    // console.log(targetForthisMonth)
+    // console.log(parseFloat(targetForthisMonth.oil || 0).toFixed(1) + 1000)
     const OilProductionChart = () => {
         return (
             // <div style={{ width: '100%', height: '300px !important', margin: '10px auto' }}>
@@ -49,15 +61,15 @@ const Insights = () => {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="x" />
                     <YAxis
-                    //  domain={[0, data?.oilTarget]} 
-                     />
+                        // domain={[0, parseInt(targetForthisMonth.oil)]}
+                    />
                     <Tooltip />
                     <Legend verticalAlign="bottom" align="center" height={36} />
                     {
-                        data.flowstations?.map(flowstation => <Bar dataKey={flowstation} stackId="a" fill={colors[flowstation]}/>)
+                        data.flowstations?.map(flowstation => <Bar dataKey={flowstation} stackId="a" fill={colors[flowstation]} />)
                     }
 
-                    <ReferenceLine y={data?.oilTarget} label="Prod Oil Target" stroke="#A5A5A5" strokeDasharray="4 4" strokeWidth={2} />
+                    <ReferenceLine alwaysShow y={parseInt(targetForthisMonth.oil)} label={`Prod Oil Target (${parseInt(targetForthisMonth.oil)})`} stroke="grey" strokeDasharray="4 4" strokeWidth={1}  />
 
 
                 </BarChart>
@@ -74,7 +86,7 @@ const Insights = () => {
                 <BarChart width={'100%'} height={'100%'} data={GasProdData} margin={{ top: 20, right: 20, left: 0, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="x" />
-                    <YAxis 
+                    <YAxis
                     // domain={[0, data?.gasProducedTarget]} 
                     />
                     <Tooltip />
@@ -83,7 +95,7 @@ const Insights = () => {
                     <Bar dataKey="Fuel Gas" stackId="a" fill="#14A459" name="Utilized Gas" />
                     <Bar dataKey="Export Gas" stackId="a" fill="#A8D18D" name="Export Gas" />
                     <Bar dataKey="Flared Gas" stackId="a" fill="#F4B184" name="Flared Gas" />
-                    <ReferenceLine y={data?.gasProducedTarget} label="Prod. Gas Target" stroke="#A5A5A5" strokeDasharray="4 4" strokeWidth={2} />
+                    <ReferenceLine alwaysShow y={targetForthisMonth?.gas}  label={`Prod. Gas Target (${parseInt(targetForthisMonth?.gas)})`} stroke="grey" strokeDasharray="4 4" strokeWidth={1} />
                 </BarChart>
             </ResponsiveContainer>
             // </div>
@@ -110,7 +122,7 @@ const Insights = () => {
     return (
         <div className="bg-[#FAFAFA]" >
             <div className="mx-5 pt-3 flex flex-row  gap-5 " >
-                <DashboardCard variance={getStatus(data?.oilTarget / 1000, data?.oilProduced / 1000)} targetVal={`Target: ${parseFloat(data?.oilTarget || 0)?.toFixed(3) / 1000} kbbls`} img={assets} title={"Oil Produced"} num={`${parseFloat(data?.oilProduced || 0)?.toFixed(3) / 1000} Kbbls`} />
+                <DashboardCard variance={getStatus(data?.oilTarget / 1000, data?.oilProduced / 1000)} targetVal={`Target: ${parseFloat(data?.oilTarget/1000 || 0)?.toFixed(1)} kbbls`} img={assets} title={"Oil Produced"} num={`${parseFloat(data?.oilProduced /1000|| 0)?.toFixed(1)} Kbbls`} />
                 <DashboardCard variance={getStatus(data?.gasProducedTarget, data?.gasProduced)} targetVal={`Target: ${parseFloat(data?.gasProducedTarget || 0)?.toFixed(3)} MMscf`} img={grossprodgas} title={"Gas Produced"} num={`${parseFloat(data?.gasProduced || 0)?.toFixed(3)} MMscf`} />
                 <DashboardCard variance={getStatus(data?.exportGasTarget, data?.gasExported)} targetVal={`Target: ${parseFloat(data?.exportGasTarget || 0)?.toFixed(3)} MMscf`} img={gasexported} title={"Gas Exported"} num={`${parseFloat(data?.gasExported || 0)?.toFixed(3)} MMscf`} />
                 <DashboardCard variance={getStatus(data?.gasFlaredTarget, data?.gasFlared)} targetVal={`${parseFloat(data?.gasFlaredTarget || 0)?.toFixed(3)} MMscf`} img={gasflared} title={"Gas Flared"} num={`${parseFloat(data?.gasFlared || 0)?.toFixed(3)} MMscf`} />

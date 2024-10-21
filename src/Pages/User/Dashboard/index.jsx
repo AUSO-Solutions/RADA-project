@@ -20,7 +20,7 @@ const tabs = [
     Component: <Insights />
   },
   {
-    title: 'Production Surveillance ',
+    title: 'Production Surveillance',
     Component: <ProductionSurveilance />
   },
   {
@@ -37,10 +37,11 @@ const Dashboard = () => {
   const assets = useAssetByName(setupData?.asset)
   const { assetNames } = useAssetNames()
   useEffect(() => {
-    dispatch(setSetupData({ name: 'asset', value: setupData?.asset || assetNames[0] }))
+    dispatch(setSetupData({ name: 'asset', value: setupData?.asset || assetNames?.[0] }))
     dispatch(setSetupData({ name: 'startDate', value: (dayjs().startOf('month').format('YYYY-MM-DD')) }))
     dispatch(setSetupData({ name: 'endDate', value: (dayjs().subtract(1, "day").format('YYYY-MM-DD')) }))
-  }, [assetNames,dispatch,setupData?.asset])
+  }, [assetNames, dispatch, setupData?.asset])
+  
   return (
     <div className='h-full'>
       <Header
@@ -53,7 +54,7 @@ const Dashboard = () => {
             {tabs.map((x, i) => <Tab key={i} text={x.title} active={i === tab} onClick={() => setTab(i)} />)}
           </ tabs>
           <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 20 }}>
-            {tabs[tab]?.title === 'Business Intelligence' &&
+            {(tabs[tab]?.title === 'Business Intelligence' || tabs[tab].title === 'Production Surveillance') &&
               <>
                 <div style={{ width: '120px' }} >
                   <Input placeholder={'Assets'} required
@@ -71,7 +72,13 @@ const Dashboard = () => {
                     onChange={(e) => dispatch(setSetupData({ name: 'flowstation', value: e?.value }))}
                   />
                 </div>
-                <div  >
+                <div style={{ width: '150px' }}>
+                  <Input isClearable key={setupData?.asset} placeholder={'Flow Stations'} required defaultValue={{ label: 'All', value: '' }}
+                    type='select' options={[{ label: 'All', value: '' }].concat(assets.flowStations?.map(createOpt))}
+                    onChange={(e) => dispatch(setSetupData({ name: 'flowstation', value: e?.value }))}
+                  />
+                </div>
+                {tabs[tab]?.title === 'Business Intelligence'&&<div  >
                   <DateRangePicker
                     startDate={setupData?.startDate}
                     endDate={setupData?.endDate}
@@ -79,7 +86,7 @@ const Dashboard = () => {
                       dispatch(setSetupData({ name: 'startDate', value: dayjs(e?.startDate).format('YYYY-MM-DD') }))
                       dispatch(setSetupData({ name: 'endDate', value: dayjs(e?.endDate).format('YYYY-MM-DD') }))
                     }} />
-                </div>
+                </div>}
               </>
             }
           </div>

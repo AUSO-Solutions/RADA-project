@@ -119,7 +119,7 @@ const Summary = () => {
 
   useEffect(() => {
     // console.log(searchParams)
-    const asset = searchParams.get('asset') || assetNames[0]
+    const asset = searchParams.get('asset') || assetNames?.[0]
     const flowstation = searchParams.get('flowstation') || ""
     const startDate = searchParams.get('startDate') || dayjs().subtract(1, "day").format('YYYY-MM-DD')
     const endDate = searchParams.get('endDate') || dayjs().subtract(1, "day").format('YYYY-MM-DD')

@@ -64,7 +64,7 @@ const getInsights = onCall(async (request) => {
             .where("date", "<=", endDate_)
             .where("asset", "==", asset);
 
-        const ipscTarget = (await db.collection('IPSC').where('month', '==', dayjs(startDate).format("YYYY-MM")).get())?.docs[0]?.data()
+        const ipscTarget = (await db.collection('setups').doc('IPSC').collection("setupList").where("asset", "==", asset).where('month', '==', dayjs(startDate).format("YYYY-MM")).get())?.docs[0]?.data()
 
         const oilQuery = (await oilStartEndData.get()).docs.map(
             (doc) => doc?.data() || {}
@@ -342,7 +342,7 @@ const getInsights = onCall(async (request) => {
                 x: time.format(format),
             };
         });
-        if(ipscTarget){
+        if (ipscTarget) {
             result.ipscTarget = ipscTarget
         }
 

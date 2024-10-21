@@ -11,6 +11,9 @@ import { queryClient } from "Services/queryClient";
 import Modal from "Components/Modal";
 import Layout from "Components/layout";
 import Loading from "Components/Loading";
+import { useEffect } from "react";
+import { getAuth } from "firebase/auth";
+import { setUser } from "Store/slices/auth";
 
 function App() {
 
@@ -19,12 +22,28 @@ function App() {
     if (uid) return children
     return <Navigate to={'/'} />
   }
+  const RefreshToken = () => {
+
+    useEffect(() => {
+
+      return () => {
+        getAuth().onIdTokenChanged((snap) => {
+          
+          snap.getIdToken().then(res => {
+            // console.log(res)
+            store.dispatch(setUser({ ...store.getState().auth.user, token: res }))
+          })
+        })
+      }
+    }, [])
+  }
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <QueryClientProvider client={queryClient} >
           <BrowserRouter>
             <ToastContainer />
+            <RefreshToken />
             <Modal />
             <Loading />
             <Routes>

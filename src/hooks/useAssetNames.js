@@ -6,7 +6,7 @@ export const useAssetNames = (options) => {
     // const { data } = useFetch({ firebaseFunction: 'getAssetsName', useToken: true, payload: { getAll: options?.getAll } })
 
     const [assetNames, setAssetames] = useState([])
-    console.log('----')
+    // console.log('----')
 
     useEffect(() => {
         // const names = data?.map(datum => datum)
@@ -16,7 +16,7 @@ export const useAssetNames = (options) => {
         const getData = async () => {
             try {
                 const { data } = await firebaseFunctions('getAssetsName', { getAll: options?.getAll }, false, { useToken: true })
-                console.log(data)
+                // console.log(data)
                 setAssetames(data)
             } catch (error) {
                 console.log(error)

@@ -20,13 +20,13 @@ const getSurveillanceData = onCall(async (request) => {
 
     const productionData = db
       .collection("actualProduction")
+      .orderBy("date", "asc")
       .where("asset", "==", asset)
-      .where("flowstaion", "==", flowstation)
-      .orderBy("date", "asc");
+      .where("flowStation", "==", flowstation)
     const productionQuery = (await productionData.get()).docs.map(
       (doc) => doc?.data() || {}
     );
-
+    console.log('----',productionQuery)
     const productionStrings = {};
     const flowStationData = [];
 
@@ -37,7 +37,7 @@ const getSurveillanceData = onCall(async (request) => {
       let gas = 0;
       let date = dailyData?.date;
 
-      dailyData?.productionData.foreach((prodData) => {
+      dailyData?.productionData?.forEach((prodData) => {
         // Compute the running sum for the flowstation
         gross += prodData.gross;
         oil += prodData.oil;
