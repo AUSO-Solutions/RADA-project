@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Overview from './Overview'
 import Insights from './Insights'
 import Tab from 'Components/tab'
@@ -41,7 +41,12 @@ const Dashboard = () => {
     dispatch(setSetupData({ name: 'startDate', value: (dayjs().startOf('month').format('YYYY-MM-DD')) }))
     dispatch(setSetupData({ name: 'endDate', value: (dayjs().subtract(1, "day").format('YYYY-MM-DD')) }))
   }, [assetNames, dispatch, setupData?.asset])
-  
+  const productionStrings = useMemo(() => {
+    // console.log(assets.assetData, setupData?.flowstation)
+    const strings = (assets.assetData.filter(data => data.flowStation === setupData?.flowstation)?.map(data => data?.productionString)).map(createOpt)
+    // console.log(strings)
+    return strings
+  }, [assets, setupData?.flowstation])
   return (
     <div className='h-full'>
       <Header
@@ -67,18 +72,18 @@ const Dashboard = () => {
                   />
                 </div>
                 <div style={{ width: '150px' }}>
-                  <Input isClearable key={setupData?.asset} placeholder={'Flow Stations'} required defaultValue={{ label: 'All', value: '' }}
+                  <Input key={setupData?.asset} placeholder={'Flow Stations'} required defaultValue={{ label: 'All', value: '' }}
                     type='select' options={[{ label: 'All', value: '' }].concat(assets.flowStations?.map(createOpt))}
                     onChange={(e) => dispatch(setSetupData({ name: 'flowstation', value: e?.value }))}
                   />
                 </div>
-                <div style={{ width: '150px' }}>
-                  <Input isClearable key={setupData?.asset} placeholder={'Flow Stations'} required defaultValue={{ label: 'All', value: '' }}
-                    type='select' options={[{ label: 'All', value: '' }].concat(assets.flowStations?.map(createOpt))}
-                    onChange={(e) => dispatch(setSetupData({ name: 'flowstation', value: e?.value }))}
+                {tabs[tab]?.title === 'Production Surveillance' && <div style={{ width: '150px' }}>
+                  <Input key={setupData?.asset} placeholder={'Prod Strings'} required defaultValue={{ label: 'All', value: '' }}
+                    type='select' options={[{ label: 'All', value: '' }].concat(productionStrings)}
+                    onChange={(e) => dispatch(setSetupData({ name: 'productionString', value: e?.value }))}
                   />
-                </div>
-                {tabs[tab]?.title === 'Business Intelligence'&&<div  >
+                </div>}
+                {tabs[tab]?.title === 'Business Intelligence' && <div  >
                   <DateRangePicker
                     startDate={setupData?.startDate}
                     endDate={setupData?.endDate}
