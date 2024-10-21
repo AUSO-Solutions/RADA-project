@@ -12,21 +12,29 @@ const getSurveillanceData = onCall(async (request) => {
       throw { code: "cancelled", message: "Please provide asset" };
     }
 
-    if (!flowstation) {
-      throw { code: "cancelled", message: "Please provide flowstation" };
-    }
+    // if (!flowstation) {
+    //   throw { code: "cancelled", message: "Please provide flowstation" };
+    // }
 
     const db = admin.firestore();
 
-    const productionData = db
+    let productionData = db
       .collection("actualProduction")
       .orderBy("date", "asc")
       .where("asset", "==", asset)
-      .where("flowStation", "==", flowstation)
+
+    if (flowstation) {
+      productionData = db
+        .collection("actualProduction")
+        .orderBy("date", "asc")
+        .where("asset", "==", asset)
+        .where("flowStation", "==", flowstation)
+    }
+
     const productionQuery = (await productionData.get()).docs.map(
       (doc) => doc?.data() || {}
     );
-    console.log('----',productionQuery)
+    console.log('----', productionQuery)
     const productionStrings = {};
     const flowStationData = [];
 

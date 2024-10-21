@@ -5,7 +5,7 @@ import LineChart from './Line'
 
 const ProductionSurveilance = () => {
   const setupData = useSelector(state => state?.setup)
-  const { data } = useFetch({ firebaseFunction: 'getSurveillanceData', payload: { asset: setupData?.asset, flowstation: setupData?.flowstation }, refetch: setupData?.flowstation })
+  const { data } = useFetch({ firebaseFunction: 'getSurveillanceData', payload: { asset: setupData?.asset, flowstation: setupData?.flowstation }, refetch: setupData })
   const result = useMemo(() => {
     const x = data.length ? JSON.parse(data) : []
     let y = []
@@ -39,14 +39,14 @@ const ProductionSurveilance = () => {
     const liquidOilDataset = [
       {
         label: "Liquid Produced (blpd)",
-        axisname:'Liquid Produced',
+        axisname: 'Liquid Produced',
         data: liquidOilData?.map((datum) => datum?.liquid),
         borderColor: "#280eb4",
         borderWidth: 3, pointRadius: .5
       },
       {
         label: "Oil Produced (bopd)",
-        axisname:'Oil Produced',
+        axisname: 'Oil Produced',
         data: liquidOilData?.map((datum) => datum?.oil),
         borderColor: "#e85912",
         borderWidth: 3, pointRadius: .5
