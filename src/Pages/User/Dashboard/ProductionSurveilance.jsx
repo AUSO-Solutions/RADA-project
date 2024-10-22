@@ -1,21 +1,47 @@
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { useFetch } from 'hooks/useFetch'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import LineChart from './Line'
+import { clearSetup } from 'Store/slices/setupSlice'
+import { sum } from 'utils'
 
 const ProductionSurveilance = () => {
   const setupData = useSelector(state => state?.setup)
+  const dispatch = useDispatch()
+  useEffect(() => {
+    return () => {
+      dispatch(clearSetup())
+    }
+  }, [])
   const { data } = useFetch({ firebaseFunction: 'getSurveillanceData', payload: { asset: setupData?.asset, flowstation: setupData?.flowstation }, refetch: setupData })
   const result = useMemo(() => {
+    // console.log(setupData)
     const x = data.length ? JSON.parse(data) : []
+    // console.log(x)
     let y = []
-    if (setupData?.productionString) {
+    if (setupData?.productionString && setupData?.flowstation) {
       y = (x?.productionStrings?.[setupData?.productionString])
     } else {
-      y = (x?.flowStationData)
+      // const 
+      const dates = Array.from(new Set(x?.flowStationData?.map(item => item?.date)))
+      const compiledFlowstations = (dates?.map(date => {
+        const collation = x?.flowStationData?.filter(item => item?.date === date)
+        return {
+          gas: sum(collation?.map(item => item?.gas)),
+          gross: sum(collation?.map(item => item?.gross)),
+          water: sum(collation?.map(item => item?.water)),
+          oil: sum(collation?.map(item => item?.oil)),
+          waterCut: sum(collation?.map(item => item?.waterCut)),
+          date,
+          gor: sum(collation?.map(item => item?.date)),
+        }
+
+      }))
+      y = (compiledFlowstations)
     }
     return y
-  }, [data, setupData?.productionString])
+  }, [data, setupData])
+  console.log(result)
   // const createDataset = (set) => {
   //   return set?.map(item => ({
   //     label: item?.label,
@@ -85,12 +111,14 @@ const ProductionSurveilance = () => {
     const gorWatercutDataset = [
       {
         label: "GOR (scf/std)",
+        yAxisId:'gor',
         data: data?.map((item, i) => item?.gor),
         borderColor: "#91ff69",
         borderWidth: 3, pointRadius: .5
       },
       {
         label: "Water (%)",
+        yAxisId:'water',
         data: data?.map((item, i) => item?.waterCut),
         borderColor: "#280eb4",
         borderWidth: 3, pointRadius: .5
@@ -104,7 +132,7 @@ const ProductionSurveilance = () => {
       liquidOil, waterProduced, dailyGas, gorWatercut
     }
   }, [result])
-
+  // console.log(graphs)
   return (
     <div className='p-3 flex flex-wrap gap-3 w-full '>
       <div className='w-[48%] h-[auto] border rounded p-3 '>
@@ -117,7 +145,7 @@ const ProductionSurveilance = () => {
         {<LineChart labels={graphs.dailyGas.labels} datasets={graphs?.dailyGas?.dataset} />}
       </div>
       <div className='w-[48%] h-[auto] border rounded p-3 '>
-        {<LineChart labels={graphs.gorWatercut.labels} datasets={graphs?.gorWatercut?.dataset} />}
+        {<LineChart stacked={false} labels={graphs.gorWatercut.labels} datasets={graphs?.gorWatercut?.dataset} />}
       </div>
     </div>
   )

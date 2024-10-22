@@ -1,4 +1,4 @@
-import React  from "react";
+import React from "react";
 import { Line } from "react-chartjs-2";
 import Chart from "chart.js/auto";
 import { CategoryScale } from "chart.js";
@@ -19,6 +19,7 @@ function LineChart({ data, labels, datasets }) {
           datasets
         }}
         options={{
+
           plugins: {
             title: {
               display: false,
@@ -35,20 +36,39 @@ function LineChart({ data, labels, datasets }) {
               }
             },
           },
+          stacked: false,
           scales: {
+            yAxes:[{
+              type: 'linear',
+              position: 'left',
+              id: 'gor',
+            },
+            {
+              type: 'linear',
+              position: 'right',
+              gridLines: {
+                drawOnChartArea: false
+              },
+              id: 'water',
+            }
+          ],
             y: {
+              stacked: false,
               title: {
                 display: true,
                 text: datasets?.map(set => set?.axisname || set?.label)?.join(' | ')
-              }
+              },
+              
             },
+            
             x: {
               title: {
                 display: true,
                 text: 'Date'
               }
             },
-          }
+          },
+
         }}
       />
     </div>

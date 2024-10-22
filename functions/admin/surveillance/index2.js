@@ -38,6 +38,7 @@ const getSurveillanceData = onCall(async (request) => {
     const productionStrings = {};
     const flowStationData = [];
 
+    const flowstations =  Array.from(new Set(productionQuery.map(item => item?.flowStation)))
     productionQuery.forEach((dailyData) => {
       let gross = 0;
       let oil = 0;
@@ -47,16 +48,19 @@ const getSurveillanceData = onCall(async (request) => {
 
       dailyData?.productionData?.forEach((prodData) => {
         // Compute the running sum for the flowstation
+        
         gross += prodData.gross;
         oil += prodData.oil;
         water += prodData.water;
         gas += prodData.gas;
 
+
+
         const stringData = {
           date,
           ...prodData,
-          waterCut: prodData.water / prodData.gross,
-          gor: prodData.gas / prodData.oil,
+          waterCut: (prodData.water / prodData.gross) * 100,
+          gor: (prodData.gas * 1000000) / prodData.oil,
         };
 
         if (prodData.productionString in productionStrings) {
@@ -72,8 +76,8 @@ const getSurveillanceData = onCall(async (request) => {
         oil,
         water,
         gas,
-        waterCut: water / gross,
-        gor: gas / oil,
+        waterCut: (water / gross) * 100,
+        gor: (gas * 1000000) / oil,
       });
     });
 
