@@ -72,6 +72,10 @@ export const genRandomNumber = () => {
     return Math.floor(Math.random() * 100) + 1
 }
 
+export const roundUp = (number) => {
+    return (Math.ceil(number * 1000) / 1000).toFixed(3);
+}
+
 const getLineDetails = (line, at1, at2) => {
     const x1 = line[at1]?.x,
         x2 = line[at2]?.x,
