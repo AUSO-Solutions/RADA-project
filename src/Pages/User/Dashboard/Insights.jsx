@@ -45,7 +45,7 @@ const Insights = () => {
     const targetForthisMonth = useMemo(() => {
         const oil = sum(Object.values(data?.ipscTarget?.flowstationsTargets || {})?.map(target => target?.oilRate));
         const gas = sum(Object.values(data?.ipscTarget?.flowstationsTargets || {})?.map(target => target?.gasRate));
-               return {
+        return {
             oil, gas,
             // oilDomain: 
 
@@ -61,7 +61,7 @@ const Insights = () => {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="x" />
                     <YAxis
-                        // domain={[0, parseInt(targetForthisMonth.oil)]}
+                    // domain={[0, parseInt(targetForthisMonth.oil)]}
                     />
                     <Tooltip />
                     <Legend verticalAlign="bottom" align="center" height={36} />
@@ -69,7 +69,7 @@ const Insights = () => {
                         data.flowstations?.map(flowstation => <Bar dataKey={flowstation} stackId="a" fill={colors[flowstation]} />)
                     }
 
-                    <ReferenceLine alwaysShow y={parseInt(targetForthisMonth.oil)} label={`Prod Oil Target (${parseInt(targetForthisMonth.oil)})`} stroke="grey" strokeDasharray="4 4" strokeWidth={1}  />
+                    <ReferenceLine alwaysShow y={parseInt(targetForthisMonth.oil)} label={`Prod Oil Target (${parseInt(targetForthisMonth.oil)})`} stroke="grey" strokeDasharray="4 4" strokeWidth={2}  />
 
 
                 </BarChart>
@@ -95,7 +95,7 @@ const Insights = () => {
                     <Bar dataKey="Fuel Gas" stackId="a" fill="#14A459" name="Utilized Gas" />
                     <Bar dataKey="Export Gas" stackId="a" fill="#A8D18D" name="Export Gas" />
                     <Bar dataKey="Flared Gas" stackId="a" fill="#F4B184" name="Flared Gas" />
-                    <ReferenceLine alwaysShow y={targetForthisMonth?.gas}  label={`Prod. Gas Target (${parseInt(targetForthisMonth?.gas)})`} stroke="grey" strokeDasharray="4 4" strokeWidth={1} />
+                    <ReferenceLine alwaysShow y={targetForthisMonth?.gas} label={`Prod. Gas Target (${parseInt(targetForthisMonth?.gas)})`} stroke="grey" strokeDasharray="4 4" strokeWidth={2} />
                 </BarChart>
             </ResponsiveContainer>
             // </div>
@@ -122,7 +122,7 @@ const Insights = () => {
     return (
         <div className="bg-[#FAFAFA]" >
             <div className="mx-5 pt-3 flex flex-row  gap-5 " >
-                <DashboardCard variance={getStatus(data?.oilTarget / 1000, data?.oilProduced / 1000)} targetVal={`Target: ${parseFloat(data?.oilTarget/1000 || 0)?.toFixed(1)} kbbls`} img={assets} title={"Oil Produced"} num={`${parseFloat(data?.oilProduced /1000|| 0)?.toFixed(1)} Kbbls`} />
+                <DashboardCard variance={getStatus(data?.oilTarget / 1000, data?.oilProduced / 1000)} targetVal={`Target: ${parseFloat(data?.oilTarget / 1000 || 0)?.toFixed(1)} kbbls`} img={assets} title={"Oil Produced"} num={`${parseFloat(data?.oilProduced / 1000 || 0)?.toFixed(1)} Kbbls`} />
                 <DashboardCard variance={getStatus(data?.gasProducedTarget, data?.gasProduced)} targetVal={`Target: ${parseFloat(data?.gasProducedTarget || 0)?.toFixed(3)} MMscf`} img={grossprodgas} title={"Gas Produced"} num={`${parseFloat(data?.gasProduced || 0)?.toFixed(3)} MMscf`} />
                 <DashboardCard variance={getStatus(data?.exportGasTarget, data?.gasExported)} targetVal={`Target: ${parseFloat(data?.exportGasTarget || 0)?.toFixed(3)} MMscf`} img={gasexported} title={"Gas Exported"} num={`${parseFloat(data?.gasExported || 0)?.toFixed(3)} MMscf`} />
                 <DashboardCard variance={getStatus(data?.gasFlaredTarget, data?.gasFlared)} targetVal={`${parseFloat(data?.gasFlaredTarget || 0)?.toFixed(3)} MMscf`} img={gasflared} title={"Gas Flared"} num={`${parseFloat(data?.gasFlared || 0)?.toFixed(3)} MMscf`} />
@@ -133,8 +133,9 @@ const Insights = () => {
                 <InsightsGraphCard title={`${querys?.asset} Oil Production (bopd)`}>{<OilProductionChart />}</InsightsGraphCard>
                 <InsightsGraphCard title={`${querys?.asset} Oil Production Variance Analysis`}>{<OilProductionVariantChart data={data} />}</InsightsGraphCard>
                 <InsightsGraphCard title={`${querys?.asset} Gas Production (MMscf/d)`}>{<GasProductionChart />}</InsightsGraphCard>
-                <InsightsGraphCard title={`${querys?.asset} Gas Production Variance Analysis `}>{<GasProductionVariantChart data={data} />}</InsightsGraphCard>
-                <InsightsGraphCard />
+                <InsightsGraphCard title={`${querys?.asset} Gas Production Variance Analysis `}>{<GasProductionVariantChart data={data} />}
+                </InsightsGraphCard>
+                {/* <InsightsGraphCard /> */}
             </div>
         </div>
     )
