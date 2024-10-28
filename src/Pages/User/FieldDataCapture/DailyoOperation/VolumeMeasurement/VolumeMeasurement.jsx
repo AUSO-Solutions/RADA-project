@@ -19,6 +19,7 @@ import dayjs from 'dayjs'
 import Setup from 'Partials/setup'
 import { setLoadingScreen } from 'Store/slices/loadingScreenSlice'
 import { useGetSetups } from 'hooks/useSetups'
+import { useMe } from 'hooks/useMe'
 // import BroadCast from 'Partials/BroadCast'
 // import SelectGroup from 'Partials/BroadCast/SelectGroup'
 // import Attachment from 'Partials/BroadCast/Attachment'
@@ -295,14 +296,15 @@ const SaveAs = () => {
 const Existing = ({ onSelect = () => null }) => {
   const [, setSearchParams] = useSearchParams()
   const { setups: data } = useGetSetups("volumeMeasurement")
-  
+
   const dispatch = useDispatch()
+  const { user } = useMe()
 
 
   return (
     <div className=" flex flex-wrap gap-4 m-5 ">
       <Files files={data} actions={[
-        { name: 'View', to: (file) => `/users/fdc/daily/${file?.reportTypes?.[0] === 'Gas' ? 'gas-table' : 'volume-measurement-table'}?id=${file?.id}` },
+        { name: 'View', to: (file) => `/users/fdc/daily/${file?.reportTypes?.[0] === 'Gas' ? 'gas-table' : 'volume-measurement-table'}?id=${file?.id}`, permitted: true },
         {
           name: 'Edit', onClick: file => {
             dispatch(setWholeSetup(file))
@@ -312,10 +314,11 @@ const Existing = ({ onSelect = () => null }) => {
               return prev
             })
           }, to: () => null,
+          permitted: user.permitted.createAndeditDailyOperationSETUP
         },
 
-        { name: 'Delete', to: (file) => `` },
-      ]} name={(file) => `${file.title || "No title"}/${file?.asset}/${file.fluidType}/${dayjs(file.created).format('MMM-YYYY')}`} />
+        { name: 'Delete', to: (file) => ``, permitted: user.permitted.createAndeditDailyOperationSETUP },
+      ].filter(x => x.permitted)} name={(file) => `${file.title || "No title"}/${file?.asset}/${file.fluidType}/${dayjs(file.created).format('MMM-YYYY')}`} />
     </div>
   )
 }
@@ -358,6 +361,7 @@ const VolumeMeasurement = () => {
   useEffect(() => {
     dispatch(clearSetup({}))
   }, [dispatch])
+  const { user } = useMe()
   // const { isOpen } = useSelector(state => state?.modal)
 
 
@@ -367,6 +371,7 @@ const VolumeMeasurement = () => {
         title={'Setup Volume Measurement Parameters'}
         steps={["Select Asset", "Define Report", "Measurement Type", "Select Flowstations", "Preview", "SaveAs"]}
         existing={<Existing />}
+        hideCreateSetupButton={!user.permitted.createAndeditDailyOperationSETUP}
         stepComponents={
           [
             <SelectAsset />,

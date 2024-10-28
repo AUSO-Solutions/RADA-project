@@ -6,9 +6,10 @@ import { Link } from "react-router-dom";
 // import Img152 from '../../Assets/images/newcross152.svg'
 // import { useSelector } from "react-redux";
 
-import { images } from "Assets";
+import { images, permissions } from "Assets";
 import Text from "Components/Text";
-import { Bubble, Edit, FolderOpen, Home, User, People,Lock, Book, Driver, Setting2 } from 'iconsax-react';
+import { Bubble, Edit, FolderOpen, Home, User, People, Lock, Book, Driver, Setting2 } from 'iconsax-react';
+import { useMe } from "hooks/useMe";
 
 // import { ROLES } from "./roles.ts";
 
@@ -22,31 +23,33 @@ function Sidenav() {
     // console.log(paths_)
     return { module: paths_[1], parent: paths_[2], child: paths_[3]?.toLowerCase() }
   }, [pathname])
+  const { user } = useMe()
+  console.log(user)
   const paths = useMemo(() => ({
     admin: [
       {
         name: "Users",
-        icon: <User variant={sidebar.parent === "users"?"Bold":"Linear"} />,
+        icon: <User variant={sidebar.parent === "users" ? "Bold" : "Linear"} />,
         path: "/admin/users",
       },
       {
         name: "Groups",
-        icon: <People variant={sidebar.parent === "groups"?"Bold":"Linear"} />,
+        icon: <People variant={sidebar.parent === "groups" ? "Bold" : "Linear"} />,
         path: "/admin/groups",
       },
       {
         name: "Roles and Permissions",
-        icon: <Lock variant={sidebar.parent === "roles-and-permissions"?"Bold":"Linear"}/>,
+        icon: <Lock variant={sidebar.parent === "roles-and-permissions" ? "Bold" : "Linear"} />,
         path: "/admin/roles-and-permissions",
       },
       {
         name: "Manage Assets",
-        icon: <Driver  variant={sidebar.parent === "manage-assets"?"Bold":"Linear"}/>,
+        icon: <Driver variant={sidebar.parent === "manage-assets" ? "Bold" : "Linear"} />,
         path: "/admin/manage-assets",
       },
       {
         name: "Activity Log",
-        icon: <Book variant={sidebar.parent === "activity-log"?"Bold":"Linear"} />,
+        icon: <Book variant={sidebar.parent === "activity-log" ? "Bold" : "Linear"} />,
         path: "/admin/activity-log",
       }
     ],
@@ -54,18 +57,20 @@ function Sidenav() {
 
       {
         name: "Dashboard",
-        icon: <Home variant={sidebar.parent === "dashboard"?"Bold":"Linear"}/>,
+        icon: <Home variant={sidebar.parent === "dashboard" ? "Bold" : "Linear"} />,
         path: "/users/dashboard",
+        permitted: permissions.viewDashboard
       },
       {
         name: "Field Data Capture",
-        icon: <Edit variant={sidebar.parent === "fdc"?"Bold":"Linear"}/>,
+        icon: <Edit variant={sidebar.parent === "fdc" ? "Bold" : "Linear"} />,
         path: "/users/fdc/daily",
         children: [
           {
             name: "Daily Production/Operations Report ",
             icon: <GrGroup />,
             path: "/users/fdc/daily",
+
           },
           {
             name: "MER Data",
@@ -86,17 +91,17 @@ function Sidenav() {
       },
       {
         name: "Reports",
-        icon: <FolderOpen variant={sidebar.parent === "reports"?"Bold":"Linear"}/>,
+        icon: <FolderOpen variant={sidebar.parent === "reports" ? "Bold" : "Linear"} />,
         path: "/users/reports",
       },
       {
         name: "Database",
-        icon: <Bubble variant={sidebar.parent === "database"?"Bold":"Linear"} />,
+        icon: <Bubble variant={sidebar.parent === "database" ? "Bold" : "Linear"} />,
         path: "/users/database",
       },
       {
         name: "Settings",
-        icon: <Setting2 variant={sidebar.parent === "settings"?"Bold":"Linear"} />,
+        icon: <Setting2 variant={sidebar.parent === "settings" ? "Bold" : "Linear"} />,
         path: "/users/settings",
       },
 
@@ -121,7 +126,7 @@ function Sidenav() {
         </div>
       </div>
       <div className={styles.barsContainer}>
-        {paths[sidebar.module].map((x) => {
+        {paths[sidebar.module].filter(x => x?.permission ? user.permissions.includes(x.permission) : true).map((x) => {
           return (
             <>
               <div
@@ -136,7 +141,7 @@ function Sidenav() {
                 onClick={() => navigate(x.path)}
               >
                 <span style={{ fontSize: '20px', display: 'block', paddingRight: '15px', }}> {x.icon} </span>
-                <Text weight={600} className={styles.barText}>{x.name} </Text>
+                <Text weight={600} className={styles.barText}>{x?.name} </Text>
               </div>
               {
                 x?.children?.length && x.path.includes(sidebar.parent)

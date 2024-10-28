@@ -7,7 +7,7 @@ const { login, createUser, getUsers, getUserByUid, deleteUserByUid, updateUserBy
 
 const { getGroups, createGroup, addMembersToGroup, deleteGroupMember, deleteGroup, deleteGroupAsset, assignAssetsToGroup } = require("./admin/auth/group");
 const { createAsset, getAssetByName, updateAssetById, deleteAssetById, getAssets, getAssetsName, importMasterXY } = require('./admin/assets')
-const { createRole, updateRole, deleteRole, getRoles, getRole, assignPermissionToRole } = require('./admin/rolesandpermissions');
+const { createRole, updateRole, deleteRole, getRoles, getRole, assignPermissionToRole, getPermissions } = require('./admin/rolesandpermissions');
 const { createSetup, deleteSetup, getSetups, updateSetup, getSetup,getSetupByMonth } = require("./fielddatacapturesetup/volumemeasurementsetup");
 const { captureOilOrCondensate, captureGas, updateOilOrCondensate, getGasVolumeByDateAndAsset, deleteOilOrCondensateVolumeByID, getOilOrCondensateVolumeByDateAndAsset } = require("./fielddatacapturesetup/volume.measurement");
 const { createMerSchedule } = require("./fielddatacapturesetup/merdataSetup");
@@ -31,7 +31,7 @@ module.exports = {
 
   createAsset, getAssetByName, updateAssetById, deleteAssetById, getAssets, getAssetsName, importMasterXY,
 
-  createRole, updateRole, deleteRole, getRoles, getRole, assignPermissionToRole,
+  createRole, updateRole, deleteRole, getRoles, getRole, assignPermissionToRole,getPermissions,
 
   createSetup, deleteSetup, getSetups, updateSetup, getSetup,getSetupByMonth,
 

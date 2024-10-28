@@ -157,8 +157,8 @@ export default function WellTestDataTable() {
                 <div className='flex justify-end py-2 items-center gap-3'>
                     <div className='flex gap-2' >
                         {isEdit && <Actions actions={[
-                            { name: 'Query Result', onClick: () => dispatch(openModal({ component: <Query title={createWellTitle(wellTest)} /> })) },
-                            { name: 'Approve', onClick: () => dispatch(openModal({ component: <Approve /> })) },
+                            { name: 'Query Result', onClick: () => dispatch(openModal({ component: <Query header={'Query Well Test Data Result'} successScreen title={createWellTitle(wellTest)} /> })) },
+                            { name: 'Approve', onClick: () => dispatch(openModal({ component: <Approve  header={'Approve Well Test Data Result'}   title={createWellTitle(wellTest)}  /> })) },
 
                         ]} />}
                     </div>

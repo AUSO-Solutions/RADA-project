@@ -7,14 +7,14 @@ import {  Divider } from '@mui/material';
 import { colors } from 'Assets';
 import { MdOutlineCheck } from 'react-icons/md';
 
-export const Approve = () => {
+export const Approve = ({header,title}) => {
     const [approved, setApproved] = React.useState(false)
     const approveWelltest = () => {
         setApproved(true)
     }
     const dispatch = useDispatch()
-    return <div className='w-[500px] p-1 h-[600px]'>
-        <Text size={24}>Approve Well Test Result</Text>
+    return <div className='w-[500px] p-1 h-fit'>
+        <Text size={24}>{header}</Text>
 
         <Divider className='mt-5' />
         {!approved ?
@@ -22,7 +22,7 @@ export const Approve = () => {
                 <div>
                     <div className='mt-5 p-2 rounded bg-[#F9FAFA]'>
                         <div className='h-[100px] flex items-center'>
-                            <Text weight={600} color={colors.rada_blue}>Well Test DATA-OML99/Field1/Wells Schedule/July,2024</Text>
+                            <Text weight={600} color={colors.rada_blue}>{title}</Text>
                         </div>
                     </div>
                     <div className='flex h-[150px] items-center mt-5' >
@@ -44,7 +44,8 @@ export const Approve = () => {
                     </div>
                     <Text weight={500} size={20} className='pt-5 ' >Approve Successful</Text>
                     <div className='mt-5 flex items-center justify-center' >
-                        <Text align={'center'} weight={400} color={colors.rada_black}> You have Successfully approved <span style={{ fontWeight: '700' }} >Well Test DATA-OML99/Field1/Wells Schedule/July,2024</span></Text>
+                        <Text align={'center'} weight={400} color={colors.rada_black}> You have Successfully approved <span style={{ fontWeight: '700' }} >
+                            {title}</span></Text>
                     </div>
 
                 </div>

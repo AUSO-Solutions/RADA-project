@@ -53,7 +53,7 @@ const CreateRoles = ({ updateUserId = null, defaultValues }) => {
             Select perrmissions
             <div className='flex flex-col'>
                 {
-                    permissions.map((permission, i) => <CheckInput label={permission} type='checkbox' defaultChecked={defaultValues?.permissions.includes(permission)} onChange={(e) => handleCheck(e, permission)} />)
+                    Object.values(permissions || {}).map((permission, i) => <CheckInput label={permission} type='checkbox' defaultChecked={defaultValues?.permissions.includes(permission)} onChange={(e) => handleCheck(e, permission)} />)
                 }
 
             </div>

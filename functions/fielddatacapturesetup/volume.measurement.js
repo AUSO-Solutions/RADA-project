@@ -12,12 +12,15 @@ const {
 const { generateRandomID } = require("../helpers");
 const dayjs = require("dayjs");
 const { Timestamp } = require("firebase-admin/firestore");
+const { getPermissions } = require("../helpers/user");
 
 const captureOilOrCondensate = onCall(async (request) => {
   try {
     let { data } = request;
     logger.log("data ----", { data });
-    const { date, asset, flowstations, fluidType, averageTarget } = data;
+    const { date, asset, flowstations, fluidType, averageTarget, idToken } = data;
+    await getPermissions(idToken,{check:['Edit Daily Production and Operation Report']})
+
     if (!date || !asset || !flowstations) {
       throw {
         code: "cancelled",
@@ -53,7 +56,8 @@ const updateOilOrCondensate = onCall(async (request) => {
   try {
     let { data } = request;
     logger.log("data ----", { data });
-    const { id, date, asset, flowstations } = data;
+    const { id, date, asset, flowstations, idToken } = data;
+    await getPermissions(idToken, { check: ['Edit Daily Production and Operation Report'] })
     if (!id || !date || !asset || !flowstations) {
       throw new Error({
         code: "cancelled",
@@ -90,6 +94,7 @@ const getOilOrCondensateVolumeByDateAndAsset = onCall(async (request) => {
 
   try {
     console.log({ date, asset })
+
     const db = admin.firestore();
     const data = (await db.collection("liquidVolumes").
       where('date', "==", date).where('asset', '==', asset).get())?.docs[0];
@@ -127,6 +132,7 @@ const getOilOrCondensateVolumesByAsset = onCall(async (request) => {
 
   try {
     const db = admin.firestore();
+
     const records = await db
       .collection("liquidVolumes")
       .where("name", "==", assetName)
@@ -164,7 +170,9 @@ const captureGas = onCall(async (request) => {
   try {
     let { data } = request;
     logger.log("data ----", { data });
-    const { date, asset, flowstations, averageTarget, setupId, totalGasProduced, subtotal, } = data;
+
+    const { date, asset, flowstations, averageTarget, setupId, totalGasProduced, subtotal, idToken} = data;
+    await getPermissions(idToken, { check: ['Edit Daily Production and Operation Report'] })
     if (!date || !asset || !flowstations) {
       throw new Error({
         code: "cancelled",

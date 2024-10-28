@@ -29,6 +29,8 @@ import { Alert } from '@mui/material';
 import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
 import Note from '../Note';
 import { useGetSetups } from 'hooks/useSetups';
+import { useMe } from 'hooks/useMe';
+// import {  permissions } from 'Assets/permissions';
 
 
 const TableInput = (props) => {
@@ -45,6 +47,8 @@ const TableInput = (props) => {
 export default function VolumeMeasurementTable() {
 
   const { search } = useLocation()
+  const { user } = useMe()
+
   const dispatch = useDispatch()
   const [setup, setSetup] = useState({})
   const id = useMemo(() => new URLSearchParams(search).get('id'), [search])
@@ -151,7 +155,7 @@ export default function VolumeMeasurementTable() {
 
   useEffect(() => {
     const values = (Object.values(tableValues))
-    console.log(values, sum(values.map(value => calculatedGrossOrnNet(value?.subTotal, value?.bsw, 'gross'))))
+    // console.log(values, sum(values.map(value => calculatedGrossOrnNet(value?.subTotal, value?.bsw, 'gross'))))
     const netProductionTotal = isNet ? sum(Object.values(values || {}).map(item => item?.subTotal || 0)) : sum(values.map(value => calculatedGrossOrnNet(value?.subTotal, value?.bsw, 'gross')));
     const grossTotal = isGross ? sum(Object.values(values || {}).map(item => item?.subTotal || 0)) : sum(values.map(value => calculatedGrossOrnNet(value?.subTotal, value?.bsw, 'net')))
     const netTargetTotal = sum(Object.values(flowstationsTargets || {}).map(target => target?.oilRate))
@@ -290,7 +294,7 @@ export default function VolumeMeasurementTable() {
     };
     dispatch(setLoadingScreen({ open: true }))
     try {
-      console.log(payload)
+      // console.log(payload)
       await firebaseFunctions('captureOilOrCondensate', payload)
       toast.success("Successful")
     } catch (error) {
@@ -468,9 +472,9 @@ export default function VolumeMeasurementTable() {
             </TableBody>
           </Table>
         </TableContainer>
-        <div className='justify-end flex my-2'>
+        {user.permitted.createAndeditDailyOperation && <div className='justify-end flex my-2'>
           <Button className={'my-3'} type='submit' disabled={!IPSC} width={150}>Save</Button>
-        </div>
+        </div>}
       </form></>
   );
 }

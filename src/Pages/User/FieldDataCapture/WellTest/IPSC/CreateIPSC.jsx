@@ -94,7 +94,7 @@ const Exists = () => {
         <div className=" flex flex-wrap gap-4 m-5 ">
             <Files files={data} actions={[
                 { name: 'View', to: (file) => `/users/fdc/well-test-data/ipsc-table?id=${file?.id}` },
-                { name: 'Edit', to: (file) => `/users/fdc/well-test-data/well-test-table?id=${file?.id}` },
+                // { name: 'Edit', to: (file) => `/users/fdc/well-test-data/well-test-table?id=${file?.id}` },
                 {
                     name: 'Broadcast', to: (file) => null, onClick: (file) => dispatch(openModal({
                         title: '',
@@ -161,6 +161,7 @@ const Schedule = () => {
                     onSave={save}
                     rightLoading={loading}
                     existing={<Exists />}
+                    hideCreateSetupButton
                     stepComponents={[
                         <SelectAsset />,
                         <Preview />,

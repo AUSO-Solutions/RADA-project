@@ -96,6 +96,17 @@ const getRoles = onCall(async ({ }) => {
         return { status: 'failed', error }
     }
 })
+const getPermissions = onCall(async ({ }) => {
+    try {
+        const db = admin.firestore();
+        const res = await db.collection('permissions').get();
+        const permissions = res.docs.map(doc => doc.data());
+        return { status: 'success', data: permissions };
+    } catch (error) {
+        logger.log('error ===> ', error);
+        return { status: 'failed', error }
+    }
+})
 
 
 const getRole = onCall(async ({ data }) => {
@@ -156,4 +167,4 @@ const assignPermissionToRole = onCall(async (request) => {
 })
 
 
-module.exports = { createRole, updateRole, deleteRole, getRoles, getRole, assignPermissionToRole }
+module.exports = { createRole, updateRole, deleteRole, getRoles, getRole, assignPermissionToRole, getPermissions }

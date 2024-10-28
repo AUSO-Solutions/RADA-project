@@ -26,6 +26,7 @@ import Actions from 'Partials/Actions/Actions';
 import { Box, Tooltip } from '@mui/material';
 import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
 import { useGetSetups } from 'hooks/useSetups';
+import { useMe } from 'hooks/useMe';
 
 // const TableInput = (props) => {
 //     return <input className='p-1 text-center w-[80px] h-[100%] border outline-none ' required {...props} />
@@ -47,6 +48,7 @@ const SaveAs = ({ defaultValue, onSave = () => null, loading }) => {
 export default function IPSCTable() {
 
     const { search } = useLocation()
+    const {user} =  useMe()
     const dispatch = useDispatch()
     const [searchParams, setSearchParams] = useSearchParams()
 
@@ -378,7 +380,7 @@ export default function IPSCTable() {
                 </div>
             </div>
             {
-                !searchParams.get('show-analytics') && <div className='flex justify-end py-2'>
+                !searchParams.get('show-analytics') && user.permitted.createAndeditIPSC && <div className='flex justify-end py-2'>
                     <Button width={120} onClick={() => {
                         dispatch(openModal({ component: <SaveAs defaultValue={res?.title} onSave={save} /> }))
                     }} >Commit</Button>

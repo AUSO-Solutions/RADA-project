@@ -62,6 +62,31 @@ const updateSetup = onCall(async (request) => {
     }
 });
 
+const updateSetupStatus = onCall(async (request) => {
+
+    try {
+        let { data } = request;
+
+        const { id, setupType, status, queryMessage, groups } = data;
+        if (!id) throw { message: 'Provide a setup id ', code: 'cancelled' };
+        if (!status) throw { message: 'Provide a status ', code: 'cancelled' };
+        if (!setupType) throw { message: 'Provide a setupType ', code: 'cancelled' };
+
+
+        const db = admin.firestore();
+        await db.collection('setups').doc(setupType).collection("setupList").doc(id).update({
+            status, queryMessage
+        });
+
+        return { message: `Setup updated` };
+
+    } catch (error) {
+        console.error('Error adding document: ', error);
+        // return { message: 'Internal Server Error' };
+        throw new HttpsError(error)
+    }
+});
+
 const deleteSetup = onCall(async (request) => {
 
     try {
@@ -118,7 +143,7 @@ const getSetupByMonth = onCall(async (request) => {
     const res = await db.
         collection('setups')
         .doc(setupType)
-        .collection('setupList').where("month",'==',month)
+        .collection('setupList').where("month", '==', month)
         .get()
     return { message: "Successful ", data: res?.docs?.map(doc => doc.data()) }
 })
