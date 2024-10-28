@@ -1,19 +1,28 @@
 import { Button } from 'Components'
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { closeModal } from 'Store/slices/modalSlice';
 import Text from 'Components/Text';
 import {  Divider } from '@mui/material';
 import { colors } from 'Assets';
 import { MdOutlineCheck } from 'react-icons/md';
+import SelectGroup from 'Partials/BroadCast/SelectGroup';
+import { updateSetupStatus } from './updateSetupStatus';
 
-export const Approve = ({header,title}) => {
+export const Approve = ({title, header, setupType, id, pagelink, onQuery = () => null }) => {
     const [approved, setApproved] = React.useState(false)
-    const approveWelltest = () => {
-        setApproved(true)
+    const formdata = useSelector(state => state?.formdata)
+    const approveWelltest =async () => {
+        // if (curr === screens.length - 2) {
+            await updateSetupStatus({ id, setupType, status: 'approved', subject: 'Approved WellTest Data', groups: formdata?.selectedGroups, users: formdata?.selectedUsers, title, pagelink })
+            setApproved(true)
+        //     setCurr(prev => prev + 1)
+        // } else {
+        //     setCurr(prev => prev + 1)
+        // }
     }
     const dispatch = useDispatch()
-    return <div className='w-[500px] p-1 h-fit'>
+    return <div className='w-[500px] p-3 h-fit'>
         <Text size={24}>{header}</Text>
 
         <Divider className='mt-5' />
@@ -21,17 +30,18 @@ export const Approve = ({header,title}) => {
             <div >
                 <div>
                     <div className='mt-5 p-2 rounded bg-[#F9FAFA]'>
-                        <div className='h-[100px] flex items-center'>
+                        <div className='h-[70px] flex items-center'>
                             <Text weight={600} color={colors.rada_blue}>{title}</Text>
                         </div>
                     </div>
-                    <div className='flex h-[150px] items-center mt-5' >
+                    
+                </div>
+                <SelectGroup/>
+                <div className='flex h-[70px] items-center mt-2' >
                         <Text align={'center'} >
                             Are you sure you want to approve this Well Test result? Click the “Approve” button to continue, to cancel, click the “Close” button above.
                         </Text>
                     </div>
-                </div>
-
                 <Button width={100} onClick={approveWelltest} className={' float-right mt-4'}>
                     Approve
                 </Button>

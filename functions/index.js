@@ -8,7 +8,7 @@ const { login, createUser, getUsers, getUserByUid, deleteUserByUid, updateUserBy
 const { getGroups, createGroup, addMembersToGroup, deleteGroupMember, deleteGroup, deleteGroupAsset, assignAssetsToGroup } = require("./admin/auth/group");
 const { createAsset, getAssetByName, updateAssetById, deleteAssetById, getAssets, getAssetsName, importMasterXY } = require('./admin/assets')
 const { createRole, updateRole, deleteRole, getRoles, getRole, assignPermissionToRole, getPermissions } = require('./admin/rolesandpermissions');
-const { createSetup, deleteSetup, getSetups, updateSetup, getSetup,getSetupByMonth } = require("./fielddatacapturesetup/volumemeasurementsetup");
+const { createSetup, deleteSetup, getSetups, updateSetup, getSetup,getSetupByMonth, updateSetupStatus } = require("./fielddatacapturesetup/volumemeasurementsetup");
 const { captureOilOrCondensate, captureGas, updateOilOrCondensate, getGasVolumeByDateAndAsset, deleteOilOrCondensateVolumeByID, getOilOrCondensateVolumeByDateAndAsset } = require("./fielddatacapturesetup/volume.measurement");
 const { createMerSchedule } = require("./fielddatacapturesetup/merdataSetup");
 const { processIPSC, getOilAndGasAccounting } = require('./fielddatacapturesetup/oilandgasaccounting/')
@@ -33,8 +33,7 @@ module.exports = {
 
   createRole, updateRole, deleteRole, getRoles, getRole, assignPermissionToRole,getPermissions,
 
-  createSetup, deleteSetup, getSetups, updateSetup, getSetup,getSetupByMonth,
-
+  createSetup, deleteSetup, getSetups, updateSetup, getSetup,getSetupByMonth,updateSetupStatus,
 
   captureOilOrCondensate,
   captureGas,

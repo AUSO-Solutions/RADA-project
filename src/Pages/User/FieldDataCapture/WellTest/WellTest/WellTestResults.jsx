@@ -29,7 +29,7 @@ const WellTestResults = () => {
         <div className=" flex flex-wrap gap-4 m-5 ">
 
             <Files files={data} actions={[
-                { name: 'Edit', to: (file) => `/users/fdc/well-test-data/well-test-table?id=${file?.id}&scheduleId=${file?.wellTestScheduleId}`, permitted: user.permitted.createAndeditWellTestResult },
+                { name: 'Edit', to: (file) => `/users/fdc/well-test-data/well-test-table?id=${file?.id}&scheduleId=${file?.wellTestScheduleId}`, permitted: user.permitted.remarkWellTestSchedule },
                 // { name: 'Create IPSC', to: (file) => `/users/fdc/well-test-data?page=ipsc&autoOPenSetupModal=yes` },
                 { name: 'Create IPSC', to: (file) => `/users/fdc/well-test-data?page=ipsc&well-test-result-id=${file?.id}&autoOpenSetupModal=yes`, permitted: user.permitted.createAndeditIPSC },
                 {

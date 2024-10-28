@@ -43,7 +43,10 @@ export const useMe = () => {
             //     return [entry[0], {
             //         state: false
             //     }]
-            // })
+            // })\
+            // [ [3,6], [], 5 , [  []  ]  ]  = 
+
+
             try {
                 const res = await firebaseFunctions('getUserByUid', { uid })
                 const myPermissions = res?.data?.roles?.flatMap(role => role?.permissions)
@@ -53,12 +56,10 @@ export const useMe = () => {
                 // console.log(JSON.stringify(Object.fromEntries(Object.entries(permissions).map(entry => {
                 //     return [entry[0], myPermissions?.includes(entry[1])]
                 // }))))
-
                 setUser({
                     ...res?.data,
                     permissions: myPermissions,
                     permitted
-
                 })
 
             } catch (error) {

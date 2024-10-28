@@ -11,7 +11,7 @@ import { ArrowBack } from '@mui/icons-material';
 import Text from 'Components/Text';
 import { Button, Input } from 'Components';
 import { Setting2 } from 'iconsax-react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useFetch } from 'hooks/useFetch';
 import dayjs from 'dayjs';
 import { firebaseFunctions } from 'Services';
@@ -48,6 +48,7 @@ export default function WellTestDataTable() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const [loading] = useState(false)
+    const { pathname, search } = useLocation()
     const [wellTest, setWellTest] = useState({})
     const [wellTestResult, setWellTestResult] = useState({})
     const [searchParams,] = useSearchParams()
@@ -56,7 +57,8 @@ export default function WellTestDataTable() {
     const { data: scheduleData } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'wellTestSchedule', id } })
     const { data: resultData } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'wellTestResult', id } })
     const isEdit = useMemo(() => { return resultData?.asset ? true : false }, [resultData])
-    console.log({isEdit})
+    // console.log({isEdit})
+
     const setupData = useSelector(state => state?.setup)
     useEffect(() => {
         if (searchParams.get('from-file')) {
@@ -157,8 +159,19 @@ export default function WellTestDataTable() {
                 <div className='flex justify-end py-2 items-center gap-3'>
                     <div className='flex gap-2' >
                         {isEdit && <Actions actions={[
-                            { name: 'Query Result', onClick: () => dispatch(openModal({ component: <Query header={'Query Well Test Data Result'} successScreen title={createWellTitle(wellTest)} /> })) },
-                            { name: 'Approve', onClick: () => dispatch(openModal({ component: <Approve  header={'Approve Well Test Data Result'}   title={createWellTitle(wellTest)}  /> })) },
+                            {
+                                name: 'Query Result',
+                                onClick: () => dispatch(openModal({
+                                    component: <Query header={'Query Well Test Data Result'} id={wellTest?.id}
+                                        setupType={'wellTestResult'} title={createWellTitle(wellTest)} pagelink={pathname + search} />
+                                }))
+                            },
+                            {
+                                name: 'Approve', onClick: () => dispatch(openModal({
+                                    component: <Approve header={'Approve Well Test Data Result'} id={wellTest?.id}
+                                        setupType={'wellTestResult'} pagelink={pathname + search} title={createWellTitle(wellTest)} />
+                                }))
+                            },
 
                         ]} />}
                     </div>

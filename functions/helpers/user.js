@@ -2,7 +2,7 @@ const admin = require("firebase-admin");
 
 const getUidByIdtoken = async (idToken) => {
     try {
-        if(!idToken) throw { message: 'Please provide user idToken', code: 'cancelled' }
+        if (!idToken) throw { message: 'Please provide user idToken', code: 'cancelled' }
         const userAuth = await admin.auth().verifyIdToken(idToken)
         return userAuth
     } catch (error) {
@@ -30,10 +30,10 @@ const getPermissions = async (idToken, { check = [] }) => {
         const roles = (await db.collection('roles').where('id', 'in', userRoles).get())?.docs?.map(doc => doc?.data())
         const roleNames = roles?.map(role => role?.roleName)
         const permissions = roles?.flatMap(role => role?.permissions)
-        console.log(roles,permissions)
+        console.log(roles, permissions)
         if (check?.length) {
-           const isPermitted = permissions.some(permitted => check.includes(permitted))
-           if(!isPermitted) throw { message: 'User is not authenticated', code: 'cancelled' }
+            const isPermitted = permissions.some(permitted => check.includes(permitted))
+            if (!isPermitted) throw { message: 'User is not authenticated', code: 'cancelled' }
         }
         return { roleNames, permissions }
     } catch (error) {
@@ -41,5 +41,37 @@ const getPermissions = async (idToken, { check = [] }) => {
         throw error
     }
 }
+const getUserGroups = async (idToken) => {
+
+    try {
+        const db = admin.firestore()
+        const { uid } = await getUidByIdtoken(idToken)
+        const groups = (await db.collection('groups').where('members', 'array-contains', uid).get()).docs.map(doc => doc.data())
+        const assets = Array.from(new Set(groups.flatMap(group => group?.assets)))
+
+        return { groups, assets }
+
+    } catch (error) {
+        throw error
+    }
+}
+
+// const getGroup = async (idToken) => {
+
+//     try {
+//         const db = admin.firestore()
+//         const { uid } = await getUidByIdtoken(idToken)
+//         const groups = (await db.collection('groups').where('members', 'array-contains', uid).get()).docs.map(doc => doc.data())
+//         const assets = Array.from(new Set(groups.flatMap(group => group?.assets)))
+
+//         return { groups, assets }
+
+//     } catch (error) {
+//         throw error
+//     }
+// }
+
+
 exports.getUser = getUser
 exports.getPermissions = getPermissions
+exports.getUserGroups = getUserGroups

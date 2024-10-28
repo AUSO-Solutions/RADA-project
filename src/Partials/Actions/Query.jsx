@@ -11,7 +11,7 @@ import { firebaseFunctions } from 'Services';
 import { updateSetupStatus } from './updateSetupStatus';
 
 
-export const Query = ({ title, header, setupType, id, onQuery = () => null }) => {
+export const Query = ({ title, header, setupType, id, pagelink, onQuery = () => null }) => {
     const screens = [
         { name: 'query', },
         { name: 'selectGroup' },
@@ -23,13 +23,17 @@ export const Query = ({ title, header, setupType, id, onQuery = () => null }) =>
 
 
     const send = async () => {
-        if (curr === screens.length - 2) {
-            await updateSetupStatus({ id, setupType, status: 'queried', queryMessage: formdata?.query })
-        } else {
-            setCurr(prev => prev + 1)
+        try {
+            if (curr === screens.length - 2) {
+                await updateSetupStatus({ id, setupType, status: 'queried', statusMessage: formdata?.query, subject: 'Queried WellTest Data', groups: formdata?.selectedGroups, users: formdata?.selectedUsers, title, pagelink })
+                onQuery()
+                setCurr(prev => prev + 1)
+            } else {
+                setCurr(prev => prev + 1)
+            }
+        } catch (error) {
+            console.log(error)
         }
-
-
     }
     return <div className='w-[500px] p-1 h-[600px]'>
         <Text size={24}>{header}</Text>
