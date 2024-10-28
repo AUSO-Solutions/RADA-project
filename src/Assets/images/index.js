@@ -9,5 +9,5 @@ export const images = {
     newcrossField: require('./newcrossfield.jpg'),
     setupIcon : require('./setup.png'),
     file : require('./file.png'),
-
+    newLogo: require('./radaNewLogoo.svg')
 }

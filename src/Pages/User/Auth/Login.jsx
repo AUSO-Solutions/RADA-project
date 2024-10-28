@@ -14,6 +14,7 @@ import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import { firebaseFunctions } from 'Services';
 import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
 import { updateStatus } from 'utils/updateUserStatus';
+import newLogoo from 'Assets/images/radaNewLogoo.svg'
 
 const UserLogin = () => {
 
@@ -41,86 +42,100 @@ const UserLogin = () => {
 
 
 
-            <Grid item className='flex justify-center-center' sx={{ backgroundImage: `url(${img})`, height: '100vh', backgroundSize: 'cover', backgroundPosition: 'top', backgroundRepeat: 'no-repeat' }} md={8}>
+            <Grid item className='flex justify-center items-center' sx={{ backgroundImage: `url(${img})`, height: '100vh', backgroundSize: 'cover', backgroundPosition: 'top', backgroundRepeat: 'no-repeat', }} md={12} >
                 {/* <img style={{ filter: 'drop-shadow(0.13rem 0.13rem  white)', width: '200px', height: '100px', }} src={images.logo} alt="" /> */}
-            </Grid>
-            <Grid item md={4}>
-                <RadaForm
-                    validationSchema={schema}
-                    btnClass={'w-[100%] '}
-                    className={'w-[500px] mx-auto text-[black] bg-[white] p-[50px] shadow border rounded-[5px]'}
-                    // #0274bd
-                    btnText={'Login'}
-                    // url={'login'}
-                    method={'post'}
-
-                    noToken
-                    onSubmit={async (data) => {
-                        try {
-                            dispatch(setLoadingScreen({ open: true }))
-                            const auth = getAuth()
-                            const { user } = await signInWithEmailAndPassword(auth, data?.email, data?.password)
-                            const details = await firebaseFunctions('getUserByUid', { uid: user?.uid })
-                            const token = (await user.getIdToken())
-                            const roles = details?.data?.roles?.map(role => role?.roleName)
-                            console.log(roles)
-                            dispatch(setUser({...details,token}))
-                            // if (!roles?.length) toast.error('Please request role assignment from admin')
+                <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+                    zIndex: 1
+                }}></div>
+                <Grid style={{ position: 'relative', zIndex: 2 }} >
+                    <RadaForm
+                        validationSchema={schema}
+                        btnClass={'w-[100%] '}
+                        className={'w-[500px] mx-auto text-[black] bg-[#ffffff]  p-[50px] shadow  rounded-[5px]'}
+                        // #0274bd
+                        // bg-[rgba(255, 255, 255, 0.5)]
+                        btnText={'Login'}
+                        // url={'login'}
+                        method={'post'}
+                        noToken
+                        onSubmit={async (data) => {
+                            try {
+                                dispatch(setLoadingScreen({ open: true }))
+                                const auth = getAuth()
+                                const { user } = await signInWithEmailAndPassword(auth, data?.email, data?.password)
+                                const details = await firebaseFunctions('getUserByUid', { uid: user?.uid })
+                                const token = (await user.getIdToken())
+                                const roles = details?.data?.roles?.map(role => role?.roleName)
+                                console.log(roles)
+                                dispatch(setUser({ ...details, token }))
+                                // if (!roles?.length) toast.error('Please request role assignment from admin')
                                 updateStatus("online")
-                            if (roles?.includes('Admin')) {
-                                navigate('/admin/users')
-                            } else {
-                                navigate('/users/fdc/daily')
-                            }
-                        
-                        } catch (error) {
-                            console.log(error?.message)
-                            toast.error(error?.code)
-                            if(error?.code==='auth/invalid-credential'){
-                                toast.error('Invalid credentials!')
-                            }
-                        } finally {
-                            dispatch(setLoadingScreen({ open: false }))
-                        }
-                    }}
-                    onSuccess={(res) => {
-                        // const user = (res?.data)
-                        // console.log(user)
-                        // dispatch(setUser(user))
-                        // navigate('/admin/users')
-                        // const role = res?.data?.roles[0]
-                        // const roles_login_paths = {
-                        //     "SUPER_ADMIN": "/admin/home",
-                        //     "FIELD_OPERATOR": "/data-form",
-                        //     "QUALITY_CONTROLLER": '/admin/home'
-                        // }
-                        // 
+                                if (roles?.includes('Admin')) {
+                                    navigate('/admin/users')
+                                } else {
+                                    navigate('/users/fdc/daily')
+                                }
 
-                        // s01MdWjT
-                    }}
-                 
-                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', width: '700px', gap: '20px' }}
-                >
+                            } catch (error) {
+                                console.log(error?.message)
+                                toast.error(error?.code)
+                                if (error?.code === 'auth/invalid-credential') {
+                                    toast.error('Invalid credentials!')
+                                }
+                            } finally {
+                                dispatch(setLoadingScreen({ open: false }))
+                            }
+                        }}
+                        onSuccess={(res) => {
+                            // const user = (res?.data)
+                            // console.log(user)
+                            // dispatch(setUser(user))
+                            // navigate('/admin/users')
+                            // const role = res?.data?.roles[0]
+                            // const roles_login_paths = {
+                            //     "SUPER_ADMIN": "/admin/home",
+                            //     "FIELD_OPERATOR": "/data-form",
+                            //     "QUALITY_CONTROLLER": '/admin/home'
+                            // }
+                            // 
 
-                    <Text className={'w-[100%] !flex justify-center'} size={'20px'} weight={'600'}>
-                        Sign in
-                    </Text>
-                    <Input label={'Email'} className='!bg-light' name='email' placeholder={"johndoe@gmail.com"} />
-                    <Input label={'Password'} className='!bg-light' name='password' placeholder={'password'} />
-                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: '300px' }} >
-                        {/* <Button width={'100px'} shadow onClick={() => window.location.pathname.includes('152') ? navigate('/152/register') : window.location.pathname.includes('147') ? navigate('/147/register') : navigate('/24/register')} >
+                            // s01MdWjT
+                        }}
+
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', width: '700px', gap: '20px' }}
+                    >
+                        <div className='mb-10' style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }} >
+                            <img height={150} width={150} src={newLogoo} />
+                            <Text size={'28px'} weight={800} >RADA AMS</Text>
+                            <Text size={'16px'} weight={600} >ASSET MANAGEMENT SOLUTION</Text>
+                        </div>
+                        <Text className={'w-[100%] !flex justify-center'} size={'20px'} weight={'600'}>
+                            Sign in
+                        </Text>
+                        <Input label={'Email'} className='!bg-light' name='email' placeholder={"johndoe@gmail.com"} />
+                        <Input label={'Password'} className='!bg-light' name='password' placeholder={'password'} />
+                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '300px' }} >
+                            {/* <Button width={'100px'} shadow onClick={() => window.location.pathname.includes('152') ? navigate('/152/register') : window.location.pathname.includes('147') ? navigate('/147/register') : navigate('/24/register')} >
                     Register
                 </Button> */}
-                        {/* <Button width={'100px'} shadow onClick={() => login({ email: '', "password": "" })} >
+                            {/* <Button width={'100px'} shadow onClick={() => login({ email: '', "password": "" })} >
                     Login
                 </Button> */}
-                    </div>
+                        </div>
 
-                    <Link to={'/forgot-password'} className='flex cursor-pointer'>
-                        Forget password?
-                    </Link>
-                </RadaForm>
+                        <Link to={'/forgot-password'} className='flex cursor-pointer'>
+                            Forget password?
+                        </Link>
+                    </RadaForm>
+                </Grid>
             </Grid>
+
         </Grid>
     )
 }

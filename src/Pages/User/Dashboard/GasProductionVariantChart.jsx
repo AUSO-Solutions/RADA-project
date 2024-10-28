@@ -93,19 +93,31 @@ const GasProductionVariantChart = ({ data: data_ }) => {
                     tickLength: 10, // Ensure tick marks are visible
                 },
                 ticks: {
-                    callback: function (value, index, ticks) {
-                        // This will split the label text into multiple lines by inserting a line break.
+                    callback: function (value, index) {
                         const label = data.labels[index];
+                        const maxCharsPerLine = 10;
                         const words = label.split(' ');
-                        const newLabel = words.join('\n'); // Break each word to a new line
-                        return newLabel;
+                        let lines = [];
+                        let line = '';
+    
+                        words.forEach((word) => {
+                            if (line.length + word.length <= maxCharsPerLine) {
+                                line += word + ' ';
+                            } else {
+                                lines.push(line.trim());
+                                line = word + ' ';
+                            }
+                        });
+                        lines.push(line.trim());
+    
+                        return lines;
                     },
                     maxRotation: 0, // Horizontal labels
                     minRotation: 0,
                     autoSkip: false, // Ensure no labels are skipped
                     maxTicksLimit: 6, // Display exactly 6 labels
                     font: {
-                        size: 8, // Adjust font size for better fit
+                        size: 12, // Adjust font size for better fit
                     },
                 },
                 stacked:true,
