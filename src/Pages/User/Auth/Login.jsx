@@ -111,7 +111,7 @@ const UserLogin = () => {
                         style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', width: '700px', gap: '20px' }}
                     >
                         <div className='mb-10' style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }} >
-                            <img height={150} width={150} src={newLogoo} />
+                            <img height={150} width={150} alt='logo' src={newLogoo} />
                             <Text size={'28px'} weight={800} >RADA AMS</Text>
                             <Text size={'16px'} weight={600} >ASSET MANAGEMENT SOLUTION</Text>
                         </div>

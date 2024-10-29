@@ -20,7 +20,7 @@ const BroadCast = ({ title = "", steps = [], stepsComponents = [], onBroadcast =
        return()=>{
         dispatch(clearFormdata())
        }
-    }, [])
+    }, [dispatch])
     const back = () => {
         setActiveStep(prev => {
             if (prev !== 0) return prev - 1
