@@ -42,7 +42,8 @@ const MERDataTestResults = () => {
                                 <SelectGroup />,
                                 <Attachment details={`${file?.asset} MER Data Result ${dayjs(file?.startDate).format('MMM/YYYY')}`} />,
                                 <BroadCastSuccessfull details={`${file?.asset} MER Data Result ${dayjs(file?.startDate).format('MMM/YYYY')}`} />]} />
-                    }))
+                    })),
+                    hidden:(file)=>  user.permitted.broadcastData && file?.status === 'approved'
                 },
                 {
                     name: 'Delete', onClick: (file) => deleteSetup({ id: file?.id, setupType: 'merResult' }), to: () => null,

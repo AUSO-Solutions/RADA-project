@@ -184,8 +184,8 @@ export default function MERDataTable() {
                         <RadaSwitch label="Edit Table" labelPlacement="left" />
                     </div>
                     <div className='flex justify-end py-2 items-center gap-3'>
-                        <ImprortResult onProceed={getFileData} />
-                        <div className='flex gap-2' >
+                        {!isEdit && <ImprortResult onProceed={getFileData} />}
+                        {isEdit && <div className='flex gap-2' >
                             {<Actions merResult={merResult} title={title} actions={[
                                 { name: 'Query Result', onClick: () => dispatch(openModal({ component: <Query /> })) },
                                 { name: 'Approve', onClick: () => dispatch(openModal({ component: <Approve /> })) },
@@ -199,10 +199,10 @@ export default function MERDataTable() {
                                     }
                                 }
                             ]} />}
-                        </div>
-                        <div className='border border-[#00A3FF] px-3 py-1 rounded-md cursor-pointer' onClick={() => setShowChart(true)} >
+                        </div>}
+                       {isEdit && <div className='border border-[#00A3FF] px-3 py-1 rounded-md cursor-pointer' onClick={() => setShowChart(true)} >
                             <Chart color='#00A3FF' />
-                        </div>
+                        </div>}
                     </div>
                 </div>
                 <div className='border rounded flex gap-3 p-2 my-2'>
