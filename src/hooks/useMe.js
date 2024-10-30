@@ -18,6 +18,7 @@ export const useMe = () => {
         permissions: [],
         permitted: {
             "viewDashboard": false,
+            "broadcastData":false,
             "createAndeditDailyOperation": false,
             "createAndeditDailyOperationSETUP": false,
             "createWellTestSchedule": false,

@@ -23,6 +23,7 @@ import Actions from 'Partials/Actions/Actions';
 import { Query } from 'Partials/Actions/Query';
 import { Approve } from 'Partials/Actions/Approve';
 import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
+import { useMe } from 'hooks/useMe';
 
 const TableInput = (props) => {
     return <input className='p-1 text-center w-[80px] h-[100%] border outline-none ' required {...props} />
@@ -47,6 +48,8 @@ export default function WellTestDataTable() {
     // const { search } = useLocation()
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    const
+        { user } = useMe()
     const [loading] = useState(false)
     const { pathname, search } = useLocation()
     const [wellTest, setWellTest] = useState({})
@@ -158,22 +161,24 @@ export default function WellTestDataTable() {
                 <Text display={'block'} className={'w-full'} align={'center'}> {createWellTitle(wellTest)}</Text>
                 <div className='flex justify-end py-2 items-center gap-3'>
                     <div className='flex gap-2' >
-                        {isEdit && <Actions actions={[
+                        {isEdit && (user.permitted.approveData || user.permitted.queryData) && <Actions actions={[
                             {
                                 name: 'Query Result',
                                 onClick: () => dispatch(openModal({
                                     component: <Query header={'Query Well Test Data Result'} id={wellTest?.id}
                                         setupType={'wellTestResult'} title={createWellTitle(wellTest)} pagelink={pathname + search} />
-                                }))
+                                })),
+                                permitted :  user.permitted.queryData
                             },
                             {
                                 name: 'Approve', onClick: () => dispatch(openModal({
                                     component: <Approve header={'Approve Well Test Data Result'} id={wellTest?.id}
                                         setupType={'wellTestResult'} pagelink={pathname + search} title={createWellTitle(wellTest)} />
-                                }))
+                                })),
+                                permitted :  user.permitted.approveData
                             },
 
-                        ]} />}
+                        ].filter(x=>x.permitted)} />}
                     </div>
                     <div className='border border-[#00A3FF] px-3 py-1 rounded-md' >
                         <Setting2 color='#00A3FF' />
@@ -275,9 +280,11 @@ export default function WellTestDataTable() {
                 </Table>
             </TableContainer>
 
-            <div className='flex justify-end py-2'>
-                <Button width={120} type='submit' >Commit</Button>
-            </div>
+           {
+            user.permitted.createAndeditWellTestResult &&  <div className='flex justify-end py-2'>
+            <Button width={120} type='submit' >Commit</Button>
+        </div>
+           }
         </form>
     );
 }

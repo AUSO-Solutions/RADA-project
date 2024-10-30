@@ -72,30 +72,30 @@ export default function MERDataTable() {
     }, [res])
 
     useEffect(() => { if (isEdit) setMerResult(res2); setTitle(res2?.title) }, [res2, isEdit])
-    useEffect(() => {
-        const chokeFields = ['gross', 'oilRate', 'bsw', 'gor', 'gasRate', 'sand', 'fthp']
-        const extraFields = ['drawdown', 'api', 'mer']
-        setMerResult(prev => {
-            let updates = {}
-            const productionStrings = Object.values(prev.merResultData || {})
-            productionStrings.forEach(productionString => {
-                const randomExtraValues = Object.fromEntries(extraFields.map(extraField => ([extraField, genRandomNumber()])))
-                updates[productionString?.productionString] = {
-                    ...productionString,
-                    ...randomExtraValues,
-                    chokes: productionString.chokes.map(choke => {
-                        const randomChokeValues = Object.fromEntries(chokeFields.map(chokeField => ([chokeField, genRandomNumber()])))
-                        return { ...choke, ...randomChokeValues }
-                    })
-                }
-            })
-            return {
-                ...prev,
-                merResultData: updates
-            }
-        })
+    // useEffect(() => {
+    //     const chokeFields = ['gross', 'oilRate', 'bsw', 'gor', 'gasRate', 'sand', 'fthp']
+    //     const extraFields = ['drawdown', 'api', 'mer']
+    //     setMerResult(prev => {
+    //         let updates = {}
+    //         const productionStrings = Object.values(prev.merResultData || {})
+    //         productionStrings.forEach(productionString => {
+    //             const randomExtraValues = Object.fromEntries(extraFields.map(extraField => ([extraField, genRandomNumber()])))
+    //             updates[productionString?.productionString] = {
+    //                 ...productionString,
+    //                 ...randomExtraValues,
+    //                 chokes: productionString.chokes.map(choke => {
+    //                     const randomChokeValues = Object.fromEntries(chokeFields.map(chokeField => ([chokeField, genRandomNumber()])))
+    //                     return { ...choke, ...randomChokeValues }
+    //                 })
+    //             }
+    //         })
+    //         return {
+    //             ...prev,
+    //             merResultData: updates
+    //         }
+    //     })
 
-    }, [res, res2])
+    // }, [res, res2])
 
     const save = async (title) => {
         if (!title) {

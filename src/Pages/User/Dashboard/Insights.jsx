@@ -66,10 +66,10 @@ const Insights = () => {
                     <Tooltip />
                     <Legend verticalAlign="bottom" align="center" height={36} />
                     {
-                        data.flowstations?.map(flowstation => <Bar dataKey={flowstation} stackId="a" fill={colors[flowstation]} />)
+                        data.flowstations?.sort((a,b)=>a?.localeCompare(b))?.map(flowstation => <Bar dataKey={flowstation} stackId="a" fill={colors[flowstation]} />)
                     }
 
-                    <ReferenceLine alwaysShow y={parseInt(targetForthisMonth.oil)} label={`Prod Oil Target (${parseInt(targetForthisMonth.oil)})`} stroke="grey" strokeDasharray="4 4" strokeWidth={2}  />
+                    <ReferenceLine alwaysShow y={parseInt(targetForthisMonth.oil)} label={`Prod Oil Target (${parseInt(targetForthisMonth.oil)})`} stroke="grey" strokeDasharray="4 4" strokeWidth={2} />
 
 
                 </BarChart>
@@ -101,9 +101,10 @@ const Insights = () => {
             // </div>
         );
     };
-    const getStatus = (target, actual) => {
+    const getStatus = (target, actual, reverse = false) => {
         const percent = ((Math.abs(parseFloat(target) - parseFloat(actual)) / parseFloat(actual)) * 100).toFixed(1)
-        if (parseFloat(target) > parseFloat(actual)) {
+        const check = reverse ? parseFloat(target) < parseFloat(actual) : parseFloat(target) > parseFloat(actual)
+        if (check) {
             return {
                 color: 'red',
                 status: 'negative',
@@ -125,7 +126,7 @@ const Insights = () => {
                 <DashboardCard variance={getStatus(data?.oilTarget / 1000, data?.oilProduced / 1000)} targetVal={`Target: ${parseFloat(data?.oilTarget / 1000 || 0)?.toFixed(1)} kbbls`} img={assets} title={"Oil Produced"} num={`${parseFloat(data?.oilProduced / 1000 || 0)?.toFixed(1)} Kbbls`} />
                 <DashboardCard variance={getStatus(data?.gasProducedTarget, data?.gasProduced)} targetVal={`Target: ${parseFloat(data?.gasProducedTarget || 0)?.toFixed(3)} MMscf`} img={grossprodgas} title={"Gas Produced"} num={`${parseFloat(data?.gasProduced || 0)?.toFixed(3)} MMscf`} />
                 <DashboardCard variance={getStatus(data?.exportGasTarget, data?.gasExported)} targetVal={`Target: ${parseFloat(data?.exportGasTarget || 0)?.toFixed(3)} MMscf`} img={gasexported} title={"Gas Exported"} num={`${parseFloat(data?.gasExported || 0)?.toFixed(3)} MMscf`} />
-                <DashboardCard variance={getStatus(data?.gasFlaredTarget, data?.gasFlared)} targetVal={`${parseFloat(data?.gasFlaredTarget || 0)?.toFixed(3)} MMscf`} img={gasflared} title={"Gas Flared"} num={`${parseFloat(data?.gasFlared || 0)?.toFixed(3)} MMscf`} />
+                <DashboardCard variance={getStatus(data?.gasFlaredTarget, data?.gasFlared, true)} targetVal={`${parseFloat(data?.gasFlaredTarget || 0)?.toFixed(3)} MMscf`} img={gasflared} title={"Gas Flared"} num={`${parseFloat(data?.gasFlared || 0)?.toFixed(3)} MMscf`} />
                 <DashboardCard variance={getStatus(data?.gasUtilizedTarget, data?.gasUtilized)} targetVal={`${parseFloat(data?.gasUtilizedTarget || 0)?.toFixed(3)} MMscf`} img={gasutilized} title={"Gas Utilized"} num={`${parseFloat(data?.gasUtilized || 0)?.toFixed(3)} MMscf`} />
             </div>
 

@@ -8,18 +8,22 @@ import Text from 'Components/Text'
 import { useAssetByName } from 'hooks/useAssetByName'
 import { store } from 'Store'
 import { firebaseFunctions } from 'Services'
-import { closeModal } from 'Store/slices/modalSlice'
+import { closeModal, openModal } from 'Store/slices/modalSlice'
 import RadioSelect from '../RadioSelect'
 import { toast } from 'react-toastify'
 import { camelize, updateFlowstation, updateFlowstationReading } from './helper'
 // import { useFetch } from 'hooks/useFetch'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import Files from 'Partials/Files'
 import dayjs from 'dayjs'
 import Setup from 'Partials/setup'
 import { setLoadingScreen } from 'Store/slices/loadingScreenSlice'
 import { useGetSetups } from 'hooks/useSetups'
 import { useMe } from 'hooks/useMe'
+// import { Query } from 'Partials/Actions/Query'
+import { createWellTitle } from 'utils'
+import { Approve } from 'Partials/Actions/Approve'
+import SetupStatus from 'Partials/SetupStatus'
 // import BroadCast from 'Partials/BroadCast'
 // import SelectGroup from 'Partials/BroadCast/SelectGroup'
 // import Attachment from 'Partials/BroadCast/Attachment'
@@ -293,14 +297,35 @@ const SaveAs = () => {
   )
 }
 
+
+// {
+//   isEdit && (user.permitted.approveData || user.permitted.queryData) && <Actions actions={[
+//     {
+//       name: 'Query Result',
+//       onClick: () => dispatch(openModal({
+//         component: <Query header={'Query Well Test Data Result'} id={wellTest?.id}
+//           setupType={'wellTestResult'} title={createWellTitle(wellTest)} pagelink={pathname + search} />
+//       })),
+//       permitted: user.permitted.queryData
+//     },
+    // {
+    //   name: 'Approve', onClick: () => dispatch(openModal({
+    //     component: <Approve header={'Approve Well Test Data Result'} id={wellTest?.id}
+    //       setupType={'wellTestResult'} pagelink={pathname + search} title={createWellTitle(wellTest)} />
+    //   })),
+    //   permitted: user.permitted.approveData
+    // },
+
+//   ].filter(x => x.permitted)} />
+// }
+
 const Existing = ({ onSelect = () => null }) => {
   const [, setSearchParams] = useSearchParams()
   const { setups: data } = useGetSetups("volumeMeasurement")
+  const {search,pathname} = useLocation()
 
   const dispatch = useDispatch()
   const { user } = useMe()
-
-
   return (
     <div className=" flex flex-wrap gap-4 m-5 ">
       <Files files={data} actions={[
@@ -314,11 +339,22 @@ const Existing = ({ onSelect = () => null }) => {
               return prev
             })
           }, to: () => null,
-          permitted: user.permitted.createAndeditDailyOperationSETUP
+          hidden: ()=>user.permitted.createAndeditDailyOperationSETUP
         },
-
-        { name: 'Delete', to: (file) => ``, permitted: user.permitted.createAndeditDailyOperationSETUP },
-      ].filter(x => x.permitted)} name={(file) => `${file.title || "No title"}/${file?.asset}/${file.fluidType}/${dayjs(file.created).format('MMM-YYYY')}`} />
+        // {
+        //   name: 'Approve Setup',
+        //   onClick: (file) => dispatch(openModal({
+        //     component: <Approve header={'Approve Volume measuresent setup'} id={file?.id}
+        //       setupType={'volumeMeasurement'} title={createWellTitle(file)} pagelink={pathname + search} />
+        //   })),
+        //   permitted: user.permitted.approveData,
+        //   to:(file)=>null
+        // },
+        // { name: 'Delete', to: (file) => ``, permitted: user.permitted.createAndeditDailyOperationSETUP },
+        
+      ]} 
+      bottomRight={(file) => <SetupStatus  setup={file}/>}
+      name={(file) => `${file.title || "No title"}/${file?.asset}/${file.fluidType}/${dayjs(file.created).format('MMM-YYYY')}`} />
     </div>
   )
 }

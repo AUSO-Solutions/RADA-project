@@ -12,7 +12,8 @@
 // ]
 export const permissions = {
 
-    viewDashboard:'View Dashboard',
+    viewDashboard: 'View Dashboard',
+    broadcastData: 'Broadcast Data',
 
     createAndeditDailyOperation: 'Create & Edit Daily Production and Operation Report',
     createAndeditDailyOperationSETUP: 'Create & Edit Daily Production and Operation SETUP',

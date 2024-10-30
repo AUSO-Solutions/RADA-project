@@ -119,8 +119,6 @@ const deleteSetup = onCall(async (request) => {
 
     try {
         let { data } = request;
-
-
         const { id, setupType } = data;
         if (!id) {
             throw { message: 'Provide a setup id', code: 'cancelled' };

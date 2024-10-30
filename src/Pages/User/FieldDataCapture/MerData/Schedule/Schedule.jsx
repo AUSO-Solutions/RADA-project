@@ -22,6 +22,8 @@ import Attachment from "Partials/BroadCast/Attachment"
 import BroadCastSuccessfull from "Partials/BroadCast/BroadCastSuccessfull"
 import { useGetSetups } from "hooks/useSetups"
 import { useMe } from "hooks/useMe"
+import SetupStatus from "Partials/SetupStatus"
+import { deleteSetup } from "utils/deleteSetup"
 
 
 
@@ -97,8 +99,13 @@ const Exists = () => {
     return (
         <div className=" flex flex-wrap gap-4 m-5 ">
             <Files name={(file) => `${createWellTitle(file, 'MER Data Schedule')}`} files={data} actions={[
-                { name: 'Remark', to: (file) => `/users/fdc/mer-data/schedule-table?id=${file?.id}`, permitted: user.permitted.remarkMERschedule },
-                { name: 'MER DATA Result', to: (file) => `/users/fdc/mer-data/mer-data-result-table?scheduleId=${file?.id}`, permitted: user.permitted.createAndeditMERdata  },
+                { name: 'Remark', to: (file) => `/users/fdc/mer-data/schedule-table?id=${file?.id}` },
+                {
+                    name: 'MER DATA Result',
+                    to: (file) => `/users/fdc/mer-data/mer-data-result-table?scheduleId=${file?.id}`,
+                    // permitted: user.permitted.createAndeditMERdata
+                    hidden: (file) => user.permitted.createAndeditMERdata && file?.status === 'approved'
+                },
                 {
                     name: 'Broadcast', to: (file) => null, onClick: (file) => dispatch(openModal({
                         title: '',
@@ -113,10 +120,16 @@ const Exists = () => {
                                 <SelectGroup />,
                                 <Attachment details={`${file?.asset} MER Data ${dayjs(file?.startDate).format('MMM/YYYY')}`} />,
                                 <BroadCastSuccessfull details={`${file?.asset} MER Data ${dayjs(file?.startDate).format('MMM/YYYY')}`} />]} />
-                    }))
+                    })),
+                    hidden: (file) => user.permitted.broadcastData && file?.status === 'approved'
                 },
 
-            ]} />
+                {
+                    name: 'Delete', onClick: (file) => deleteSetup({ id: file?.id, setupType: 'merSchedule' }), to: () => null,
+                    hidden: (file) => user.permitted.remarkMERschedule && file?.status !== 'approved'
+                },
+
+            ]} bottomRight={(file) => <SetupStatus setup={file} />} />
         </div>
     )
 }
@@ -127,7 +140,7 @@ const Schedule = () => {
     useEffect(() => {
         dispatch(clearSetup())
     }, [dispatch])
-    const {user} = useMe()
+    const { user } = useMe()
     const save = async () => {
         try {
             dispatch(setLoadingScreen({ open: true }))

@@ -15,12 +15,21 @@ import { useFetch } from 'hooks/useFetch';
 import dayjs from 'dayjs';
 import { firebaseFunctions } from 'Services';
 import { toast } from 'react-toastify';
+import { useMe } from 'hooks/useMe';
+import Actions from 'Partials/Actions/Actions';
+import { Query } from 'Partials/Actions/Query';
+import { Approve } from 'Partials/Actions/Approve';
+import { openModal } from 'Store/slices/modalSlice';
+import { useDispatch } from 'react-redux';
+import { createWellTitle } from 'utils';
+import { Box } from '@mui/material';
 
 
 export default function MERScheduleTable() {
 
-
-    const { search } = useLocation()
+    const { user } = useMe()
+    const { pathname, search } = useLocation()
+    const dispatch = useDispatch()
     const [loading, setLoading] = React.useState(false)
     const [merSchedule, setMerSchedule] = React.useState({})
     const id = React.useMemo(() => new URLSearchParams(search).get('id'), [search])
@@ -39,6 +48,8 @@ export default function MERScheduleTable() {
         }
     }
 
+
+
     return (
         < div className='px-3'>
             <div className='flex justify-between items-center'>
@@ -49,6 +60,24 @@ export default function MERScheduleTable() {
                     </Link>
                     <RadaSwitch label="Edit Table" labelPlacement="left" />
                 </div>
+                {(user.permitted.approveData || user.permitted.queryData) && <Actions actions={[
+                    {
+                        name: 'Query Result',
+                        onClick: () => dispatch(openModal({
+                            component: <Query header={'Query MER Schedule'} id={merSchedule?.id}
+                                setupType={'merSchedule'} title={createWellTitle(merSchedule)} pagelink={pathname + search} />
+                        })),
+                        permitted: user.permitted.queryData
+                    },
+                    {
+                        name: 'Approve', onClick: () => dispatch(openModal({
+                            component: <Approve header={'Approve MER Schedule'} id={merSchedule?.id}
+                                setupType={'merSchedule'} pagelink={pathname + search} title={createWellTitle(merSchedule)} />
+                        })),
+                        permitted: user.permitted.approveData
+                    },
+
+                ].filter(x => x.permitted)} />}
             </div>
             <TableContainer className={`m-auto border ${tableStyles.borderedMuiTable}`}>
                 <Table sx={{ minWidth: 700 }} >
@@ -69,32 +98,56 @@ export default function MERScheduleTable() {
                             </TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center">Production string</TableCell>
 
-                            <TableCell style={{ fontWeight: '600' }} colSpan={1} align="center">Remarks</TableCell>
+                        
                             <TableCell style={{ fontWeight: '600' }} align="center">Test Choke (/64")</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center">On Program</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center">Start Date</TableCell>
                             <TableCell style={{ fontWeight: '600' }} align="center">End Date</TableCell>
                             {/* <TableCell style={{ fontWeight: '600' }} align="center">Stabilization Duration (Hrs)</TableCell> */}
-                            <TableCell style={{ fontWeight: '600' }} align="center">Test Duration (Hrs)</TableCell>
+                            <TableCell style={{ fontWeight: '600' }} align="center">Test Duration (Hrs)</TableCell>    <TableCell style={{ fontWeight: '600' }} colSpan={1} align="center">Remarks</TableCell>
                         </TableRow>
                     </TableHead>
 
                     {
                         Object.values(merSchedule?.merScheduleData || {}).map((mer, i) => {
+                            const merBorder = (i) => mer?.chokes?.length !== i + 1 ? '.1px lightgrey solid' : ''
                             return <>
                                 <TableBody className='flex w-fit'>
                                     <TableRow >
-                                        <TableCell rowSpan={mer?.chokes?.length + 1} align="center">
+                                        <TableCell align="center">
                                             {i + 1}
 
                                         </TableCell>
-                                        <TableCell rowSpan={mer?.chokes?.length + 1} align="center">
+                                        <TableCell align="center">
                                             {mer?.reservoir}
                                         </TableCell>
-                                        <TableCell rowSpan={mer?.chokes?.length + 1} align="center">
+                                        <TableCell align="center">
                                             {mer?.productionString}
                                         </TableCell>
-                                        <TableCell rowSpan={mer?.chokes?.length + 1} colSpan={1} align="center">
+
+                                        <TableCell align="center" className='flex flex-col h-[100%] !p-0'>
+                                            {mer?.chokes?.map((choke, i) => <Box className='py-2 !h-[33%]' borderBottom={merBorder(i)} >{choke?.chokeSize}</Box> || '-')}
+                                        </TableCell>
+                                        <TableCell align="center" className='flex flex-col !p-0' bgcolor={mer?.onProgram ? '#A7EF6F' : "#FF5252"}  >
+                                            <Box className='!h-[100%]' >{mer?.onProgram ? 'YES' : 'NO'}</Box>
+                                        </TableCell>
+
+                                        <TableCell align="center" className='flex flex-col h-[100%] !p-0'>
+                                            {mer?.chokes?.map((choke, i) => <Box className='py-2 !h-[33%]' borderBottom={merBorder(i)} >{dayjs(choke?.startDate).format('DD MMM YYYY. hh:mmA')}</Box> || '-')}
+                                        </TableCell>
+                                        <TableCell align="center" className='flex flex-col h-[100%] !p-0'>
+                                            {mer?.chokes?.map((choke, i) => <Box className='py-2 !h-[33%]' borderBottom={merBorder(i)} >{dayjs(choke?.endDate).format('DD MMM YYYY. hh:mmA')}</Box> || '-')}
+                                        </TableCell>
+                                        <TableCell align="center" className='flex flex-col h-[100%] !p-0'>
+                                            {mer?.chokes?.map((choke, i) => <Box className='py-2 !h-[33%]' borderBottom={merBorder(i)} >{dayjs(choke?.endDate).diff(choke?.startDate, 'hours')}</Box> || '-')}
+                                        </TableCell>
+
+                                         {/* <TableCell bgcolor={mer?.isSelected ? '#A7EF6F' : "#FF5252"} align="center">{mer?.isSelected ? 'YES' : 'NO'}</TableCell>
+                                                <TableCell align="center">{dayjs(choke?.startDate).format('DD MMM YYYY. hh:mmA')}</TableCell>
+                                                <TableCell align="center">{dayjs(choke?.endDate).format('DD MMM YYYY. hh:mmA')}</TableCell>
+                                                <TableCell align="center">{dayjs(choke?.endDate).diff(choke?.startDate, 'hours')}</TableCell> */}
+                                    {/* </TableRow> */}
+                                        <TableCell colSpan={1} align="center">
 
                                             <textarea className='border outline-none px-2 !h-[100%] py-1' defaultValue={mer?.remark || 'No Remark'} onChange={(e) => {
                                                 setMerSchedule(prev => ({
@@ -109,16 +162,8 @@ export default function MERScheduleTable() {
                                         </TableCell>
                                     </TableRow>
 
-                                    {
-                                        mer?.chokes?.map(choke => <TableRow >
-                                            <TableCell align="center">  {choke?.chokeSize || '-'}  </TableCell>
-                                            <TableCell bgcolor={mer?.isSelected ? '#A7EF6F' : "#FF5252"} align="center">{mer?.isSelected ? 'YES' : 'NO'}</TableCell>
-                                            <TableCell align="center">{dayjs(choke?.startDate).format('DD MMM YYYY. hh:mmA')}</TableCell>
-                                            <TableCell align="center">{dayjs(choke?.endDate).format('DD MMM YYYY. hh:mmA')}</TableCell>
-                                            <TableCell align="center">{dayjs(choke?.endDate).diff(choke?.startDate, 'hours')}</TableCell>
-                                        </TableRow>)
-                                    }
-                                </TableBody>
+                               
+                                </TableBody >
                             </>
                         })
                     }
@@ -129,9 +174,11 @@ export default function MERScheduleTable() {
                 </Table>
             </TableContainer>
 
-            <div className='flex justify-end py-1'>
-                <Button loading={loading} onClick={save} width={120} >Save</Button>
-            </div>
-        </div>
+            {
+                user.permitted.remarkMERschedule && <div className='flex justify-end py-1'>
+                    <Button loading={loading} onClick={save} width={120} >Save</Button>
+                </div>
+            }
+        </div >
     );
 }

@@ -24,6 +24,8 @@ import SelectGroup from "Partials/BroadCast/SelectGroup"
 import Attachment from "Partials/BroadCast/Attachment"
 import { useGetSetups } from "hooks/useSetups"
 import { useMe } from "hooks/useMe"
+import SetupStatus from "Partials/SetupStatus"
+import { deleteSetup } from "utils/deleteSetup"
 
 const SelectAsset = () => {
 
@@ -318,8 +320,13 @@ const Exists = () => {
         <div className=" flex flex-wrap gap-4 m-5 ">
 
             <Files name={(file) => `${createWellTitle(file, 'Well Test Schedule')}`} files={data} actions={[
-                { name: 'Remark Schedule', to: (file) => `/users/fdc/well-test-data/schedule-table?id=${file?.id}`, permitted: user.permitted.remarkWellTestSchedule },
-                { name: 'Well Test Result', to: (file) => `/users/fdc/well-test-data/well-test-table?id=${file?.id}`,permitted: user.permitted.createAndeditWellTestResult  },
+                { name: 'Remark', to: (file) => `/users/fdc/well-test-data/schedule-table?id=${file?.id}`, permitted: true },
+                {
+                    name: 'CreateWell Test',
+                    to: (file) => `/users/fdc/well-test-data/well-test-table?id=${file?.id}`,
+                    // permitted: user.permitted.createAndeditWellTestResult,
+                    hidden: (file) => user.permitted.createAndeditWellTestResult && file?.status === 'approved'
+                },
                 {
                     name: 'Broadcast', to: (file) => null, onClick: (file) => dispatch(openModal({
                         title: '',
@@ -335,9 +342,15 @@ const Exists = () => {
                                 <Attachment details={`${file?.asset} Well Test ${dayjs(file?.startDate).format('MMM/YYYY')}`} />,
                                 <BroadCastSuccessfull details={`${file?.asset} Well Test ${dayjs(file?.startDate).format('MMM/YYYY')}`} />]} />
                     })),
-                    permitted:true
+                    // permitted: user.permitted.broadcastData,
+                    hidden: (file) => user.permitted.broadcastData && file?.status === 'approved'
                 },
-            ].filter(x=>x?.permitted)} />
+                {
+                    name: 'Delete', onClick: (file) => deleteSetup({ id: file?.id, setupType: 'wellTestSchedule' }), to: () => null,
+                    hidden: (file) => user.permitted.remarkWellTestSchedule && file?.status !== 'approved'
+                },
+            ]}
+                bottomRight={(file) => <SetupStatus setup={file} />} />
 
         </div>
     )
@@ -346,7 +359,7 @@ const Exists = () => {
 const Schedule = () => {
     // const setupData = useSelector(state => state.setup)
     const [loading] = useState(false)
-    const {user} =  useMe()
+    const { user } = useMe()
     const dispatch = useDispatch()
     useEffect(() => {
         dispatch(clearSetup())

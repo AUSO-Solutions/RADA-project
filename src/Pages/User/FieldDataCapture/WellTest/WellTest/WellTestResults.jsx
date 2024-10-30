@@ -17,6 +17,8 @@ import { useAssetNames } from 'hooks/useAssetNames'
 import { useNavigate } from 'react-router-dom'
 import { useGetSetups } from 'hooks/useSetups'
 import { useMe } from 'hooks/useMe'
+import SetupStatus from 'Partials/SetupStatus'
+import { deleteSetup } from 'utils/deleteSetup'
 
 const WellTestResults = () => {
     const setupData = useSelector(state => state?.setup)
@@ -29,11 +31,16 @@ const WellTestResults = () => {
         <div className=" flex flex-wrap gap-4 m-5 ">
 
             <Files files={data} actions={[
-                { name: 'Edit', to: (file) => `/users/fdc/well-test-data/well-test-table?id=${file?.id}&scheduleId=${file?.wellTestScheduleId}`, permitted: user.permitted.remarkWellTestSchedule },
+                { name: user.permitted.remarkWellTestSchedule ? 'Edit' : 'View', to: (file) => `/users/fdc/well-test-data/well-test-table?id=${file?.id}&scheduleId=${file?.wellTestScheduleId}`, permitted: true },
                 // { name: 'Create IPSC', to: (file) => `/users/fdc/well-test-data?page=ipsc&autoOPenSetupModal=yes` },
-                { name: 'Create IPSC', to: (file) => `/users/fdc/well-test-data?page=ipsc&well-test-result-id=${file?.id}&autoOpenSetupModal=yes`, permitted: user.permitted.createAndeditIPSC },
+                { name: 'Create IPSC', to: (file) => `/users/fdc/well-test-data?page=ipsc&well-test-result-id=${file?.id}&autoOpenSetupModal=yes`,
+                //  permitted: user.permitted.createAndeditIPSC ,
+                    hidden: (file) => user.permitted.createAndeditIPSC && file?.status === 'approved'
+                },
                 {
-                    name: 'Broadcast', to: (file) => null, onClick: (file) => dispatch(openModal({
+                    name: 'Broadcast',
+                    to: (file) => null,
+                    onClick: (file) => dispatch(openModal({
                         title: '',
                         component: <BroadCast
                             link={`/users/fdc/well-test-data?page=ipsc&well-test-result-id=${file?.id}`}
@@ -47,9 +54,15 @@ const WellTestResults = () => {
                                 <Attachment details={`${file?.asset} Well Test Result ${dayjs(file?.startDate).format('MMM/YYYY')}`} />,
                                 <BroadCastSuccessfull details={`${file?.asset} Well Test Result ${dayjs(file?.startDate).format('MMM/YYYY')}`} />]} />
                     })),
-                    permitted: true
+                    hidden: (file) => user.permitted.broadcastData && file?.status === 'approved'
                 },
-            ].filter(x => x.permitted)} name={(file) => `${createWellTitle(file, 'Well Test Result')}`}
+                {
+                    name: 'Delete', onClick: (file) => deleteSetup({ id: file?.id, setupType: 'wellTestResult' }), to: () => null,
+                    hidden: (file) => user.permitted.createAndeditWellTestResult && file?.status !== 'approved'
+                },
+            ]}
+                name={(file) => `${createWellTitle(file, 'Well Test Result')}`}
+                bottomRight={(file) => <SetupStatus setup={file} />}
 
             />
         </div>
