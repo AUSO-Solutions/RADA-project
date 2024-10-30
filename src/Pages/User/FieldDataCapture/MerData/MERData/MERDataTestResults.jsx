@@ -1,5 +1,6 @@
 
 import dayjs from 'dayjs'
+import { useMe } from 'hooks/useMe'
 import { useGetSetups } from 'hooks/useSetups'
 import BroadCast from 'Partials/BroadCast'
 import Attachment from 'Partials/BroadCast/Attachment'
@@ -10,11 +11,13 @@ import React from 'react'
 import { useDispatch } from 'react-redux'
 import { openModal } from 'Store/slices/modalSlice'
 import { createWellTitle } from 'utils'
+import { deleteSetup } from 'utils/deleteSetup'
 
 
 const MERDataTestResults = () => {
     const { setups: data } = useGetSetups("merResult")
     const dispatch = useDispatch();
+    const {user}  =  useMe()
 
     return (
         <div className=" flex flex-wrap gap-4 m-5 ">
@@ -24,7 +27,7 @@ const MERDataTestResults = () => {
             <Files files={data} actions={[
                 { name: 'Edit', to: (file) => `/users/fdc/mer-data/mer-data-result-table?id=${file?.id}` },
                 // { name: 'Create IPSC', to: (file) => `/users/fdc/well-test-data?page=ipsc&well-test-result-id=${file?.id}&autoOpenSetupModal=yes` },
-                { name: 'Delete', to: (file) => `` },
+                // { name: 'Delete', to: (file) => `` },
                 {
                     name: 'Broadcast', to: (file) => null, onClick: (file) => dispatch(openModal({
                         title: '',
@@ -40,6 +43,10 @@ const MERDataTestResults = () => {
                                 <Attachment details={`${file?.asset} MER Data Result ${dayjs(file?.startDate).format('MMM/YYYY')}`} />,
                                 <BroadCastSuccessfull details={`${file?.asset} MER Data Result ${dayjs(file?.startDate).format('MMM/YYYY')}`} />]} />
                     }))
+                },
+                {
+                    name: 'Delete', onClick: (file) => deleteSetup({ id: file?.id, setupType: 'merResult' }), to: () => null,
+                    hidden: (file) => user.permitted.createAndeditMERdata && file?.status !== 'approved'
                 },
             ]} name={(file) => `${createWellTitle(file, 'Mer Data')}`} />
 

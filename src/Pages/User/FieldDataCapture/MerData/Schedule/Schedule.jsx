@@ -124,10 +124,7 @@ const Exists = () => {
                     hidden: (file) => user.permitted.broadcastData && file?.status === 'approved'
                 },
 
-                {
-                    name: 'Delete', onClick: (file) => deleteSetup({ id: file?.id, setupType: 'merSchedule' }), to: () => null,
-                    hidden: (file) => user.permitted.remarkMERschedule && file?.status !== 'approved'
-                },
+               
 
             ]} bottomRight={(file) => <SetupStatus setup={file} />} />
         </div>

@@ -48,8 +48,6 @@ export default function MERScheduleTable() {
         }
     }
 
-
-
     return (
         < div className='px-3'>
             <div className='flex justify-between items-center'>
@@ -142,11 +140,6 @@ export default function MERScheduleTable() {
                                             {mer?.chokes?.map((choke, i) => <Box className='py-2 !h-[33%]' borderBottom={merBorder(i)} >{dayjs(choke?.endDate).diff(choke?.startDate, 'hours')}</Box> || '-')}
                                         </TableCell>
 
-                                         {/* <TableCell bgcolor={mer?.isSelected ? '#A7EF6F' : "#FF5252"} align="center">{mer?.isSelected ? 'YES' : 'NO'}</TableCell>
-                                                <TableCell align="center">{dayjs(choke?.startDate).format('DD MMM YYYY. hh:mmA')}</TableCell>
-                                                <TableCell align="center">{dayjs(choke?.endDate).format('DD MMM YYYY. hh:mmA')}</TableCell>
-                                                <TableCell align="center">{dayjs(choke?.endDate).diff(choke?.startDate, 'hours')}</TableCell> */}
-                                    {/* </TableRow> */}
                                         <TableCell colSpan={1} align="center">
 
                                             <textarea className='border outline-none px-2 !h-[100%] py-1' defaultValue={mer?.remark || 'No Remark'} onChange={(e) => {
