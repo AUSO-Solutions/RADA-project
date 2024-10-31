@@ -7,6 +7,7 @@ import Attachment from 'Partials/BroadCast/Attachment'
 import BroadCastSuccessfull from 'Partials/BroadCast/BroadCastSuccessfull'
 import SelectGroup from 'Partials/BroadCast/SelectGroup'
 import Files from 'Partials/Files'
+import SetupStatus from 'Partials/SetupStatus'
 import React from 'react'
 import { useDispatch } from 'react-redux'
 import { openModal } from 'Store/slices/modalSlice'
@@ -49,7 +50,7 @@ const MERDataTestResults = () => {
                     name: 'Delete', onClick: (file) => deleteSetup({ id: file?.id, setupType: 'merResult' }), to: () => null,
                     hidden: (file) => user.permitted.createAndeditMERdata && file?.status !== 'approved'
                 },
-            ]} name={(file) => `${createWellTitle(file, 'Mer Data')}`} />
+            ]} name={(file) => `${createWellTitle(file, 'Mer Data')}`}  bottomRight={(file) => <SetupStatus setup={file} />}/>
 
         </div>
     )

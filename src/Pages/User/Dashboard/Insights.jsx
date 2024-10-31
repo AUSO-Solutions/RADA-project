@@ -102,7 +102,7 @@ const Insights = () => {
         );
     };
     const getStatus = (target, actual, reverse = false) => {
-        const percent = ((Math.abs(parseFloat(target) - parseFloat(actual)) / parseFloat(actual)) * 100).toFixed(1)
+        const percent = ((Math.abs(parseFloat(target) - parseFloat(actual)) / parseFloat(target)) * 100).toFixed(1)
         const check = reverse ? parseFloat(target) < parseFloat(actual) : parseFloat(target) > parseFloat(actual)
         if (check) {
             return {
