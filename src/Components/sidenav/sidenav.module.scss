@@ -16,11 +16,13 @@
     height: 10vh;
     background-color: #ffffff;
     display: flex;
-    // flex-direction: column;
+    flex-direction: column;
     width: 90%;
-    // justify-self: center;
-    align-items: center;
+    justify-content: center;
+    align-items: start;
     margin: auto;
+    cursor: pointer;
+    // padding-bottom: 10px;
     padding-left: 30px;
     border-bottom: 2px solid rgba(226, 226, 226, 1);
     // .lowerBorder {

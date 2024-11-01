@@ -8,8 +8,8 @@ import { Link } from "react-router-dom";
 
 import { images } from "Assets";
 import Text from "Components/Text";
-import { Bubble, Edit, FolderOpen, Home, User, People,Lock, Book, Driver, Setting2 } from 'iconsax-react';
-
+import { Bubble, Edit, FolderOpen, Home, User, People, Lock, Book, Driver, Setting2 } from 'iconsax-react';
+import newLogoo from 'Assets/images/radaNewLogoo.svg'
 // import { ROLES } from "./roles.ts";
 
 
@@ -26,27 +26,27 @@ function Sidenav() {
     admin: [
       {
         name: "Users",
-        icon: <User variant={sidebar.parent === "users"?"Bold":"Linear"} />,
+        icon: <User variant={sidebar.parent === "users" ? "Bold" : "Linear"} />,
         path: "/admin/users",
       },
       {
         name: "Groups",
-        icon: <People variant={sidebar.parent === "groups"?"Bold":"Linear"} />,
+        icon: <People variant={sidebar.parent === "groups" ? "Bold" : "Linear"} />,
         path: "/admin/groups",
       },
       {
         name: "Roles and Permissions",
-        icon: <Lock variant={sidebar.parent === "roles-and-permissions"?"Bold":"Linear"}/>,
+        icon: <Lock variant={sidebar.parent === "roles-and-permissions" ? "Bold" : "Linear"} />,
         path: "/admin/roles-and-permissions",
       },
       {
         name: "Manage Assets",
-        icon: <Driver  variant={sidebar.parent === "manage-assets"?"Bold":"Linear"}/>,
+        icon: <Driver variant={sidebar.parent === "manage-assets" ? "Bold" : "Linear"} />,
         path: "/admin/manage-assets",
       },
       {
         name: "Activity Log",
-        icon: <Book variant={sidebar.parent === "activity-log"?"Bold":"Linear"} />,
+        icon: <Book variant={sidebar.parent === "activity-log" ? "Bold" : "Linear"} />,
         path: "/admin/activity-log",
       }
     ],
@@ -54,12 +54,12 @@ function Sidenav() {
 
       {
         name: "Dashboard",
-        icon: <Home variant={sidebar.parent === "dashboard"?"Bold":"Linear"}/>,
+        icon: <Home variant={sidebar.parent === "dashboard" ? "Bold" : "Linear"} />,
         path: "/users/dashboard",
       },
       {
         name: "Field Data Capture",
-        icon: <Edit variant={sidebar.parent === "fdc"?"Bold":"Linear"}/>,
+        icon: <Edit variant={sidebar.parent === "fdc" ? "Bold" : "Linear"} />,
         path: "/users/fdc/daily",
         children: [
           {
@@ -86,17 +86,17 @@ function Sidenav() {
       },
       {
         name: "Reports",
-        icon: <FolderOpen variant={sidebar.parent === "reports"?"Bold":"Linear"}/>,
+        icon: <FolderOpen variant={sidebar.parent === "reports" ? "Bold" : "Linear"} />,
         path: "/users/reports",
       },
       {
         name: "Database",
-        icon: <Bubble variant={sidebar.parent === "database"?"Bold":"Linear"} />,
+        icon: <Bubble variant={sidebar.parent === "database" ? "Bold" : "Linear"} />,
         path: "/users/database",
       },
       {
         name: "Settings",
-        icon: <Setting2 variant={sidebar.parent === "settings"?"Bold":"Linear"} />,
+        icon: <Setting2 variant={sidebar.parent === "settings" ? "Bold" : "Linear"} />,
         path: "/users/settings",
       },
 
@@ -107,19 +107,21 @@ function Sidenav() {
   return (
     <div className={styles.body}>
       <div className={styles.sidebarHeader}>
-        <Link href="/lasg-eb-admin">
+        <Link className="flex items-center" href="/lasg-eb-admin">
           <img
-            src={images.logo}
+            src={newLogoo}
             alt={"logo"}
             width={"150px"}
             height={"150px"}
-            className="xs:w-[100px] sm:w-[120px] md:w-[100px] lg:w-[100px]"
+            className="xs:w-[100px] sm:w-[120px] md:w-[100px] lg:w-[70px]"
           />
+          <Text  weight={700} size={'16px'} >RADA AMS</Text>
         </Link>
-        <div className={styles.lowerBorder}>
-
-        </div>
+        {/* <div className={styles.lowerBorder}>
+        </div> */}
+         {/* <Text weight={700} size={'12px'} >ASSET MANAGEMENT SOLUTION</Text> */}
       </div>
+      
       <div className={styles.barsContainer}>
         {paths[sidebar.module].map((x) => {
           return (
