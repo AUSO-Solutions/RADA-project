@@ -6,9 +6,10 @@ import { Link } from "react-router-dom";
 // import Img152 from '../../Assets/images/newcross152.svg'
 // import { useSelector } from "react-redux";
 
-import { images } from "Assets";
+import { images, permissions } from "Assets";
 import Text from "Components/Text";
-import { Bubble, Edit, FolderOpen, Home, User, People, Lock, Book, Driver, Setting2 } from 'iconsax-react';
+import { Bubble, Edit, FolderOpen, Home, User, People,  Lock, Book, Driver, Setting2 } from 'iconsax-react';
+import { useMe } from "hooks/useMe";
 import newLogoo from 'Assets/images/radaNewLogoo.svg'
 // import { ROLES } from "./roles.ts";
 
@@ -22,6 +23,8 @@ function Sidenav() {
     // console.log(paths_)
     return { module: paths_[1], parent: paths_[2], child: paths_[3]?.toLowerCase() }
   }, [pathname])
+  const { user } = useMe()
+  // console.log(user)
   const paths = useMemo(() => ({
     admin: [
       {
@@ -56,6 +59,7 @@ function Sidenav() {
         name: "Dashboard",
         icon: <Home variant={sidebar.parent === "dashboard" ? "Bold" : "Linear"} />,
         path: "/users/dashboard",
+        permitted: permissions.viewDashboard
       },
       {
         name: "Field Data Capture",
@@ -66,6 +70,7 @@ function Sidenav() {
             name: "Daily Production/Operations Report ",
             icon: <GrGroup />,
             path: "/users/fdc/daily",
+
           },
           {
             name: "MER Data",
@@ -123,7 +128,7 @@ function Sidenav() {
       </div>
       
       <div className={styles.barsContainer}>
-        {paths[sidebar.module].map((x) => {
+        {paths[sidebar.module].filter(x => x?.permission ? user.permissions.includes(x.permission) : true).map((x) => {
           return (
             <>
               <div
@@ -138,7 +143,7 @@ function Sidenav() {
                 onClick={() => navigate(x.path)}
               >
                 <span style={{ fontSize: '20px', display: 'block', paddingRight: '15px', }}> {x.icon} </span>
-                <Text weight={600} className={styles.barText}>{x.name} </Text>
+                <Text weight={600} className={styles.barText}>{x?.name} </Text>
               </div>
               {
                 x?.children?.length && x.path.includes(sidebar.parent)

@@ -1,13 +1,16 @@
 import { colors } from 'Assets'
 import { Button } from 'Components'
 import Text from 'Components/Text'
+import { useMe } from 'hooks/useMe'
 import React from 'react'
-import { useSelector } from 'react-redux'
+// import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { logout_ } from 'utils/logout'
 
 const ProfilePopup = ({onEdit=()=>null}) => {
-    const user = useSelector(state => state.auth?.user?.data)
+    // const user = useSelector(state => state.auth?.user?.data)
+    const {user} = useMe()
+
 const navigate = useNavigate()
     return (
     

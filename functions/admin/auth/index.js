@@ -210,6 +210,7 @@ const getUserByUid = onCall(async ({ data }) => {
     try {
         if (uid) {
             const db = admin.firestore()
+
             const res = await db.collection('users').doc(uid).get()
             const groups = (await db.collection('groups').where('members', 'array-contains', uid).get())?.docs?.map(doc => doc?.data()) || []
             const data = res.data()

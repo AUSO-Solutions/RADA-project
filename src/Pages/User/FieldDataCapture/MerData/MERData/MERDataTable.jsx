@@ -19,11 +19,14 @@ import { closeModal, openModal } from 'Store/slices/modalSlice';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import Actions from 'Partials/Actions/Actions';
-import { createWellTitle, genRandomNumber, getIntersectionBetweenTwoLines } from 'utils';
+import { createWellTitle, getIntersectionBetweenTwoLines } from 'utils';
 import { Approve } from 'Partials/Actions/Approve';
 import { Query } from 'Partials/Actions/Query';
 import ExtractWellTest from './ExtractWellTest';
 import MerChart from './MerChart';
+import ImprortResult from './ImportResult';
+import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
+import { useMe } from 'hooks/useMe';
 
 
 const SaveAs = ({ defaultValue, onSave = () => null, loading }) => {
@@ -46,6 +49,7 @@ const TableInput = ({ type = 'number', onChange = () => null, ...props }) => {
 
 export default function MERDataTable() {
 
+    const { user } = useMe()
     const { search } = useLocation()
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -59,8 +63,9 @@ export default function MERDataTable() {
     const [title, setTitle] = useState('')
     const isEdit = useMemo(() => { return !scheduleId }, [scheduleId])
     const [showChart, setShowChart] = useState(false)
+
     useEffect(() => {
-        console.log(res)
+        // console.log(res)
         if (res) setMerResult({
             title: res?.title,
             merResultData: res?.merScheduleData,
@@ -72,30 +77,30 @@ export default function MERDataTable() {
     }, [res])
 
     useEffect(() => { if (isEdit) setMerResult(res2); setTitle(res2?.title) }, [res2, isEdit])
-    useEffect(() => {
-        const chokeFields = ['gross', 'oilRate', 'bsw', 'gor', 'gasRate', 'sand', 'fthp']
-        const extraFields = ['drawdown', 'api', 'mer']
-        setMerResult(prev => {
-            let updates = {}
-            const productionStrings = Object.values(prev.merResultData || {})
-            productionStrings.forEach(productionString => {
-                const randomExtraValues = Object.fromEntries(extraFields.map(extraField => ([extraField, genRandomNumber()])))
-                updates[productionString?.productionString] = {
-                    ...productionString,
-                    ...randomExtraValues,
-                    chokes: productionString.chokes.map(choke => {
-                        const randomChokeValues = Object.fromEntries(chokeFields.map(chokeField => ([chokeField, genRandomNumber()])))
-                        return { ...choke, ...randomChokeValues }
-                    })
-                }
-            })
-            return {
-                ...prev,
-                merResultData: updates
-            }
-        })
+    // useEffect(() => {
+    //     const chokeFields = ['gross', 'oilRate', 'bsw', 'gor', 'gasRate', 'sand', 'fthp']
+    //     const extraFields = ['drawdown', 'api', 'mer']
+    //     setMerResult(prev => {
+    //         let updates = {}
+    //         const productionStrings = Object.values(prev.merResultData || {})
+    //         productionStrings.forEach(productionString => {
+    //             const randomExtraValues = Object.fromEntries(extraFields.map(extraField => ([extraField, genRandomNumber()])))
+    //             updates[productionString?.productionString] = {
+    //                 ...productionString,
+    //                 // ...randomExtraValues,
+    //                 chokes: productionString.chokes.map(choke => {
+    //                     const randomChokeValues = Object.fromEntries(chokeFields.map(chokeField => ([chokeField, genRandomNumber()])))
+    //                     return { ...choke, ...randomChokeValues }
+    //                 })
+    //             }
+    //         })
+    //         return {
+    //             ...prev,
+    //             merResultData: updates
+    //         }
+    //     })
 
-    }, [res, res2])
+    // }, [res, res2])
 
     const save = async (title) => {
         if (!title) {
@@ -104,6 +109,7 @@ export default function MERDataTable() {
         }
         setLoading(true)
         try {
+            dispatch(setLoadingScreen({ open: true }))
             if (isEdit) {
                 const payload = { ...merResult, title, setupType: 'merResult', id, }
                 console.log(payload)
@@ -113,25 +119,45 @@ export default function MERDataTable() {
                 console.log(payload)
                 const { data } = await firebaseFunctions('createSetup', payload)
                 navigate(`/users/fdc/mer-data/mer-data-result-table?id=${data?.id}`)
-
             }
             dispatch(closeModal())
             toast.success('Data saved to MER test result')
         } catch (error) {
             console.log(error)
         } finally {
-            setLoading(false)
+            dispatch(setLoadingScreen({ open: false }))
         }
     }
 
     const getMer = useCallback((mer) => {
-
         const chokePoints = mer?.chokes?.map(choke => ({ x: choke?.oilRate, y: choke?.chokeSize }))
         const fthpPoints = mer?.chokes?.map(choke => ({ x: choke?.oilRate, y: choke?.fthp }))
         const intersection = getIntersectionBetweenTwoLines(chokePoints, fthpPoints)
         return (intersection.x.toFixed(3))
-
     }, [])
+
+    const getFileData = (data) => {
+        const newResult = {}
+        for (const string in merResult?.merResultData) {
+            const stringData = merResult?.merResultData[string];
+            const thisData = data?.filter(item => item?.productionString === string)
+            // const chokeFields = ['gross', 'oilRate', 'bsw', 'gor', 'gasRate', 'sand', 'fthp']
+            newResult[string] = {
+                ...stringData, chokes: thisData?.map(item => {
+                    delete item.productionString
+                    return {
+                        ...stringData?.chokes?.find(choke => choke?.chokeSize === item?.chokeSize),
+                        ...item
+                    }
+                })
+            }
+        }
+        setMerResult(prev => {
+            return { ...prev, merResultData: newResult }
+        })
+        toast.success('Data imported successfully!')
+        dispatch(closeModal())
+    }
 
     return (
         <>
@@ -150,7 +176,8 @@ export default function MERDataTable() {
                         <RadaSwitch label="Edit Table" labelPlacement="left" />
                     </div>
                     <div className='flex justify-end py-2 items-center gap-3'>
-                        <div className='flex gap-2' >
+                        {!isEdit && <ImprortResult onProceed={getFileData} />}
+                        {isEdit && <div className='flex gap-2' >
                             {<Actions merResult={merResult} title={title} actions={[
                                 { name: 'Query Result', onClick: () => dispatch(openModal({ component: <Query /> })) },
                                 { name: 'Approve', onClick: () => dispatch(openModal({ component: <Approve /> })) },
@@ -164,30 +191,14 @@ export default function MERDataTable() {
                                     }
                                 }
                             ]} />}
-                        </div>
-                        <div className='border border-[#00A3FF] px-3 py-1 rounded-md cursor-pointer' onClick={() => setShowChart(true)} >
+                        </div>}
+                        {isEdit && <div className='border border-[#00A3FF] px-3 py-1 rounded-md cursor-pointer' onClick={() => setShowChart(true)} >
                             <Chart color='#00A3FF' />
-                        </div>
+                        </div>}
                     </div>
                 </div>
                 <div className='border rounded flex gap-3 p-2 my-2'>
-                    {/* <Text>  MER schedule: {merResult?.title}</Text>
-                                            />
-                                        }))
-                                    }
-                                }
-                            ]} />}
-                        </div>
-                        <div className='border border-[#00A3FF] px-3 py-1 rounded-md' onClick={() => setShowChart(true)} >
-                            <Setting2 color='#00A3FF' />
-                        </div>
-                    </div>
-                </div>
-                <div className='border rounded flex gap-3 p-2 my-2'>
-                    {/* <Text>  MER schedule: {merResult?.title}</Text>
-                <Text>Asset: {merResult?.asset}</Text> */}
                     {createWellTitle(merResult)}
-                    {/* <Text>Field: {merResult?.field}</Text>  */}
                 </div>
                 <TableContainer className={`m-auto border  pr-5 ${tableStyles.borderedMuiTable}`}>
                     <Table sx={{ minWidth: 700 }} >
@@ -265,80 +276,6 @@ export default function MERDataTable() {
                                     handleChange('chokes', newChokeValues)
                                 }
 
-
-                                // return <TableBody className={tableStyles.tableBody}>
-                                //     <TableRow key={mer?.productionString}>
-                                //         <TableCell rowSpan={4} align="center">
-                                //             {mer?.reservoir}
-                                //         </TableCell>
-                                //         <TableCell rowSpan={4} align="center">
-                                //             {mer?.productionString}
-                                //         </TableCell>
-                                //         <TableCell align="center" className={tableStyles.cellNoPadding}>
-                                //             {chokes?.map((choke, i) =>
-                                //                 (<div className={`border-b py-2`}>{choke?.chokeSize}</div>)
-                                //             )}
-                                //         </TableCell>
-                                //         <TableCell align="center" className={tableStyles.cellNoPadding}>
-                                //             {chokes?.map((choke, i) =>
-                                //                 (<div className={`border-b py-2`}>{dayjs(choke?.startDate).format("DD/MMM/YYYY")}</div>)
-                                //             )}
-                                //         </TableCell>
-                                //         <TableCell align="center" className={tableStyles.cellNoPadding}>
-                                //             {chokes?.map((choke, i) =>
-                                //                 (<div className={`border-b py-2`}>{dayjs(choke?.endDate).format("DD/MMM/YYYY")}</div>)
-                                //             )}
-                                //         </TableCell>
-                                //         <TableCell align="center" className={tableStyles.cellNoPadding}>
-                                //             {chokes?.map((choke, i) =>
-                                //                 (<div className={`border-b py-2`}>{dayjs(choke?.endDate).diff(choke?.startDate, "hours")}</div>)
-                                //             )}
-                                //         </TableCell>
-                                //         <TableCell align="center" className={`${tableStyles.cellNoPadding} `}>
-                                //             {chokes?.map((choke, i) =>
-                                //             (<div className='border-b'>
-                                //                 <TableInput onChange={(e) => handleChokeItemChange(e, i)} name='gross' defaultValue={choke?.gross} />
-                                //             </div>)
-                                //             )}
-                                //         </TableCell>
-                                //         <TableCell align="center" className={`${tableStyles.cellNoPadding} `}>
-                                //             {chokes?.map((choke, i) =>
-                                //             (<div className='border-b'>
-                                //                 <TableInput onChange={(e) => handleChokeItemChange(e, i)} name='oilRate' defaultValue={choke?.oilRate} />
-                                //             </div>)
-                                //             )}
-                                //         </TableCell>
-                                //         <TableCell align="center" className={`${tableStyles.cellNoPadding} `}>
-                                //             {chokes?.map((choke, i) =>
-                                //             (<div className='border-b'>
-                                //                 <TableInput onChange={(e) => handleChokeItemChange(e, i)} name='bsw' defaultValue={choke?.bsw} />
-                                //             </div>)
-                                //             )}
-                                //         </TableCell>
-                                //         <TableCell align="center" className={`${tableStyles.cellNoPadding} `}>
-                                //             <TableInput onChange={(e) => handleChokeItemChange(e, i)} name='initialGor' defaultValue={mer?.initialGor} />
-                                //         </TableCell>
-                                //         <TableCell align="center" className={`${tableStyles.cellNoPadding} `}>
-                                //             {chokes?.map((choke, i) =>
-                                //             (<div className='border-b'>
-                                //                 <TableInput onChange={(e) => handleChokeItemChange(e, i)} name='gor' defaultValue={choke?.gor} />
-                                //             </div>)
-                                //             )}
-                                //         </TableCell>
-                                //         <TableCell align="center" className={`${tableStyles.cellNoPadding} `}>
-                                //             {chokes?.map((choke, i) =>
-                                //             (<div className='border-b'>
-                                //                 <TableInput onChange={(e) => handleChokeItemChange(e, i)} name='gasRate' defaultValue={choke?.gasRate} />
-                                //             </div>)
-                                //             )}
-                                //         </TableCell>
-                                //         <TableCell align="center" className={`${tableStyles.cellNoPadding} `}>
-                                //             {chokes?.map((choke, i) =>
-                                //             (<div className='border-b'>
-                                //                 <TableInput onChange={(e) => handleChokeItemChange(e, i)} name='sand' defaultValue={choke?.sand} />
-                                //             </div>)
-                                //             )}
-                                //         </TableCell>
                                 return <TableBody className={tableStyles.tableBody}>
                                     <TableRow key={mer?.productionString}>
                                         <TableCell rowSpan={4} align="center">
@@ -362,7 +299,7 @@ export default function MERDataTable() {
                                         <TableCell align="center" className={tableStyles.cellNoPadding}>
                                             {chokes?.map((choke, i) =>
                                             (<div className={`border-b py-2`}>
-                                                <TableInput onChange={(e) => handleChokeItemChange(e, i)} type='date' name={'endDate'}  defaultValue={dayjs(choke?.endDate).format("YYYY-MM-DD")} />
+                                                <TableInput onChange={(e) => handleChokeItemChange(e, i)} type='date' name={'endDate'} defaultValue={dayjs(choke?.endDate).format("YYYY-MM-DD")} />
                                             </div>)
                                             )}
                                         </TableCell>
@@ -449,38 +386,7 @@ export default function MERDataTable() {
                                         <TableCell align="center" >
                                             <TableInput type='number' className='p-3 outline-none h-full' onChange={handleExtraChange} name='mer' value={getMer(mer)} />
                                         </TableCell>
-                                        {/* <TableCell align="center" className={`${tableStyles.cellNoPadding} `}>
-                                            <TableInput onChange={(e) => handleChokeItemChange(e, i)} name='initialReservoirPressure' defaultValue={mer?.initialReservoirPressure} />
-                                        </TableCell>
-                                        <TableCell align="center" className={`${tableStyles.cellNoPadding} `}>
-                                            <TableInput onChange={(e) => handleChokeItemChange(e, i)} name='currentReservoirPressure' defaultValue={mer?.currentReservoirPressure} />
-                                        </TableCell>
-                                        <TableCell align="center" className={`${tableStyles.cellNoPadding} `}>
-                                            <TableInput onChange={(e) => handleChokeItemChange(e, i)} name='fbhp' defaultValue={mer?.fbhp} />
-                                        </TableCell>
-                                        <TableCell align="center" className={`${tableStyles.cellNoPadding} `}>
-                                            {chokes?.map((choke, i) =>
-                                            (<div className='border-b'>
-                                                <TableInput onChange={(e) => handleChokeItemChange(e, i)} name='fthp' defaultValue={choke?.fthp} />
-                                            </div>)
-                                            )}
-                                        </TableCell> */}
-                                        {/* <TableCell align="center" >
-                                            <TableInput type='number' className='p-3 outline-none h-full' onChange={handleExtraChange} name='drawdown' defaultValue={mer?.currentReservoirPressure - mer?.fbhp} />
-                                        </TableCell>
-                                        <TableCell align="center" >
-                                            <TableInput type='number' className='p-3 outline-none h-full' onChange={handleExtraChange} name='api' defaultValue={mer?.api} />
-                                        </TableCell>
-                                        <TableCell align="center" >
-                                            <select className='p-3 outline-none h-full' onChange={handleExtraChange} name='fluidType' defaultValue={mer?.fluidType} >
-                                                <option value=""></option>
-                                                <option value="Oil">Oil</option>
-                                                <option value="Gas">Gas</option>
-                                            </select>
-                                        </TableCell> */}
-                                        {/* <TableCell align="center" >
-                                            <TableInput type='number' className='p-3 outline-none h-full' onChange={handleExtraChange} name='mer' defaultValue={mer?.mer} />
-                                        </TableCell> */}
+
 
                                         <TableCell align="center" sx={{ minWidth: '200px' }} colSpan={3}>
                                             <textarea defaultValue={mer.remark} onChange={handleExtraChange} name='remark' className='border outline-none p-1' rows={2} cols={20}>
@@ -493,10 +399,13 @@ export default function MERDataTable() {
 
                     </Table>
                 </TableContainer>
-                <div className='flex justify-end py-2'>
-                    <Button width={120} type='submit' >Commit</Button>
-                </div>
+                {user.permitted.createAndeditMERdata &&
+                    <div className='flex justify-end py-2'>
+                        <Button width={120} type='submit' >Commit</Button>
+                    </div>
+
+                }
             </form>
-            </>
-                );
+        </>
+    );
 }

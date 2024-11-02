@@ -16,7 +16,7 @@ const ConfirmModal = ({
 }) => {
     const dispatch = useDispatch()
     return (
-        <div >
+        <div className='!min-w-[300px]'>
             {
                 message && <div className='text-center'>
                     <Text size={'16px'} weight={'400'} className={'mb-4 text-center '} block>{message}</Text>

@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { useAssetNames } from "hooks/useAssetNames"
 import { clearSetup, setSetupData, setWholeSetup } from "Store/slices/setupSlice"
 import CheckInput from "Components/Input/CheckInput"
-import {  Input } from "Components"
+import { Input } from "Components"
 import { useCallback, useEffect, useState } from "react"
 import styles from '../welltest.module.scss'
 import Text from "Components/Text"
@@ -23,6 +23,9 @@ import BroadCastSuccessfull from "Partials/BroadCast/BroadCastSuccessfull"
 import SelectGroup from "Partials/BroadCast/SelectGroup"
 import Attachment from "Partials/BroadCast/Attachment"
 import { useGetSetups } from "hooks/useSetups"
+import { useMe } from "hooks/useMe"
+import SetupStatus from "Partials/SetupStatus"
+import { deleteSetup } from "utils/deleteSetup"
 
 const SelectAsset = () => {
 
@@ -67,7 +70,7 @@ const SelectAsset = () => {
             onChange={(e) => onSelectAsset(e)}
         />
         <ImportWellTestSchedule />
-      
+
         <br />  Flow stations ({setupData?.flowstations?.length}) <br />
         {
             asset?.flowStations?.map(flowStation => <> <CheckInput checked={setupData?.flowstations?.includes(flowStation)} onChange={(e) => selectFlowstations(e, flowStation)} label={flowStation} /> </>)
@@ -250,44 +253,44 @@ const Preview = () => {
                 <tbody>
                     {
                         Object.values(setupData?.wellsData || {})?.filter(item => setupData?.flowstations?.includes(item?.flowstation))
-                        .sort((a, b) => {
-                            return ((setupData?.productionStrings?.includes(b?.productionString) ? 1 : 0) - (setupData?.productionStrings?.includes(a?.productionString) ? 1 : 0))
-                        }).map((wellData, i) => {
-                            const col = wellData
-                            // if (!col?.isSelected) return null
-                            return (
-                                <tr className="border-b " >
-                                    <td className="w-full" >
-                                        {col?.productionString}
-                                    </td>
-                                    <td>
-                                        {col?.reservoir}
-                                    </td>
-                                    <td>
-                                        <input type="text" className={styles.inputBox} defaultValue={col?.fluidType} disabled />
-                                    </td>
-                                    <td>
-                                        <input type="number" className={styles.inputBox} defaultValue={col?.noOfChokes} disabled />
-                                    </td>
-                                    <td  >
-                                        <input type="number" className={styles.inputBox} defaultValue={col?.chokeSize} disabled />
-                                    </td>
-                                    <td>
-                                        <input type="datetime-local" className={styles.inputBox} defaultValue={col?.startDate} disabled />
-                                    </td>
-                                    <td>
-                                        <input type="datetime-local" className={styles.inputBox} defaultValue={col?.endDate} disabled />
-                                    </td>
-                                    <td>
-                                        <input className={styles.inputBox} type='number' value={dayjs(col?.endDate).diff(col?.startDate, 'hours')} disabled />
-                                    </td>
-                                    <td>
-                                        <input className={styles.inputBox} type='number' defaultValue={col?.stabilizatonDuration} disabled />
-                                    </td>
-                                </tr>
+                            .sort((a, b) => {
+                                return ((setupData?.productionStrings?.includes(b?.productionString) ? 1 : 0) - (setupData?.productionStrings?.includes(a?.productionString) ? 1 : 0))
+                            }).map((wellData, i) => {
+                                const col = wellData
+                                // if (!col?.isSelected) return null
+                                return (
+                                    <tr className="border-b " >
+                                        <td className="w-full" >
+                                            {col?.productionString}
+                                        </td>
+                                        <td>
+                                            {col?.reservoir}
+                                        </td>
+                                        <td>
+                                            <input type="text" className={styles.inputBox} defaultValue={col?.fluidType} disabled />
+                                        </td>
+                                        <td>
+                                            <input type="number" className={styles.inputBox} defaultValue={col?.noOfChokes} disabled />
+                                        </td>
+                                        <td  >
+                                            <input type="number" className={styles.inputBox} defaultValue={col?.chokeSize} disabled />
+                                        </td>
+                                        <td>
+                                            <input type="datetime-local" className={styles.inputBox} defaultValue={col?.startDate} disabled />
+                                        </td>
+                                        <td>
+                                            <input type="datetime-local" className={styles.inputBox} defaultValue={col?.endDate} disabled />
+                                        </td>
+                                        <td>
+                                            <input className={styles.inputBox} type='number' value={dayjs(col?.endDate).diff(col?.startDate, 'hours')} disabled />
+                                        </td>
+                                        <td>
+                                            <input className={styles.inputBox} type='number' defaultValue={col?.stabilizatonDuration} disabled />
+                                        </td>
+                                    </tr>
+                                )
+                            }
                             )
-                        }
-                        )
                     }
 
                 </tbody>
@@ -311,13 +314,19 @@ const Exists = () => {
 
     const { setups: data } = useGetSetups("wellTestSchedule")
     const dispatch = useDispatch()
+    const { user } = useMe()
 
     return (
         <div className=" flex flex-wrap gap-4 m-5 ">
 
             <Files name={(file) => `${createWellTitle(file, 'Well Test Schedule')}`} files={data} actions={[
-                { name: 'Remark Schedule', to: (file) => `/users/fdc/well-test-data/schedule-table?id=${file?.id}` },
-                { name: 'Well Test Result', to: (file) => `/users/fdc/well-test-data/well-test-table?id=${file?.id}` },
+                { name: 'View', to: (file) => `/users/fdc/well-test-data/schedule-table?id=${file?.id}`, permitted: true },
+                {
+                    name: 'CreateWell Test',
+                    to: (file) => `/users/fdc/well-test-data/well-test-table?id=${file?.id}`,
+                    // permitted: user.permitted.createAndeditWellTestResult,
+                    hidden: (file) => user.permitted.createAndeditWellTestResult && file?.status === 'approved'
+                },
                 {
                     name: 'Broadcast', to: (file) => null, onClick: (file) => dispatch(openModal({
                         title: '',
@@ -332,9 +341,16 @@ const Exists = () => {
                                 <SelectGroup />,
                                 <Attachment details={`${file?.asset} Well Test ${dayjs(file?.startDate).format('MMM/YYYY')}`} />,
                                 <BroadCastSuccessfull details={`${file?.asset} Well Test ${dayjs(file?.startDate).format('MMM/YYYY')}`} />]} />
-                    }))
+                    })),
+                    // permitted: user.permitted.broadcastData,
+                    hidden: (file) => user.permitted.broadcastData && file?.status === 'approved'
                 },
-            ]} />
+                {
+                    name: 'Delete', onClick: (file) => deleteSetup({ id: file?.id, setupType: 'wellTestSchedule' }), to: () => null,
+                    hidden: (file) => user.permitted.remarkWellTestSchedule && file?.status !== 'approved'
+                },
+            ]}
+                bottomRight={(file) => <SetupStatus setup={file} />} />
 
         </div>
     )
@@ -343,6 +359,7 @@ const Exists = () => {
 const Schedule = () => {
     // const setupData = useSelector(state => state.setup)
     const [loading] = useState(false)
+    const { user } = useMe()
     const dispatch = useDispatch()
     useEffect(() => {
         dispatch(clearSetup())
@@ -372,6 +389,7 @@ const Schedule = () => {
                     onSave={save}
                     rightLoading={loading}
                     existing={<Exists />}
+                    hideCreateSetupButton={!user.permitted.createWellTestSchedule}
                     stepComponents={[
                         <SelectAsset />,
                         <DefineSchedule />,

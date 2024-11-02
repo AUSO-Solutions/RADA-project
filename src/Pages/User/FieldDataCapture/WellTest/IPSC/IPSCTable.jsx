@@ -6,7 +6,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import tableStyles from '../table.module.scss'
-import RadaSwitch from 'Components/Input/RadaSwitch';
+// import RadaSwitch from 'Components/Input/RadaSwitch';
 import { ArrowBack, ArrowRight } from '@mui/icons-material';
 import Text from 'Components/Text';
 import { Button, Input } from 'Components';
@@ -26,6 +26,9 @@ import Actions from 'Partials/Actions/Actions';
 import { Box, Tooltip } from '@mui/material';
 import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
 import { useGetSetups } from 'hooks/useSetups';
+import { useMe } from 'hooks/useMe';
+import { Query } from 'Partials/Actions/Query';
+import { Approve } from 'Partials/Actions/Approve';
 
 // const TableInput = (props) => {
 //     return <input className='p-1 text-center w-[80px] h-[100%] border outline-none ' required {...props} />
@@ -46,7 +49,8 @@ const SaveAs = ({ defaultValue, onSave = () => null, loading }) => {
 
 export default function IPSCTable() {
 
-    const { search } = useLocation()
+    const { pathname,search } = useLocation()
+    const { user } = useMe()
     const dispatch = useDispatch()
     const [searchParams, setSearchParams] = useSearchParams()
 
@@ -174,11 +178,29 @@ export default function IPSCTable() {
                         <ArrowBack />
                         <Text>Files</Text>
                     </Link>
-                    <RadaSwitch label="Edit Table" labelPlacement="left" />
+                    {/* <RadaSwitch label="Edit Table" labelPlacement="left" /> */}
                 </div>{currFlowstation}
                 <Text display={'block'} className={'w-full'} align={'center'}> {createWellTitle(ipscData)}</Text>
 
                 <div className='flex justify-end py-2 items-center gap-3'>
+                    {(user.permitted.approveData || user.permitted.queryData) && <Actions actions={[
+                        {
+                            name: 'Query Result',
+                            onClick: () => dispatch(openModal({
+                                component: <Query header={'Query IPSC Result'} id={ipscData?.id}
+                                    setupType={'IPSC'} title={createWellTitle(ipscData)} pagelink={pathname + search} />
+                            })),
+                            permitted: user.permitted.queryData
+                        },
+                        {
+                            name: 'Approve', onClick: () => dispatch(openModal({
+                                component: <Approve header={'Approve IPSC Result'} id={ipscData?.id}
+                                    setupType={'IPSC'} pagelink={pathname + search} title={createWellTitle(ipscData)} />
+                            })),
+                            permitted: user.permitted.approveData
+                        },
+
+                    ].filter(x => x.permitted)} />}
                     <Input type='select' placeholder='Flowstation'
                         onChange={e => setCurrFlowstation(e.value)}
                         containerClass={'!w-[250px]'} value={{ label: currFlowstation, value: currFlowstation }}
@@ -264,7 +286,7 @@ export default function IPSCTable() {
                         <TableBody>
                             {
                                 Object.values(ipscData?.wellTestResultData || {})
-                                .sort((a, b) => a?.productionString.localeCompare(b?.productionString))
+                                    .sort((a, b) => a?.productionString.localeCompare(b?.productionString))
                                     .sort((a, b) => ((b?.isSelected ? 1 : 0) - (a?.isSelected ? 1 : 0)))
                                     ?.filter(well => well?.flowstation === currFlowstation)
                                     ?.map((well, i) => {
@@ -378,7 +400,7 @@ export default function IPSCTable() {
                 </div>
             </div>
             {
-                !searchParams.get('show-analytics') && <div className='flex justify-end py-2'>
+                !searchParams.get('show-analytics') && user.permitted.createAndeditIPSC && <div className='flex justify-end py-2'>
                     <Button width={120} onClick={() => {
                         dispatch(openModal({ component: <SaveAs defaultValue={res?.title} onSave={save} /> }))
                     }} >Commit</Button>

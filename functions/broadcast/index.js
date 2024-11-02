@@ -8,14 +8,13 @@ const broadcast = onCall(async (request) => {
     try {
         const { data } = request;
         logger.log("Data ----", { data });
-        const { attachment, groups, pagelink, subject, type, date, users } = data;
+        const { attachment, groups=[], pagelink, subject, type, date, users = [] } = data;
         const db = admin.firestore()
-        // console.log(typeof groups, groups?.length)
         const members = groups.flatMap(group => (group?.members.map(member => ({ group: group?.groupName, ...member }))))
+        const emailAddresses = Array.from(new Set(members?.map(member => member?.email)?.concat(users?.map(user => user?.email))))
+        var maillist = emailAddresses.join(',');
 
-        var maillist = members?.map(member => member?.email).join(',');
-
-        // console.log(members, maillist)
+        console.log(maillist)
 
         const link = 'https://ped-application-4d196.web.app'
         var msg = {
@@ -23,16 +22,16 @@ const broadcast = onCall(async (request) => {
             to: maillist,
             subject, // Subject line
             html: `<b>Hello</b> <br>
-<p>
-    This is ${type} broadcast for ${date} <br> <br>
-    
-    <a href="${link + pagelink}">View in app </a><br>
-    <a href="${attachment}">View attached file</a><br>
+            <p>
+                This is ${type} broadcast for ${date} <br> <br>
+                
+                <a href="${link + pagelink}">View in app </a><br>
+                <a href="${attachment}">View attached file</a><br>
 
-    <br> <br>
-    You are receiving this email because you are registered to the PED Application 
+                <br> <br>
+                You are receiving this email because you are registered to the PED Application 
 
-</p>`
+            </p>`
         }
 
         transporter.sendMail(msg, function (error, info) {

@@ -1,6 +1,7 @@
 import { Button } from 'Components'
 import React, { useRef } from 'react'
 import { useDispatch } from 'react-redux'
+import { toast } from 'react-toastify'
 import { openModal } from 'Store/slices/modalSlice'
 
 
@@ -8,9 +9,14 @@ const Note = ({ title = "Highlight", btnText = "Save Note", onSave = () => null 
 
     const dispatch = useDispatch()
     const NoteBox = () => {
-        const note = useRef()
+        const note = useRef({value:'999njb'})
         const saveNote = () => {
+            if(!note.current?.value){
+                toast.error("Please provide a note")
+                return
+            }
             onSave(note.current?.value)
+            // console.log('',)
         }
         return (
             <div className=' flex flex-col  '>

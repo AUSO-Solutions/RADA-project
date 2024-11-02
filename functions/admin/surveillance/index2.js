@@ -7,10 +7,10 @@ const getSurveillanceData = onCall(async (request) => {
   try {
     const { data } = request;
     logger.log("Data ----", { data });
-    const { asset = "OML 24", flowstation } = data;
-    if (!asset) {
-      throw { code: "cancelled", message: "Please provide asset" };
-    }
+    const { asset = "", flowstation } = data;
+    // if (!asset) {
+    //   throw { code: "cancelled", message: "Please provide asset" };
+    // }
 
     // if (!flowstation) {
     //   throw { code: "cancelled", message: "Please provide flowstation" };
@@ -21,15 +21,9 @@ const getSurveillanceData = onCall(async (request) => {
     let productionData = db
       .collection("actualProduction")
       .orderBy("date", "asc")
-      .where("asset", "==", asset)
 
-    if (flowstation) {
-      productionData = db
-        .collection("actualProduction")
-        .orderBy("date", "asc")
-        .where("asset", "==", asset)
-        .where("flowStation", "==", flowstation)
-    }
+    if (asset) productionData = productionData.where("asset", "==", asset)
+    if (asset && flowstation) productionData = productionData.where("flowStation", "==", flowstation)
 
     const productionQuery = (await productionData.get()).docs.map(
       (doc) => doc?.data() || {}
@@ -38,7 +32,7 @@ const getSurveillanceData = onCall(async (request) => {
     const productionStrings = {};
     const flowStationData = [];
 
-    const flowstations =  Array.from(new Set(productionQuery.map(item => item?.flowStation)))
+    const flowstations = Array.from(new Set(productionQuery.map(item => item?.flowStation)))
     productionQuery.forEach((dailyData) => {
       let gross = 0;
       let oil = 0;
@@ -48,13 +42,11 @@ const getSurveillanceData = onCall(async (request) => {
 
       dailyData?.productionData?.forEach((prodData) => {
         // Compute the running sum for the flowstation
-        
+
         gross += prodData.gross;
         oil += prodData.oil;
         water += prodData.water;
         gas += prodData.gas;
-
-
 
         const stringData = {
           date,

@@ -21,8 +21,8 @@ import SelectGroup from "Partials/BroadCast/SelectGroup"
 import Attachment from "Partials/BroadCast/Attachment"
 import BroadCastSuccessfull from "Partials/BroadCast/BroadCastSuccessfull"
 import { useGetSetups } from "hooks/useSetups"
-
-
+import { useMe } from "hooks/useMe"
+import SetupStatus from "Partials/SetupStatus"
 
 const ImporFiles = () => {
     const dispatch = useDispatch()
@@ -37,17 +37,14 @@ const ImporFiles = () => {
         }
     }
     const setupData = useSelector(state => state.setup)
-
     return (
         <div>
             <Input type='month' label={'MER Month'} onChange={e => dispatch(setSetupData({ name: 'month', value: e.target.value }))} defaultValue={{ label: setupData?.month, value: setupData?.month }} containerClass={'!w-fit self-right  p-2'} />
-
             <div className="w-full  flex ">
                 <ExcelToCsv className="block  border w-[50%] text-center rounded m-3 p-3" onComplete={(jsonData, file) => {
                     handleFiles('chokeSizes', jsonData)
                     setFiles({ chokeFile: file })
                 }}>
-
                     {setupData?.chokeSizes ?
                         <><TickCircle color={colors.rada_blue} className="mx-auto" size={50} /> Choke sizes file uploaded</>
                         : <>
@@ -57,20 +54,16 @@ const ImporFiles = () => {
 
                 </ExcelToCsv>
                 <ExcelToCsv className="block border w-[50%] rounded m-3 p-3" onComplete={jsonData => handleFiles('staticParameters', jsonData)}>
-
-
-
-
                     {setupData?.staticParameters ?
-                        <><TickCircle color={colors.rada_blue} className="mx-auto" size={50} /> Reservoir Parameterss file uploaded</>
-                        : <>
+                        <>
+                            <TickCircle color={colors.rada_blue} className="mx-auto" size={50} />
+                            Reservoir Parameterss file uploaded
+                        </>
+                        :
+                         <>
                             <BsPlus color={colors.rada_blue} size={50} className="mx-auto" />
                             Import file for Reservoir Parameters
                         </>}
-
-                    {/* <BsPlus size={50} className="mx-auto" />
-                    {setupData?.staticParameters?.name || "Import file for Reservoir Parameters"} */}
-
                 </ExcelToCsv>
             </div>
         </div>
@@ -88,15 +81,20 @@ const SaveAs = () => {
     )
 }
 const Exists = () => {
-
     const { setups: data } = useGetSetups("merSchedule")
     const dispatch = useDispatch()
+    const { user } = useMe()
 
     return (
-        <div className=" flex flex-wrap gap-4 m-5 ">
+        <div className="flex flex-wrap gap-4 m-5 ">
             <Files name={(file) => `${createWellTitle(file, 'MER Data Schedule')}`} files={data} actions={[
-                { name: 'Remark', to: (file) => `/users/fdc/mer-data/schedule-table?id=${file?.id}` },
-                { name: 'MER DATA Result', to: (file) => `/users/fdc/mer-data/mer-data-result-table?scheduleId=${file?.id}` },
+                { name: 'View', to: (file) => `/users/fdc/mer-data/schedule-table?id=${file?.id}` },
+                {
+                    name: 'MER DATA Result',
+                    to: (file) => `/users/fdc/mer-data/mer-data-result-table?scheduleId=${file?.id}`,
+                    // permitted: user.permitted.createAndeditMERdata
+                    hidden: (file) => user.permitted.createAndeditMERdata && file?.status === 'approved'
+                },
                 {
                     name: 'Broadcast', to: (file) => null, onClick: (file) => dispatch(openModal({
                         title: '',
@@ -111,20 +109,24 @@ const Exists = () => {
                                 <SelectGroup />,
                                 <Attachment details={`${file?.asset} MER Data ${dayjs(file?.startDate).format('MMM/YYYY')}`} />,
                                 <BroadCastSuccessfull details={`${file?.asset} MER Data ${dayjs(file?.startDate).format('MMM/YYYY')}`} />]} />
-                    }))
+                    })),
+                    hidden: (file) => user.permitted.broadcastData && file?.status === 'approved'
                 },
 
-            ]} />
+
+
+            ]} bottomRight={(file) => <SetupStatus setup={file} />} />
         </div>
     )
 }
 
 const Schedule = () => {
-    const [loading, ] = useState(false)
+    const [loading,] = useState(false)
     const dispatch = useDispatch()
     useEffect(() => {
         dispatch(clearSetup())
     }, [dispatch])
+    const { user } = useMe()
     const save = async () => {
         try {
             dispatch(setLoadingScreen({ open: true }))
@@ -154,6 +156,7 @@ const Schedule = () => {
                     onSave={save}
                     rightLoading={loading}
                     existing={<Exists />}
+                    hideCreateSetupButton={!user.permitted.createMERschedule}
                     stepComponents={[
                         <ImporFiles />,
                         <SaveAs />

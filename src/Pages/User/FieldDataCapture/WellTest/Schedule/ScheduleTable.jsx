@@ -17,12 +17,17 @@ import { firebaseFunctions } from 'Services';
 import { toast } from 'react-toastify';
 import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
 import { useDispatch } from 'react-redux';
+import { useMe } from 'hooks/useMe';
+import Actions from 'Partials/Actions/Actions';
+import { Query } from 'Partials/Actions/Query';
+import { Approve } from 'Partials/Actions/Approve';
+import { createWellTitle } from 'utils';
+import { openModal } from 'Store/slices/modalSlice';
 
 
 export default function ScheduleTable() {
-
-
-    const { search } = useLocation()
+    const {pathname ,search } = useLocation()
+    const {user} =  useMe()
     const [loading] = React.useState(false)
     const [wellTest, setWellTest] = React.useState({})
     const id = React.useMemo(() => new URLSearchParams(search).get('id'), [search])
@@ -43,7 +48,7 @@ export default function ScheduleTable() {
     }
 
     return (
-        < div className='px-3'>
+        < div className='px-3 !w-[98%]'>
             <div className='flex justify-between items-center'>
                 <div className='flex gap-4 py-4 items-center'>
                     <Link to={'/users/fdc/well-test-data/'} className='flex flex-row gap-2 bg-[#EFEFEF] px-4 py-1 rounded-md' >
@@ -52,6 +57,25 @@ export default function ScheduleTable() {
                     </Link>
                     <RadaSwitch label="Edit Table" labelPlacement="left" />
                 </div>
+
+                {(user.permitted.approveData || user.permitted.queryData) && <Actions actions={[
+                            {
+                                name: 'Query Result',
+                                onClick: () => dispatch(openModal({
+                                    component: <Query header={'Query Well Test Schdedule'} id={wellTest?.id}
+                                        setupType={'wellTestSchedule'} title={createWellTitle(wellTest)} pagelink={pathname + search} />
+                                })),
+                                permitted :  user.permitted.queryData
+                            },
+                            {
+                                name: 'Approve', onClick: () => dispatch(openModal({
+                                    component: <Approve header={'Approve Well Test Schdedule'} id={wellTest?.id}
+                                        setupType={'wellTestSchedule'} pagelink={pathname + search} title={createWellTitle(wellTest)} />
+                                })),
+                                permitted :  user.permitted.approveData
+                            },
+
+                        ].filter(x=>x.permitted)} />}
             </div>
             <TableContainer className={`m-auto border ${tableStyles.borderedMuiTable}`}>
                 <Table sx={{ minWidth: 700 }} >
@@ -128,9 +152,9 @@ export default function ScheduleTable() {
                 </Table>
             </TableContainer>
 
-            <div className='flex justify-end py-1'>
+          {user.permitted.remarkWellTestSchedule &&  <div className='flex justify-end py-1'>
                 <Button loading={loading} onClick={save} width={120} >Save</Button>
-            </div>
+            </div>}
         </div>
     );
 }

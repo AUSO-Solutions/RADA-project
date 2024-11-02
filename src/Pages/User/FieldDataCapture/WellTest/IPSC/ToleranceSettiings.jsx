@@ -2,6 +2,7 @@ import { Divider } from '@mui/material'
 import { Button, Input } from 'Components'
 import Text from 'Components/Text'
 import { useFetch } from 'hooks/useFetch'
+import { useMe } from 'hooks/useMe'
 import React, { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -17,10 +18,11 @@ const ToleranceSettiings = ({ onClickOut = () => null }) => {
         { title: "BSW", name: 'bsw', type: "number", unit: "%" },
     ]
     const [toleranceValues, setTolenranceValue] = useState({})
+    const { user } = useMe()
     const { data: ipsc } = useFetch({ firebaseFunction: 'getSetup', payload: { id: searchParams.get('id'), setupType: 'IPSC' } })
-    useEffect(()=>{
-setTolenranceValue(ipsc?.toleranceValues)
-    },[ipsc])
+    useEffect(() => {
+        setTolenranceValue(ipsc?.toleranceValues)
+    }, [ipsc])
     const submit = async () => {
         try {
             const id = searchParams.get('id')
@@ -61,7 +63,7 @@ setTolenranceValue(ipsc?.toleranceValues)
                     </div>
 
                 </div>
-                <Button className={'mx-auto my-[30px]'} onClick={submit} width={200}>Apply Settings</Button>
+                {user.permitted.createAndeditIPSC && <Button className={'mx-auto my-[30px]'} onClick={submit} width={200}>Apply Settings</Button>}
             </div>
         </>)
 }

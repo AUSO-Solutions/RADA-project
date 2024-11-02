@@ -5,15 +5,10 @@ import CreateRoles from './CreateRoles'
 import RadaTable from 'Components/RadaTable'
 import Header from 'Components/header'
 import { closeModal, openModal } from 'Store/slices/modalSlice'
-
-
 import { useDispatch } from 'react-redux'
-
 import TableAction from 'Components/RadaTable/TableAction'
 import ConfirmModal from 'Components/Modal/ConfirmModal'
 import { firebaseFunctions } from 'Services'
-
-
 
 const Roles = () => {
 
@@ -29,7 +24,6 @@ const Roles = () => {
     }finally{
       setDelLoad(false)
     }
-
   }
 
   return (
@@ -37,19 +31,14 @@ const Roles = () => {
       <Header
         name={'Roles and permissions'}
         btns={[
-          { text: 'Create role', onClick: () => dispatch(openModal({ title: 'Create role', component: <CreateRoles /> })) },
-          // { text: 'Import users', onClick: () => dispatch(openModal({ title: 'Import Users', component: <ImportUsers /> })) },
-
+          { text: 'Create role', onClick: () => dispatch(openModal({ title: 'Create role', component: <CreateRoles /> })) }
         ]}
       />
       <RadaTable
         firebaseApi='getRoles'
         columns={[
           { name: 'Name', key:"roleName" },
-          { name: 'Permissions', render:(data)=>data.permissions?.join(', ') },
-          //   { name: 'Email' },
-          //   { name: 'Status' },
-          // { name: 'Action' }
+          { name: 'Permissions', render:(data)=>data.permissions?.join(', ') }
         ]} 
         
         actions={(data, i) => <TableAction

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import LineChart from './Line'
 import { clearSetup } from 'Store/slices/setupSlice'
 import { sum } from 'utils'
+// import { Line2 } from './Line2'
 
 const ProductionSurveilance = () => {
   const setupData = useSelector(state => state?.setup)
@@ -12,12 +13,12 @@ const ProductionSurveilance = () => {
     return () => {
       dispatch(clearSetup())
     }
-  }, [])
+  }, [dispatch])
   const { data } = useFetch({ firebaseFunction: 'getSurveillanceData', payload: { asset: setupData?.asset, flowstation: setupData?.flowstation }, refetch: setupData })
   const result = useMemo(() => {
     // console.log(setupData)
     const x = data.length ? JSON.parse(data) : []
-    // console.log(x)
+    console.log(x)
     let y = []
     if (setupData?.productionString && setupData?.flowstation) {
       y = (x?.productionStrings?.[setupData?.productionString])
@@ -63,20 +64,42 @@ const ProductionSurveilance = () => {
 
     const liquidOilData = data?.map((item, i) => ({ liquid: item?.gross, oil: item?.oil }))
     const liquidOilDataset = [
-      {
-        label: "Liquid Produced (blpd)",
-        axisname: 'Liquid Produced',
-        data: liquidOilData?.map((datum) => datum?.liquid),
-        borderColor: "#280eb4",
-        borderWidth: 3, pointRadius: .5
-      },
+
       {
         label: "Oil Produced (bopd)",
         axisname: 'Oil Produced',
         data: liquidOilData?.map((datum) => datum?.oil),
         borderColor: "#e85912",
-        borderWidth: 3, pointRadius: .5
+        borderWidth: 3, pointRadius: .5,
+        yAxisID: 'y',
+        fill: {
+          target: "origin",
+          above: "#e8591270"
+        }
       },
+      {
+        label: "Liquid Produced (blpd)",
+        axisname: 'Liquid Produced',
+        data: liquidOilData?.map((datum) => datum?.liquid),
+        borderColor: "#280eb4",
+        borderWidth: 3, pointRadius: .5,
+        yAxisID: 'y',
+        fill: {
+          target: "origin",
+          above: "#280eb470"
+        }
+      },
+      {
+        label: "Daily Gas (MMscf)",
+        data: data?.map((item, i) => item?.gas),
+        borderColor: "#319112",
+        borderWidth: 3, pointRadius: .5,
+        yAxisID: 'y1',
+        fill: {
+          target: "origin",
+          above: "#31911270"
+        }
+      }
     ]
     const liquidOil = {
       dataset: liquidOilDataset,
@@ -87,7 +110,8 @@ const ProductionSurveilance = () => {
         label: "Water Produced (bwpd)",
         data: data?.map((item, i) => item?.water),
         borderColor: "#558ce6",
-        borderWidth: 3, pointRadius: .5
+        borderWidth: 3, pointRadius: .5,
+        yAxisID: 'y',
       }
     ]
     const waterProduced = {
@@ -99,7 +123,8 @@ const ProductionSurveilance = () => {
         label: "Daily Gas (MMscf)",
         data: data?.map((item, i) => item?.gas),
         borderColor: "#319112",
-        borderWidth: 3, pointRadius: .5
+        borderWidth: 3, pointRadius: .5,
+        yAxisID: 'y'
       }
     ]
     const dailyGas = {
@@ -107,45 +132,73 @@ const ProductionSurveilance = () => {
       labels
     }
 
-    // const gorWatercutData = data?.map((item, i) => ({ gor: item?.gross, oil: item?.oil }))
-    const gorWatercutDataset = [
+
+    const gorDataset = [
       {
         label: "GOR (scf/std)",
-        yAxisId:'gor',
+        yAxisID: 'y',
         data: data?.map((item, i) => item?.gor),
         borderColor: "#91ff69",
         borderWidth: 3, pointRadius: .5
       },
+    ]
+    const waterCutDataset = [
       {
-        label: "Water (%)",
-        yAxisId:'water',
+        label: "Water Cut (%)",
+        yAxisID: 'y1',
         data: data?.map((item, i) => item?.waterCut),
         borderColor: "#280eb4",
         borderWidth: 3, pointRadius: .5
-      },
+      }, 
     ]
-    const gorWatercut = {
-      dataset: gorWatercutDataset,
+
+    // const gorWatercutDataset = [
+    //   {
+    //     label: "GOR (scf/std)",
+    //     yAxisID: 'y',
+    //     data: data?.map((item, i) => item?.gor),
+    //     borderColor: "#91ff69",
+    //     borderWidth: 3, pointRadius: .5
+    //   },
+    //   {
+    //     label: "Water Cut (%)",
+    //     yAxisID: 'y1',
+    //     data: data?.map((item, i) => item?.waterCut),
+    //     borderColor: "#280eb4",
+    //     borderWidth: 3, pointRadius: .5
+    //   },
+    // ]
+    // const gorWatercut = {
+    //   dataset: gorWatercutDataset,
+    //   labels
+    // }
+    const gor = {
+      dataset: gorDataset,
+      labels
+    }
+    const waterCut = {
+      dataset: waterCutDataset,
       labels
     }
     return {
-      liquidOil, waterProduced, dailyGas, gorWatercut
+      liquidOil, waterProduced, dailyGas, gor, waterCut
     }
   }, [result])
   // console.log(graphs)
   return (
     <div className='p-3 flex flex-wrap gap-3 w-full '>
+      {/* <Line2 labels={graphs.liquidOil.labels} datasets={graphs?.liquidOil?.dataset}  /> */}
       <div className='w-[48%] h-[auto] border rounded p-3 '>
         {<LineChart labels={graphs.liquidOil.labels} datasets={graphs?.liquidOil?.dataset} />}
       </div>
       <div className='w-[48%] h-[auto] border rounded p-3 '>
-        {<LineChart labels={graphs.waterProduced.labels} datasets={graphs?.waterProduced?.dataset} />}
+        {<LineChart labels={graphs.waterCut.labels} datasets={graphs?.waterCut?.dataset} />}
       </div>
       <div className='w-[48%] h-[auto] border rounded p-3 '>
         {<LineChart labels={graphs.dailyGas.labels} datasets={graphs?.dailyGas?.dataset} />}
       </div>
       <div className='w-[48%] h-[auto] border rounded p-3 '>
-        {<LineChart stacked={false} labels={graphs.gorWatercut.labels} datasets={graphs?.gorWatercut?.dataset} />}
+        {<LineChart stacked={false} labels={graphs.gor.labels} datasets={graphs?.gor?.dataset} />}
       </div>
     </div>
   )

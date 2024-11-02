@@ -7,11 +7,13 @@ import { colors } from 'Assets';
 import { CheckOutlined } from '@mui/icons-material';
 import { setFormdata } from 'Store/slices/formdataSlice';
 import SelectGroup from 'Partials/BroadCast/SelectGroup';
+// import { firebaseFunctions } from 'Services';
+import { updateSetupStatus } from './updateSetupStatus';
 
 
-export const Query = ({ title, done }) => {
-     const screens = [
-        { name: 'query',  },
+export const Query = ({ title, header, setupType, id, pagelink, onQuery = () => null }) => {
+    const screens = [
+        { name: 'query', },
         { name: 'selectGroup' },
         { name: 'sent' },
     ]
@@ -19,18 +21,28 @@ export const Query = ({ title, done }) => {
     const dispatch = useDispatch()
     const formdata = useSelector(state => state?.formdata)
 
+
     const send = async () => {
-        setCurr(prev => prev + 1)
-       
+        try {
+            if (curr === screens.length - 2) {
+                await updateSetupStatus({ id, setupType, status: 'queried', statusMessage: formdata?.query, subject: 'Queried WellTest Data', groups: formdata?.selectedGroups, users: formdata?.selectedUsers, title, pagelink })
+                onQuery()
+                setCurr(prev => prev + 1)
+            } else {
+                setCurr(prev => prev + 1)
+            }
+        } catch (error) {
+            console.log(error)
+        }
     }
     return <div className='w-[500px] p-1 h-[600px]'>
-        <Text size={24}>Query Well Test Data Result</Text>
+        <Text size={24}>{header}</Text>
 
         <Divider className='!mt-[40px]' />
         {
             screens[curr].name === 'selectGroup' && <>
                 {/* <Text size={20} className={'my-3 block  '}>Select Group</Text> */}
-<br /> <br />
+                <br /> <br />
                 <SelectGroup /></>
         }
         {
@@ -58,8 +70,8 @@ export const Query = ({ title, done }) => {
                 <Text align={'center'} className={'block w-[85%] text-center'}>{title} query has been sent successfully to the {formdata?.selectedGroups?.map(group => group?.groupName).join(',  ')}</Text>
             </div>
         }
-       {curr !== screens.length -1 && <Button onClick={send} width={100} className={'float-right mt-[50px]'}>
-            {curr === screens.length -2 ? "Send" :'Proceed'} 
+        {curr !== screens.length - 1 && <Button onClick={send} width={100} className={'float-right mt-[50px]'}>
+            {curr === screens.length - 2 ? "Send" : 'Proceed'}
         </Button>}
     </div>
 }

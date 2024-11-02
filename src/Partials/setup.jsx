@@ -10,7 +10,7 @@ import { useLocation } from 'react-router-dom'
 import { openModal } from 'Store/slices/modalSlice'
 
 
-const Setup = ({ title, steps = [], onBack, onNext, stepComponents = [], onSave = () => null, type, rightLoading, onSetWholeSetup, existing }) => {
+const Setup = ({ title, steps = [], onBack, onNext, stepComponents = [], onSave = () => null, type, rightLoading, onSetWholeSetup, existing, hideCreateSetupButton = false }) => {
     const SetupModal = () => {
         const [activeStep, setActiveStep] = useState(0)
         const back = () => {
@@ -69,12 +69,12 @@ const Setup = ({ title, steps = [], onBack, onNext, stepComponents = [], onSave 
             existing ?
                 <>
                     {existing}
-                    <Button className={'ml-5'} onClick={() => dispatch(openModal({
+                    {!hideCreateSetupButton && <Button disabled={hideCreateSetupButton} className={'ml-5'} onClick={() => dispatch(openModal({
                         title: '',
                         component: <SetupModal />
                     }))}>
                         Create new setup
-                    </Button>
+                    </Button>}
                 </>
                 :
                 <div className='w-[100%] !h-[100%] flex items-center justify-center'>
