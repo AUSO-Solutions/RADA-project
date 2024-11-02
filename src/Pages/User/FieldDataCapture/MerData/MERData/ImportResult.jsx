@@ -1,6 +1,6 @@
 import { AttachFile } from '@mui/icons-material'
 import { Button } from 'Components'
-import dayjs from 'dayjs'
+// import dayjs from 'dayjs'
 import ExcelToCsv from 'Partials/ExcelToCSV'
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
@@ -13,8 +13,8 @@ const Import = ({ onProceed = () => null }) => {
     const importFile = () => {
         const result = data.map(datum => {
             const productionString = datum?.['Production String']
-            const reservoir = datum?.['Reservoir']
-            const field = datum?.['Field']
+            // const reservoir = datum?.['Reservoir']
+            // const field = datum?.['Field']
             const chokeSize = datum?.['Choke (/64")']
             const gross = datum?.['Gross (blpd)']
             const oilRate = datum?.['Oil Rate (bopd)']

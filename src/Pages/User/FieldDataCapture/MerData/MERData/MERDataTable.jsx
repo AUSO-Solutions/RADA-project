@@ -19,14 +19,14 @@ import { closeModal, openModal } from 'Store/slices/modalSlice';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import Actions from 'Partials/Actions/Actions';
-import { createWellTitle, genRandomNumber, getIntersectionBetweenTwoLines } from 'utils';
+import { createWellTitle, getIntersectionBetweenTwoLines } from 'utils';
 import { Approve } from 'Partials/Actions/Approve';
 import { Query } from 'Partials/Actions/Query';
 import ExtractWellTest from './ExtractWellTest';
 import MerChart from './MerChart';
-import ExcelToCsv from 'Partials/ExcelToCSV';
 import ImprortResult from './ImportResult';
 import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
+import { useMe } from 'hooks/useMe';
 
 
 const SaveAs = ({ defaultValue, onSave = () => null, loading }) => {
@@ -49,6 +49,7 @@ const TableInput = ({ type = 'number', onChange = () => null, ...props }) => {
 
 export default function MERDataTable() {
 
+    const { user } = useMe()
     const { search } = useLocation()
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -64,7 +65,7 @@ export default function MERDataTable() {
     const [showChart, setShowChart] = useState(false)
 
     useEffect(() => {
-        console.log(res)
+        // console.log(res)
         if (res) setMerResult({
             title: res?.title,
             merResultData: res?.merScheduleData,
@@ -118,15 +119,12 @@ export default function MERDataTable() {
                 console.log(payload)
                 const { data } = await firebaseFunctions('createSetup', payload)
                 navigate(`/users/fdc/mer-data/mer-data-result-table?id=${data?.id}`)
-
             }
             dispatch(closeModal())
             toast.success('Data saved to MER test result')
         } catch (error) {
             console.log(error)
         } finally {
-            // setLoading(false)
-
             dispatch(setLoadingScreen({ open: false }))
         }
     }
@@ -139,14 +137,10 @@ export default function MERDataTable() {
     }, [])
 
     const getFileData = (data) => {
-        // console.log(data)
-        // console.log(merResult?.merResultData)
         const newResult = {}
-
         for (const string in merResult?.merResultData) {
             const stringData = merResult?.merResultData[string];
             const thisData = data?.filter(item => item?.productionString === string)
-
             // const chokeFields = ['gross', 'oilRate', 'bsw', 'gor', 'gasRate', 'sand', 'fthp']
             newResult[string] = {
                 ...stringData, chokes: thisData?.map(item => {
@@ -157,9 +151,7 @@ export default function MERDataTable() {
                     }
                 })
             }
-
         }
-        // console.log(newResult)
         setMerResult(prev => {
             return { ...prev, merResultData: newResult }
         })
@@ -200,7 +192,7 @@ export default function MERDataTable() {
                                 }
                             ]} />}
                         </div>}
-                       {isEdit && <div className='border border-[#00A3FF] px-3 py-1 rounded-md cursor-pointer' onClick={() => setShowChart(true)} >
+                        {isEdit && <div className='border border-[#00A3FF] px-3 py-1 rounded-md cursor-pointer' onClick={() => setShowChart(true)} >
                             <Chart color='#00A3FF' />
                         </div>}
                     </div>
@@ -407,9 +399,12 @@ export default function MERDataTable() {
 
                     </Table>
                 </TableContainer>
-                <div className='flex justify-end py-2'>
-                    <Button width={120} type='submit' >Commit</Button>
-                </div>
+                {user.permitted.createAndeditMERdata &&
+                    <div className='flex justify-end py-2'>
+                        <Button width={120} type='submit' >Commit</Button>
+                    </div>
+
+                }
             </form>
         </>
     );

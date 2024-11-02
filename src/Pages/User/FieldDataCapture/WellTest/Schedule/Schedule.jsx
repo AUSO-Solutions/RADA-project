@@ -320,7 +320,7 @@ const Exists = () => {
         <div className=" flex flex-wrap gap-4 m-5 ">
 
             <Files name={(file) => `${createWellTitle(file, 'Well Test Schedule')}`} files={data} actions={[
-                { name: 'Remark', to: (file) => `/users/fdc/well-test-data/schedule-table?id=${file?.id}`, permitted: true },
+                { name: 'View', to: (file) => `/users/fdc/well-test-data/schedule-table?id=${file?.id}`, permitted: true },
                 {
                     name: 'CreateWell Test',
                     to: (file) => `/users/fdc/well-test-data/well-test-table?id=${file?.id}`,

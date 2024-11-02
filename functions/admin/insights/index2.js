@@ -10,12 +10,12 @@ const getInsights = onCall(async (request) => {
         const { data } = request;
         logger.log("Data ----", { data });
         const {
-            asset = "OML 24",
+            asset,
             flowstation,
             startDate = dayjs(),
             endDate = dayjs(),
         } = data;
-        if (!asset) throw { code: "cancelled", messsage: "Please provide asset" };
+        // if (!asset) throw { code: "cancelled", messsage: "Please provide asset" };
         if (!startDate || !endDate)
             throw { code: "cancelled", message: "Please provide start or end dates" };
         if (!dayjs(startDate).isValid() || !dayjs(endDate).isValid())
@@ -30,41 +30,45 @@ const getInsights = onCall(async (request) => {
         let format = "DD/MM/YYYY";
         console.log({ noOfDays, noOfMonths });
         let frame = []; // placeholder for the days or months
-        if (noOfDays === 0) frame.push(dayjs(startDate));
-        if (noOfDays > 0 && noOfDays < 32) {
+        // if (noOfDays === 0) frame.push(dayjs(startDate));
+        if (noOfDays >= 0) {
             format = "DD/MM/YYYY";
             for (let day = 0; day <= noOfDays; day++) {
                 frame.push(dayjs(startDate).add(day, "days"));
             }
         }
-        if (noOfDays >= 32) {
-            format = "MM/YYYY";
-            for (let day = 0; day <= noOfMonths; day++) {
-                frame.push(dayjs(startDate).add(day, "months"));
-            }
-        }
-        console.log(frame)
+        // if (noOfDays >= 32) {
+        //     format = "MM/YYYY";
+        //     for (let day = 0; day <= noOfMonths; day++) {
+        //         frame.push(dayjs(startDate).add(day, "months"));
+        //     }
+        // }
+        // console.log(frame)
 
         // query by start and end dates
-        const oilStartEndData = db
+        let oilStartEndData = db
             .collection("liquidVolumes")
             .where("date", ">=", startDate_)
             .where("date", "<=", endDate_)
-            .where("asset", "==", asset);
+        if (asset) oilStartEndData = oilStartEndData.where("asset", "in", asset);
 
-        const gasStartEndData = db
+        let gasStartEndData = db
             .collection("gasVolumes")
             .where("date", ">=", startDate_)
             .where("date", "<=", endDate_)
-            .where("asset", "==", asset);
+        if (asset) gasStartEndData = gasStartEndData.where("asset", "in", asset);
 
-        const defermentStartEndData = db
+        let defermentStartEndData = db
             .collection("deferments")
             .where("date", ">=", startDate_)
             .where("date", "<=", endDate_)
-            .where("asset", "==", asset);
+        if (asset) defermentStartEndData = defermentStartEndData.where("asset", "in", asset);
 
-        const ipscTarget = (await db.collection('setups').doc('IPSC').collection("setupList").where("asset", "==", asset).where('month', '==', dayjs(startDate).format("YYYY-MM")).get())?.docs[0]?.data()
+        const ipscTarget = (await db.collection('setups').doc('IPSC')
+            .collection("setupList").where("asset", "==", asset)
+            .where('month', '>=', dayjs(startDate).format("YYYY-MM"))
+            .where('month', '<=', dayjs(endDate).format("YYYY-MM"))
+            .get())?.docs.map(doc => doc?.data())
 
         const oilQuery = (await oilStartEndData.get()).docs.map(
             (doc) => doc?.data() || {}

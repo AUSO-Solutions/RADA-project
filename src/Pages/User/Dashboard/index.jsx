@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import Overview from './Overview'
-import Insights from './Insights'
+import Insights from './BusinessIntelligence'
 import Tab from 'Components/tab'
 import Header from 'Components/header'
 import dayjs from 'dayjs'
@@ -84,6 +84,7 @@ const Dashboard = () => {
                   />
                 </div>}
                 {tabs[tab]?.title === 'Business Intelligence' && <div  >
+                  {/* {setupData?.startDate} -- {setupData?.endDate} */}
                   <DateRangePicker
                     startDate={setupData?.startDate}
                     endDate={setupData?.endDate}

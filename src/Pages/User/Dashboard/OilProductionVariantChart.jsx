@@ -27,7 +27,7 @@ const OilProductionVariantChart = ({ data: data_ }) => {
 
     const data = useMemo(() => {
         return {
-            labels: ['Target', 'Scheduled Deferment', 'Unscheduled Deferment', 'Third-Party Deferment', 'Actual'],
+            labels: ['IPSC', 'Scheduled Deferment', 'Unscheduled Deferment', 'Third-Party Deferment', 'Actual'],
             datasets: [
                 {
                     label: 'Oil Production Variance (bbls)',

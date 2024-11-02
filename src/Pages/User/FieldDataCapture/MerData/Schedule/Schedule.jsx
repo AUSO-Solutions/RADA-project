@@ -23,9 +23,6 @@ import BroadCastSuccessfull from "Partials/BroadCast/BroadCastSuccessfull"
 import { useGetSetups } from "hooks/useSetups"
 import { useMe } from "hooks/useMe"
 import SetupStatus from "Partials/SetupStatus"
-import { deleteSetup } from "utils/deleteSetup"
-
-
 
 const ImporFiles = () => {
     const dispatch = useDispatch()
@@ -40,17 +37,14 @@ const ImporFiles = () => {
         }
     }
     const setupData = useSelector(state => state.setup)
-
     return (
         <div>
             <Input type='month' label={'MER Month'} onChange={e => dispatch(setSetupData({ name: 'month', value: e.target.value }))} defaultValue={{ label: setupData?.month, value: setupData?.month }} containerClass={'!w-fit self-right  p-2'} />
-
             <div className="w-full  flex ">
                 <ExcelToCsv className="block  border w-[50%] text-center rounded m-3 p-3" onComplete={(jsonData, file) => {
                     handleFiles('chokeSizes', jsonData)
                     setFiles({ chokeFile: file })
                 }}>
-
                     {setupData?.chokeSizes ?
                         <><TickCircle color={colors.rada_blue} className="mx-auto" size={50} /> Choke sizes file uploaded</>
                         : <>
@@ -60,20 +54,16 @@ const ImporFiles = () => {
 
                 </ExcelToCsv>
                 <ExcelToCsv className="block border w-[50%] rounded m-3 p-3" onComplete={jsonData => handleFiles('staticParameters', jsonData)}>
-
-
-
-
                     {setupData?.staticParameters ?
-                        <><TickCircle color={colors.rada_blue} className="mx-auto" size={50} /> Reservoir Parameterss file uploaded</>
-                        : <>
+                        <>
+                            <TickCircle color={colors.rada_blue} className="mx-auto" size={50} />
+                            Reservoir Parameterss file uploaded
+                        </>
+                        :
+                         <>
                             <BsPlus color={colors.rada_blue} size={50} className="mx-auto" />
                             Import file for Reservoir Parameters
                         </>}
-
-                    {/* <BsPlus size={50} className="mx-auto" />
-                    {setupData?.staticParameters?.name || "Import file for Reservoir Parameters"} */}
-
                 </ExcelToCsv>
             </div>
         </div>
@@ -91,15 +81,14 @@ const SaveAs = () => {
     )
 }
 const Exists = () => {
-
     const { setups: data } = useGetSetups("merSchedule")
     const dispatch = useDispatch()
     const { user } = useMe()
 
     return (
-        <div className=" flex flex-wrap gap-4 m-5 ">
+        <div className="flex flex-wrap gap-4 m-5 ">
             <Files name={(file) => `${createWellTitle(file, 'MER Data Schedule')}`} files={data} actions={[
-                { name: 'Remark', to: (file) => `/users/fdc/mer-data/schedule-table?id=${file?.id}` },
+                { name: 'View', to: (file) => `/users/fdc/mer-data/schedule-table?id=${file?.id}` },
                 {
                     name: 'MER DATA Result',
                     to: (file) => `/users/fdc/mer-data/mer-data-result-table?scheduleId=${file?.id}`,
@@ -124,7 +113,7 @@ const Exists = () => {
                     hidden: (file) => user.permitted.broadcastData && file?.status === 'approved'
                 },
 
-               
+
 
             ]} bottomRight={(file) => <SetupStatus setup={file} />} />
         </div>

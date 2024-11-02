@@ -35,27 +35,21 @@ const Insights = () => {
     // console.log(data)
     const OilProdData = useMemo(() => Object.values(data.assetOilProduction || {}), [data]);
     const GasProdData = useMemo(() => Object.values(data.assetGasProduction || {}), [data]);
-    const colors = {
+    const colors = useMemo(() => ({
         'Ekulama 1 Flowstation': 'green',
         'Ekulama 2 Flowstation': 'blue',
         'Awoba Flowstation': 'red',
         'EFE Flowstation': 'purple',
         "OML 147 Flowstation": 'orange'
-    }
+    }), [])
     const targetForthisMonth = useMemo(() => {
         const oil = sum(Object.values(data?.ipscTarget?.flowstationsTargets || {})?.map(target => target?.oilRate));
         const gas = sum(Object.values(data?.ipscTarget?.flowstationsTargets || {})?.map(target => target?.gasRate));
-        return {
-            oil, gas,
-            // oilDomain: 
-
-        }
+        return { oil, gas }
     }, [data])
-    // console.log(targetForthisMonth)
-    // console.log(parseFloat(targetForthisMonth.oil || 0).toFixed(1) + 1000)
+
     const OilProductionChart = () => {
         return (
-            // <div style={{ width: '100%', height: '300px !important', margin: '10px auto' }}>
             <ResponsiveContainer width="100%" height={350}>
                 <BarChart width={'100%'} height={'100%'} data={OilProdData} margin={{ top: 20, right: 20, left: 0, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -66,15 +60,11 @@ const Insights = () => {
                     <Tooltip />
                     <Legend verticalAlign="bottom" align="center" height={36} />
                     {
-                        data.flowstations?.sort((a,b)=>a?.localeCompare(b))?.map(flowstation => <Bar dataKey={flowstation} stackId="a" fill={colors[flowstation]} />)
+                        data.flowstations?.sort((a, b) => a?.localeCompare(b))?.map(flowstation => <Bar dataKey={flowstation} stackId="a" fill={colors[flowstation]} />)
                     }
-
-                    <ReferenceLine alwaysShow y={parseInt(targetForthisMonth.oil)} label={`Prod Oil Target (${parseInt(targetForthisMonth.oil)})`} stroke="grey" strokeDasharray="4 4" strokeWidth={2} />
-
-
+                    <ReferenceLine alwaysShow y={parseInt(targetForthisMonth.oil)} label={`IPSC (${parseInt(targetForthisMonth.oil)})`} stroke="grey" strokeDasharray="4 4" strokeWidth={3} />
                 </BarChart>
             </ResponsiveContainer>
-            // </div>
         );
     };
 
@@ -95,7 +85,7 @@ const Insights = () => {
                     <Bar dataKey="Fuel Gas" stackId="a" fill="#14A459" name="Utilized Gas" />
                     <Bar dataKey="Export Gas" stackId="a" fill="#A8D18D" name="Export Gas" />
                     <Bar dataKey="Flared Gas" stackId="a" fill="#F4B184" name="Flared Gas" />
-                    <ReferenceLine alwaysShow y={targetForthisMonth?.gas} label={`Prod. Gas Target (${parseInt(targetForthisMonth?.gas)})`} stroke="grey" strokeDasharray="4 4" strokeWidth={2} />
+                    <ReferenceLine alwaysShow y={targetForthisMonth?.gas} label={`IPSC (${parseInt(targetForthisMonth?.gas)})`} stroke="grey" strokeDasharray="4 4" strokeWidth={2} />
                 </BarChart>
             </ResponsiveContainer>
             // </div>
@@ -126,8 +116,8 @@ const Insights = () => {
                 <DashboardCard variance={getStatus(data?.oilTarget / 1000, data?.oilProduced / 1000)} targetVal={`Target: ${parseFloat(data?.oilTarget / 1000 || 0)?.toFixed(1)} kbbls`} img={assets} title={"Oil Produced"} num={`${parseFloat(data?.oilProduced / 1000 || 0)?.toFixed(1)} Kbbls`} />
                 <DashboardCard variance={getStatus(data?.gasProducedTarget, data?.gasProduced)} targetVal={`Target: ${parseFloat(data?.gasProducedTarget || 0)?.toFixed(3)} MMscf`} img={grossprodgas} title={"Gas Produced"} num={`${parseFloat(data?.gasProduced || 0)?.toFixed(3)} MMscf`} />
                 <DashboardCard variance={getStatus(data?.exportGasTarget, data?.gasExported)} targetVal={`Target: ${parseFloat(data?.exportGasTarget || 0)?.toFixed(3)} MMscf`} img={gasexported} title={"Gas Exported"} num={`${parseFloat(data?.gasExported || 0)?.toFixed(3)} MMscf`} />
-                <DashboardCard variance={getStatus(data?.gasFlaredTarget, data?.gasFlared, true)} targetVal={`${parseFloat(data?.gasFlaredTarget || 0)?.toFixed(3)} MMscf`} img={gasflared} title={"Gas Flared"} num={`${parseFloat(data?.gasFlared || 0)?.toFixed(3)} MMscf`} />
-                <DashboardCard variance={getStatus(data?.gasUtilizedTarget, data?.gasUtilized)} targetVal={`${parseFloat(data?.gasUtilizedTarget || 0)?.toFixed(3)} MMscf`} img={gasutilized} title={"Gas Utilized"} num={`${parseFloat(data?.gasUtilized || 0)?.toFixed(3)} MMscf`} />
+                <DashboardCard variance={getStatus(data?.gasFlaredTarget, data?.gasFlared, true)} targetVal={`Target: ${parseFloat(data?.gasFlaredTarget || 0)?.toFixed(3)} MMscf`} img={gasflared} title={"Gas Flared"} num={`${parseFloat(data?.gasFlared || 0)?.toFixed(3)} MMscf`} />
+                <DashboardCard variance={getStatus(data?.gasUtilizedTarget, data?.gasUtilized)} targetVal={`Target: ${parseFloat(data?.gasUtilizedTarget || 0)?.toFixed(3)} MMscf`} img={gasutilized} title={"Gas Utilized"} num={`${parseFloat(data?.gasUtilized || 0)?.toFixed(3)} MMscf`} />
             </div>
 
             <div className="pt-5 flex flex-row flex-wrap justify-evenly shadow rounded" style={{ rowGap: "12px" }}>

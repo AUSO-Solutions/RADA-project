@@ -6,7 +6,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import tableStyles from '../table.module.scss'
-import RadaSwitch from 'Components/Input/RadaSwitch';
+// import RadaSwitch from 'Components/Input/RadaSwitch';
 import { ArrowBack, ArrowRight } from '@mui/icons-material';
 import Text from 'Components/Text';
 import { Button, Input } from 'Components';

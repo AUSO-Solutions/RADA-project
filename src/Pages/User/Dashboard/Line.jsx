@@ -1,25 +1,43 @@
 import React from "react";
 import { Line } from "react-chartjs-2";
 import Chart from "chart.js/auto";
-import { CategoryScale } from "chart.js";
+// import { CategoryScale } from "chart.js";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
 
-Chart.register(CategoryScale);
+Chart.register( CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend);
 
 
 function LineChart({ data, labels, datasets }) {
-
+// console.log(datasets?.every(set => set?.yAxisID === datasets[0]?.yAxisID),datasets)
   return (
     <div className="chart-container">
-      {/* <h2 style={{ textAlign: "center" }}>
-        Line Chart
-      </h2> */}
+   
       <Line
+
         data={{
           labels,
           datasets
         }}
         options={{
-
+          interaction: {
+            mode: 'index',
+            intersect: false,
+          },
           plugins: {
             title: {
               display: false,
@@ -36,37 +54,37 @@ function LineChart({ data, labels, datasets }) {
               }
             },
           },
-          stacked: false,
+          // stacked: false,
           scales: {
-            yAxes:[{
-              type: 'linear',
-              position: 'left',
-              id: 'gor',
-            },
-            {
-              type: 'linear',
-              position: 'right',
-              gridLines: {
-                drawOnChartArea: false
-              },
-              id: 'water',
-            }
-          ],
             y: {
-              stacked: false,
+              type:'linear',
+              position:'left',
+              id:"y",
               title: {
                 display: true,
-                text: datasets?.map(set => set?.axisname || set?.label)?.join(' | ')
-              },
-              
-            },
-            
-            x: {
-              title: {
-                display: true,
-                text: 'Date'
+                text: datasets?.filter(set => set?.yAxisID === 'y')?.map(set => set?.axisname || set?.label)?.join(' | ')
               }
             },
+            y1: {
+              type:'linear',
+              display:!datasets?.every(set => set?.yAxisID === datasets[0]?.yAxisID),
+              position:'right',
+              id:'y1',
+              grid: {
+                drawOnChartArea: false,
+              },
+              title: {
+                display: true,
+                text: datasets?.filter(set => set?.yAxisID === 'y1')?.map(set => set?.axisname || set?.label)?.join(' | ')
+              },
+            },
+            
+            // x: {
+            //   title: {
+            //     display: true,
+            //     text: 'Date'
+            //   }
+            // },
           },
 
         }}
