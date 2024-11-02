@@ -30,6 +30,8 @@ import { firebaseFunctions } from 'Services';
 import { useGetSetups } from 'hooks/useSetups';
 import { useMe } from 'hooks/useMe';
 import { permissions } from 'Assets/permissions';
+import { closeModal } from 'Store/slices/modalSlice';
+import Note from '../Note';
 
 
 // const TableInput = ({ type = '', ...props }) => {
@@ -51,6 +53,8 @@ export default function GasTable() {
   const dispatch = useDispatch()
   const [searchParams, setSearchParams] = useSearchParams()
   const [setup, setSetup] = useState({})
+
+  const [captureData, setCaptureData] = useState(null)
   const [showSettings, setShowSettings] = useState(false)
   // const [date, setDate] = useState(dayjs().format("YYYY-MM-DD"))
   const date = useMemo(() => searchParams.get('date'), [searchParams])
@@ -70,7 +74,7 @@ export default function GasTable() {
 
   const { setups: IPSCs } = useGetSetups("IPSC")
 
-  const IPSC = useMemo(() => IPSCs?.find(IPSC => IPSC?.month === dayjs().format('YYYY-MM') && IPSC?.asset === setup?.asset), [IPSCs, setup?.asset])
+  const IPSC = useMemo(() => IPSCs?.find(IPSC => IPSC?.month === dayjs(date).format('YYYY-MM') && IPSC?.asset === setup?.asset), [IPSCs, setup?.asset, date])
 
   const flowstationsTargets = IPSC?.flowstationsTargets
   const averageTarget = IPSC?.averageTarget
@@ -82,6 +86,23 @@ export default function GasTable() {
     totalGasProduced: 0,
   })
   const gasTypes = ["Gas Flared USM", "Fuel Gas", "Export Gas"].map(type => ({ label: type, value: camelize(type) }))
+
+  const addNote = async (note) => {
+    dispatch(setLoadingScreen({ open: true }))
+    try {
+      // await firebaseFunctions('addNoteToVolumeCapture', { id: captureData?.id, note, type: 'gas' })
+
+      await firebaseFunctions('addNoteToVolumeCapture', { date: captureData?.date, asset: captureData?.asset, note, type: 'gas' })
+      setCaptureData(prev => ({ ...prev, note }))
+      toast.success('Note added successfully')
+      dispatch(closeModal())
+    } catch (error) {
+      console.log(error)
+    } finally {
+      dispatch(setLoadingScreen({ open: false }))
+    }
+  }
+
 
   const handleChange = ({ flowStation, field, value, readingIndex, flowStationField, gasType }) => {
 
@@ -144,6 +165,8 @@ export default function GasTable() {
     const getDayCapture = async () => {
       try {
         const { data } = await firebaseFunctions('getGasVolumeByDateAndAsset', { asset: setup?.asset, date: date }, false, { loadingScreen: true })
+        console.log(data)
+        setCaptureData(data)
         const dayTableValues = Object.fromEntries((data?.flowstations || [])?.map(flowstation => {
           return [flowstation?.name, {
             "meters": Object.fromEntries(Object.entries(flowstation?.meters || {}).map(meter => (
@@ -220,6 +243,7 @@ export default function GasTable() {
     const payload = {
       date: date,
       asset: setup.asset,
+      note: captureData?.note,
       fluidType: 'gas',
       totalGasProduced: totals.totalGasProduced,
       setupId: setup?.id,
@@ -256,6 +280,8 @@ export default function GasTable() {
         {reportTypes__?.length && <RadioSelect defaultValue={setup?.reportTypes?.[0]} list={reportTypes__} onChange={onSelectReportType} />} <RadaSwitch label="Edit Table" labelPlacement="left" />
       </div>
       <div className='flex items-center gap-2 '>
+
+        <Note title='Volume measurement Highlight' onSave={addNote} defaultValue={captureData?.note} />
         <AttachSetup setup={setup} />
         <Link to={'/users/fdc/daily?tab=volume-measurement'}>   <Text className={'cursor-pointer'} color={colors.rada_blue}>View setups</Text></Link>
         <RadaDatePicker onChange={onDateChange} value={date} max={dayjs().format('YYYY-MM-DD')} />

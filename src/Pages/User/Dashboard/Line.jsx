@@ -3,7 +3,7 @@ import { Line } from "react-chartjs-2";
 import Chart from "chart.js/auto";
 // import { CategoryScale } from "chart.js";
 import {
-  Chart as ChartJS,
+  // Chart as ChartJS,
   CategoryScale,
   LinearScale,
   PointElement,

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import Overview from './Overview'
 import Insights from './BusinessIntelligence'
 import Tab from 'Components/tab'
@@ -30,49 +30,44 @@ const tabs = [
 ]
 
 const Dashboard = () => {
+
   const dispatch = useDispatch();
   const createOpt = item => ({ label: item, value: item })
   const [tab, setTab] = useState(0)
   const setupData = useSelector(state => state.setup)
   const assets = useAssetByName(setupData?.asset)
   const { assetNames } = useAssetNames()
-  useEffect(() => {
-    dispatch(setSetupData({ name: 'asset', value: setupData?.asset || assetNames?.[0] }))
-    dispatch(setSetupData({ name: 'startDate', value: (dayjs().startOf('month').format('YYYY-MM-DD')) }))
-    dispatch(setSetupData({ name: 'endDate', value: (dayjs().subtract(1, "day").format('YYYY-MM-DD')) }))
-  }, [assetNames, dispatch, setupData?.asset])
+
   const productionStrings = useMemo(() => {
-    // console.log(assets.assetData, setupData?.flowstation)
     const strings = (assets.assetData.filter(data => data.flowStation === setupData?.flowstation)?.map(data => data?.productionString)).map(createOpt)
-    // console.log(strings)
     return strings
   }, [assets, setupData?.flowstation])
+
+
   return (
     <div className='h-full'>
-      <Header
-        name={'Dashboard'}
-      />
-
+      <Header name={'Dashboard'} />
       <div>
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingRight: 40, }} >
           < tabs style={{ display: 'flex', gap: '40px', paddingLeft: 40, borderBottom: "1px solid rgba(230, 230, 230, 1)" }} >
             {tabs.map((x, i) => <Tab key={i} text={x.title} active={i === tab} onClick={() => setTab(i)} />)}
           </ tabs>
-          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 20 }}>
+          <div  key={tab} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 20 }}>
             {(tabs[tab]?.title === 'Business Intelligence' || tabs[tab].title === 'Production Surveillance') &&
               <>
                 <div style={{ width: '120px' }} >
                   <Input placeholder={'Assets'} required
-                    type='select' options={assetNames?.map(assetName => ({ value: assetName, label: assetName }))}
+                    type='select' options={[{ label: 'All', value: '' }].concat(assetNames?.map(assetName => ({ value: assetName, label: assetName })))}
                     onChange={(e) => {
                       dispatch(setSetupData({ name: 'asset', value: e?.value }))
                       dispatch(setSetupData({ name: 'flowstation', value: '' }))
                     }}
-                    defaultValue={{ value: setupData?.asset, label: setupData?.asset }}
+                  defaultValue={{ label: 'All', value: '' }}
                   />
                 </div>
                 <div style={{ width: '150px' }}>
-                  <Input key={setupData?.asset} placeholder={'Flow Stations'} required defaultValue={{ label: 'All', value: '' }}
+                  <Input key={setupData?.asset} placeholder={'Flow Stations'} required
+                    defaultValue={{ label: 'All', value: '' }}
                     type='select' options={[{ label: 'All', value: '' }].concat(assets.flowStations?.map(createOpt))}
                     onChange={(e) => dispatch(setSetupData({ name: 'flowstation', value: e?.value }))}
                   />

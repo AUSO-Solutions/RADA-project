@@ -23,6 +23,7 @@ import BroadCastSuccessfull from 'Partials/BroadCast/BroadCastSuccessfull';
 import { openModal } from 'Store/slices/modalSlice';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { bsw } from 'utils';
+import { firebaseFunctions } from 'Services';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -51,7 +52,24 @@ const Summary = () => {
   const [showChart, setShowChart] = useState(false);
   // const switches = ['Oil/Condensate', 'Gas'];
   const [curr, setCurr] = useState({})
-  console.log(curr)
+  const [notes, setNotes] = useState({
+    liquidNote: '', gasNote: ''
+  })
+  // console.log(curr)
+
+  useEffect(() => {
+    const getNotes = async () => {
+      try {
+        const { data: liquidData } = await firebaseFunctions('getOilOrCondensateVolumeByDateAndAsset', { asset: setupData?.asset, date: setupData?.startDate }, false, { loadingScreen: false })
+        const { data: gasData } = await firebaseFunctions('getGasVolumeByDateAndAsset', { asset: setupData?.asset, date: setupData?.startDate }, false, { loadingScreen: false })
+        setNotes({ gasNote: gasData?.note, liquidNote: liquidData?.note })
+      } catch (error) {
+        setNotes({ gasNote: '', liquidNote: ''})
+      }
+    }
+    if (setupData?.asset && setupData?.startDate) getNotes()
+
+  }, [setupData?.asset, setupData?.startDate])
   const values = useMemo(() => {
     return [
       { name: "Gross Liquid (bbls/day)", target: parseFloat(tableData.grossTarget || 0).toFixed(3), actual: parseFloat(tableData.grossProduction || 0).toFixed(3) },
@@ -73,11 +91,11 @@ const Summary = () => {
 
   const data = useMemo(() => {
     return {
-      labels: [`Target (${curr?.target})`,`Actual  (${curr?.actual})`],
+      labels: [`Target (${curr?.target})`, `Actual  (${curr?.actual})`],
       datasets: [
         {
           label: curr?.name,
-          data: [curr?.target,curr?.actual,],
+          data: [curr?.target, curr?.actual,],
           backgroundColor: [
             "#29A2CC",
             "#D31E1E",
@@ -217,9 +235,18 @@ const Summary = () => {
               name: 'Remarks', key: 'remarks'
             },
           ]}
-
           data={values} />
 
+
+      </div>
+
+      <div className='pl-[30px]'>
+        <Text weight={600} size={16}>
+          Highlights   </Text> <br />
+        <Text weight={400} size={14}>
+          Gas :  {notes?.gasNote || 'No note'} <br />
+          Liquid :  {notes?.liquidNote || 'No note'}
+        </Text>
 
       </div>
 

@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import DashboardCard from "Components/dashboardCard";
 import assets from 'Assets/images/assets.svg'
 import gasexported from 'Assets/images/gasexported.svg'
@@ -9,14 +9,17 @@ import InsightsGraphCard from "Components/insightsGraphCard";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine, } from 'recharts';
 import OilProductionVariantChart from "./OilProductionVariantChart";
 import { useFetch } from "hooks/useFetch";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import GasProductionVariantChart from "./GasProductionVariantChart";
 import { sum } from "utils";
+import { setSetupData } from "Store/slices/setupSlice";
+import dayjs from "dayjs";
 // import { useAssetNames } from "hooks/useAssetNames";
 // import { useAssetByName } from "hooks/useAssetByName";
 
 
 const Insights = () => {
+    const dispatch = useDispatch()
     const querys = useSelector(state => state?.setup)
     // console.log(querys)
     const res = useFetch({
@@ -43,11 +46,14 @@ const Insights = () => {
         "OML 147 Flowstation": 'orange'
     }), [])
     const targetForthisMonth = useMemo(() => {
-        const oil = sum(Object.values(data?.ipscTarget?.flowstationsTargets || {})?.map(target => target?.oilRate));
-        const gas = sum(Object.values(data?.ipscTarget?.flowstationsTargets || {})?.map(target => target?.gasRate));
+        const oil = sum(Object.values(data?.ipscTarget?.[0]?.flowstationsTargets || {})?.map(target => target?.oilRate));
+        const gas = sum(Object.values(data?.ipscTarget?.[0]?.flowstationsTargets || {})?.map(target => target?.gasRate));
         return { oil, gas }
     }, [data])
-
+    useEffect(() => {
+        dispatch(setSetupData({ name: 'startDate', value: dayjs().startOf('month').format('YYYY-MM-DD') }))
+        dispatch(setSetupData({ name: 'endDate', value: dayjs().endOf('month').format('YYYY-MM-DD') }))
+    }, [dispatch])
     const OilProductionChart = () => {
         return (
             <ResponsiveContainer width="100%" height={350}>
@@ -62,7 +68,10 @@ const Insights = () => {
                     {
                         data.flowstations?.sort((a, b) => a?.localeCompare(b))?.map(flowstation => <Bar dataKey={flowstation} stackId="a" fill={colors[flowstation]} />)
                     }
-                    <ReferenceLine alwaysShow y={parseInt(targetForthisMonth.oil)} label={`IPSC (${parseInt(targetForthisMonth.oil)})`} stroke="grey" strokeDasharray="4 4" strokeWidth={3} />
+                    <ReferenceLine alwaysShow y={parseInt(targetForthisMonth.oil)}
+                        //  label={`IPSC (${parseInt(targetForthisMonth.oil)})`}
+                        label={{ value:`IPSC (${parseInt(targetForthisMonth.oil)})`, fill: 'black', fontWeight: 600 }}
+                        stroke="grey" strokeDasharray="4 4" strokeWidth={3} />
                 </BarChart>
             </ResponsiveContainer>
         );
@@ -85,7 +94,11 @@ const Insights = () => {
                     <Bar dataKey="Fuel Gas" stackId="a" fill="#14A459" name="Utilized Gas" />
                     <Bar dataKey="Export Gas" stackId="a" fill="#A8D18D" name="Export Gas" />
                     <Bar dataKey="Flared Gas" stackId="a" fill="#F4B184" name="Flared Gas" />
-                    <ReferenceLine alwaysShow y={targetForthisMonth?.gas} label={`IPSC (${parseInt(targetForthisMonth?.gas)})`} stroke="grey" strokeDasharray="4 4" strokeWidth={2} />
+                    <ReferenceLine alwaysShow y={targetForthisMonth?.gas} 
+                    // label={`IPSC (${parseInt(targetForthisMonth?.gas)})`}
+
+                    label={{ value:`IPSC (${parseInt(targetForthisMonth.gas)})`, fill: 'black', fontWeight: 600 }}
+                     stroke="grey" strokeDasharray="4 4" strokeWidth={2} />
                 </BarChart>
             </ResponsiveContainer>
             // </div>
@@ -121,10 +134,10 @@ const Insights = () => {
             </div>
 
             <div className="pt-5 flex flex-row flex-wrap justify-evenly shadow rounded" style={{ rowGap: "12px" }}>
-                <InsightsGraphCard title={`${querys?.asset} Oil Production (bopd)`}>{<OilProductionChart />}</InsightsGraphCard>
-                <InsightsGraphCard title={`${querys?.asset} Oil Production Variance Analysis`}>{<OilProductionVariantChart data={data} />}</InsightsGraphCard>
-                <InsightsGraphCard title={`${querys?.asset} Gas Production (MMscf/d)`}>{<GasProductionChart />}</InsightsGraphCard>
-                <InsightsGraphCard title={`${querys?.asset} Gas Production Variance Analysis `}>{<GasProductionVariantChart data={data} />}
+                <InsightsGraphCard title={`${querys?.asset || "All assets"} Oil Production (bopd)`}>{<OilProductionChart />}</InsightsGraphCard>
+                <InsightsGraphCard title={`${querys?.asset || "All assets"} Oil Production Variance Analysis`}>{<OilProductionVariantChart data={data} />}</InsightsGraphCard>
+                <InsightsGraphCard title={`${querys?.asset || "All assets"} Gas Production (MMscf/d)`}>{<GasProductionChart />}</InsightsGraphCard>
+                <InsightsGraphCard title={`${querys?.asset || "All assets"} Gas Production Variance Analysis `}>{<GasProductionVariantChart data={data} />}
                 </InsightsGraphCard>
                 {/* <InsightsGraphCard /> */}
             </div>

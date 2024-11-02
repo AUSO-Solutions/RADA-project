@@ -24,7 +24,7 @@ function Sidenav() {
     return { module: paths_[1], parent: paths_[2], child: paths_[3]?.toLowerCase() }
   }, [pathname])
   const { user } = useMe()
-  console.log(user)
+  // console.log(user)
   const paths = useMemo(() => ({
     admin: [
       {

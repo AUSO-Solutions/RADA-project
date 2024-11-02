@@ -50,22 +50,23 @@ const getInsights = onCall(async (request) => {
             .collection("liquidVolumes")
             .where("date", ">=", startDate_)
             .where("date", "<=", endDate_)
-        if (asset) oilStartEndData = oilStartEndData.where("asset", "in", asset);
+        if (asset) oilStartEndData = oilStartEndData.where("asset", "==", asset);
 
         let gasStartEndData = db
             .collection("gasVolumes")
             .where("date", ">=", startDate_)
             .where("date", "<=", endDate_)
-        if (asset) gasStartEndData = gasStartEndData.where("asset", "in", asset);
+        if (asset) gasStartEndData = gasStartEndData.where("asset", "==", asset);
 
         let defermentStartEndData = db
             .collection("deferments")
             .where("date", ">=", startDate_)
             .where("date", "<=", endDate_)
-        if (asset) defermentStartEndData = defermentStartEndData.where("asset", "in", asset);
+        if (asset) defermentStartEndData = defermentStartEndData.where("asset", "==", asset);
 
         const ipscTarget = (await db.collection('setups').doc('IPSC')
-            .collection("setupList").where("asset", "==", asset)
+            .collection("setupList")
+            .where("asset", "==", asset)
             .where('month', '>=', dayjs(startDate).format("YYYY-MM"))
             .where('month', '<=', dayjs(endDate).format("YYYY-MM"))
             .get())?.docs.map(doc => doc?.data())

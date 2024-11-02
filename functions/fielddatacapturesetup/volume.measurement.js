@@ -19,7 +19,7 @@ const captureOilOrCondensate = onCall(async (request) => {
     let { data } = request;
     logger.log("data ----", { data });
     const { date, asset, flowstations, fluidType, averageTarget, idToken } = data;
-    await getPermissions(idToken,{check:['Edit Daily Production and Operation Report']})
+    await getPermissions(idToken, { check: ['Edit Daily Production and Operation Report'] })
 
     if (!date || !asset || !flowstations) {
       throw {
@@ -171,7 +171,7 @@ const captureGas = onCall(async (request) => {
     let { data } = request;
     logger.log("data ----", { data });
 
-    const { date, asset, flowstations, averageTarget, setupId, totalGasProduced, subtotal, idToken} = data;
+    const { date, asset, flowstations, averageTarget, setupId, totalGasProduced, subtotal, idToken } = data;
     await getPermissions(idToken, { check: ['Edit Daily Production and Operation Report'] })
     if (!date || !asset || !flowstations) {
       throw new Error({
@@ -214,18 +214,45 @@ const addNoteToVolumeCapture = onCall(async (request) => {
   try {
     let { data } = request;
     logger.log("data ----", { data });
-    const { oilCaputeId, gasCaptureId, note } = data;
-    if (!oilCaputeId && !gasCaptureId) {
+    const { date, asset, type = '', note } = data;
+    if (!date && !asset) {
+
       throw {
         code: "cancelled",
-        message: "Please provide oil or gas capture id",
+        message: "Please provide liquid or gas capture date & asset",
+      };
+    }
+    const types = ['liquid', 'gas']
+    if (!types.includes(type)) {
+      throw {
+        code: "cancelled",
+        message: "Type must be liquid or gas",
+      };
+    }
+    if (!note) {
+      throw {
+        code: "cancelled",
+        message: "Please provide a note",
       };
     }
 
     const db = admin.firestore();
-    if (oilCaputeId) await db.collection("liquidVolumes").doc(oilCaputeId).update({ note });
-    if (gasCaptureId) await db.collection("gasVolumes").doc(gasCaptureId).update({ note });
-    return id;
+
+    const collection = type === 'liquid' ? "liquidVolumes" : "gasVolumes"
+    if (date && asset) {
+      const quer = db.collection(collection).where('date', "==", date).where('asset', '==', asset)
+      const prev = (await quer.get())?.docs?.[0];
+
+      if (prev?.exists) await db.collection(collection).doc(prev?.id).update({ note });
+      if (!prev?.exists) {
+        throw {
+          code: "cancelled",
+          message: "No capture found!",
+        };
+      }
+    }
+
+    return {message:"Successful"} ;
   } catch (error) {
     logger.log("error ===> ", error);
     throw new HttpsError(error?.code, error?.message);
@@ -382,4 +409,5 @@ module.exports = {
   getGasVolumeByDateAndAsset,
   getOilOrCondensateVolumesByAsset,
   deleteOilOrCondensateVolumeByID,
+  addNoteToVolumeCapture
 };

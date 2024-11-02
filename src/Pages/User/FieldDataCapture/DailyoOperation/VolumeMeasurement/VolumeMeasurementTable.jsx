@@ -30,6 +30,7 @@ import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
 import Note from '../Note';
 import { useGetSetups } from 'hooks/useSetups';
 import { useMe } from 'hooks/useMe';
+import { closeModal } from 'Store/slices/modalSlice';
 // import {  permissions } from 'Assets/permissions';
 
 
@@ -60,6 +61,7 @@ export default function VolumeMeasurementTable() {
   const [showSettings, setShowSettings] = useState(false)
   const [currReport, setCurrReport] = useState(setup?.reportTypes?.[0])
   const [searchParams, setSearchParams] = useSearchParams()
+  const [captureData, setCaptureData] = useState(null)
 
   const date = searchParams.get('date')
   useEffect(() => {
@@ -73,7 +75,7 @@ export default function VolumeMeasurementTable() {
   const isGross = currReport === 'Gross Liquid'
 
   const { setups: IPSCs } = useGetSetups("IPSC")
-  const IPSC = IPSCs?.find(IPSC => IPSC?.month === dayjs().format('YYYY-MM') && IPSC?.asset === setup?.asset)
+  const IPSC = IPSCs?.find(IPSC => IPSC?.month === dayjs(date).format('YYYY-MM') && IPSC?.asset === setup?.asset)
   const flowstationsTargets = IPSC?.flowstationsTargets
 
   const [tableValues, setTableValues] = useState({})
@@ -174,6 +176,8 @@ export default function VolumeMeasurementTable() {
     const getDayCapture = async () => {
       try {
         const { data } = await firebaseFunctions('getOilOrCondensateVolumeByDateAndAsset', { asset: setup?.asset, date: date }, false, { loadingScreen: true })
+        console.log(data)
+        setCaptureData(data)
         // console.log(JSON.stringify(tableValues), data?.flowstations)
         const dayTableValues = Object.fromEntries((data?.flowstations || [])?.map(flowstation => {
           return [flowstation?.name, {
@@ -218,13 +222,10 @@ export default function VolumeMeasurementTable() {
         const isNum = (num) => !isNaN(num)
         if (isNum(initialReading) || isNum(finalReading)) handleChange({ flowStation: flowStation?.name, field: 'finalReading', value: finalReading, readingIndex })
         if (isNum(deductionInitialReading) || isNum(deductionFinalReading)) handleChange({ flowStation: flowStation?.name, field: 'deductionFinalReading', value: deductionFinalReading, readingIndex })
-
       });
     });
     // eslint-disable-next-line
   }, [setup])
-
-
 
   const calculatedGrossOrnNet = (subTotal, bsw, type = 'net') => {
     let netResult = (subTotal * (1 - bsw / 100)).toFixed(3) //for net (Gross* (1-bsw/100))
@@ -234,11 +235,20 @@ export default function VolumeMeasurementTable() {
     if (isNaN(netResult || netResult)) return 0
   }
 
-  // console.log(tableValues)
-  const [volumeNote, setVolumeNote] = useState("")
-  const addNote = (note) => {
-    setVolumeNote(note)
+  const addNote = async (note) => {
+    dispatch(setLoadingScreen({ open: true }))
+    try {
+      await firebaseFunctions('addNoteToVolumeCapture', { date: captureData?.date, asset: captureData?.asset, note, type: 'liquid' })
+      setCaptureData(prev => ({ ...prev, note }))
+      toast.success('Note added successfully')
+      dispatch(closeModal())
+    } catch (error) {
+
+    } finally {
+      dispatch(setLoadingScreen({ open: false }))
+    }
   }
+
   const averageTarget = IPSC?.averageTarget
   const save = async (e) => {
     e.preventDefault()
@@ -257,7 +267,7 @@ export default function VolumeMeasurementTable() {
       totals,
       setupId: setup?.id,
       averageTarget,
-      note: volumeNote,
+      note: captureData?.note,
       flowstations: flowStations.map(flowStation => {
         const addDeduction = flowStation?.measurementType === 'tankDipping' ? {
           deduction: {
@@ -338,7 +348,7 @@ export default function VolumeMeasurementTable() {
           {currReport ? <RadioSelect key={currReport} onChange={onSelectReportType} defaultValue={currReport} list={setup?.reportTypes?.concat(attacmentSetup?.reportTypes)} /> : 'Loading report...'} <RadaSwitch label="Edit Table" labelPlacement="left" />
         </div>
         <div className='flex items-center gap-2 '>
-          <Note title='Volume measurement Highlight' onSave={addNote} defaultValue />
+          <Note title='Volume measurement Highlight' onSave={addNote} defaultValue={captureData?.note} />
           <AttachSetup setup={setup} />
           <Link to={'/users/fdc/daily?tab=volume-measurement'}>
             <Text className={'cursor-pointer'} color={colors.rada_blue}>View setups</Text>
@@ -353,7 +363,7 @@ export default function VolumeMeasurementTable() {
       {showSettings && <VolumeSettings onClickOut={() => setShowSettings(false)} onComplete={setSetup} />}
       < form className='px-3 ' onSubmit={save} >
         <TableContainer className={`m-auto border ${tableStyles.borderedMuiTable}`}>
-          {!IPSC && <Alert severity='info' className='my-2' hidden={!IPSC}>
+          {!IPSC && <Alert severity='error' className='my-2' hidden={!IPSC}>
             No IPSC for this {setup?.asset} this month
           </Alert>}
           <Table sx={{ minWidth: 700 }} >

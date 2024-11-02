@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import LineChart from './Line'
 import { clearSetup } from 'Store/slices/setupSlice'
 import { sum } from 'utils'
-import { Line2 } from './Line2'
+// import { Line2 } from './Line2'
 
 const ProductionSurveilance = () => {
   const setupData = useSelector(state => state?.setup)
@@ -13,12 +13,12 @@ const ProductionSurveilance = () => {
     return () => {
       dispatch(clearSetup())
     }
-  }, [])
+  }, [dispatch])
   const { data } = useFetch({ firebaseFunction: 'getSurveillanceData', payload: { asset: setupData?.asset, flowstation: setupData?.flowstation }, refetch: setupData })
   const result = useMemo(() => {
     // console.log(setupData)
     const x = data.length ? JSON.parse(data) : []
-    // console.log(x)
+    console.log(x)
     let y = []
     if (setupData?.productionString && setupData?.flowstation) {
       y = (x?.productionStrings?.[setupData?.productionString])
