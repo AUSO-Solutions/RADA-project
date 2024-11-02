@@ -25,7 +25,7 @@ const Overview = () => {
             </div>
 
             <div className="w-full flex flex-row mt-10 gap-3 ">
-                <div className="w-[70%] bg-[#FFFFFF] mx-5 pt-5 rounded-lg" >
+                <div className="w-[100%] bg-[#FFFFFF] mx-5 pt-5 rounded-lg" >
                     <Text size={'22px'} weight={'500'} className='pl-5' >Activities</Text>
                     <div className="ml-5 bg-[#FAFAFA]  h-[62px] flex flex-row gap-5 border-4 border-[#FAFAFA] rounded-full w-[300px] mt-5 items-center justify-around" >
                         <div className='text-[#595959] hover:bg-[#00A3FF] hover:text-[white] h-[50px] w-[120px] flex items-center justify-center hover:rounded-3xl cursor-pointer ' >
@@ -59,7 +59,7 @@ const Overview = () => {
                     </div>
 
                 </div>
-                <div className="w-[30%] bg-[#FFFFFF] mx-5 p-5 rounded-lg" >
+                {/* <div className="w-[30%] bg-[#FFFFFF] mx-5 p-5 rounded-lg" >
                     <Text size={'22px'} weight={'500'} >Pending Broadcast</Text>
                     <hr className="mt-3" />
                     <div className="flex flex-col gap-5 pt-5 overflow-y-scroll" >
@@ -71,7 +71,7 @@ const Overview = () => {
                         <BroadcastCard />
                     </div>
 
-                </div>
+                </div> */}
             </div>
         </div>
     )

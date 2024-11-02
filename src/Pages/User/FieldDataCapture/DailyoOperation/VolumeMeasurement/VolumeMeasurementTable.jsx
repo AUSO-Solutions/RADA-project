@@ -418,7 +418,7 @@ export default function VolumeMeasurementTable() {
                         }
                         {
                           measurementType === "Tank Dipping" && <TableRow>
-                            <TableCell align="center">Deduction</TableCell>
+                            <TableCell align="center">Export</TableCell>
                             <TableCell align="center">
                               <TableInput type='number'
                                 value={tableValues?.[name]?.deductionInitialReading}
