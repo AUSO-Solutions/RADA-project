@@ -64,7 +64,17 @@ const ProductionSurveilance = () => {
 
     const liquidOilData = data?.map((item, i) => ({ liquid: item?.gross, oil: item?.oil }))
     const liquidOilDataset = [
-
+      {
+        label: "Gas Produced (MMscf)",
+        data: data?.map((item, i) => item?.gas),
+        borderColor: "#319112",
+        borderWidth: 3, pointRadius: .5,
+        yAxisID: 'y1',
+        // fill: {
+        //   target: "origin",
+        //   above: "#31911270"
+        // }
+      },
       {
         label: "Oil Produced (bopd)",
         axisname: 'Oil Produced',
@@ -72,10 +82,10 @@ const ProductionSurveilance = () => {
         borderColor: "#e85912",
         borderWidth: 3, pointRadius: .5,
         yAxisID: 'y',
-        fill: {
-          target: "origin",
-          above: "#e8591270"
-        }
+        // fill: {
+        //   target: "origin",
+        //   above: "#e8591270"
+        // }
       },
       {
         label: "Liquid Produced (blpd)",
@@ -84,22 +94,12 @@ const ProductionSurveilance = () => {
         borderColor: "#280eb4",
         borderWidth: 3, pointRadius: .5,
         yAxisID: 'y',
-        fill: {
-          target: "origin",
-          above: "#280eb470"
-        }
+        // fill: {
+        //   target: "origin",
+        //   above: "#280eb470"
+        // }
       },
-      {
-        label: "Daily Gas (MMscf)",
-        data: data?.map((item, i) => item?.gas),
-        borderColor: "#319112",
-        borderWidth: 3, pointRadius: .5,
-        yAxisID: 'y1',
-        fill: {
-          target: "origin",
-          above: "#31911270"
-        }
-      }
+     
     ]
     const liquidOil = {
       dataset: liquidOilDataset,
