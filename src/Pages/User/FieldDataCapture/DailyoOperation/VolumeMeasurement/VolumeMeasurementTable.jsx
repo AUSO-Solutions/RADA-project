@@ -131,7 +131,7 @@ export default function VolumeMeasurementTable() {
         netProduction: deductionDiference
       }
 
-      const subTotal = parseFloat(sum(Object.values(updatedMeters || {}).map(value => parseFloat(value.netProduction)))) - parseFloat(deductionTotal.toFixed(5) || 0)
+      const subTotal = Math.abs(parseFloat(sum(Object.values(updatedMeters || {}).map(value => parseFloat(value.netProduction)))) - parseFloat(deductionTotal.toFixed(5) || 0))
       let updatedFlowStation = {
         ...prevFlowStation,
         meters: updatedMeters,
