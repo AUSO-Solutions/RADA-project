@@ -26,8 +26,8 @@ import { openModal } from 'Store/slices/modalSlice';
 
 
 export default function ScheduleTable() {
-    const {pathname ,search } = useLocation()
-    const {user} =  useMe()
+    const { pathname, search } = useLocation()
+    const { user } = useMe()
     const [loading] = React.useState(false)
     const [wellTest, setWellTest] = React.useState({})
     const id = React.useMemo(() => new URLSearchParams(search).get('id'), [search])
@@ -59,26 +59,26 @@ export default function ScheduleTable() {
                 </div>
 
                 {(user.permitted.approveData || user.permitted.queryData) && <Actions actions={[
-                            {
-                                name: 'Query Result',
-                                onClick: () => dispatch(openModal({
-                                    component: <Query header={'Query Well Test Schdedule'} id={wellTest?.id}
-                                        setupType={'wellTestSchedule'} title={createWellTitle(wellTest)} pagelink={pathname + search} />
-                                })),
-                                permitted :  user.permitted.queryData
-                            },
-                            {
-                                name: 'Approve', onClick: () => dispatch(openModal({
-                                    component: <Approve header={'Approve Well Test Schdedule'} id={wellTest?.id}
-                                        setupType={'wellTestSchedule'} pagelink={pathname + search} title={createWellTitle(wellTest)} />
-                                })),
-                                permitted :  user.permitted.approveData
-                            },
+                    {
+                        name: 'Query Result',
+                        onClick: () => dispatch(openModal({
+                            component: <Query header={'Query Well Test Schdedule'} id={wellTest?.id}
+                                setupType={'wellTestSchedule'} title={createWellTitle(wellTest)} pagelink={pathname + search} />
+                        })),
+                        permitted: user.permitted.queryData
+                    },
+                    {
+                        name: 'Approve', onClick: () => dispatch(openModal({
+                            component: <Approve header={'Approve Well Test Schdedule'} id={wellTest?.id}
+                                setupType={'wellTestSchedule'} pagelink={pathname + search} title={createWellTitle(wellTest)} />
+                        })),
+                        permitted: user.permitted.approveData
+                    },
 
-                        ].filter(x=>x.permitted)} />}
+                ].filter(x => x.permitted)} />}
             </div>
-            <TableContainer className={`m-auto border ${tableStyles.borderedMuiTable}`}>
-                <Table sx={{ minWidth: 700 }} >
+            <TableContainer  sx={{ maxHeight: 700, }}  className={`m-auto border ${tableStyles.borderedMuiTable}`}>
+                <Table stickyHeader sx={{ minWidth: 700 }} >
                     <TableHead >
                         <TableRow sx={{ bgcolor: `rgba(239, 239, 239, 1) !important`, color: 'black', fontWeight: 'bold  !important' }}>
                             <TableCell style={{ fontWeight: '600' }} align="center" colSpan={12} >
@@ -109,7 +109,7 @@ export default function ScheduleTable() {
 
                         {
                             Object.values(wellTest?.wellsData || {})
-                            .sort((a, b) => a?.productionString.localeCompare(b?.productionString))
+                                .sort((a, b) => a?.productionString.localeCompare(b?.productionString))
                                 .sort((a, b) => ((b?.isSelected ? 1 : 0) - (a?.isSelected ? 1 : 0)))?.map((well, i) => {
                                     return <TableRow>
                                         <TableCell align="center">
@@ -152,7 +152,7 @@ export default function ScheduleTable() {
                 </Table>
             </TableContainer>
 
-          {user.permitted.remarkWellTestSchedule &&  <div className='flex justify-end py-1'>
+            {user.permitted.remarkWellTestSchedule && <div className='flex justify-end py-1'>
                 <Button loading={loading} onClick={save} width={120} >Save</Button>
             </div>}
         </div>

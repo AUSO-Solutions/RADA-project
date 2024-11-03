@@ -200,8 +200,8 @@ export default function MERDataTable() {
                 <div className='border rounded flex gap-3 p-2 my-2'>
                     {createWellTitle(merResult)}
                 </div>
-                <TableContainer className={`m-auto border  pr-5 ${tableStyles.borderedMuiTable}`}>
-                    <Table sx={{ minWidth: 700 }} >
+                <TableContainer sx={{maxHeight:700}} className={`m-auto border  pr-5 ${tableStyles.borderedMuiTable}`}>
+                    <Table stickyHeader sx={{ minWidth: 700 }} >
                         <TableHead>
                             <TableRow sx={{ bgcolor: `rgba(239, 239, 239, 1) !important`, color: 'black', fontWeight: 'bold  !important' }}>
                                 <TableCell style={{ fontWeight: '600' }} align="center" colSpan={2} >Field 1</TableCell>

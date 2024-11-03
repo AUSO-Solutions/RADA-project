@@ -77,8 +77,8 @@ export default function MERScheduleTable() {
 
                 ].filter(x => x.permitted)} />}
             </div>
-            <TableContainer className={`m-auto border ${tableStyles.borderedMuiTable}`}>
-                <Table sx={{ minWidth: 700 }} >
+            <TableContainer sx={{maxHeight:700}} className={`m-auto border ${tableStyles.borderedMuiTable}`}>
+                <Table stickyHeader sx={{ minWidth: 700 }} >
                     <TableHead >
                         <TableRow sx={{ bgcolor: `rgba(239, 239, 239, 1) !important`, color: 'black', fontWeight: 'bold  !important' }}>
                             <TableCell style={{ fontWeight: '600' }} align="center" colSpan={11} >
