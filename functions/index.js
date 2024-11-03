@@ -15,6 +15,7 @@ const { processIPSC, getOilAndGasAccounting } = require('./fielddatacapturesetup
 const { getInsight } = require('./admin/insights')
 const { getInsights } = require('./admin/insights/index2')
 const { getSurveillanceData } = require('./admin/surveillance/index2')
+const { getOverviewData } = require('./admin/overview/index')
 const { broadcast } = require('./broadcast/index')
 // const { setupWellTestData, getSetups, updateWellTestData, deleteWellTestDataSetup } = require('./fielddatacapturesetup/welltestsetup')
 
@@ -40,9 +41,9 @@ module.exports = {
   updateOilOrCondensate,
   getOilOrCondensateVolumeByDateAndAsset,
   getGasVolumeByDateAndAsset,
-  deleteOilOrCondensateVolumeByID,addNoteToVolumeCapture,
+  deleteOilOrCondensateVolumeByID, addNoteToVolumeCapture,
 
   createMerSchedule,
   processIPSC, getOilAndGasAccounting,
-  getInsight, getInsights, broadcast, getSurveillanceData
+  getInsight, getInsights, broadcast, getSurveillanceData,getOverviewData
 }

@@ -52,27 +52,32 @@ const Dashboard = () => {
           < tabs style={{ display: 'flex', gap: '40px', paddingLeft: 40, borderBottom: "1px solid rgba(230, 230, 230, 1)" }} >
             {tabs.map((x, i) => <Tab key={i} text={x.title} active={i === tab} onClick={() => setTab(i)} />)}
           </ tabs>
-          <div  key={tab} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 20 }}>
-            {(tabs[tab]?.title === 'Business Intelligence' || tabs[tab].title === 'Production Surveillance') &&
+          <div key={tab} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 20 }}>
+            {
               <>
-                <div style={{ width: '120px' }} >
-                  <Input placeholder={'Assets'} required
-                    type='select' options={[{ label: 'All', value: '' }].concat(assetNames?.map(assetName => ({ value: assetName, label: assetName })))}
-                    onChange={(e) => {
-                      dispatch(setSetupData({ name: 'asset', value: e?.value }))
-                      dispatch(setSetupData({ name: 'flowstation', value: '' }))
-                      dispatch(setSetupData({ name: 'productionString', value: '' }))
-                    }}
-                  defaultValue={{ label: 'All', value: '' }}
-                  />
-                </div>
-                <div style={{ width: '150px' }}>
-                  <Input key={setupData?.asset} placeholder={'Flow Stations'} required
-                    defaultValue={{ label: 'All', value: '' }}
-                    type='select' options={[{ label: 'All', value: '' }].concat(assets.flowStations?.map(createOpt))}
-                    onChange={(e) => dispatch(setSetupData({ name: 'flowstation', value: e?.value }))}
-                  />
-                </div>
+                {(tabs[tab]?.title === 'Production Surveillance' ||  tabs[tab]?.title === 'Business Intelligence') &&
+                  <>
+                    <div style={{ width: '120px' }} >
+                      <Input placeholder={'Assets'} required
+                        type='select' options={[{ label: 'All', value: '' }].concat(assetNames?.map(assetName => ({ value: assetName, label: assetName })))}
+                        onChange={(e) => {
+                          dispatch(setSetupData({ name: 'asset', value: e?.value }))
+                          dispatch(setSetupData({ name: 'flowstation', value: '' }))
+                          dispatch(setSetupData({ name: 'productionString', value: '' }))
+                        }}
+                        defaultValue={{ label: 'All', value: '' }}
+                      />
+                    </div>
+                    <div style={{ width: '150px' }}>
+                      <Input key={setupData?.asset} placeholder={'Flow Stations'} required
+                        defaultValue={{ label: 'All', value: '' }}
+                        type='select' options={[{ label: 'All', value: '' }].concat(assets.flowStations?.map(createOpt))}
+                        onChange={(e) => dispatch(setSetupData({ name: 'flowstation', value: e?.value }))}
+                      />
+                    </div>
+                  </>
+
+                }
                 {tabs[tab]?.title === 'Production Surveillance' && <div style={{ width: '150px' }}>
                   <Input key={setupData?.asset} placeholder={'Prod Strings'} required defaultValue={{ label: 'All', value: '' }}
                     type='select' options={[{ label: 'All', value: '' }].concat(productionStrings)}
@@ -80,7 +85,6 @@ const Dashboard = () => {
                   />
                 </div>}
                 {tabs[tab]?.title === 'Business Intelligence' && <div  >
-                  {/* {setupData?.startDate} -- {setupData?.endDate} */}
                   <DateRangePicker
                     startDate={setupData?.startDate}
                     endDate={setupData?.endDate}
@@ -88,6 +92,11 @@ const Dashboard = () => {
                       dispatch(setSetupData({ name: 'startDate', value: dayjs(e?.startDate).format('YYYY-MM-DD') }))
                       dispatch(setSetupData({ name: 'endDate', value: dayjs(e?.endDate).format('YYYY-MM-DD') }))
                     }} />
+                </div>}
+                {tabs[tab]?.title === 'Overview' && <div>
+                  <Input placeholder={'Date'} required defaultValue={dayjs().format('YYYY-MM-DD')}
+                    type='date' onChange={(e) => dispatch(setSetupData({ name: 'date', value: e?.target?.value }))}
+                  />
                 </div>}
               </>
             }

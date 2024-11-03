@@ -1,5 +1,5 @@
 import DashboardCard from "Components/dashboardCard";
-import React from "react";
+import React, { useMemo } from "react";
 import assets from 'Assets/images/assets.svg'
 import activewells from 'Assets/images/activewells.svg'
 import grossprodoil from 'Assets/images/grossprodoil.svg'
@@ -7,21 +7,36 @@ import grossprodgas from 'Assets/images/grossprodgas.svg'
 import noofreports from 'Assets/images/noofreports.svg'
 import Text from "Components/Text";
 import RadaTable from "Components/RadaTable";
-import BroadcastCard from "Components/broadcastCard";
+
+import { useFetch } from "hooks/useFetch";
+import { useSelector } from "react-redux";
+
 
 const Overview = () => {
 
-  
+    // const [overviewData, setOverviewData] = useState({})
+    const filter = useSelector(state => state?.setup)
+    const { data: overviewData } = useFetch({ firebaseFunction: 'getOverviewData', payload: { date: filter?.date }, refetch: filter })
+    // console.log( filter)
+
+    const result = useMemo(() => {
+        if (typeof overviewData === 'string') {
+            return JSON.parse(overviewData)
+        }
+        return {}
+    }, [overviewData])
+
+
 
     return (
         <div className="bg-[#FAFAFA]" >
 
             <div className="pt-3  flex flex-row justify-evenly" >
-                <DashboardCard img={assets} title={"Assets"} num={'3'} />
-                <DashboardCard img={activewells} title={"Active Wells"} num={'1000'} />
-                <DashboardCard img={grossprodoil} title={"Total Broadcast"} num={'100000'} />
-                <DashboardCard img={grossprodgas} title={"Total Commit"} num={'100000'} />
-                <DashboardCard img={noofreports} title={"No. of Reports"} num={'0'} />
+                <DashboardCard img={assets} title={"Assets"} num={result?.assets} />
+                <DashboardCard img={activewells} title={"Flowstations"} num={result?.flowstations} />
+                <DashboardCard img={grossprodoil} title={"Producing Reservoirs"} num={result?.producingReservoir} />
+                <DashboardCard img={grossprodgas} title={"Producing Wells"} num={result?.producingWells} />
+                <DashboardCard img={noofreports} title={"Shutin Wells"} num={result?.shutinWells} />
             </div>
 
             <div className="w-full flex flex-row mt-10 gap-3 ">
@@ -50,8 +65,7 @@ const Overview = () => {
                                 },
                                 {
                                     name: 'Assets', render: (data) => {
-                                        const memberslist = data?.assets?.map(asset => `${asset.name} ${asset.well}`).slice(0, 2).join(', ') + "..."
-                                        if (data?.assets?.length) return memberslist
+                                        if (data?.assets?.length) return data?.assets?.join(', ')
                                         return 'No asset present'
                                     }
                                 },
