@@ -1,4 +1,5 @@
 /* eslint-disable no-throw-literal */
+const dayjs = require("dayjs");
 const admin = require("firebase-admin");
 const logger = require("firebase-functions/logger");
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
@@ -28,7 +29,10 @@ const getSurveillanceData = onCall(async (request) => {
     const productionQuery = (await productionData.get()).docs.map(
       (doc) => doc?.data() || {}
     );
-    console.log('----', productionQuery)
+
+    // console.log('----', productionQuery)
+    const IPSCs = (await db.collection('setups').doc('IPSC').collection('setupList').where("asset", "==", asset).get())?.docs?.map(doc => doc?.data())
+    console.log(IPSCs)
     const productionStrings = {};
     const flowStationData = [];
 
@@ -39,6 +43,8 @@ const getSurveillanceData = onCall(async (request) => {
       let water = 0;
       let gas = 0;
       let date = dailyData?.date;
+      let fthp = 0;
+      let chokeSize = 0;
 
       dailyData?.productionData?.forEach((prodData) => {
         // Compute the running sum for the flowstation
@@ -47,12 +53,15 @@ const getSurveillanceData = onCall(async (request) => {
         oil += prodData.oil;
         water += prodData.water;
         gas += prodData.gas;
+        fthp = IPSCs?.find(IPSC => IPSC?.month === dayjs(date).format('YYYY-MM'))?.wellTestResultData?.[prodData.productionString]?.fthp || 0
+        chokeSize = IPSCs?.find(IPSC => IPSC?.month === dayjs(date).format('YYYY-MM'))?.wellTestResultData?.[prodData.productionString]?.chokeSize || 0
 
         const stringData = {
           date,
           ...prodData,
           waterCut: (prodData.water / prodData.gross) * 100,
           gor: (prodData.gas * 1000000) / prodData.oil,
+          fthp, chokeSize
         };
 
         if (prodData.productionString in productionStrings) {
@@ -73,6 +82,7 @@ const getSurveillanceData = onCall(async (request) => {
       });
     });
 
+    // console.log(productionStrings)
     const result = { flowStationData, productionStrings };
 
     return { data: JSON.stringify(result) };

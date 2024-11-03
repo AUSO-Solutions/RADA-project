@@ -13,7 +13,7 @@ import {
   Legend,
 } from 'chart.js';
 
-Chart.register( CategoryScale,
+Chart.register(CategoryScale,
   LinearScale,
   PointElement,
   LineElement,
@@ -22,11 +22,11 @@ Chart.register( CategoryScale,
   Legend);
 
 
-function LineChart({ data, labels, datasets }) {
-// console.log(datasets?.every(set => set?.yAxisID === datasets[0]?.yAxisID),datasets)
+function LineChart({ data, labels, datasets, range = { y: { max: null, min: null, }, y1: { max: null, min: null, } } }) {
+  // console.log(datasets?.every(set => set?.yAxisID === datasets[0]?.yAxisID),datasets)
   return (
     <div className="chart-container">
-   
+
       <Line
 
         data={{
@@ -57,19 +57,23 @@ function LineChart({ data, labels, datasets }) {
           // stacked: false,
           scales: {
             y: {
-              type:'linear',
-              position:'left',
-              id:"y",
+              type: 'linear',
+              position: 'left',
+              id: "y",
+              max: range?.y?.max ?? null,
+              min: range?.y?.min ?? null,
               title: {
                 display: true,
                 text: datasets?.filter(set => set?.yAxisID === 'y')?.map(set => set?.axisname || set?.label)?.join(' | ')
               }
             },
             y1: {
-              type:'linear',
-              display:!datasets?.every(set => set?.yAxisID === datasets[0]?.yAxisID),
-              position:'right',
-              id:'y1',
+              type: 'linear',
+              display: !datasets?.every(set => set?.yAxisID === datasets[0]?.yAxisID),
+              position: 'right',
+              id: 'y1',
+              max: range?.y1?.max ?? null,
+              min: range?.y1?.min ?? null,
               grid: {
                 drawOnChartArea: false,
               },
@@ -78,7 +82,7 @@ function LineChart({ data, labels, datasets }) {
                 text: datasets?.filter(set => set?.yAxisID === 'y1')?.map(set => set?.axisname || set?.label)?.join(' | ')
               },
             },
-            
+
             // x: {
             //   title: {
             //     display: true,

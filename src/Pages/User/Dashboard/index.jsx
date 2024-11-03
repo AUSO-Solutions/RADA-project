@@ -61,6 +61,7 @@ const Dashboard = () => {
                     onChange={(e) => {
                       dispatch(setSetupData({ name: 'asset', value: e?.value }))
                       dispatch(setSetupData({ name: 'flowstation', value: '' }))
+                      dispatch(setSetupData({ name: 'productionString', value: '' }))
                     }}
                   defaultValue={{ label: 'All', value: '' }}
                   />
