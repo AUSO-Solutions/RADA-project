@@ -48,33 +48,21 @@ const getOverviewData = onCall(async (request) => {
         // if (asset && flowstation) oilAccountingQuery = oilAccountingQuery.where('flowStation', '==', flowstation)
         const oilAccounting = (await oilAccountingQuery.get())?.docs?.map(doc => doc?.data())
 
-        // flowstations.forEach((flowstation) => {
 
-        //     const flowstationAccount = oilAccounting.find(account => account?.flowStation === flowstation)
-        //     const productionData = flowstationAccount?.productionData || []
+        if (oilAccounting.length) {
+            const allProductionData = oilAccounting?.flatMap(account => account?.productionData) || []
+            wells.forEach((well) => {
+                const stringData = allProductionData?.find(data => data?.productionString === well)
+                if (stringData?.uptimeProduction > 0) result.producingWells++
+                else result.shutinWells++
+            })
+            reservoirs.forEach((reservoir) => {
+                const stringData = allProductionData?.filter(data => data?.reservoir === reservoir) || []
+                if (stringData?.some(stringDatum => stringDatum?.uptimeProduction > 0)) result.producingReservoir++
+                else result.shutinReservoir++
+            })
+        }
 
-        //     productionData.forEach((stringData) => {
-        //         if (stringData?.uptimeProduction > 0) {
-        //             result.producingWells++
-        //         }else{
-
-        //         }
-        //     })
-
-        const allProductionData = oilAccounting?.flatMap(account => account?.productionData) || []
-
-        wells.forEach((well) => {
-            const stringData = allProductionData?.find(data => data?.productionString === well)
-            if (stringData?.uptimeProduction > 0) result.producingWells++
-            else result.shutinWells++
-        })
-        reservoirs.forEach((reservoir) => {
-            const stringData = allProductionData?.filter(data => data?.reservoir === reservoir) || []
-            if (stringData?.some(stringDatum => stringDatum?.uptimeProduction > 0)) result.producingReservoir++
-            else result.shutinReservoir++
-        })
-
-        // })
 
         result.assets = assets.length
         result.flowstations = flowstations.length
