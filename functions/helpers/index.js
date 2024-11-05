@@ -11,12 +11,13 @@ exports.generateRandomID = (len = 8) => {
 };
 
 exports.frontendUrl = 'https://ped-application-4d196.web.app'
-exports.sender = 'kehindesalaudeen222@gmail.com'
+exports.sender = 'rada.apps@newcross.com'
 exports.transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'kehindesalaudeen222@gmail.com',
-    pass: 'nffa llda lyrf jzle'
+    user: 'rada.apps@newcross.com',
+    pass:'newcross2024#'
+    // pass: 'nffa llda lyrf jzle'
   }
 });
 
