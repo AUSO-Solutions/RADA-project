@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux"
 import { clearSetup, setSetupData } from "Store/slices/setupSlice"
-import { Input } from "Components"
+import { Button, Input } from "Components"
 import { useEffect, useState } from "react"
 import Text from "Components/Text"
 import { closeModal, openModal } from "Store/slices/modalSlice"
@@ -40,31 +40,41 @@ const ImporFiles = () => {
     return (
         <div>
             <Input type='month' label={'MER Month'} onChange={e => dispatch(setSetupData({ name: 'month', value: e.target.value }))} defaultValue={{ label: setupData?.month, value: setupData?.month }} containerClass={'!w-fit self-right  p-2'} />
-            <div className="w-full  flex ">
-                <ExcelToCsv className="block  border w-[50%] text-center rounded m-3 p-3" onComplete={(jsonData, file) => {
-                    handleFiles('chokeSizes', jsonData)
-                    setFiles({ chokeFile: file })
-                }}>
-                    {setupData?.chokeSizes ?
-                        <><TickCircle color={colors.rada_blue} className="mx-auto" size={50} /> Choke sizes file uploaded</>
-                        : <>
-                            <BsPlus size={50} className="mx-auto" />
-                            Import file for production strings chokes
-                        </>}
+            <div className="w-full flex justify-between">
+                <div className="w-[50%] flex flex-col items-center">
+                    <ExcelToCsv className="block  border  text-center rounded m-3 p-3" onComplete={(jsonData, file) => {
+                        handleFiles('chokeSizes', jsonData)
+                        setFiles({ chokeFile: file })
+                    }}>
+                        {setupData?.chokeSizes ?
+                            <><TickCircle color={colors.rada_blue} className="mx-auto" size={50} /> Choke sizes file uploaded</>
+                            : <>
+                                <BsPlus size={50} className="mx-auto" />
+                                Import file for production strings chokes
+                            </>}
 
-                </ExcelToCsv>
-                <ExcelToCsv className="block border w-[50%] rounded m-3 p-3" onComplete={jsonData => handleFiles('staticParameters', jsonData)}>
+                    </ExcelToCsv> 
+                    <Button width={150} >
+                            <a href={'/DownloadTemplates/MERSchedule.xlsx'} download>Download Template</a>
+                        </Button>
+                </div>
+                <div className="w-[50%] flex flex-col items-center">
+                <ExcelToCsv className="block border  rounded m-3 p-3" onComplete={jsonData => handleFiles('staticParameters', jsonData)}>
                     {setupData?.staticParameters ?
                         <>
                             <TickCircle color={colors.rada_blue} className="mx-auto" size={50} />
                             Reservoir Parameterss file uploaded
                         </>
                         :
-                         <>
+                        <>
                             <BsPlus color={colors.rada_blue} size={50} className="mx-auto" />
                             Import file for Reservoir Parameters
                         </>}
                 </ExcelToCsv>
+                <Button width={150}  >
+                            <a href={'/DownloadTemplates/ReservoirData.xlsx'} download>Download Template</a>
+                        </Button>
+                </div>
             </div>
         </div>
     )
@@ -86,37 +96,40 @@ const Exists = () => {
     const { user } = useMe()
 
     return (
-        <div className="flex flex-wrap gap-4 m-5 ">
-            <Files name={(file) => `${createWellTitle(file, 'MER Data Schedule')}`} files={data} actions={[
-                { name: 'View', to: (file) => `/users/fdc/mer-data/schedule-table?id=${file?.id}` },
-                {
-                    name: 'MER DATA Result',
-                    to: (file) => `/users/fdc/mer-data/mer-data-result-table?scheduleId=${file?.id}`,
-                    // permitted: user.permitted.createAndeditMERdata
-                    hidden: (file) => user.permitted.createAndeditMERdata && file?.status === 'approved'
-                },
-                {
-                    name: 'Broadcast', to: (file) => null, onClick: (file) => dispatch(openModal({
-                        title: '',
-                        component: <BroadCast
-                            link={`/users/fdc/mer-data/mer-data-result-table?scheduleId=${file?.id}`}
-                            type={'MER Data'}
-                            date={dayjs(file?.month).format('MMM/YYYY')}
-                            title='Broadcast MER Data'
-                            subject={`${file?.asset} MER Data ${dayjs(file?.month).format('MMM/YYYY')}`}
-                            steps={['Select Group', 'Attachment', 'Broadcast']}
-                            stepsComponents={[
-                                <SelectGroup />,
-                                <Attachment details={`${file?.asset} MER Data ${dayjs(file?.startDate).format('MMM/YYYY')}`} />,
-                                <BroadCastSuccessfull details={`${file?.asset} MER Data ${dayjs(file?.startDate).format('MMM/YYYY')}`} />]} />
-                    })),
-                    hidden: (file) => user.permitted.broadcastData && file?.status === 'approved'
-                },
+        <>
+            <div className="flex flex-wrap gap-4 m-5 ">
+                <Files name={(file) => `${createWellTitle(file, 'MER Data Schedule')}`} files={data} actions={[
+                    { name: 'View', to: (file) => `/users/fdc/mer-data/schedule-table?id=${file?.id}` },
+                    {
+                        name: 'MER DATA Result',
+                        to: (file) => `/users/fdc/mer-data/mer-data-result-table?scheduleId=${file?.id}`,
+                        // permitted: user.permitted.createAndeditMERdata
+                        hidden: (file) => user.permitted.createAndeditMERdata && file?.status === 'approved'
+                    },
+                    {
+                        name: 'Broadcast', to: (file) => null, onClick: (file) => dispatch(openModal({
+                            title: '',
+                            component: <BroadCast
+                                link={`/users/fdc/mer-data/mer-data-result-table?scheduleId=${file?.id}`}
+                                type={'MER Data'}
+                                date={dayjs(file?.month).format('MMM/YYYY')}
+                                title='Broadcast MER Data'
+                                subject={`${file?.asset} MER Data ${dayjs(file?.month).format('MMM/YYYY')}`}
+                                steps={['Select Group', 'Attachment', 'Broadcast']}
+                                stepsComponents={[
+                                    <SelectGroup />,
+                                    <Attachment details={`${file?.asset} MER Data ${dayjs(file?.startDate).format('MMM/YYYY')}`} />,
+                                    <BroadCastSuccessfull details={`${file?.asset} MER Data ${dayjs(file?.startDate).format('MMM/YYYY')}`} />]} />
+                        })),
+                        hidden: (file) => user.permitted.broadcastData && file?.status === 'approved'
+                    },
 
 
 
-            ]} bottomRight={(file) => <SetupStatus setup={file} />} />
-        </div>
+                ]} bottomRight={(file) => <SetupStatus setup={file} />} />
+            </div>
+        </>
+
     )
 }
 

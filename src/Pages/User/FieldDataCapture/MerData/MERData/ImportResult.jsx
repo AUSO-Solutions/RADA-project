@@ -57,7 +57,12 @@ const Import = ({ onProceed = () => null }) => {
             <ExcelToCsv className={'border rounded p-3 '} onSelectFile={setFile} onComplete={setData}>
                 {file?.name || ' Import Mer test result'} <AttachFile />
             </ExcelToCsv> <br />
-            <Button onClick={importFile} disabled={!file} className={'px-[50px]'}>Proceed</Button>
+            <div className='flex gap-2' >
+                <Button onClick={importFile} disabled={!file} className={'px-[50px]'}>Proceed</Button>
+                <Button width={150} >
+                    <a href={'/DownloadTemplates/MERResult.xlsx'} download>Download Template</a>
+                </Button>
+            </div>
         </div>
     )
 

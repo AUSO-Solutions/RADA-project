@@ -60,7 +60,7 @@ export const ImportWellTestSchedule = ({ type = 'wellTestSchedule', btnText, onC
             return asset?.fields.includes(test?.field)
             // return false
         })
-        
+
         if (!flowstationExist) { toast.error('Some flowstations do not match MasterXY'); return }
         if (!stringExist) { toast.error('Some production strings do not match MasterXY'); return }
         if (!reservoirExist) { toast.error('Some reservoirs do not match MasterXY'); return }
@@ -118,6 +118,9 @@ export const ImportWellTestSchedule = ({ type = 'wellTestSchedule', btnText, onC
                     {file?.name || <> <Text> Import Well Test Scedule</Text> <AttachFile /></>}
                 </ExcelToCsv>
                 <Button className={'px-3'} onClick={onClick} disabled={!file}>{btnText || 'Confirm file'}</Button>
+                <Button width={150} >
+                    <a href={'/DownloadTemplates/OML24August2024WellTest.xlsx'} download>Download Template</a>
+                </Button>
 
             </div>
         </div>
