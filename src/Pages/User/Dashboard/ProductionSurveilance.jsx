@@ -130,7 +130,9 @@ const ProductionSurveilance = () => {
       borderWidth: 3, pointRadius: .5,
       yAxisID: 'y1',
     }
-    const liquidOilDatasets = [oilDataset, liquidDataset]
+    if (setupData?.productionString) dailyGasDataset.yAxisID = 'y1'
+    if (!setupData?.productionString) dailyGasDataset.yAxisID = 'y'
+    const liquidOilDatasets = setupData?.productionString ? [oilDataset, liquidDataset, dailyGasDataset] : [oilDataset, liquidDataset]
     const liquidOil = {
       dataset: liquidOilDatasets,
       labels
@@ -149,15 +151,15 @@ const ProductionSurveilance = () => {
       labels
     }
 
-    const fthpChoke ={
+    const fthpChoke = {
       dataset: [fthpDataset, chokeSizeDataset],
       labels
     }
 
     return {
-      liquidOil, dailyGas, gor, water,fthpChoke
+      liquidOil, dailyGas, gor, water, fthpChoke
     }
-  }, [result])
+  }, [result, setupData?.productionString])
   // console.log(graphs)
   return (
     <div className='p-3 flex flex-wrap gap-3 w-full '>
@@ -168,11 +170,11 @@ const ProductionSurveilance = () => {
       <div className='w-[48%] h-[auto] border rounded p-3 '>
         {<LineChart labels={graphs.water.labels} datasets={graphs?.water?.dataset} range={{ y: { max: 100, min: 0, } }} />}
       </div>
-  {  !setupData?.productionString &&    <div className='w-[48%] h-[auto] border rounded p-3 '>
+      {!setupData?.productionString && <div className='w-[48%] h-[auto] border rounded p-3 '>
         {<LineChart labels={graphs.dailyGas.labels} datasets={graphs?.dailyGas?.dataset} />}
       </div>}
-   {setupData?.productionString &&   <div className='w-[48%] h-[auto] border rounded p-3 '>
-        {<LineChart labels={graphs.fthpChoke.labels}  datasets={graphs?.fthpChoke?.dataset} range={{ y1: { max: 64, min: 0, } }}/>}
+      {setupData?.productionString && <div className='w-[48%] h-[auto] border rounded p-3 '>
+        {<LineChart labels={graphs.fthpChoke.labels} datasets={graphs?.fthpChoke?.dataset} range={{ y1: { max: 64, min: 0, } }} />}
       </div>}
       <div className='w-[48%] h-[auto] border rounded p-3 '>
         {<LineChart stacked={false} labels={graphs.gor.labels} datasets={graphs?.gor?.dataset} />}

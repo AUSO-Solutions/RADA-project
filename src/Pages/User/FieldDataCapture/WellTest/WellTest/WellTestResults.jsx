@@ -45,6 +45,7 @@ const WellTestResults = () => {
                         component: <BroadCast
                             link={`/users/fdc/well-test-data?page=ipsc&well-test-result-id=${file?.id}`}
                             type={'Well Test Result'}
+                            setup={file}
                             date={dayjs(file?.month).format('MMM/YYYY')}
                             title='Broadcast Well Test Result'
                             subject={`${file?.asset} MER Data ${dayjs(file?.month).format('MMM/YYYY')}`}

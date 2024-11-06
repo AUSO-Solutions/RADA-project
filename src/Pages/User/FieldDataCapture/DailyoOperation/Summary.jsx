@@ -64,7 +64,7 @@ const Summary = () => {
         const { data: gasData } = await firebaseFunctions('getGasVolumeByDateAndAsset', { asset: setupData?.asset, date: setupData?.startDate }, false, { loadingScreen: false })
         setNotes({ gasNote: gasData?.note, liquidNote: liquidData?.note })
       } catch (error) {
-        setNotes({ gasNote: '', liquidNote: ''})
+        setNotes({ gasNote: '', liquidNote: '' })
       }
     }
     if (setupData?.asset && setupData?.startDate) getNotes()
@@ -203,6 +203,7 @@ const Summary = () => {
           <Button onClick={(file) => dispatch(openModal({
             title: '',
             component: <BroadCast
+              setup={setupData}
               link={pathname + search}
               type={'Daily Production/Operation Report '}
               date={dayjs(setupData?.startDate).format('DD/MMM/YYYY')}

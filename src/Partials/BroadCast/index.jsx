@@ -10,16 +10,14 @@ import { clearFormdata } from 'Store/slices/formdataSlice'
 import { setLoadingScreen } from 'Store/slices/loadingScreenSlice'
 import { firebaseFileUpload, firebaseGetUploadedFile } from 'utils'
 
-
-
-const BroadCast = ({ title = "", steps = [], stepsComponents = [], onBroadcast = () => null, link, subject, type, date }) => {
+const BroadCast = ({ setup = {}, title = "", steps = [], stepsComponents = [], onBroadcast = () => null, link, subject, type, date }) => {
     const [activeStep, setActiveStep] = useState(0)
     const dispatch = useDispatch()
     const formdata = useSelector(state => state?.formdata)
     useEffect(() => {
-       return()=>{
-        dispatch(clearFormdata())
-       }
+        return () => {
+            dispatch(clearFormdata())
+        }
     }, [dispatch])
     const back = () => {
         setActiveStep(prev => {
@@ -38,7 +36,7 @@ const BroadCast = ({ title = "", steps = [], stepsComponents = [], onBroadcast =
 
                 const filepath = await firebaseFileUpload(formdata?.file, formdata?.file?.name)
                 const file_url = await firebaseGetUploadedFile(filepath)
-                await firebaseFunctions('broadcast', { groups: formdata?.selectedGroups, users: formdata?.selectedUsers, attachment: file_url, pagelink: link, subject, type, date })
+                await firebaseFunctions('broadcast', { groups: formdata?.selectedGroups, asset: setup?.asset, users: formdata?.selectedUsers, attachment: file_url, pagelink: link, subject, type, date })
                 onBroadcast()
                 setActiveStep(prev => {
                     if (prev !== steps?.length - 1) return prev + 1

@@ -4,6 +4,7 @@ const logger = require("firebase-functions/logger");
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const crypto = require('crypto');
 const { currentTime, transporter, sender, frontendUrl } = require("../../helpers");
+const { newAccountTemplate } = require("../../helpers/email_templates/newAccountTemplate");
 // const { getAuth, createUserWithEmailAndPassword } = require("firebase/auth");
 
 
@@ -53,18 +54,19 @@ const sendCreationEmail = (data) => {
         from: sender, // sender address
         to: data?.email,
         subject: 'RADA Appliation Account Creation!', // Subject line
-        html: `<b>Hello ${data?.firstName} ${data?.lastName}</b> <br>
-            <p>
-           Your successfully been added to the RADA PED Application <br> <br>
+        // html: `<b>Hello ${data?.firstName} ${data?.lastName}</b> <br>
+        //     <p>
+        //    Your successfully been added to the RADA PED Application <br> <br>
 
-            <a href="${frontendUrl}">Login via this url ${frontendUrl}  </a><br><br>
-            Your login details are <br />
-            Username: ${data?.email} <br />
-            Password: ${data?.password} 
+        //     <a href="${frontendUrl}">Login via this url ${frontendUrl}  </a><br><br>
+        //     Your login details are <br />
+        //     Username: ${data?.email} <br />
+        //     Password: ${data?.password} 
 
-            <br> <br>
-            You are receiving this email because you are registered to the PED Application.
-            </p>`
+        //     <br> <br>
+        //     You are receiving this email because you are registered to the PED Application.
+        //     </p>`
+        html: newAccountTemplate({ name: data?.firstName + " " + data?.lastName, email: data?.email, password: data?.password })
     }
 
     transporter.sendMail(msg, function (error, info) {
@@ -260,11 +262,11 @@ const changePassword = onCall(async (request) => {
     try {
         let { data } = request
         logger.log('data ----', { data })
-        const { email, uid, oldPassword, newPassword} = data
+        const { email, uid, oldPassword, newPassword } = data
         const db = admin.firestore()
         if (uid) {
             // await db.collection("users").doc(uid).update({ firstName, lastName, email, roles })
-            await admin.auth().updateUser(uid, { password:newPassword })
+            await admin.auth().updateUser(uid, { password: newPassword })
             return { status: 'success', data, message: 'User updated successfully' }
         } else {
             throw { code: 'cancelled', message: 'Error updating user.' }

@@ -104,6 +104,7 @@ const Exists = () => {
                         component: <BroadCast
                             link={`/users/fdc/well-test-data/ipsc-table?id=${file?.id}`}
                             type={'Well Test IPSC'}
+                            setup={file}
                             date={dayjs(file?.month).format('MMM/YYYY')}
                             title='Broadcast Well Test IPSC'
                             subject={`${file?.asset} Well Test IPSC ${dayjs(file?.month).format('MMM/YYYY')}`}

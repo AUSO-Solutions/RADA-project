@@ -333,6 +333,7 @@ const Exists = () => {
                         component: <BroadCast
                             link={`/users/fdc/well-test-data/well-test-table?id=${file?.id}`}
                             type={'MER Data'}
+                            setup={file}
                             date={dayjs(file?.month).format('MMM/YYYY')}
                             title='Broadcast Well Test Schedule'
                             subject={`${file?.asset} Well Test ${dayjs(file?.month).format('MMM/YYYY')}`}

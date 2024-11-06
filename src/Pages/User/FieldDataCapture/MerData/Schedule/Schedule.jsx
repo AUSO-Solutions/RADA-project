@@ -53,27 +53,27 @@ const ImporFiles = () => {
                                 Import file for production strings chokes
                             </>}
 
-                    </ExcelToCsv> 
+                    </ExcelToCsv>
                     <Button width={150} >
-                            <a href={'/DownloadTemplates/MERSchedule.xlsx'} download>Download Template</a>
-                        </Button>
+                        <a href={'/DownloadTemplates/MERSchedule.xlsx'} download>Download Template</a>
+                    </Button>
                 </div>
                 <div className="w-[50%] flex flex-col items-center">
-                <ExcelToCsv className="block border  rounded m-3 p-3" onComplete={jsonData => handleFiles('staticParameters', jsonData)}>
-                    {setupData?.staticParameters ?
-                        <>
-                            <TickCircle color={colors.rada_blue} className="mx-auto" size={50} />
-                            Reservoir Parameterss file uploaded
-                        </>
-                        :
-                        <>
-                            <BsPlus color={colors.rada_blue} size={50} className="mx-auto" />
-                            Import file for Reservoir Parameters
-                        </>}
-                </ExcelToCsv>
-                <Button width={150}  >
-                            <a href={'/DownloadTemplates/ReservoirData.xlsx'} download>Download Template</a>
-                        </Button>
+                    <ExcelToCsv className="block border  rounded m-3 p-3" onComplete={jsonData => handleFiles('staticParameters', jsonData)}>
+                        {setupData?.staticParameters ?
+                            <>
+                                <TickCircle color={colors.rada_blue} className="mx-auto" size={50} />
+                                Reservoir Parameterss file uploaded
+                            </>
+                            :
+                            <>
+                                <BsPlus color={colors.rada_blue} size={50} className="mx-auto" />
+                                Import file for Reservoir Parameters
+                            </>}
+                    </ExcelToCsv>
+                    <Button width={150}  >
+                        <a href={'/DownloadTemplates/ReservoirData.xlsx'} download>Download Template</a>
+                    </Button>
                 </div>
             </div>
         </div>
@@ -110,6 +110,7 @@ const Exists = () => {
                         name: 'Broadcast', to: (file) => null, onClick: (file) => dispatch(openModal({
                             title: '',
                             component: <BroadCast
+                                setup={file}
                                 link={`/users/fdc/mer-data/mer-data-result-table?scheduleId=${file?.id}`}
                                 type={'MER Data'}
                                 date={dayjs(file?.month).format('MMM/YYYY')}
