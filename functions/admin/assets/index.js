@@ -11,6 +11,7 @@ const {
   createDrainagePoint,
   getOMLIDOrCreate,
 } = require("./helpers");
+const { getUserGroups } = require("../../helpers/user");
 // const { getAuth, createUserWithEmailAndPassword } = require("firebase/auth");
 
 ;
@@ -157,9 +158,10 @@ const getAssets = onCall(async (request) => {
   const idToken = request.data?.idToken
   try {
     const db = admin.firestore();
-    const uid = (await admin.auth().verifyIdToken(idToken)).uid
-    const groups = (await db.collection('groups').where('members', 'array-contains', uid).get()).docs.map(doc => doc.data())
-    const assets = Array.from(new Set(groups.flatMap(group => group?.assets)))
+    // const uid = (await admin.auth().verifyIdToken(idToken)).uid
+    const groupDetails =  await getUserGroups(idToken)
+    const groups =groupDetails.groups
+    const assets = groupDetails.assets
     const res = await db.collectionGroup("assetList").where('asset', 'in', assets).get()
     // const size = res.size
     // const perpage = size / count
@@ -185,9 +187,10 @@ const getAssetsName = onCall(async (request) => {
       console.log(docs.map((doc) => doc.data()))
       names = docs.map((doc) => doc.data()).map(item => item?.assetName)
     } else {
-      const uid = (await admin.auth().verifyIdToken(idToken)).uid
-      const groups = (await db.collection('groups').where('members', 'array-contains', uid).get()).docs.map(doc => doc.data())
-      const assets = Array.from(new Set(groups.flatMap(group => group?.assets)))
+      // const uid = (await admin.auth().verifyIdToken(idToken)).uid
+      // const groups = (await db.collection('groups').where('members', 'array-contains', uid).get()).docs.map(doc => doc.data())
+      // const assets = Array.from(new Set(groups.flatMap(group => group?.assets)))
+      const assets = (await getUserGroups(idToken)).assets
       names = assets
     }
 
@@ -196,7 +199,7 @@ const getAssetsName = onCall(async (request) => {
     return { status: "success", data: names };
   } catch (error) {
     logger.log("error=>", error);
-    return { status: "failed", error };
+    throw new HttpsError('cancelled', error?.message);
   }
 });
 const getAssetByName = onCall(async ({ data }) => {
@@ -216,7 +219,9 @@ const getAssetByName = onCall(async ({ data }) => {
     }
   } catch (error) {
     logger.log("error=>", error);
-    return { status: "failed", error };
+    // throw { status: "failed", error };
+
+    throw new HttpsError('cancelled', error?.message);
   }
 });
 

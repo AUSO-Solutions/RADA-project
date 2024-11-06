@@ -316,6 +316,27 @@ const deleteUserByUid = onCall(async (request) => {
         throw new HttpsError(error?.code, error?.message)
     }
 });
+// const refreshToken = onCall(async (request) => {
+//     try {
+//         let { data } = request
+//         logger.log('data ----', { data })
+//         const { uid, idToken } = data
+
+//         if (uid) {
+//             // (await admin.auth().(idToken)).exp
+//             const customToken = await admin.auth().createCustomToken(uid)
+
+//             return { status: 'success', message: 'New token generated', token: customToken }
+//         } else {
+//             throw { code: 'cancelled', message: 'Error deleting user.' }
+//         }
+//     } catch (error) {
+//         logger.log('error ===> ', error)
+//         throw new HttpsError(error?.code, error?.message)
+//     }
+// });
+
+
 
 const forgotPassword = onCall(async (request) => {
     try {

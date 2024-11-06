@@ -21,9 +21,10 @@ export const authSlice = createSlice({
             state.user.lastUsedApp = Date.now()
         },
         refreshTokens: (state, { payload }) => {
-            state.user.access_token = payload?.access_token
-            state.user.refresh_token = payload?.refresh_token
-            state.user.loggedInAt = Date.now()
+            state.user.token = payload
+            // state.user.access_token = payload?.access_token
+            // state.user.refresh_token = payload?.refresh_token
+            // state.user.loggedInAt = Date.now()
         }
     }
 });
