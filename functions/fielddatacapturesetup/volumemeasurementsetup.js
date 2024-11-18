@@ -77,8 +77,7 @@ const updateSetupStatus = onCall(async (request) => {
         if (!statuses.includes(status)) throw { message: `allowed status includes ${statuses?.join(', ')}`, code: 'cancelled' }
         const members = groups.flatMap(group => (group?.members.map(member => ({ group: group?.groupName, ...member }))))
         const emailAddresses = Array.from(new Set(members?.map(member => member?.email)?.concat(users?.map(user => user?.email))))
-        var maillist = emailAddresses
-        // .join(',');
+        var maillist = emailAddresses .join(',');
         console.log(maillist)
 
         var msg = {
@@ -94,14 +93,14 @@ const updateSetupStatus = onCall(async (request) => {
                 You are receiving this email because you are registered to the PED Application 
             </p>`
         }
-        await transporter().sendMultiple(msg)
-        // transporter.sendMail(msg, function (error, info) {
-        //     if (error) {
-        //         console.log(error);
-        //     } else {
-        //         console.log('Email sent: ' + info.response);
-        //     }
-        // });
+        // await transporter().sendMultiple(msg)
+        transporter.sendMail(msg, function (error, info) {
+            if (error) {
+                console.log(error);
+            } else {
+                console.log('Email sent: ' + info.response);
+            }
+        });
 
         await db.collection('setups').doc(setupType).collection("setupList").doc(id).update({
             status: status?.toLowerCase(), statusMessage

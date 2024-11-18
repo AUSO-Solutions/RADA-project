@@ -57,14 +57,14 @@ const sendCreationEmail = async (data) => {
         html: newAccountTemplate({ name: data?.firstName + " " + data?.lastName, email: data?.email, password: data?.password })
     }
 
-    // transporter.sendMail(msg, function (error, info) {
-    //     if (error) {
-    //         console.log(error);
-    //     } else {
-    //         console.log('Email sent: ' + info.response);
-    //     }
-    // });
-    await transporter().send(msg)
+    transporter.sendMail(msg, function (error, info) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+    // await transporter().send(msg)
 }
 
 const createUser = onCall(async (request) => {

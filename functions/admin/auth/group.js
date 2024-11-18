@@ -38,14 +38,14 @@ const sendAddedToGroupEmail = async (group, user) => {
         html: addToGroup({ name: user?.firstName + " " + user?.lastName, groupName: group?.groupName, assets: group?.assets?.join(', ') })
     }
 
-    // transporter.sendMail(msg, function (error, info) {
-    //     if (error) {
-    //         console.log(error);
-    //     } else {
-    //         console.log('Email sent: ' + info.response);
-    //     }
-    // });
-    await transporter().send(msg)
+    transporter.sendMail(msg, function (error, info) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+    // await transporter().send(msg)
 }
 const addMembersToGroup = onCall(async ({ data }) => {
 
