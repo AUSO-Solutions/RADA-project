@@ -45,7 +45,6 @@ const Group = () => {
             // setMembers(prev => prev.filter(prev => prev?.id !== asset))
             setRefetch(Math.random())
             setGroupDetail(prev => ({ ...prev, assets: prev?.assets?.filter(assetDetail => assetDetail !== asset) }))
-
         } catch (error) {
 
         } finally {
@@ -54,8 +53,6 @@ const Group = () => {
     }
 
     const dispatch = useDispatch()
-
-
     const usersAddable = useMemo(() => {
         return users
             .filter(user => !group?.members
@@ -64,7 +61,7 @@ const Group = () => {
             .map(user => ({ label: user?.firstName + " " + user?.lastName, value: user?.uid }))
     }, [group, users])
     const assetsAddable = useMemo(() => {
-        return assetNames
+        return Array.from(new Set(assetNames))
             .filter(assetName => !group?.assets?.includes(assetName))
             .map(assetName => ({ label: assetName, value: assetName }))
     }, [group, assetNames])

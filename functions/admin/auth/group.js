@@ -30,31 +30,22 @@ const createGroup = onCall(async (request) => {
     }
 });
 
-const sendAddedToGroupEmail = (group, user) => {
+const sendAddedToGroupEmail = async (group, user) => {
     var msg = {
         from: sender, // sender address
         to: user?.email,
-        subject: `Addition to Group  `, // Subject line
-        // html: `<b>Hello ${user?.firstName} ${user?.lastName}</b> <br>
-        //     <p>
-        //    Your successfully been added to ${group?.groupName} in the RADA PED Application <br> <br>
-
-        //     you now have access to ${group?.assets?.join(', ')}. <br />
-        //     Kindly login to see the changes effect 
-
-        //     <br> <br>
-        //     You are receiving this email because you are registered to the PED Application.
-        //     </p>`
+        subject: `Addition to Group  `,
         html: addToGroup({ name: user?.firstName + " " + user?.lastName, groupName: group?.groupName, assets: group?.assets?.join(', ') })
     }
 
-    transporter.sendMail(msg, function (error, info) {
-        if (error) {
-            console.log(error);
-        } else {
-            console.log('Email sent: ' + info.response);
-        }
-    });
+    // transporter.sendMail(msg, function (error, info) {
+    //     if (error) {
+    //         console.log(error);
+    //     } else {
+    //         console.log('Email sent: ' + info.response);
+    //     }
+    // });
+    await transporter().send(msg)
 }
 const addMembersToGroup = onCall(async ({ data }) => {
 

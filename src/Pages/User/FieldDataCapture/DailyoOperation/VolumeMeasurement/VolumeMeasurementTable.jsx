@@ -54,6 +54,7 @@ export default function VolumeMeasurementTable() {
   const [setup, setSetup] = useState({})
   const id = useMemo(() => new URLSearchParams(search).get('id'), [search])
   const { data: res } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'volumeMeasurement', id } })
+  // const [tableKey, setTableKey] = useState
 
   const { data: attacmentSetup } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'volumeMeasurement', id: res?.attachmentId }, dontFetch: !res?.attachmentId/* */ })
   useEffect(() => { setSetup(res) }, [res])
@@ -101,8 +102,8 @@ export default function VolumeMeasurementTable() {
       const initialReading = field === "initialReading" ? value : parseFloat(prevFlowStationListIndexValues?.initialReading || 0)
       const deductionFinalReading = flowStationField === "deductionFinalReading" ? value : (prevFlowStation?.deductionFinalReading || 0)
       const deductionInitialReading = flowStationField === "deductionInitialReading" ? value : (prevFlowStation?.deductionInitialReading || 0)
-      const difference = ((Math.abs(parseFloat(finalReading) - parseFloat(initialReading))))
-      const deductionDiference = ((Math.abs(parseFloat(deductionFinalReading || 0) - parseFloat(deductionInitialReading || 0))))
+      const difference = (((parseFloat(finalReading) - parseFloat(initialReading))))
+      const deductionDiference = (parseFloat(deductionFinalReading || 0) - parseFloat(deductionInitialReading || 0))
       const netProduction = (difference * parseFloat(meterFactor || 0))
       const deductionTotal = (deductionDiference * parseFloat(deductionMeterFactor || 0))
       const gross = (difference.toFixed(5) * parseFloat(meterFactor || 0).toFixed(5))
@@ -131,7 +132,7 @@ export default function VolumeMeasurementTable() {
         netProduction: deductionDiference
       }
 
-      const subTotal = Math.abs(parseFloat(sum(Object.values(updatedMeters || {}).map(value => parseFloat(value.netProduction)))) - parseFloat(deductionTotal.toFixed(5) || 0))
+      const subTotal =(parseFloat(sum(Object.values(updatedMeters || {}).map(value => parseFloat(value.netProduction)))) + parseFloat(deductionTotal.toFixed(5) || 0))
       let updatedFlowStation = {
         ...prevFlowStation,
         meters: updatedMeters,
@@ -176,7 +177,6 @@ export default function VolumeMeasurementTable() {
     const getDayCapture = async () => {
       try {
         const { data } = await firebaseFunctions('getOilOrCondensateVolumeByDateAndAsset', { asset: setup?.asset, date: date }, false, { loadingScreen: true })
-        console.log(data)
         setCaptureData(data)
         // console.log(JSON.stringify(tableValues), data?.flowstations)
         const dayTableValues = Object.fromEntries((data?.flowstations || [])?.map(flowstation => {
@@ -335,6 +335,7 @@ export default function VolumeMeasurementTable() {
     })
   }, [setSearchParams])
   const onDateChange = (value) => {
+    setTableValues({})
     setSearchParams(prev => {
       prev.set('date', value)
       return prev
@@ -362,15 +363,15 @@ export default function VolumeMeasurementTable() {
 
       {showSettings && <VolumeSettings onClickOut={() => setShowSettings(false)} onComplete={setSetup} />}
       < form className='px-3 ' onSubmit={save} >
-        <TableContainer className={`m-auto border ${tableStyles.borderedMuiTable}`}>
+        <TableContainer className={`m-auto border ${tableStyles.borderedMuiTable}`} >
           {!IPSC && <Alert severity='error' className='my-2' hidden={!IPSC}>
             No IPSC for this {setup?.asset} this month
           </Alert>}
-          <Table sx={{ minWidth: 700 }} >
+          <Table sx={{ minWidth: 700 }} key={date}Yes >
             <TableHead >
               <TableRow sx={{ bgcolor: `rgba(239, 239, 239, 1) !important`, color: 'black', fontWeight: 'bold  !important' }}>
                 <TableCell align="left" colSpan={3} >
-                  Flow stations
+                  Flow stations {date}
                 </TableCell>
                 <TableCell align="center" colSpan={3} >
                   Meter/Tank Readings
@@ -399,7 +400,7 @@ export default function VolumeMeasurementTable() {
                 ?.map(
                   ({ name, numberOfUnits, measurementType, readings, ...rest }, flowStationIndex) => {
                     return (
-                      <TableBody>
+                      <TableBody key={name}> 
                         <TableRow key={name}>
                           <TableCell align="left" rowSpan={parseFloat(numberOfUnits) + ((!measurementType || measurementType === "Metering") ? 2 : 3)} colSpan={3}>
                             {name} ({measurementType || "Metering"}) {measurementType}

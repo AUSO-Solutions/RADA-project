@@ -26,23 +26,25 @@ export function findLineByLeastSquares(values_x, values_y) {
     /*
      * Calculate the sum for each of the parts necessary.
      */
+    // console.log(values_y)
     for (let i = 0; i< values_length; i++) {
-        x = values_x[i];
-        y = values_y[i];
+        x = parseFloat(values_x[i]);
+        y = parseFloat(values_y[i]);
         x_sum+= x;
         y_sum+= y;
         xx_sum += x*x;
         xy_sum += x*y;
         count++;
     }
-
+// console.log({xx_sum,xy_sum,})
     /*
      * Calculate m and b for the line equation:
      * y = x * m + b
      */
     var m = (count*xy_sum - x_sum*y_sum) / (count*xx_sum - x_sum*x_sum);
+    //  console.log(count,xy_sum,x_sum,y_sum,'--',(count*xy_sum - x_sum*y_sum))
     var b = (y_sum/count) - (m*x_sum)/count;
-
+// console.log({y_sum,y})
     /*
      * We then return the x and y data points according to our fit
      */
@@ -52,9 +54,10 @@ export function findLineByLeastSquares(values_x, values_y) {
     for (let i = 0; i < values_length; i++) {
         x = values_x[i];
         y = x * m + b;
+        // console.log(x, m, b)
         result_values_x.push(x);
         result_values_y.push(y);
     }
-
+// console.log({result_values_y})
     return [result_values_x, result_values_y];
 }

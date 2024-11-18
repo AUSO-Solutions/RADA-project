@@ -165,7 +165,7 @@ export default function GasTable() {
     const getDayCapture = async () => {
       try {
         const { data } = await firebaseFunctions('getGasVolumeByDateAndAsset', { asset: setup?.asset, date: date }, false, { loadingScreen: true })
-        console.log(data)
+        // console.log(data)
         setCaptureData(data)
         const dayTableValues = Object.fromEntries((data?.flowstations || [])?.map(flowstation => {
           return [flowstation?.name, {
@@ -201,6 +201,7 @@ export default function GasTable() {
     })
   }, [setSearchParams])
   const onDateChange = (value) => {
+    setTableValues({})
     setSearchParams(prev => {
       prev.set('date', value)
       return prev
@@ -297,7 +298,7 @@ export default function GasTable() {
           {!IPSC && <Alert severity='error' className='my-2' hidden={!IPSC}>
             No IPSC for this {setup?.asset} this month
           </Alert>}
-          <Table sx={{ minWidth: 700 }} >
+          <Table sx={{ minWidth: 700 }} key={date}>
             <TableHead >
               <TableRow sx={{ bgcolor: `rgba(239, 239, 239, 1) !important`, color: 'black', fontWeight: 'bold  !important' }}>
                 <TableCell align="left" colSpan={3} >

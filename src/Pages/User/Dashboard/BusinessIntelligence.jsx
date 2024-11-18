@@ -21,7 +21,7 @@ import dayjs from "dayjs";
 const Insights = () => {
     const dispatch = useDispatch()
     const querys = useSelector(state => state?.setup)
-    // console.log(querys)
+    console.log(querys)
     const res = useFetch({
         firebaseFunction: 'getInsights', payload: {
             asset: querys?.asset,
@@ -46,11 +46,15 @@ const Insights = () => {
         "OML 147 Flowstation": 'orange'
     }), [])
     const targetForthisMonth = useMemo(() => {
-        const oil = sum(Object.values(data?.ipscTarget?.[0]?.flowstationsTargets || {})?.map(target => target?.oilRate));
-        const gas = sum(Object.values(data?.ipscTarget?.[0]?.flowstationsTargets || {})?.map(target => target?.gasRate));
+        // const allTargets =  
+        const selectedFlowstationTarget = (data?.ipscTarget?.flatMap(target => Object.values(target?.flowstationsTargets)))
+        // console.log()
+        const oil = sum(selectedFlowstationTarget?.map(target => target?.oilRate));
+        const gas = sum(selectedFlowstationTarget?.map(target => target?.gasRate));
         return { oil, gas }
     }, [data])
     useEffect(() => {
+        dispatch(setSetupData({ name: "asset", value: '' }))
         dispatch(setSetupData({ name: 'startDate', value: dayjs().startOf('month').format('YYYY-MM-DD') }))
         dispatch(setSetupData({ name: 'endDate', value: dayjs().endOf('month').format('YYYY-MM-DD') }))
     }, [dispatch])
@@ -70,7 +74,7 @@ const Insights = () => {
                     }
                     <ReferenceLine alwaysShow y={parseInt(targetForthisMonth.oil)}
                         //  label={`IPSC (${parseInt(targetForthisMonth.oil)})`}
-                        label={{ value:`IPSC (${parseInt(targetForthisMonth.oil)})`, fill: 'black', fontWeight: 600 }}
+                        label={{ value: `IPSC (${parseInt(targetForthisMonth.oil)})`, fill: 'black', fontWeight: 600 }}
                         stroke="grey" strokeDasharray="4 4" strokeWidth={3} />
                 </BarChart>
             </ResponsiveContainer>
@@ -94,11 +98,11 @@ const Insights = () => {
                     <Bar dataKey="Fuel Gas" stackId="a" fill="#14A459" name="Utilized Gas" />
                     <Bar dataKey="Export Gas" stackId="a" fill="#A8D18D" name="Export Gas" />
                     <Bar dataKey="Flared Gas" stackId="a" fill="#F4B184" name="Flared Gas" />
-                    <ReferenceLine alwaysShow y={targetForthisMonth?.gas} 
-                    // label={`IPSC (${parseInt(targetForthisMonth?.gas)})`}
+                    <ReferenceLine alwaysShow y={targetForthisMonth?.gas}
+                        // label={`IPSC (${parseInt(targetForthisMonth?.gas)})`}
 
-                    label={{ value:`IPSC (${parseInt(targetForthisMonth.gas)})`, fill: 'black', fontWeight: 600 }}
-                     stroke="grey" strokeDasharray="4 4" strokeWidth={2} />
+                        label={{ value: `IPSC (${parseInt(targetForthisMonth.gas)})`, fill: 'black', fontWeight: 600 }}
+                        stroke="grey" strokeDasharray="4 4" strokeWidth={2} />
                 </BarChart>
             </ResponsiveContainer>
             // </div>

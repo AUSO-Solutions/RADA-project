@@ -64,12 +64,12 @@ const getInsights = onCall(async (request) => {
             .where("date", "<=", endDate_)
         if (asset) defermentStartEndData = defermentStartEndData.where("asset", "==", asset);
 
-        const ipscTarget = (await db.collection('setups').doc('IPSC')
+        let ipscTargetQuery = db.collection('setups').doc('IPSC')
             .collection("setupList")
-            .where("asset", "==", asset)
             .where('month', '>=', dayjs(startDate).format("YYYY-MM"))
             .where('month', '<=', dayjs(endDate).format("YYYY-MM"))
-            .get())?.docs.map(doc => doc?.data())
+        if (asset) ipscTargetQuery = ipscTargetQuery.where("asset", "==", asset)
+        const ipscTarget = (await ipscTargetQuery.get())?.docs.map(doc => doc?.data())
 
         const oilQuery = (await oilStartEndData.get()).docs.map(
             (doc) => doc?.data() || {}

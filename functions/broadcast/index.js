@@ -13,7 +13,8 @@ const broadcast = onCall(async (request) => {
         const db = admin.firestore()
         const members = groups.flatMap(group => (group?.members.map(member => ({ group: group?.groupName, ...member }))))
         const emailAddresses = Array.from(new Set(members?.map(member => member?.email)?.concat(users?.map(user => user?.email))))
-        var maillist = emailAddresses.join(',');
+        var maillist = emailAddresses
+        // .join(',');
 
         console.log(maillist)
 
@@ -36,7 +37,7 @@ const broadcast = onCall(async (request) => {
             html: broadcastTemplate({ date, pageLink: link + pagelink, attactedFile: attachment , name:'', asset})
         }
 
-        transporter.sendMail(msg, function (error, info) {
+        transporter().sendMultiple(msg, function (error, info) {
             if (error) {
                 console.log(error);
             } else {

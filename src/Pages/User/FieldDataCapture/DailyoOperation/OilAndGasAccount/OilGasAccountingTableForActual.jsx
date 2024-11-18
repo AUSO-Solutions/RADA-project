@@ -113,8 +113,16 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
             const actualProduction = results?.actualProduction || []
             const deferment = results?.deferment?.drainagePoints || []
             if (searchParams.get('table') === 'actual-production') {
+                // console.log(deferment)
                 const res = Object.fromEntries(actualProduction.map(data => {
-                    return [data?.productionString, { ...wellTestResultData[data?.productionString], ...data }]
+                    const thisDeferment = deferment?.find(defermentData => defermentData?.productionString === data?.productionString)
+                    // console.log({ thisDeferment })
+                    return [data?.productionString, {
+                        ...wellTestResultData[data?.productionString],
+                        defermentCategory: thisDeferment?.defermentCategory,
+                        defermentSubCategory: thisDeferment?.defermentSubCategory,
+                        ...data
+                    }]
                 }))
                 // console.log(res)
                 setWellTestResultData(res)
@@ -193,7 +201,7 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
                             const name = e.target.name
                             const value = e.target.value
                             let status = name === 'uptimeProduction' ? { status: parseInt(value) === 0 ? 'Closed In' : 'Producing' } : {}
-                            console.log({name,value})
+                            console.log({ name, value })
                             setWellTestResultData(prev => ({
                                 ...prev,
                                 [well?.productionString]: {
@@ -225,6 +233,7 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
 
                             {
                                 <> <TableCell style={{ background: '#D9E3F9' }} align="center">
+                                    {/* {well?.defermentCategory}  */}
                                     <select disabled={searchParams.get('table') === 'deferred-production'} className='bg-[inherit] outline-none' value={well?.defermentCategory} defaultValue='Unscheduled Deferment' onChange={handleChange} name='defermentCategory' >
                                         {defermentCategoryArray?.map(category => <option value={category}>{category}</option>)}
                                     </select>

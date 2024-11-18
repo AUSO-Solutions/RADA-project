@@ -43,6 +43,8 @@ const Dashboard = () => {
     return strings
   }, [assets, setupData?.flowstation])
 
+  // console.log({setupData})
+
 
   return (
     <div className='h-full'>

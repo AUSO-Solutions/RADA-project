@@ -29,7 +29,7 @@ function App() {
       return () => {
         getAuth().onIdTokenChanged((snap) => {
           
-          snap.getIdToken().then(res => {
+          snap.getIdToken(true).then(res => {
             // console.log(res)
             store.dispatch(setUser({ ...store.getState().auth.user, token: res }))
           })

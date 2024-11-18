@@ -58,13 +58,15 @@ const updateStatus = onCall(async (request) => {
             html
         }
 
-        transporter.sendMail(msg, function (error, info) {
-            if (error) {
-                console.log(error);
-            } else {
-                console.log('Email sent: ' + info.response);
-            }
-        });
+        // transporter.sendMail(msg, function (error, info) {
+        //     if (error) {
+        //         console.log(error);
+        //     } else {
+        //         console.log('Email sent: ' + info.response);
+        //     }
+        // });
+
+        await transporter().send(msg)
 
         await db.collection('setup').doc(setupType).update({ status, query: query || null })
         await db.collection('queries').add({

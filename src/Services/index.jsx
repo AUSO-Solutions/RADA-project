@@ -66,7 +66,8 @@ const firebaseFunctions = async (functionName, payload, hideError = false, optio
     } catch (error) {
         // console.log(error?.message, '---', typeof error?.message)
         if (error?.message?.includes("token has expired")) {
-            // store.dispatch(())
+            console.log("token has expired")
+            // window.location.reload()
             toast.info('Session expired!')
             await logout_()
         }

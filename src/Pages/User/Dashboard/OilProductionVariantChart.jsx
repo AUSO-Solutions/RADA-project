@@ -38,7 +38,7 @@ const OilProductionVariantChart = ({ data: data_ }) => {
                         'rgba(255, 99, 132, 0.6)', // Decrease
                         'rgba(255, 99, 132, 0.6)', // Decrease
                         'rgba(255, 99, 132, 0.6)', // Decrease
-                        'rgba(75, 192, 192, 0.6)', // Actual
+                        'rgba(255, 0, 0, 0.6)', // Actual
                     ],
                     borderColor: [
                         'rgba(255, 0, 0, 0.6)', // Target border
@@ -46,7 +46,7 @@ const OilProductionVariantChart = ({ data: data_ }) => {
                         'rgba(255, 99, 132, 1)', // Decrease border
                         'rgba(255, 99, 132, 1)', // Decrease border
                         'rgba(255, 99, 132, 1)', // Decrease border
-                        'rgba(75, 192, 192, 1)', // Actual border
+                        'rgba(255, 0, 0, 0.6)', // Actual border
                     ],
                     borderWidth: 1,
                     borderDash: [0, [5, 5], [5, 5], [5, 5], 0], // Make bars dashed where appropriate

@@ -19,7 +19,7 @@ const captureOilOrCondensate = onCall(async (request) => {
     let { data } = request;
     logger.log("data ----", { data });
     const { date, asset, flowstations, fluidType, averageTarget, idToken } = data;
-    await getPermissions(idToken, { check: ['Edit Daily Production and Operation Report'] })
+    await getPermissions(idToken, { check: ['Create & Edit Daily Production and Operation Report'] })
 
     if (!date || !asset || !flowstations) {
       throw {

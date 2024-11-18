@@ -138,9 +138,9 @@ export const getIntersectionBetweenTwoLines = (line1, line2, at1 = 0, at2 = 1) =
         // if line1 and line2 are segments, they intersect if both of the above are true
         return result;
     };
-    console.log({ line1, line2 })
+    // console.log({ line1, line2 })
     const res = checkLineIntersection(line1[0].x, line1[0].y, line1[1].x, line1[1].y, line2[0].x, line2[0].y, line2[1].x, line2[1].y)
-    console.log(res)
+    // console.log(res)
 
 
 

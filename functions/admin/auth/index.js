@@ -49,33 +49,22 @@ const saveUserInDb = async (data, uid) => {
     return { user }
 }
 
-const sendCreationEmail = (data) => {
+const sendCreationEmail = async (data) => {
     var msg = {
         from: sender, // sender address
         to: data?.email,
         subject: 'RADA Appliation Account Creation!', // Subject line
-        // html: `<b>Hello ${data?.firstName} ${data?.lastName}</b> <br>
-        //     <p>
-        //    Your successfully been added to the RADA PED Application <br> <br>
-
-        //     <a href="${frontendUrl}">Login via this url ${frontendUrl}  </a><br><br>
-        //     Your login details are <br />
-        //     Username: ${data?.email} <br />
-        //     Password: ${data?.password} 
-
-        //     <br> <br>
-        //     You are receiving this email because you are registered to the PED Application.
-        //     </p>`
         html: newAccountTemplate({ name: data?.firstName + " " + data?.lastName, email: data?.email, password: data?.password })
     }
 
-    transporter.sendMail(msg, function (error, info) {
-        if (error) {
-            console.log(error);
-        } else {
-            console.log('Email sent: ' + info.response);
-        }
-    });
+    // transporter.sendMail(msg, function (error, info) {
+    //     if (error) {
+    //         console.log(error);
+    //     } else {
+    //         console.log('Email sent: ' + info.response);
+    //     }
+    // });
+    await transporter().send(msg)
 }
 
 const createUser = onCall(async (request) => {
@@ -89,7 +78,7 @@ const createUser = onCall(async (request) => {
         const db = admin.firestore()
         const { uid } = await genUid(email, password)
         logger.log({ uid })
-        sendCreationEmail(data)
+        await sendCreationEmail(data)
         const { user } = await saveUserInDb(data, uid)
         return { status: 'success', message: 'User created successfully', data: user }
 
@@ -316,25 +305,23 @@ const deleteUserByUid = onCall(async (request) => {
         throw new HttpsError(error?.code, error?.message)
     }
 });
-// const refreshToken = onCall(async (request) => {
-//     try {
-//         let { data } = request
-//         logger.log('data ----', { data })
-//         const { uid, idToken } = data
+const refreshToken = onCall(async (request) => {
+    try {
+        let { data } = request
+        const { uid } = data
 
-//         if (uid) {
-//             // (await admin.auth().(idToken)).exp
-//             const customToken = await admin.auth().createCustomToken(uid)
-
-//             return { status: 'success', message: 'New token generated', token: customToken }
-//         } else {
-//             throw { code: 'cancelled', message: 'Error deleting user.' }
-//         }
-//     } catch (error) {
-//         logger.log('error ===> ', error)
-//         throw new HttpsError(error?.code, error?.message)
-//     }
-// });
+        if (uid) {
+            // (await admin.auth().(idToken)).exp
+            const customToken = await admin.auth().createCustomToken(uid)
+            return { status: 'success', message: 'New token generated', token: customToken }
+        } else {
+            throw { code: 'cancelled', message: 'Error deleting user.' }
+        }
+    } catch (error) {
+        logger.log('error ===> ', error)
+        throw new HttpsError(error?.code, error?.message)
+    }
+});
 
 
 
@@ -361,4 +348,4 @@ const forgotPassword = onCall(async (request) => {
 
 
 
-module.exports = { login, createUser, getUsers, updateUserByUid, deleteUserByUid, getUserByUid, createUsers, updateUserStatusByUid, changePassword }
+module.exports = { login, createUser, getUsers, updateUserByUid, deleteUserByUid, getUserByUid, createUsers, updateUserStatusByUid, changePassword, refreshToken }

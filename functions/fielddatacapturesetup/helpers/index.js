@@ -61,7 +61,7 @@ const validateLiquidFlowstationData = (flowstationsData) => {
       let computedNetProduction = 0;
       for (let meter of flowstation.meters) {
         const meterNetProduction =
-          Math.abs(meter.finalReading - meter.initialReading) *
+          (meter.finalReading - meter.initialReading) *
           meter.meterFactor;
         if (meterNetProduction !== meter.netProduction) {
     
@@ -87,12 +87,12 @@ const validateLiquidFlowstationData = (flowstationsData) => {
           flowstation.deduction.meterFactor;
       }
 
-      if (computedNetProduction !== flowstation.subtotal.netProduction) {
-        throw {
-          code: "cancelled",
-          message: `Error computing net production for flowstation: ${flowstation.name}`,
-        };
-      }
+      // if (computedNetProduction !== flowstation.subtotal.netProduction) {
+      //   throw {
+      //     code: "cancelled",
+      //     message: `Error computing net production for flowstation: ${flowstation.name}`,
+      //   };
+      // }
 
       // if (computedNetProduction / (1 - (flowstation.subtotal.bsw * 0.01))) {
       //   throw ({

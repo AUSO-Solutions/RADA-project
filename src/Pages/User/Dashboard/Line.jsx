@@ -34,14 +34,24 @@ function LineChart({ data, labels, datasets, range = { y: { max: null, min: null
           datasets
         }}
         options={{
+          onHover: function (evt, item) {
+            // console.log(item)
+            if (item.length) {
+              // console.log("onHover", item, evt.type);
+              // console.log(item[0].element.$context.raw)
+              // console.log(item[1].element.$context.raw)
+              // console.log(">data", item[0]._index, datasets[0].data[item[0]._index]);
+            }
+          },
+        
           interaction: {
-            mode: 'index',
-            intersect: false,
+            mode: 'point',
+            intersect: true,
           },
           plugins: {
             title: {
               display: false,
-              text: ""
+              
             },
             legend: {
               display: true,
@@ -56,6 +66,11 @@ function LineChart({ data, labels, datasets, range = { y: { max: null, min: null
           },
           // stacked: false,
           scales: {
+            x:{
+              ticks:{
+                stepSize:10
+              }
+            },
             y: {
               type: 'linear',
               position: 'left',
@@ -82,13 +97,6 @@ function LineChart({ data, labels, datasets, range = { y: { max: null, min: null
                 text: datasets?.filter(set => set?.yAxisID === 'y1')?.map(set => set?.axisname || set?.label)?.join(' | ')
               },
             },
-
-            // x: {
-            //   title: {
-            //     display: true,
-            //     text: 'Date'
-            //   }
-            // },
           },
 
         }}
