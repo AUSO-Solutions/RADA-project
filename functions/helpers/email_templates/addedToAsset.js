@@ -100,7 +100,7 @@ exports.addToGroup = ({ name, groupName, assets }) => {
                 </div>
 
                 <div class="footer">
-                    <p>You're receiving this email because you're registered for the PED Application. If you have any questions or need assistance, don't hesitate to <a href="${supportEmail}">reach out</a>!</p>
+                    <p>You're receiving this email because you're registered for the RADA AMS Application. If you have any questions or need assistance, don't hesitate to <a href="${supportEmail}">reach out</a>!</p>
                 </div>
             </div> 
         </div> 

@@ -104,13 +104,12 @@ exports.broadcastTemplate = ({name='',asset,date,attactedFile, pageLink})=>`
 
                 <div class="main-content">
                     <p>Hello ${name},</p>
-                    <p>The production report(s) for ${asset} is/are already based on the producing strings for
-                        ${date}.</p>
+                    <p>Please find attached ${asset} daily production report for 24hrs period starting 0600hr, ${date}.</p>
 
                     <p>Kindly View in App <a href="${pageLink}">In App</a> or View the <a
                             href="${attactedFile}">Attached File</a> </p>
 
-                    <p>You are receiving this email beacuse you're part of the PED Application Community </p>
+                    <p>You are receiving this email beacuse you're part of the RADA AMS Application </p>
                 </div>
 
                 <div class="footer">

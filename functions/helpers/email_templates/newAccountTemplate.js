@@ -94,7 +94,7 @@ exports.newAccountTemplate =({name,email,password})=>`
 
                 <div class="main-content">
                     <p>Hello ${name},</p>
-                    <p>Congratulations! Your account has been created for the <strong>RADA PED Web APP</strong>.</p>
+                    <p>Congratulations! Your account has been created for the <strong>RADA AMS APP</strong>.</p>
 
                     <p>Here's what you need to get started:</p>
                     <ul>
@@ -108,7 +108,7 @@ exports.newAccountTemplate =({name,email,password})=>`
                 </div>
 
                 <div class="footer">
-                    <p>You're receiving this email because you're registered for the PED Application. If you have any questions or need assistance, don't hesitate to <a href="${supportEmail}">reach out</a>!</p>
+                    <p>You're receiving this email because you're registered for the RADA AMS Application. If you have any questions or need assistance, don't hesitate to <a href="${supportEmail}">reach out</a>!</p>
                 </div>
             </div> 
         </div> 
