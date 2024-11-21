@@ -44,6 +44,7 @@ exports.addToGroup = ({ name, groupName, assets }) => {
             display: flex;
             justify-content: center;
             align-items: center;
+             gap:5px;
         }
         .header img {
             max-width: 80px; 
@@ -78,6 +79,11 @@ exports.addToGroup = ({ name, groupName, assets }) => {
             color: #ff0000;
             text-decoration: none;
         }
+     .rada {
+            color: #ffffff; 
+            font-weight: 600;
+
+        }
     </style>
 </head>
 <body>
@@ -86,7 +92,7 @@ exports.addToGroup = ({ name, groupName, assets }) => {
         <div class="container">
             <div class="inner-content">
                 <div class="header">
-                    <img src="${appLogo}" alt="PED Logo">
+                    <img src="${appLogo}" width="40px" alt="RADA AMS Logo">
                     <p class="rada" >RADA AMS</p>
                 </div>
 
@@ -100,7 +106,7 @@ exports.addToGroup = ({ name, groupName, assets }) => {
                 </div>
 
                 <div class="footer">
-                    <p>You're receiving this email because you're registered for the PED Application. If you have any questions or need assistance, don't hesitate to <a href="${supportEmail}">reach out</a>!</p>
+                    <p>You're receiving this email because you're registered for the RADA AMS Application. If you have any questions or need assistance, don't hesitate to <a href="${supportEmail}">reach out</a>!</p>
                 </div>
             </div> 
         </div> 

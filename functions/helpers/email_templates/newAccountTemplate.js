@@ -18,6 +18,7 @@ exports.newAccountTemplate =({name,email,password})=>`
             background-color: #f4f4f4;
             padding: 20px;
         }
+
         .container {
             max-width: 600px;
             margin: 0 auto;
@@ -45,14 +46,16 @@ exports.newAccountTemplate =({name,email,password})=>`
             display: flex;
             justify-content: center;
             align-items: center;
+            gap:5px;
         }
 
         .header img {
             max-width: 80px;
         }
-        .rada {
+          .rada {
             color: #ffffff; 
             font-weight: 600;
+            padding-left:5px;
         }
         .main-content {
             padding: 20px 20px;
@@ -88,13 +91,13 @@ exports.newAccountTemplate =({name,email,password})=>`
         <div class="container">
             <div class="inner-content">
                 <div class="header">
-                    <img src="${appLogo}" alt="PED Logo">
+                    <img src="${appLogo}" width="40px" alt="PED Logo">
                     <p class="rada" >RADA AMS</p>
                 </div>
 
                 <div class="main-content">
                     <p>Hello ${name},</p>
-                    <p>Congratulations! Your account has been created for the <strong>RADA PED Web APP</strong>.</p>
+                    <p>Congratulations! Your account has been created for the <strong>RADA AMS APP</strong>.</p>
 
                     <p>Here's what you need to get started:</p>
                     <ul>
@@ -108,7 +111,7 @@ exports.newAccountTemplate =({name,email,password})=>`
                 </div>
 
                 <div class="footer">
-                    <p>You're receiving this email because you're registered for the PED Application. If you have any questions or need assistance, don't hesitate to <a href="${supportEmail}">reach out</a>!</p>
+                    <p>You're receiving this email because you're registered for the RADA AMS Application. If you have any questions or need assistance, don't hesitate to <a href="${supportEmail}">reach out</a>!</p>
                 </div>
             </div> 
         </div> 

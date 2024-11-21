@@ -2,47 +2,45 @@
 const admin = require("firebase-admin");
 const logger = require("firebase-functions/logger");
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
-const { transporter, sender } = require("../helpers");
+const { transporter, sender, appLogo } = require("../helpers");
 const { broadcastTemplate } = require("../helpers/email_templates/broadcastTemplate");
 
 const broadcast = onCall(async (request) => {
     try {
         const { data } = request;
         logger.log("Data ----", { data });
-        const { attachment, asset, groups = [], pagelink, subject, type, date, users = [] } = data;
+        const { attachment, asset, groups = [], pagelink, subject, broadcastType, date, users = [] } = data;
         const db = admin.firestore()
         const members = groups.flatMap(group => (group?.members.map(member => ({ group: group?.groupName, ...member }))))
+        // const emailAddresses = Array.from(new Set(members?.map(member => member?.email)?.concat(users?.map(user => user?.email))))
         const emailAddresses = Array.from(new Set(members?.map(member => member?.email)?.concat(users?.map(user => user?.email))))
-        var maillist = emailAddresses.join(',');
-
-        console.log(maillist)
+        // var maillist = emailAddresses.join(',');
+        // console.log(maillist)
 
         const link = 'https://ped-application-4d196.web.app'
-        var msg = {
-            from: sender, // sender address
-            to: maillist,
-            subject, // Subject line
-            // html: `<b>Hello</b> <br>
-            // <p>
-            //     This is ${type} broadcast for ${date} <br> <br>
-
-            //     <a href="${link + pagelink}">View in app </a><br>
-            //     <a href="${attachment}">View attached file</a><br>
-
-            //     <br> <br>
-            //     You are receiving this email because you are registered to the PED Application 
-
-            // </p>`
-            html: broadcastTemplate({ date, pageLink: link + pagelink, attactedFile: attachment , name:'', asset})
-        }
-
-        transporter.sendMail(msg, function (error, info) {
-            if (error) {
-                console.log(error);
-            } else {
-                console.log('Email sent: ' + info.response);
+        emailAddresses.forEach((address) => {
+            const name = members?.find(member => member?.email === address)?.name
+            var msg = {
+                from: sender, // sender address
+                to: address,
+                subject, // Subject line
+                html: broadcastTemplate({ date, pageLink: link + pagelink, attactedFile: attachment, name, asset, broadcastType }),
+                // attachments: [{
+                //     filename: 'logo',
+                //     path: appLogo,
+                //     cid: 'appLogo' //same cid value as in the html img src
+                // }]
             }
-        });
+
+            transporter.sendMail(msg, function (error, info) {
+                if (error) {
+                    console.log(error);
+                } else {
+                    console.log('Email sent: ' + info.response);
+                }
+            });
+        })
+
         // transporter().sendMultiple(msg, function (error, info) {
         //     if (error) {
         //         console.log(error);

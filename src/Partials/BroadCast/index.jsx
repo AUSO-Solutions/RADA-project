@@ -10,8 +10,10 @@ import { clearFormdata } from 'Store/slices/formdataSlice'
 import { setLoadingScreen } from 'Store/slices/loadingScreenSlice'
 import { firebaseFileUpload, firebaseGetUploadedFile } from 'utils'
 
-const BroadCast = ({ setup = {}, title = "", steps = [], stepsComponents = [], onBroadcast = () => null, link, subject, type, date }) => {
+const BroadCast = ({ setup = {}, title = "", steps = [], stepsComponents = [], onBroadcast = () => null, link, subject, type, date, broadcastType='wellTestandMer' }) => {
     const [activeStep, setActiveStep] = useState(0)
+
+    // const typesAllowed = ['wellTestandMer', 'dailyProduction', '']
     const dispatch = useDispatch()
     const formdata = useSelector(state => state?.formdata)
     useEffect(() => {
@@ -36,7 +38,7 @@ const BroadCast = ({ setup = {}, title = "", steps = [], stepsComponents = [], o
 
                 const filepath = await firebaseFileUpload(formdata?.file, formdata?.file?.name)
                 const file_url = await firebaseGetUploadedFile(filepath)
-                await firebaseFunctions('broadcast', { groups: formdata?.selectedGroups, asset: setup?.asset, users: formdata?.selectedUsers, attachment: file_url, pagelink: link, subject, type, date })
+                await firebaseFunctions('broadcast', { groups: formdata?.selectedGroups, asset: setup?.asset, users: formdata?.selectedUsers, attachment: file_url, pagelink: link, subject, type, date, broadcastType })
                 onBroadcast()
                 setActiveStep(prev => {
                     if (prev !== steps?.length - 1) return prev + 1

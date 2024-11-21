@@ -1,6 +1,16 @@
 const { appLogo, supportEmail } = require("..");
 
-exports.broadcastTemplate = ({name='',asset,date,attactedFile, pageLink})=>`
+const contentTypes = (type = 'wellTestandMer', date, asset) => {
+    const typesAllowed = ['wellTestandMer', 'dailyProduction']
+    console.log({type})
+    const types = {
+        "dailyProduction": `<p>Please find attached ${asset} daily production report for 24hrs period starting 0600hr, ${date}.</p>`,
+        "wellTestandMer": `<p>The production report(s) for ${asset} is/are already based on the producing strings for ${date}.</p>`
+    }
+    if (typesAllowed.includes(type)) { return types[type] }
+    else { return types.wellTestandMer }
+}
+exports.broadcastTemplate = ({ name = '', asset, date, attactedFile, pageLink, broadcastType }) => `
 <!DOCTYPE html>
 <html lang="en">
 
@@ -48,6 +58,7 @@ exports.broadcastTemplate = ({name='',asset,date,attactedFile, pageLink})=>`
             display: flex;
             justify-content: center;
             align-items: center;
+             gap:5px;
         }
 
         .header img {
@@ -57,6 +68,7 @@ exports.broadcastTemplate = ({name='',asset,date,attactedFile, pageLink})=>`
         .rada {
             color: #ffffff; 
             font-weight: 600;
+
         }
 
         .main-content {
@@ -98,24 +110,19 @@ exports.broadcastTemplate = ({name='',asset,date,attactedFile, pageLink})=>`
         <div class="container">
             <div class="inner-content">
                 <div class="header">
-                    <img src="${appLogo}" alt="PED Logo">
+                    <img src="${appLogo}" width="40px" alt="RADA Logo">
                     <p class="rada">RADA AMS</p>
                 </div>
 
                 <div class="main-content">
                     <p>Hello ${name},</p>
-                    <p>The production report(s) for ${asset} is/are already based on the producing strings for
-                        ${date}.</p>
-
-                    <p>Kindly View in App <a href="${pageLink}">In App</a> or View the <a
-                            href="${attactedFile}">Attached File</a> </p>
-
-                    <p>You are receiving this email beacuse you're part of the PED Application Community </p>
+                    ${contentTypes(broadcastType, date, asset)}
+                    <p>Kindly View in App <a href="${pageLink}">In App</a> or View the <a href="${attactedFile}">Attached File</a> </p>
+                    <p>You are receiving this email beacuse you're part of the RADA AMS Application Community </p>
                 </div>
 
                 <div class="footer">
-                    <p> If you have any questions or need assistance, don't hesitate to <a
-                            href="${supportEmail}">reach out</a>!</p>
+                    <p> If you have any questions or need assistance, don't hesitate to <a href="${supportEmail}">reach out</a>!</p>
                 </div>
             </div>
         </div>

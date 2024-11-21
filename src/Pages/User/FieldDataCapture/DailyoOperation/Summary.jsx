@@ -205,6 +205,7 @@ const Summary = () => {
             component: <BroadCast
               setup={setupData}
               link={pathname + search}
+              broadcastType={'dailyProduction'}
               type={'Daily Production/Operation Report '}
               date={dayjs(setupData?.startDate).format('DD/MMM/YYYY')}
               title='Broadcast Volume measurement'
@@ -249,8 +250,9 @@ const Summary = () => {
           Liquid :  {notes?.liquidNote || 'No note'}
         </Text>
 
-      </div>
-
+      </div>dddd
+{/* <img src='https://firebasestorage.googleapis.com/v0/b/ped-application-4d196.appspot.com/o/radaNewLogoo.svg?alt=media&token=e3249009-d0c3-497f-8b2a-873988ad9355' alt='?media&token=475ebfb1-9f96-4b2d-b7f0-12390171a51' /> */}
+{/* https://firebasestorage.googleapis.com/v0/b/ped-application-4d196.appspot.com/o/radaNewLogoo.svg?alt=media&token=e3249009-d0c3-497f-8b2a-873988ad9355 */}
 
       {showChart && (
         <div style={{ display: 'flex', flexDirection: 'column', backgroundColor: '#fff', position: 'absolute', top: 0, right: 10, width: '500px', height: 'auto', borderRadius: 5, boxShadow: '2px 1px 5px  #242424' }}>
