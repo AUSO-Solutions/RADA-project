@@ -15,10 +15,11 @@ exports.generateRandomID = (len = 8) => {
 };
 exports.sendgridApiKey =
 exports.frontendUrl = 'https://ped-application-4d196.web.app'
-exports.appLogo = 'https://firebasestorage.googleapis.com/v0/b/ped-application-4d196.appspot.com/o/radaNewLogoo.svg?alt=media&token=475ebfb1-9f96-4b2d-b7f0-12390171a515'
+exports.appLogo = 'https://firebasestorage.googleapis.com/v0/b/ped-application-4d196.appspot.com/o/radaNewLogoo.svg'
+exports.logoAlt = 'media&token=475ebfb1-9f96-4b2d-b7f0-12390171a51'
 exports.sender = 'rada.apps@gmail.com'
 // exports.sender = 'rada.apps@newcross.com'
-exports.supportEmail = 'rada.apps@newcross.com'
+exports.supportEmail = 'mailto:rada.apps@newcross.com'
 exports.transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
