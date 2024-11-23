@@ -19,7 +19,7 @@ const broadcast = onCall(async (request) => {
 
         const link = 'https://ped-application-4d196.web.app'
         emailAddresses.forEach((address) => {
-            const name = members?.find(member => member?.email === address)?.name
+            const name = members?.find(member => member?.email === address)?.name || users?.find(user => user?.email === address)?.name 
             var msg = {
                 from: sender, // sender address
                 to: address,
