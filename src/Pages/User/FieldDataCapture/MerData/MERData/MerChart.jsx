@@ -17,8 +17,8 @@ const MerChart = ({ onClickOut = () => null, merResult }) => {
     }, [current, merResult?.merResultData])
 
     const points = useMemo(() => {
-        const fthpPoints = graphData.map(item => ({ x: item?.oilRate, y: item?.fthp }))
-        const chokePoints = graphData.map(item => ({ x: item?.oilRate, y: item?.chokeSize }))
+        const fthpPoints = graphData.map(item => ({ x: parseFloat(item?.oilRate), y: parseFloat(item?.fthp) }))
+        const chokePoints = graphData.map(item => ({ x: parseFloat(item?.oilRate), y: parseFloat(item?.chokeSize) }))
         const chokeSizesLineOfbestFit = findLineByLeastSquares(chokePoints?.map(line => line?.x), chokePoints?.map(line => line?.y))
         const fthpLineOfbestFit = findLineByLeastSquares(fthpPoints?.map(line => line?.x), fthpPoints?.map(line => line?.y))
         // console.log(

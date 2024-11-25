@@ -23,6 +23,7 @@
     "faker": "^6.6.6",
     "firebase": "^10.14.0",
     "iconsax-react": "^0.0.8",
+    "mathjs": "^14.0.0",
     "mdb-react-ui-kit": "^8.0.0",
     "papaparse": "^5.4.1",
     "postcss-cli": "^11.0.0",

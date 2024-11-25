@@ -3,6 +3,7 @@ import dayjs from "dayjs"
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { project_storage } from "firebase-config";
 // import { findLineByLeastSquares } from "./findLineByLeastSquares";
+import { intersect } from "mathjs";
 
 export const sum = (array = []) => {
     if (Array.isArray(array) && array?.length) return parseFloat(array.reduce((a, b) => parseFloat(a) + parseFloat(b)))
@@ -97,13 +98,18 @@ const getLineDetails = (line, at1, at2) => {
  * @param {Array} line2
  */
 export const getIntersectionBetweenTwoLines = (line1, line2, at1 = 0, at2 = 1) => {
+
+    // console.log(first)
     if (!line1.length || !line1.length) return {
         x: 0, y: 0
     }
     // console.log(line1?.map(line => line?.x), line1?.map(line => line?.y))
     // const res = findLineByLeastSquares(line1?.map(line => line?.x), line1?.map(line => line?.y))
     // console.log({lineOfBestFit :  res})
+    // console.log([line1[0].x, line1[0].y, 'line1point1'], [line1[1].x, line1[1].y, 'line1point2'], [line2[0].x, line2[0].y, 'line2point1'], [line2[1].x, line2[1].y, 'line2point2'])
+    const tbj = intersect([line1[0].x, line1[0].y], [line1[1].x, line1[1].y], [line2[0].x, line2[0].y], [line2[1].x, line2[1].y])
 
+    console.log({ tbj })
     function checkLineIntersection(line1StartX, line1StartY, line1EndX, line1EndY, line2StartX, line2StartY, line2EndX, line2EndY) {
         // if the lines intersect, the result contains the x and y of the intersection (treating the lines as infinite) and booleans for whether line segment 1 or line segment 2 contain the point
         var denominator, a, b, numerator1, numerator2, result = {
@@ -141,9 +147,6 @@ export const getIntersectionBetweenTwoLines = (line1, line2, at1 = 0, at2 = 1) =
     // console.log({ line1, line2 })
     const res = checkLineIntersection(line1[0].x, line1[0].y, line1[1].x, line1[1].y, line2[0].x, line2[0].y, line2[1].x, line2[1].y)
     // console.log(res)
-
-
-
     const line1Details = getLineDetails(line1, at1, line1.length - 1)
     const line2Details = getLineDetails(line2, at1, line2.length - 1)
     const x = (line2Details.c - line1Details.c) / (line1Details.slope - line2Details.slope)
@@ -151,6 +154,7 @@ export const getIntersectionBetweenTwoLines = (line1, line2, at1 = 0, at2 = 1) =
     return {
         line1Details, line2Details, x, y
     }
+    // Math.sin
 
 }
 export const bsw = ({ gross, oil, water }) => {
