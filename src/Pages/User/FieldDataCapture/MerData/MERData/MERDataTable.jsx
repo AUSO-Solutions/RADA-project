@@ -384,7 +384,7 @@ export default function MERDataTable() {
                                             </select>
                                         </TableCell>
                                         <TableCell align="center" >
-                                            <TableInput type='number' className='p-3 outline-none h-full' onChange={handleExtraChange} name='mer' value={getMer(mer)} />
+                                            <TableInput type='number' className='p-3 outline-none h-full' onChange={handleExtraChange} name='mer' defaultValue={mer?.mer} />
                                         </TableCell>
 
 

@@ -6,6 +6,7 @@ import { getIntersectionBetweenTwoLines } from 'utils';
 import LineChart from 'Pages/User/Dashboard/Line';
 // import { getChokeFthpPoints } from './getChokeFthpPoints'
 import { findLineByLeastSquares } from 'utils/findLineByLeastSquares';
+// import { ChartExample } from 'Pages/User/Dashboard/Line3';
 
 const MerChart = ({ onClickOut = () => null, merResult }) => {
     // console.log(merResult?.merResultData)
@@ -18,11 +19,8 @@ const MerChart = ({ onClickOut = () => null, merResult }) => {
     const points = useMemo(() => {
         const fthpPoints = graphData.map(item => ({ x: item?.oilRate, y: item?.fthp }))
         const chokePoints = graphData.map(item => ({ x: item?.oilRate, y: item?.chokeSize }))
-        // console.log({ fthpPoints, chokePoints})
-        // const { fthpPoints, chokePoints } = getChokeFthpPoints(graphData)
-        // console.log({ chokePoints })
         const chokeSizesLineOfbestFit = findLineByLeastSquares(chokePoints?.map(line => line?.x), chokePoints?.map(line => line?.y))
-        const fthpLineOfbestFit = findLineByLeastSquares(fthpPoints?.map(line => line?.x), fthpPoints?.map(line => line?.y)) 
+        const fthpLineOfbestFit = findLineByLeastSquares(fthpPoints?.map(line => line?.x), fthpPoints?.map(line => line?.y))
         // console.log(
         //     { fthpPoints, fthpLineOfbestFit }
         // )
@@ -51,7 +49,6 @@ const MerChart = ({ onClickOut = () => null, merResult }) => {
         yAxisID: 'y1',
     }
 
-
     return (
         <>
             <div className='h-[100vh] w-[100vw] fixed ' onClick={onClickOut}></div>
@@ -67,32 +64,14 @@ const MerChart = ({ onClickOut = () => null, merResult }) => {
                     MER:
                     {points.intersection.x}
                 </div>
-                {/* <ResponsiveContainer width="100%" height="100%"> */}
-                <LineChart labels={graphData.map(item => parseFloat(item?.oilRate))} datasets={[fthpDataset, chokeSizeDataset]} />
-                {/* <div className=' mx-auto'>
-                    <ComposedChart
-                        width={600}
-                        height={500}
-                        data={graphData}
-                        style={{ backgroundColor: 'white', margin: 'auto' }}
-                  
-                    >
-                        <CartesianGrid strokeDasharray="5 5" />
-                        <XAxis dataKey="oilRate" label={{ value: 'Oil Rate', angle: 0, position: 'insideLeft' }} domain={[0, 1500]} />
-                        <YAxis yAxisId="left" label={{ value: 'Choke sizes', angle: -90, position: 'insideLeft' }} domain={[0, 200]} />
-                        <YAxis yAxisId="right" orientation="right" label={{ value: 'FTHP', angle: -90, position: 'insideRight', }} domain={[0, 200]} />
-                        <Tooltip cursor={{
-                            stroke: "#BABABA",
-                            strokeWidth: 2,
-                            strokeDasharray: "5 5",
-                        }} />
-                        <Legend />
-                        <Line yAxisId="left" type="monotone" dataKey="chokeSize" stroke="#8884d8" dot={false} tension={0} strokeLinejoin='miter'
-                            a />
-                        <Line yAxisId="right" type="monotone" dataKey="fthp" stroke="#82ca9d" dot={false} tension={0} strokeLinejoin='miter'
-                        />
-                    </ComposedChart>
-                </div> */}
+                <LineChart
+                    xStepsize={10}
+                    useCrosshair={true}
+                    xScaleType={'linear'}
+                    datasets={[fthpDataset, chokeSizeDataset]}
+                    labels={graphData.map(item => parseFloat(item?.oilRate))}
+                />
+
             </div>
         </>
     )
