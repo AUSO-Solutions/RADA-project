@@ -159,7 +159,7 @@ export default function MERDataTable() {
         dispatch(closeModal())
     }
     const setMerValueFromPointClick = (x, y, y1, productionString) => {
-        console.log({ x, y, y1, productionString })
+        // console.log({ x, y, y1, productionString })
         // console.log(merResult)
         setMerResult(prev => {
             return {
