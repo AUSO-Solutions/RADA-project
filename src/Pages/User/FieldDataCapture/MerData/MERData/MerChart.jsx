@@ -65,9 +65,9 @@ const MerChart = ({ onClickOut = () => null, merResult }) => {
                     {points.intersection.x}
                 </div>
                 <LineChart
-                    xStepsize={10}
+                    // xStepsize={10}
                     useCrosshair={true}
-                    xScaleType={'linear'}
+                    // xScaleType={'linear'}
                     datasets={[fthpDataset, chokeSizeDataset]}
                     labels={graphData.map(item => parseFloat(item?.oilRate))}
                 />

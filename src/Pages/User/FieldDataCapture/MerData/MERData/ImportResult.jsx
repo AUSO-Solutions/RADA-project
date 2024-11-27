@@ -17,6 +17,7 @@ const Import = ({ onProceed = () => null }) => {
             // const field = datum?.['Field']
             const chokeSize = datum?.['Choke (/64")']
             const gross = datum?.['Gross (blpd)']
+            const bsw = datum?.['BS&W (%)']
             const oilRate = datum?.['Oil Rate (bopd)']
             const waterRate = datum?.['Water Rate (bwpd)']
             const gasRate = datum?.['Gas Rate (MMscf/day)']
@@ -36,6 +37,7 @@ const Import = ({ onProceed = () => null }) => {
                 chokeSize,
                 gross,
                 oilRate,
+                bsw,
                 waterRate,
                 gasRate,
                 gor,

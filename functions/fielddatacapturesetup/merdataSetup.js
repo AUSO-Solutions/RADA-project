@@ -27,6 +27,7 @@ const validateProductionStringsChokeSizesFile = async (JSONs, masterxy = []) => 
                 const reservoir = json?.Reservoir
                 const productionString = json?.["Production String"]
                 const choke = json?.Choke
+                const bsw = json?.["BS&W (%)"]
                 const startDate = json?.["Start Date and Time"]
                 const endDate = json?.["End Date and Time"]
                 // if (asset && field && productionString && reservoir && choke && startDate && endDate) {
@@ -62,13 +63,14 @@ const validateProductionStringsChokeSizesFile = async (JSONs, masterxy = []) => 
                     const choke = json?.Choke
                     const startDate = json?.["Start Date and Time"]
                     const endDate = json?.["End Date and Time"]
-                    return { asset, field, reservoir, productionString, choke, startDate, endDate }
+                    const bsw = json?.["BS&W (%)"]
+                    return { asset, field, reservoir, productionString, choke, startDate, endDate, bsw }
                 })
                 results[productionString] = {
                     productionString,
                     reservoir: details[0].reservoir,
                     onProgram:details?.map(detail => detail?.choke)?.length?true:false,
-                    chokes: details.map(detail => ({ chokeSize: detail.choke, startDate: detail.startDate, endDate: detail.endDate }))
+                    chokes: details.map(detail => ({ chokeSize: detail.choke, startDate: detail.startDate, endDate: detail.endDate, bsw: detail.bsw }))
                 }
             });
             return {
