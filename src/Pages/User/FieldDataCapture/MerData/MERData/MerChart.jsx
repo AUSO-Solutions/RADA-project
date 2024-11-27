@@ -8,8 +8,9 @@ import LineChart from 'Pages/User/Dashboard/Line';
 import { findLineByLeastSquares } from 'utils/findLineByLeastSquares';
 // import { ChartExample } from 'Pages/User/Dashboard/Line3';
 
-const MerChart = ({ onClickOut = () => null, merResult }) => {
+const MerChart = ({ onClickOut = () => null, merResult, onPointClick = () => null }) => {
     // console.log(merResult?.merResultData)
+    const [currentPoints, setCurrentPoints] = useState({ x: 0, y: 0, y1: 0 })
     const [current, setCurrent] = useState('')
     const graphData = useMemo(() => {
         const results = Object.values(merResult?.merResultData || {}).filter(result => result?.productionString === current)
@@ -34,19 +35,24 @@ const MerChart = ({ onClickOut = () => null, merResult }) => {
 
     const fthpDataset = {
         label: "FTHP (psia)",
-        // data: graphData.map(item => item?.fthp),
-        data: points.bestFit.fthpLineOfbestFit.map(point => point.y),
+        data: graphData.map(item => item?.fthp),
+        // data: points.bestFit.fthpLineOfbestFit.map(point => point.y),
         borderColor: "black",
         borderWidth: 3, pointRadius: .5,
         yAxisID: 'y',
     }
     const chokeSizeDataset = {
         label: "Chok Size (/64)",
-        // data: graphData.map(item => item?.chokeSize), 
-        data: points.bestFit.chokeSizesLineOfbestFit.map(point => point.y),
+        data: graphData.map(item => item?.chokeSize),
+        // data: points.bestFit.chokeSizesLineOfbestFit.map(point => point.y),
         borderColor: "purple",
         borderWidth: 3, pointRadius: .5,
         yAxisID: 'y1',
+    }
+
+    const getHoveredPoints = (x, y, y1) => {
+        // console.log({ x, y, y1 })
+        setCurrentPoints({ x, y, y1 })
     }
 
     return (
@@ -56,18 +62,22 @@ const MerChart = ({ onClickOut = () => null, merResult }) => {
 
                 <div className='my-3 flex py-3 justify-between items-center'>
                     <Text weight={600}>
-                        MER Chart
+                        MER Chart ({current})
                     </Text>
                     <Input containerClass='!w-[150px]' type='select' onChange={(e) => setCurrent(e.value)} options={Object.values(merResult?.merResultData || {}).map(result => ({ label: result?.productionString, value: result?.productionString }))} />
                 </div>
-                <div>
-                    MER:
-                    {points.intersection.x}
+                <div className='pl-3 flex gap-3'>
+                    <Text size={12} weight={600} >MER: {currentPoints.x.toFixed(2)} </Text>
+                    <Text size={12} weight={600} >FTHP: {currentPoints.y.toFixed(2)} </Text>
+                    <Text size={12} weight={600} >Choke size: {currentPoints.y1.toFixed(2)}</Text>
                 </div>
+
                 <LineChart
-                    // xStepsize={10}
+                    xStepsize={10}
                     useCrosshair={true}
-                    // xScaleType={'linear'}
+                    xScaleType={'linear'}
+                    onHover={getHoveredPoints}
+                    onClick={(x, y, y1) => onPointClick(x, y, y1, current)}
                     datasets={[fthpDataset, chokeSizeDataset]}
                     labels={graphData.map(item => parseFloat(item?.oilRate))}
                 />

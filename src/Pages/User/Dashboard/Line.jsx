@@ -34,7 +34,9 @@ function LineChart({
   range = {
     y: { max: null, min: null, },
     y1: { max: null, min: null, }
-  }
+  },
+  onHover = () => null,
+  onClick = () => null,
 }) {
 
   const crosshair = useCrosshair ? {
@@ -47,21 +49,42 @@ function LineChart({
       group: 1,                 // chart group
       suppressTooltips: true   // suppress tooltips when showing a synced tracer
     },
-    zoom: {
-      enabled: true,                                      // enable zooming
-      zoomboxBackgroundColor: 'rgba(66,133,244,0.2)',     // background color of zoom box 
-      zoomboxBorderColor: '#48F',                         // border color of zoom box
-      zoomButtonText: 'Reset Zoom',                       // reset zoom button text
-      zoomButtonClass: 'reset-zoom',                      // reset zoom button class
-    },
-    // callbacks: {
-    //   beforeZoom: () => function (start, end) {                  // called before zoom, return false to prevent zoom
-    //     return true;
-    //   },
-    //   afterZoom: () => function (start, end) {                   // called after zoom
-    //   }
-    // }
   } : {}
+
+
+  const getPointsOnMouseEvent = (event) => {
+    var yTop = event.chart.chartArea.top;
+    var yBottom = event.chart.chartArea.bottom;
+
+    var yMin = event.chart.scales['y'].min;
+    var yMax = event.chart.scales['y'].max;
+
+    var y1Min = event.chart.scales['y1'].min;
+    var y1Max = event.chart.scales['y1'].max;
+    var newY = 0, newY1 = 0;
+
+    if (event.native.offsetY <= yBottom && event.native.offsetY >= yTop) {
+      newY = Math.abs((event.native.offsetY - yTop) / (yBottom - yTop));
+      newY = (newY - 1) * -1;
+      newY = newY * (Math.abs(yMax - yMin)) + yMin;
+
+      newY1 = Math.abs((event.native.offsetY - yTop) / (yBottom - yTop));
+      newY1 = (newY1 - 1) * -1;
+      newY1 = newY1 * (Math.abs(y1Max - y1Min)) + y1Min
+    };
+
+    var xTop = event.chart.chartArea.left;
+    var xBottom = event.chart.chartArea.right;
+    var xMin = event.chart.scales['x'].min;
+    var xMax = event.chart.scales['x'].max;
+    var newX = 0;
+
+    if (event.native.offsetX <= xBottom && event.native.offsetX >= xTop) {
+      newX = Math.abs((event.native.offsetX - xTop) / (xBottom - xTop));
+      newX = newX * (Math.abs(xMax - xMin)) + xMin;
+    };
+    return ({ newX, newY, newY1 })
+  }
 
   return (
     <div className="chart-container">
@@ -72,14 +95,16 @@ function LineChart({
           datasets
         }}
         options={{
-          onClick: function (evt, item) {
-            console.log(item)
-            if (item.length) {
-              console.log("onHover", item, evt.type);
-              // console.log(item[0].element.$context.raw)
-              // console.log(item[1].element.$context.raw)
-              console.log(">data", item[0]._index, datasets[0].data[item[0]._index]);
-            }
+          hover: {
+            intersect: false
+          },
+          onHover: function (event) {
+            const points = getPointsOnMouseEvent(event)
+            onHover(points.newX, points.newY, points.newY1)
+          },
+          onClick: function (event) {
+            const points = getPointsOnMouseEvent(event)
+            onClick(points.newX, points.newY, points.newY1)
           },
 
           interaction: {
@@ -112,7 +137,7 @@ function LineChart({
               }
             },
             y: {
-              type: 'linear',
+              // type: 'linear',
               position: 'left',
               id: "y",
               max: range?.y?.max ?? null,
@@ -123,7 +148,7 @@ function LineChart({
               }
             },
             y1: {
-              type: 'linear',
+              // type: 'linear',
               display: !datasets?.every(set => set?.yAxisID === datasets[0]?.yAxisID),
               position: 'right',
               id: 'y1',

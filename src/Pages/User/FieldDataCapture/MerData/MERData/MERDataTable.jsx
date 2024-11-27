@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -19,7 +19,7 @@ import { closeModal, openModal } from 'Store/slices/modalSlice';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import Actions from 'Partials/Actions/Actions';
-import { createWellTitle, getIntersectionBetweenTwoLines } from 'utils';
+import { createWellTitle } from 'utils';
 import { Approve } from 'Partials/Actions/Approve';
 import { Query } from 'Partials/Actions/Query';
 import ExtractWellTest from './ExtractWellTest';
@@ -129,12 +129,12 @@ export default function MERDataTable() {
         }
     }
 
-    const getMer = useCallback((mer) => {
-        const chokePoints = mer?.chokes?.map(choke => ({ x: choke?.oilRate, y: choke?.chokeSize }))
-        const fthpPoints = mer?.chokes?.map(choke => ({ x: choke?.oilRate, y: choke?.fthp }))
-        const intersection = getIntersectionBetweenTwoLines(chokePoints, fthpPoints)
-        return (intersection.x.toFixed(3))
-    }, [])
+    // const getMer = useCallback((mer) => {
+    //     const chokePoints = mer?.chokes?.map(choke => ({ x: choke?.oilRate, y: choke?.chokeSize }))
+    //     const fthpPoints = mer?.chokes?.map(choke => ({ x: choke?.oilRate, y: choke?.fthp }))
+    //     const intersection = getIntersectionBetweenTwoLines(chokePoints, fthpPoints)
+    //     return (intersection.x.toFixed(3))
+    // }, [])
 
     const getFileData = (data) => {
         const newResult = {}
@@ -158,10 +158,27 @@ export default function MERDataTable() {
         toast.success('Data imported successfully!')
         dispatch(closeModal())
     }
+    const setMerValueFromPointClick = (x, y, y1, productionString) => {
+        console.log({ x, y, y1, productionString })
+        // console.log(merResult)
+        setMerResult(prev => {
+            return {
+                ...prev,
+                merResultData: {
+                    ...prev?.merResultData,
+                    [productionString]: {
+                        ...prev?.merResultData[productionString],
+                        mer: x?.toFixed(2)
+                    }
+                }
+            }
+        })
+        toast.success(`MER value for ${productionString} is set to ${x?.toFixed(2)}`)
+    }
 
     return (
         <>
-            {showChart && <MerChart merResult={merResult} onClickOut={() => setShowChart(false)} />}
+            {showChart && <MerChart merResult={merResult} onClickOut={() => setShowChart(false)} onPointClick={setMerValueFromPointClick} />}
             < form className='w-[80vw] px-3' onSubmit={(e) => {
                 e.preventDefault()
                 dispatch(openModal({ component: <SaveAs defaultValue={res2?.title} onSave={save} loading={loading} /> }))
@@ -185,7 +202,6 @@ export default function MERDataTable() {
                                     name: 'Extract Well Test', onClick: () => {
                                         dispatch(openModal({
                                             component: <ExtractWellTest merResult={merResult}
-
                                             />
                                         }))
                                     }
@@ -200,7 +216,7 @@ export default function MERDataTable() {
                 <div className='border rounded flex gap-3 p-2 my-2'>
                     {createWellTitle(merResult)}
                 </div>
-                <TableContainer sx={{maxHeight:700}} className={`m-auto border  pr-5 ${tableStyles.borderedMuiTable}`}>
+                <TableContainer sx={{ maxHeight: 700 }} className={`m-auto border  pr-5 ${tableStyles.borderedMuiTable}`}>
                     <Table stickyHeader sx={{ minWidth: 700 }} >
                         <TableHead>
                             <TableRow sx={{ bgcolor: `rgba(239, 239, 239, 1) !important`, color: 'black', fontWeight: 'bold  !important' }}>
