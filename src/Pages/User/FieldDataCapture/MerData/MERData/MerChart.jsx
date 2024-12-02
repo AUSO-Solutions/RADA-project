@@ -4,10 +4,23 @@ import { Input } from 'Components'
 import Text from 'Components/Text';
 // import { getIntersectionBetweenTwoLines } from 'utils';
 import LineChart from 'Pages/User/Dashboard/Line';
+
+import Chart from "chart.js/auto";
+import crosshairPlugin from 'chartjs-plugin-crosshair';
 // import { getChokeFthpPoints } from './getChokeFthpPoints'
 // import { findLineByLeastSquares } from 'utils/findLineByLeastSquares';
 // import { ChartExample } from 'Pages/User/Dashboard/Line3';
 
+Chart.register(
+    // CategoryScale,
+    // LinearScale,
+    // PointElement,
+    // LineElement,
+    // Title,
+    // Tooltip,
+    // Legend,
+    crosshairPlugin
+  );
 const MerChart = ({ onClickOut = () => null, merResult, onPointClick = () => null }) => {
     // console.log(merResult?.merResultData)
     const [currentPoints, setCurrentPoints] = useState({ x: 0, y: 0, y1: 0 })

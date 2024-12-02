@@ -1,8 +1,7 @@
 import React from "react";
 import { Line } from "react-chartjs-2";
 import Chart from "chart.js/auto";
-import crosshairPlugin from 'chartjs-plugin-crosshair';
-// import { CategoryScale } from "chart.js";
+// import crosshairPlugin from 'chartjs-plugin-crosshair';
 import {
   // Chart as ChartJS,
   CategoryScale,
@@ -14,6 +13,21 @@ import {
   Legend
 } from 'chart.js';
 
+
+import { CrosshairPlugin, Interpolate } from 'chartjs-plugin-crosshair';
+// Dont use the plugin as it is. Error in afterDraw function  
+// Chart.register(CrosshairPlugin);  
+const CustomCrosshairPlugin = function (plugin) {  
+  const originalAfterDraw = plugin.afterDraw;  
+  plugin.afterDraw = function(chart, easing) {  
+      if (chart && chart.crosshair) {  
+        originalAfterDraw.call(this, chart, easing);  
+      }  
+  };  
+  return plugin;  
+};  
+// Chart.register();  
+
 Chart.register(
   CategoryScale,
   LinearScale,
@@ -22,7 +36,8 @@ Chart.register(
   Title,
   Tooltip,
   Legend,
-  crosshairPlugin
+  CustomCrosshairPlugin(CrosshairPlugin)
+  // crosshairPlugin
 );
 
 
@@ -38,18 +53,6 @@ function LineChart({
   onHover = () => null,
   onClick = () => null,
 }) {
-
-  const crosshair = useCrosshair ? {
-    line: {
-      color: 'red',  // crosshair line color
-      width: .5        // crosshair line width
-    },
-    sync: {
-      enabled: true,            // enable trace line syncing with other charts
-      group: 1,                 // chart group
-      suppressTooltips: true   // suppress tooltips when showing a synced tracer
-    },
-  } : {}
 
 
   const getPointsOnMouseEvent = (event) => {
@@ -115,7 +118,31 @@ function LineChart({
             title: {
               display: false,
             },
-            crosshair,
+            crosshair: {
+              line: {
+                color: useCrosshair ? 'red' : '#FFFFFF01',  // crosshair line color
+                width: .5,       // crosshair line width
+              },
+              sync: {
+                enabled: true,            // enable trace line syncing with other charts
+                group: 1,                 // chart group
+                suppressTooltips: true   // suppress tooltips when showing a synced tracer
+              },
+              zoom: {
+                enabled: true,                                      // enable zooming
+                zoomboxBackgroundColor: 'rgba(66,133,244,0.2)',     // background color of zoom box 
+                zoomboxBorderColor: '#48F',                         // border color of zoom box
+                zoomButtonText: 'Reset Zoom',                       // reset zoom button text
+                zoomButtonClass: 'reset-zoom',                      // reset zoom button class
+              },
+              callbacks: {
+                beforeZoom: () => function (start, end) {                  // called before zoom, return false to prevent zoom
+                  return true;
+                },
+                afterZoom: () => function (start, end) {                   // called after zoom
+                }
+              }
+            },
 
             legend: {
               display: true,

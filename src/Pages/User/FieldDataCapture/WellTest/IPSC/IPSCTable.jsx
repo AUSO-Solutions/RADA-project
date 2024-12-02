@@ -30,9 +30,6 @@ import { useMe } from 'hooks/useMe';
 import { Query } from 'Partials/Actions/Query';
 import { Approve } from 'Partials/Actions/Approve';
 
-// const TableInput = (props) => {
-//     return <input className='p-1 text-center w-[80px] h-[100%] border outline-none ' required {...props} />
-// }
 
 const SaveAs = ({ defaultValue, onSave = () => null, loading }) => {
     const [title, setTitle] = useState(defaultValue)
@@ -75,7 +72,7 @@ export default function IPSCTable() {
 
     const bringForward = (wellTestResults, wellTestResult, productionString) => {
         const data = getWellLastTestResult(wellTestResults, wellTestResult, productionString)
-        console.log(data)
+        // console.log(data)
         setIpscData(prev => {
             return {
                 ...prev, wellTestResultData: {
@@ -110,7 +107,7 @@ export default function IPSCTable() {
             //     toast.error("Gas rate total must be equal to the summation of the gas types ")
             //     return
             // }
-            console.log(payload)
+            // console.log(payload)
             await firebaseFunctions('updateSetup', payload)
             dispatch(closeModal())
             toast.success('Data saved to IPSC')

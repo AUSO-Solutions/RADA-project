@@ -117,12 +117,7 @@ const ExtractWellTest = ({ merResult }) => {
     const dispatch = useDispatch()
     const save = async () => {
         const setup = store.getState().setup
-        console.log(setup)
-        // const payload = {
-        //     ...setup,
-        //     asset: merResult?.asset,
-        //     merResultId: merResult?.id
-        // }
+     
         dispatch(openModal({ component: <WellTestCommitTable wellTestResult={setup?.wellTestResultData} merResult={merResult} /> }))
 
     }

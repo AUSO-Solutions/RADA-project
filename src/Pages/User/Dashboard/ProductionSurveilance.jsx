@@ -165,19 +165,19 @@ const ProductionSurveilance = () => {
     <div className='p-3 flex flex-wrap gap-3 w-full '>
       {/* <Line2 labels={graphs.liquidOil.labels} datasets={graphs?.liquidOil?.dataset}  /> */}
       <div className='w-[48%] h-[auto] border rounded p-3 '>
-        {<LineChart labels={graphs.liquidOil.labels} datasets={graphs?.liquidOil?.dataset} />}
+        {<LineChart useCrosshair={false} labels={graphs.liquidOil.labels} datasets={graphs?.liquidOil?.dataset} />}
       </div>
       <div className='w-[48%] h-[auto] border rounded p-3 '>
-        {<LineChart labels={graphs.water.labels} datasets={graphs?.water?.dataset} range={{ y: { max: 100, min: 0, } }} />}
+        {<LineChart useCrosshair={false} labels={graphs.water.labels} datasets={graphs?.water?.dataset} range={{ y: { max: 100, min: 0, } }} />}
       </div>
       {!setupData?.productionString && <div className='w-[48%] h-[auto] border rounded p-3 '>
-        {<LineChart labels={graphs.dailyGas.labels} datasets={graphs?.dailyGas?.dataset} />}
+        {<LineChart useCrosshair={false} labels={graphs.dailyGas.labels} datasets={graphs?.dailyGas?.dataset} />}
       </div>}
       {setupData?.productionString && <div className='w-[48%] h-[auto] border rounded p-3 '>
-        {<LineChart labels={graphs.fthpChoke.labels} datasets={graphs?.fthpChoke?.dataset} range={{ y1: { max: 64, min: 0, } }} />}
+        {<LineChart useCrosshair={false} labels={graphs.fthpChoke.labels} datasets={graphs?.fthpChoke?.dataset} range={{ y1: { max: 64, min: 0, } }} />}
       </div>}
       <div className='w-[48%] h-[auto] border rounded p-3 '>
-        {<LineChart stacked={false} labels={graphs.gor.labels} datasets={graphs?.gor?.dataset} />}
+        {<LineChart useCrosshair={false} stacked={false} labels={graphs.gor.labels} datasets={graphs?.gor?.dataset} />}
       </div>
     </div>
   )

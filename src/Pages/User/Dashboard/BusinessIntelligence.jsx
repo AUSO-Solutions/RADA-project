@@ -47,7 +47,7 @@ const Insights = () => {
     }), [])
     const targetForthisMonth = useMemo(() => {
         // const allTargets =  
-        const selectedFlowstationTarget = (data?.ipscTarget?.flatMap(target => Object.values(target?.flowstationsTargets)))
+        const selectedFlowstationTarget = (data?.ipscTarget?.flatMap(target => Object.values(target?.flowstationsTargets || {} )))
         // console.log()
         const oil = sum(selectedFlowstationTarget?.map(target => target?.oilRate));
         const gas = sum(selectedFlowstationTarget?.map(target => target?.gasRate));

@@ -21,20 +21,30 @@ import { setSetupData } from 'Store/slices/setupSlice';
 import { closeModal, openModal } from 'Store/slices/modalSlice';
 import { firebaseFunctions } from 'Services';
 import { toast } from 'react-toastify';
-// import { firebaseFunctions } from 'Services';
-// import { closeModal, openModal } from 'Store/slices/modalSlice';
-// import { useDispatch } from 'react-redux';
-// import { toast } from 'react-toastify';
-
-// import { createWellTitle } from 'utils';
+import { sum } from 'utils';
+import { getAssetByName } from 'hooks/useAssetByName';
 
 const SaveAs = () => {
     const setupData = useSelector(state => state.setup)
     const dispatch = useDispatch()
     const save = async () => {
         try {
-            console.log(setupData)
-            await firebaseFunctions('createSetup', { ...setupData, setupType: 'wellTestResult' })
+            // console.log(setupData)
+            const asset_ = await getAssetByName(setupData?.asset)
+            console.log(asset_.flowStations)
+            const arr = Object.values(setupData?.wellTestResultData || {})
+            // console.log(arr)
+            const flowstations = asset_.flowStations
+            const totals = {
+                gross: sum(arr.map(item => item?.gross || 0)),
+                oilRate: sum(arr.map(item => item?.oilRate || 0)),
+                gasRate: sum(arr.map(item => item?.gasRate || 0)),
+                exportGas: null,
+                flaredGas: null,
+                fuelGas: null
+            }
+            console.log(setupData?.wellTestResultData, totals, flowstations)
+            await firebaseFunctions('createSetup', { ...setupData, setupType: 'wellTestResult', totals, flowstations   })
             toast.success('Successfully uploaded')
             dispatch(closeModal())
         } catch (error) {
