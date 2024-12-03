@@ -27,6 +27,7 @@ import MerChart from './MerChart';
 import ImprortResult from './ImportResult';
 import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
 import { useMe } from 'hooks/useMe';
+import { getAssetByName } from 'hooks/useAssetByName';
 
 
 const SaveAs = ({ defaultValue, onSave = () => null, loading }) => {
@@ -65,42 +66,30 @@ export default function MERDataTable() {
     const [showChart, setShowChart] = useState(false)
 
     useEffect(() => {
-        // console.log(res)
-        if (res) setMerResult({
-            title: res?.title,
-            merResultData: res?.merScheduleData,
-            field: res?.field,
-            scheduleId: res?.id,
-            asset: res?.asset,
-            month: res?.month
-        })
+
+        const inheritMerSchedule = async () => {
+            const asset_ = await getAssetByName(res?.asset, { loadingScreen: true })
+            const flowstations = asset_.flowStations
+
+            for (const productionString in  res?.merScheduleData) {
+                const flowstation = asset_.assetData?.find(item => item?.wellId)?.flowstation
+                 res.merScheduleData[productionString].flowstation = flowstation
+            }
+
+            setMerResult({
+                title: res?.title,
+                merResultData: res?.merScheduleData,
+                field: res?.field,
+                scheduleId: res?.id,
+                asset: res?.asset,
+                month: res?.month,
+                flowstations
+            })
+        }
+        if (res) inheritMerSchedule()
     }, [res])
 
     useEffect(() => { if (isEdit) setMerResult(res2); setTitle(res2?.title) }, [res2, isEdit])
-    // useEffect(() => {
-    //     const chokeFields = ['gross', 'oilRate', 'bsw', 'gor', 'gasRate', 'sand', 'fthp']
-    //     const extraFields = ['drawdown', 'api', 'mer']
-    //     setMerResult(prev => {
-    //         let updates = {}
-    //         const productionStrings = Object.values(prev.merResultData || {})
-    //         productionStrings.forEach(productionString => {
-    //             const randomExtraValues = Object.fromEntries(extraFields.map(extraField => ([extraField, genRandomNumber()])))
-    //             updates[productionString?.productionString] = {
-    //                 ...productionString,
-    //                 // ...randomExtraValues,
-    //                 chokes: productionString.chokes.map(choke => {
-    //                     const randomChokeValues = Object.fromEntries(chokeFields.map(chokeField => ([chokeField, genRandomNumber()])))
-    //                     return { ...choke, ...randomChokeValues }
-    //                 })
-    //             }
-    //         })
-    //         return {
-    //             ...prev,
-    //             merResultData: updates
-    //         }
-    //     })
-
-    // }, [res, res2])
 
     const save = async (title) => {
         if (!title) {
@@ -117,6 +106,7 @@ export default function MERDataTable() {
             } else {
                 const payload = { ...merResult, title, setupType: 'merResult' }
                 console.log(payload)
+
                 const { data } = await firebaseFunctions('createSetup', payload)
                 navigate(`/users/fdc/mer-data/mer-data-result-table?id=${data?.id}`)
             }
@@ -129,14 +119,7 @@ export default function MERDataTable() {
         }
     }
 
-    // const getMer = useCallback((mer) => {
-    //     const chokePoints = mer?.chokes?.map(choke => ({ x: choke?.oilRate, y: choke?.chokeSize }))
-    //     const fthpPoints = mer?.chokes?.map(choke => ({ x: choke?.oilRate, y: choke?.fthp }))
-    //     const intersection = getIntersectionBetweenTwoLines(chokePoints, fthpPoints)
-    //     return (intersection.x.toFixed(3))
-    // }, [])
-
-    const getFileData = (data) => {
+    const getFileData = async (data) => {
         const newResult = {}
         for (const string in merResult?.merResultData) {
             const stringData = merResult?.merResultData[string];
@@ -193,7 +176,7 @@ export default function MERDataTable() {
                         <RadaSwitch label="Edit Table" labelPlacement="left" />
                     </div>
                     <div className='flex justify-end py-2 items-center gap-3'>
-                        {!isEdit && <ImprortResult onProceed={getFileData} />}
+                        {!isEdit && <ImprortResult asset={merResult?.asset} onProceed={getFileData} />}
                         {isEdit && <div className='flex gap-2' >
                             {<Actions merResult={merResult} title={title} actions={[
                                 { name: 'Query Result', onClick: () => dispatch(openModal({ component: <Query /> })) },
@@ -225,10 +208,8 @@ export default function MERDataTable() {
                                 <TableCell style={{ fontWeight: '600' }} align="center" colSpan={3} > Test Date  </TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Gross</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Oil Rate</TableCell>
-
                                 <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >BS&W</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Initial GOR</TableCell>
-
                                 <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Current GOR</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Gas Rate</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Sandcut</TableCell>

@@ -6,11 +6,13 @@ import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { openModal } from 'Store/slices/modalSlice'
 
-const Import = ({ onProceed = () => null }) => {
+const Import = ({ onProceed = () => null, asset }) => {
     const [file, setFile] = useState(null)
     const [data, setData] = useState([])
 
-    const importFile = () => {
+    const importFile = async () => {
+
+        // console.log(asset, assetData.assetData)
         const result = data.map(datum => {
             const productionString = datum?.['Production String']
             // const reservoir = datum?.['Reservoir']
@@ -30,8 +32,10 @@ const Import = ({ onProceed = () => null }) => {
             const orificePlateSize = datum?.['Orifice Plate Size (inches)']
             const remark = datum?.['Remark']
 
+
             return {
                 productionString,
+                // flowstation,
                 // reservoir,
                 // field,
                 chokeSize,
@@ -51,6 +55,7 @@ const Import = ({ onProceed = () => null }) => {
             }
 
         })
+        console.log(result)
         onProceed(result)
 
     }
@@ -69,10 +74,10 @@ const Import = ({ onProceed = () => null }) => {
     )
 
 }
-const ImprortResult = ({ onProceed = () => null }) => {
+const ImprortResult = ({ onProceed = () => null, asset }) => {
 
     const dispatch = useDispatch()
-    return <Button onClick={() => dispatch(openModal({ component: <Import onProceed={onProceed} />, title: 'Import MER Data Result' }))}>Import Result</Button>
+    return <Button onClick={() => dispatch(openModal({ component: <Import asset={asset} onProceed={onProceed} />, title: 'Import MER Data Result' }))}>Import Result</Button>
 }
 
 export default ImprortResult

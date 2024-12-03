@@ -44,9 +44,9 @@ export const useAssetByName = (name) => {
     }
 }
 
-export const getAssetByName = async (name) => {
+export const getAssetByName = async (name, {loadingScreen=false}) => {
     try {
-        const res = await firebaseFunctions('getAssetByName', { name })
+        const res = await firebaseFunctions('getAssetByName', { name }, false, { loadingScreen })
 
         const set = new Set(res?.data)
         const uniques = (Array.from(set))

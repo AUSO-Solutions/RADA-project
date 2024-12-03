@@ -56,6 +56,7 @@ export default function IPSCTable() {
     const [flowstationsTargets, setFlowstationTragets] = useState({})
     const [currFlowstation, setCurrFlowstation] = useState()
     useEffect(() => {
+
         setCurrFlowstation(ipscData?.flowstations?.[0])
     }, [ipscData?.flowstations])
     // console.log({ flowstationsTargets })

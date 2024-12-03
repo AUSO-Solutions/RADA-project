@@ -22,7 +22,6 @@ const SelectChokes = ({ merResult }) => {
             noOfChokes: chokes?.length,
             isSelected: true
         }
-        console.log(data)
         const prevWellTestResultData = setup?.wellTestResultData
         dispatch(setSetupData({ name: 'wellTestResultData', value: { ...prevWellTestResultData, [resultData?.productionString]: data } }))
         console.log({ ...prevWellTestResultData, [resultData?.productionString]: data })

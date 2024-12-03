@@ -29,11 +29,8 @@ const SaveAs = () => {
     const dispatch = useDispatch()
     const save = async () => {
         try {
-            // console.log(setupData)
             const asset_ = await getAssetByName(setupData?.asset)
-            console.log(asset_.flowStations)
             const arr = Object.values(setupData?.wellTestResultData || {})
-            // console.log(arr)
             const flowstations = asset_.flowStations
             const totals = {
                 gross: sum(arr.map(item => item?.gross || 0)),
@@ -43,7 +40,6 @@ const SaveAs = () => {
                 flaredGas: null,
                 fuelGas: null
             }
-            console.log(setupData?.wellTestResultData, totals, flowstations)
             await firebaseFunctions('createSetup', { ...setupData, setupType: 'wellTestResult', totals, flowstations   })
             toast.success('Successfully uploaded')
             dispatch(closeModal())
