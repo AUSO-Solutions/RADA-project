@@ -79,6 +79,14 @@ export default function GasTable() {
   const flowstationsTargets = IPSC?.flowstationsTargets
   const averageTarget = IPSC?.averageTarget
   // console.log(flowstationsTargets)
+  const totalGasTarget = useMemo(() => {
+    if (flowstationsTargets) {
+      const flowstationsTargetsList = Object.values(flowstationsTargets || {})
+      const total = sum(flowstationsTargetsList.map(item => item?.gasRate))
+      return total
+    }
+    return 0
+  }, [flowstationsTargets])
 
   const [tableValues, setTableValues] = useState({})
   // const [loading, setLoading] = useState(false)
@@ -355,7 +363,7 @@ export default function GasTable() {
 
                               <TableCell align="center">
 
-                                <TableInput value={readingAtIndex ? initialReading : "-"}
+                                <TableInput value={readingAtIndex ? (initialReading || 0) : "-"}
                                   disabled={!readingAtIndex} type={'number'}
                                   onChange={(e) => handleChange({ flowStation: name, field: 'initialReading', value: e.target.value, readingIndex, gasType: gasType.value })} />
                               </TableCell>
@@ -394,7 +402,7 @@ export default function GasTable() {
             <TableBody>
               <TableRow >
                 <TableCell align="left" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} className='bg-[rgba(0, 163, 255, 0.3)]' colSpan={7}>{"Total Gas Production"}</TableCell>
-                <TableCell align="center" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} className='bg-[rgba(0, 163, 255, 0.3)]' colSpan={1}> {averageTarget?.gasRate}</TableCell>
+                <TableCell align="center" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} className='bg-[rgba(0, 163, 255, 0.3)]' colSpan={1}> {totalGasTarget}</TableCell>
                 <TableCell align="center" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} >{totals?.totalGasProduced}</TableCell>
               </TableRow>
             </TableBody>

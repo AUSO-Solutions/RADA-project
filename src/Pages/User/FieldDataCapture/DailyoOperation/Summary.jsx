@@ -46,7 +46,7 @@ const Summary = () => {
   const tableData = useMemo(() => {
     return res?.data?.length ? JSON.parse(res?.data) : {}
   }, [res])
-  // console.log(tableData)
+  console.log(tableData)
   const assets = useAssetByName(setupData?.asset)
   const { assetNames } = useAssetNames()
   const [showChart, setShowChart] = useState(false);

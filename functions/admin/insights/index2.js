@@ -210,12 +210,12 @@ const getInsights = onCall(async (request) => {
             gasFlowstationsData.map((flowstation) => flowstation?.subtotal?.fuelGas || 0)
         );
         //Gases Targets
-        result.gasProducedTarget =
-            sum(
-                gasFlowstationsData.map(
-                    (flowstation) => flowstation?.subtotal?.totalGasTarget || 0
-                )
-            );
+        // result.gasProducedTarget =
+        //     sum(
+        //         gasFlowstationsData.map(
+        //             (flowstation) => flowstation?.subtotal?.totalGasTarget || 0
+        //         )
+        //     );
         result.exportGasTarget =
             sum(
                 gasFlowstationsData.map(
@@ -234,6 +234,7 @@ const getInsights = onCall(async (request) => {
                     (flowstation) => flowstation?.subtotal?.fuelGasTarget || 0
                 )
             );
+        result.gasProducedTarget = sum([result.gasUtilizedTarget, result.gasFlaredTarget, result.exportGasTarget])
         //Deferments
         result.totalOilDeferment = sum(
             defermentQuery.map((item) => item?.deferment?.totalOilDeferment)
