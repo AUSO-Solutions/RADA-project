@@ -14,7 +14,7 @@ import {
 } from 'chart.js';
 
 
-import { CrosshairPlugin, Interpolate } from 'chartjs-plugin-crosshair';
+import { CrosshairPlugin } from 'chartjs-plugin-crosshair';
 // Dont use the plugin as it is. Error in afterDraw function  
 // Chart.register(CrosshairPlugin);  
 const CustomCrosshairPlugin = function (plugin) {  

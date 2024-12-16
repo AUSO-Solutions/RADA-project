@@ -2,18 +2,21 @@ import React, { useEffect, useMemo } from 'react'
 import { useFetch } from 'hooks/useFetch'
 import { useDispatch, useSelector } from 'react-redux'
 import LineChart from './Line'
-import { clearSetup } from 'Store/slices/setupSlice'
+import { setSetupData } from 'Store/slices/setupSlice'
 import { sum } from 'utils'
 // import { Line2 } from './Line2'
 
-const ProductionSurveilance = () => {
+const ProductionSurveilance = ({assetOptions}) => {
   const setupData = useSelector(state => state?.setup)
   const dispatch = useDispatch()
   useEffect(() => {
-    return () => {
-      dispatch(clearSetup())
-    }
-  }, [dispatch])
+
+    dispatch(setSetupData({ name: "asset", value: assetOptions[0]?.value }))
+    // return () => {
+    //   dispatch(clearSetup())
+    // }
+  }, [dispatch,assetOptions])
+  console.log(setupData)
   const { data } = useFetch({ firebaseFunction: 'getSurveillanceData', payload: { asset: setupData?.asset, flowstation: setupData?.flowstation }, refetch: setupData })
   const result = useMemo(() => {
     // console.log(setupData)
@@ -43,26 +46,10 @@ const ProductionSurveilance = () => {
     }
     return y
   }, [data, setupData])
-  // console.log(result)
-  // const createDataset = (set) => {
-  //   return set?.map(item => ({
-  //     label: item?.label,
-  //     data: item?.data,
-  //     backgroundColor: [
-  //       "rgba(75,192,192,1)",
-  //       "&quot;#ecf0f1",
-  //       "#50AF95",
-  //       "#f3ba2f",
-  //       "#2a71d0"
-  //     ],
-  //     borderColor: "black",
-  //     borderWidth: 2
-  //   }))
-  // }
   const graphs = useMemo(() => {
     const data = result
     const labels = data?.map((item, i) => item?.date)
-    console.log(result)
+    // console.log(result)
     const liquidOilData = data?.map((item, i) => ({ liquid: item?.gross, oil: item?.oil }))
     const oilDataset = {
       label: "Oil Produced (bopd)",

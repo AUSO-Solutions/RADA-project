@@ -46,7 +46,7 @@ const SaveAs = ({ defaultValue, onSave = () => null, loading }) => {
 
 export default function IPSCTable() {
 
-    const { pathname,search } = useLocation()
+    const { pathname, search } = useLocation()
     const { user } = useMe()
     const dispatch = useDispatch()
     const [searchParams, setSearchParams] = useSearchParams()
@@ -56,7 +56,6 @@ export default function IPSCTable() {
     const [flowstationsTargets, setFlowstationTragets] = useState({})
     const [currFlowstation, setCurrFlowstation] = useState()
     useEffect(() => {
-
         setCurrFlowstation(ipscData?.flowstations?.[0])
     }, [ipscData?.flowstations])
     // console.log({ flowstationsTargets })
@@ -108,7 +107,7 @@ export default function IPSCTable() {
             //     toast.error("Gas rate total must be equal to the summation of the gas types ")
             //     return
             // }
-            // console.log(payload)
+            console.log(payload)
             await firebaseFunctions('updateSetup', payload)
             dispatch(closeModal())
             toast.success('Data saved to IPSC')
@@ -166,7 +165,8 @@ export default function IPSCTable() {
         })
 
     }, [ipscData?.wellTestResultData])
-    // console.log(flowstationsTargets)
+    // console.log(ipscData)
+
     return (
         < div className=' w-[80vw] px-3'>
             {showSettings && <ToleranceSettiings onClickOut={() => setShowSettings(false)} />}
@@ -289,6 +289,16 @@ export default function IPSCTable() {
                                     ?.filter(well => well?.flowstation === currFlowstation)
                                     ?.map((well, i) => {
 
+                                        const handleChange = (name, value, type = 'number') => {
+                                            setIpscData(prev => {
+                                                prev.wellTestResultData[well?.productionString] = {
+                                                    ...prev.wellTestResultData[well?.productionString],
+                                                    [name]: type === 'number' ? parseFloat(value) :  value
+                                                }
+                                                return prev
+                                            })
+                                        }
+
                                         return <TableRow key={well?.productionString}>
                                             <TableCell align="center">
                                                 {well?.reservoir}
@@ -297,10 +307,12 @@ export default function IPSCTable() {
                                                 {well?.productionString}
                                             </TableCell>
                                             <TableCell align="center">
-                                                {well?.chokeSize}
+                                                <input type="text" defaultValue={well?.chokeSize} onChange={(e)=>handleChange('chokeSize', e.target.value)} className='text-center' />
                                             </TableCell>
                                             <TableCell align="center">
                                                 {dayjs(well?.endDate).format("DD/MMM/YYYY")}
+
+                                                <input type="text" defaultValue={well?.chokeSize} onChange={(e)=>handleChange('chokeSize', e.target.value)} className='text-center' />
                                             </TableCell>
                                             <TableCell align="center">
                                                 {well?.fluidType}
@@ -310,14 +322,16 @@ export default function IPSCTable() {
                                             </TableCell>
                                             {
                                                 fields.map(field => <TableCell align="center">
-                                                    {field.fn(well) || (well?.[field.name] ?? "-")}
+                                                    {/* {field.fn(well) || (well?.[field.name] ?? "-")} */}
+
+                                                <input type={field.type} defaultValue={field.fn(well) || (well?.[field.name] ?? "-")} onChange={(e)=>handleChange(field.name, e.target.value)} className='text-center' />
                                                     {/* <TableInput type='number' defaultValue={well?.[field.name]} onChange={(e) => handleChange(field.name, e.target.value)} /> */}
                                                 </TableCell>)
                                             }
                                             <TableCell align="center" sx={{ minWidth: '200px' }} colSpan={3}>
                                                 {well?.remark || "No remark"}
-                                                {/* <textarea defaultValue={well.remark} onChange={(e) => handleChange("remark", e.target.value)} className='border outline-none p-1' rows={2} cols={20}>
-                                        </textarea> */}
+                                                <textarea defaultValue={well.remark} onChange={(e) => handleChange("remark", e.target.value)} className='border outline-none p-1' rows={2} cols={20}>
+                                        </textarea>
                                             </TableCell>
                                             <TableCell align="center" colSpan={1}>
                                                 <Actions actions={[

@@ -95,6 +95,7 @@ export default function VolumeMeasurementTable() {
     const meterFactor = parseFloat(flowStationSetup?.readings?.[readingIndex]?.meterFactor || 1)
     const deductionMeterFactor = parseFloat(flowStationSetup?.deductionMeterFactor || 1)
     setTableValues(prev => {
+      console.log(Object.values(prev).map(item => item?.meters[0]))
       const prevFlowStation = prev?.[flowStation]
       const prevFlowStationList = prevFlowStation?.meters
       const prevFlowStationListIndexValues = prevFlowStation?.meters?.[readingIndex]
@@ -158,7 +159,7 @@ export default function VolumeMeasurementTable() {
 
   useEffect(() => {
     const values = (Object.values(tableValues))
-    // console.log(values, sum(values.map(value => calculatedGrossOrnNet(value?.subTotal, value?.bsw, 'gross'))))
+    console.log(values, sum(values.map(value => calculatedGrossOrnNet(value?.subTotal, value?.bsw, 'gross'))))
     const netProductionTotal = isNet ? sum(Object.values(values || {}).map(item => item?.subTotal || 0)) : sum(values.map(value => calculatedGrossOrnNet(value?.subTotal, value?.bsw, 'gross')));
     const grossTotal = isGross ? sum(Object.values(values || {}).map(item => item?.subTotal || 0)) : sum(values.map(value => calculatedGrossOrnNet(value?.subTotal, value?.bsw, 'net')))
     const netTargetTotal = sum(Object.values(flowstationsTargets || {}).map(target => target?.oilRate))
@@ -274,7 +275,6 @@ export default function VolumeMeasurementTable() {
             initialReading: flowStation?.deductionInitialReading,
             finalReading: flowStation?.deductionFinalReading,
             meterFactor: flowStation?.deduction?.meterFactor,
-            // gross: 500,
             netProduction: flowStation?.deductionTotal,
           }
         } : {}
@@ -298,7 +298,6 @@ export default function VolumeMeasurementTable() {
             netProduction: meter?.netProduction,
           })),
           ...addDeduction
-
         }
       }),
     };

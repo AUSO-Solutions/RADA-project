@@ -14,14 +14,11 @@ import GasProductionVariantChart from "./GasProductionVariantChart";
 import { sum } from "utils";
 import { setSetupData } from "Store/slices/setupSlice";
 import dayjs from "dayjs";
-// import { useAssetNames } from "hooks/useAssetNames";
-// import { useAssetByName } from "hooks/useAssetByName";
 
-
-const Insights = () => {
+const Insights = ({assetOptions=[]}) => {
     const dispatch = useDispatch()
     const querys = useSelector(state => state?.setup)
-    console.log(querys)
+
     const res = useFetch({
         firebaseFunction: 'getInsights', payload: {
             asset: querys?.asset,
@@ -54,10 +51,10 @@ const Insights = () => {
         return { oil, gas }
     }, [data])
     useEffect(() => {
-        dispatch(setSetupData({ name: "asset", value: '' }))
+        dispatch(setSetupData({ name: "asset", value: assetOptions[0]?.value }))
         dispatch(setSetupData({ name: 'startDate', value: dayjs().startOf('month').format('YYYY-MM-DD') }))
         dispatch(setSetupData({ name: 'endDate', value: dayjs().endOf('month').format('YYYY-MM-DD') }))
-    }, [dispatch])
+    }, [dispatch, assetOptions])
     const OilProductionChart = () => {
         return (
             <ResponsiveContainer width="100%" height={350}>

@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react'
 import Overview from './Overview'
-import Insights from './BusinessIntelligence'
+import BusinessIntelligence from './BusinessIntelligence'
 import Tab from 'Components/tab'
 import Header from 'Components/header'
 import dayjs from 'dayjs'
@@ -14,20 +14,6 @@ import { setSetupData } from 'Store/slices/setupSlice'
 import DateRangePicker from 'Components/DatePicker'
 import ProductionSurveilance from './ProductionSurveilance'
 
-const tabs = [
-  {
-    title: 'Business Intelligence',
-    Component: <Insights />
-  },
-  {
-    title: 'Production Surveillance',
-    Component: <ProductionSurveilance />
-  },
-  {
-    title: 'Overview',
-    Component: <Overview />
-  }
-]
 
 const Dashboard = () => {
 
@@ -43,8 +29,27 @@ const Dashboard = () => {
     return strings
   }, [assets, setupData?.flowstation])
 
-  // console.log({setupData})
+  const assetOptions = useMemo(() => {
+    const originalList = assetNames?.map(assetName => ({ value: assetName, label: assetName }))
+    if (assetNames.length === 3) return [{ label: 'All', value: '' }].concat(originalList)
+    return originalList
+  }, [assetNames])
 
+
+  const tabs = useMemo(() => [
+    {
+      title: 'Business Intelligence',
+      Component: <BusinessIntelligence assetOptions={assetOptions} />
+    },
+    {
+      title: 'Production Surveillance',
+      Component: <ProductionSurveilance assetOptions={assetOptions} />
+    },
+    {
+      title: 'Overview',
+      Component: <Overview />
+    }
+  ], [assetOptions])
 
   return (
     <div className='h-full'>
@@ -57,17 +62,17 @@ const Dashboard = () => {
           <div key={tab} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 20 }}>
             {
               <>
-                {(tabs[tab]?.title === 'Production Surveillance' ||  tabs[tab]?.title === 'Business Intelligence') &&
+                {(tabs[tab]?.title === 'Production Surveillance' || tabs[tab]?.title === 'Business Intelligence') &&
                   <>
                     <div style={{ width: '120px' }} >
-                      <Input placeholder={'Assets'} required
-                        type='select' options={[{ label: 'All', value: '' }].concat(assetNames?.map(assetName => ({ value: assetName, label: assetName })))}
+                      <Input placeholder={'Assets'} required key={assetOptions.length}
+                        type='select' options={assetOptions}
                         onChange={(e) => {
                           dispatch(setSetupData({ name: 'asset', value: e?.value }))
                           dispatch(setSetupData({ name: 'flowstation', value: '' }))
                           dispatch(setSetupData({ name: 'productionString', value: '' }))
                         }}
-                        defaultValue={{ label: 'All', value: '' }}
+                        defaultValue={assetOptions[0]}
                       />
                     </div>
                     <div style={{ width: '150px' }}>

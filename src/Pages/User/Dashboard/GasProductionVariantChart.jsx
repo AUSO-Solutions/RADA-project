@@ -142,6 +142,31 @@ const GasProductionVariantChart = ({ data: data_ }) => {
             tooltip: {
                 enabled: true, // Enable tooltips
             },
+            crosshair: {
+                line: {
+                    color: '#FFFFFF01',  // crosshair line color
+                    // width: .5,       // crosshair line width
+                },
+                // sync: {
+                //     enabled: true,            // enable trace line syncing with other charts
+                //     group: 1,                 // chart group
+                //     suppressTooltips: true   // suppress tooltips when showing a synced tracer
+                // },
+                zoom: {
+                    enabled: false,                                      // enable zooming
+                    zoomboxBackgroundColor: 'rgba(66,133,244,0.2)',     // background color of zoom box 
+                    zoomboxBorderColor: '#48F',                         // border color of zoom box
+                    zoomButtonText: 'Reset Zoom',                       // reset zoom button text
+                    zoomButtonClass: 'reset-zoom',                      // reset zoom button class
+                },
+                // callbacks: {
+                //     beforeZoom: () => function (start, end) {                  // called before zoom, return false to prevent zoom
+                //         return true;
+                //     },
+                //     afterZoom: () => function (start, end) {                   // called after zoom
+                //     }
+                // }
+            },
         },
     };
     return (

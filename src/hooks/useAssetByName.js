@@ -10,7 +10,7 @@ export const useAssetByName = (name) => {
         fields: [],
         productionStrings: [],
         wells: [],
-        reservoirs:[]
+        reservoirs: []
     })
 
     const [loading, setLoading] = useState(false)
@@ -44,9 +44,9 @@ export const useAssetByName = (name) => {
     }
 }
 
-export const getAssetByName = async (name, {loadingScreen=false}) => {
+export const getAssetByName = async (name, options) => {
     try {
-        const res = await firebaseFunctions('getAssetByName', { name }, false, { loadingScreen })
+        const res = await firebaseFunctions('getAssetByName', { name }, false, { loadingScreen: options?.loadingScreen })
 
         const set = new Set(res?.data)
         const uniques = (Array.from(set))
