@@ -29,7 +29,7 @@ export const getWellLastTestResult = (wellTestResults, wellTestResult, productio
         const match = matches[index];
         // console.log(match.wellTestResultData)
         const wellTestResultData = match.wellTestResultData
-        const isTested = wellTestResultData[productionString].isSelected
+        const isTested = wellTestResultData[productionString]?.isSelected
         if (isTested) {
             // console.log(tests)
             productionStringData = wellTestResultData[productionString]

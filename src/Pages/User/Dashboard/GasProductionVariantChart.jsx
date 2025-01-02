@@ -29,7 +29,7 @@ const GasProductionVariantChart = ({ data: data_ }) => {
 
     const data = useMemo(() => {
         return {
-            labels: ['IPSC','Oil Deferment Impact' , 'Unitlized Gas', 'Flared Gas', 'Export', 'Actual'],
+            labels: ['IPSC','Oil Deferment Impact' , 'Utilized Gas', 'Flared Gas', 'Export', 'Actual'],
             datasets: [
                 {
                     label: 'Gas Production Variance (MMscf)',

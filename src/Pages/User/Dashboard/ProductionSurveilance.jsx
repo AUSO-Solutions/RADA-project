@@ -16,7 +16,6 @@ const ProductionSurveilance = ({assetOptions}) => {
     //   dispatch(clearSetup())
     // }
   }, [dispatch,assetOptions])
-  console.log(setupData)
   const { data } = useFetch({ firebaseFunction: 'getSurveillanceData', payload: { asset: setupData?.asset, flowstation: setupData?.flowstation }, refetch: setupData })
   const result = useMemo(() => {
     // console.log(setupData)
