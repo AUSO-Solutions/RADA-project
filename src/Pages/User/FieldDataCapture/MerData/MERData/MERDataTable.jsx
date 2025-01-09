@@ -61,6 +61,7 @@ export default function MERDataTable() {
     const scheduleId = useMemo(() => new URLSearchParams(search).get('scheduleId'), [search])
     const { data: res } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'merSchedule', id: scheduleId || id } })
     const { data: res2 } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'merResult', id }, dontFetch: !id })
+    console.log({res2})
     const [title, setTitle] = useState('')
     const isEdit = useMemo(() => { return !scheduleId }, [scheduleId])
     const [showChart, setShowChart] = useState(false)
@@ -161,6 +162,7 @@ export default function MERDataTable() {
 
     return (
         <>
+    
             {showChart && <MerChart merResult={merResult} onClickOut={() => setShowChart(false)} onPointClick={setMerValueFromPointClick} />}
             < form className='w-[80vw] px-3' onSubmit={(e) => {
                 e.preventDefault()
@@ -289,14 +291,14 @@ export default function MERDataTable() {
                                         <TableCell align="center" className={tableStyles.cellNoPadding}>
                                             {chokes?.map((choke, i) =>
                                             (<div className={`border-b py-2`}>
-                                                <TableInput onChange={(e) => handleChokeItemChange(e, i)} name={'startDate'} type='date' defaultValue={dayjs(choke?.startDate).format("YYYY-MM-DD")} />
+                                                <TableInput onChange={(e) => handleChokeItemChange(e, i)} name={'startDate'} type='datetime-local' defaultValue={dayjs(choke?.startDate).format("YYYY-MM-DDTHH:mm")} />
                                             </div>)
                                             )}
                                         </TableCell>
                                         <TableCell align="center" className={tableStyles.cellNoPadding}>
                                             {chokes?.map((choke, i) =>
                                             (<div className={`border-b py-2`}>
-                                                <TableInput onChange={(e) => handleChokeItemChange(e, i)} type='date' name={'endDate'} defaultValue={dayjs(choke?.endDate).format("YYYY-MM-DD")} />
+                                                <TableInput onChange={(e) => handleChokeItemChange(e, i)} type='datetime-local' name={'endDate'} defaultValue={dayjs(choke?.endDate).format("YYYY-MM-DDTHH:mm")} />
                                             </div>)
                                             )}
                                         </TableCell>

@@ -59,10 +59,10 @@ const Users = () => {
           { name: 'First name', key: 'firstName' },
           { name: 'Last name', key: 'lastName' },
           { name: 'Email', key: 'email' },
-          { name: 'Status', key: 'status' },
-          { name: 'Groups', key: 'status' , render:(data)=> data?.groups?.join(', ') ||  'No groups' },
-          { name: 'Assets', key: 'status' , render:(data)=> data?.assets?.join(', ') ||  'No assets' },
-          { name: 'Roles', key: 'roles', render:(data)=> data?.roles?.map(role => role?.roleName)?.join(', ')  || "No roles"},
+          { name: 'Status', key: 'status', render: (data) => data?.status === 'online'? <span className='text-[green] font-bold'>online </span> : <span>offline </span> },
+          { name: 'Groups', key: 'status', render: (data) => data?.groups?.join(', ') || 'No groups' },
+          { name: 'Assets', key: 'status', render: (data) => data?.assets?.join(', ') || 'No assets' },
+          { name: 'Roles', key: 'roles', render: (data) => data?.roles?.map(role => role?.roleName)?.join(', ') || "No roles" },
           // { name: 'Action' }
         ]}
         actions={(data, i) => <TableAction

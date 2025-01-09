@@ -30,7 +30,8 @@ const MERDataTestResults = () => {
                 // { name: 'Create IPSC', to: (file) => `/users/fdc/well-test-data?page=ipsc&well-test-result-id=${file?.id}&autoOpenSetupModal=yes` },
                 // { name: 'Delete', to: (file) => `` },
                 {
-                    name: 'Broadcast', to: (file) => null, onClick: (file) => dispatch(openModal({
+                    name: 'Broadcast',
+                    to: (file) => null, onClick: (file) => dispatch(openModal({
                         title: '',
                         component: <BroadCast
                             setup={file}
@@ -45,7 +46,7 @@ const MERDataTestResults = () => {
                                 <Attachment details={`${file?.asset} MER Data Result ${dayjs(file?.startDate).format('MMM/YYYY')}`} />,
                                 <BroadCastSuccessfull details={`${file?.asset} MER Data Result ${dayjs(file?.startDate).format('MMM/YYYY')}`} />]} />
                     })),
-                    hidden: (file) => user.permitted.broadcastData && file?.status === 'approved'
+                    hidden: (file) => user.permitted.broadcastData && file?.status !== 'approved'
                 },
                 {
                     name: 'Delete', onClick: (file) => deleteSetup({ id: file?.id, setupType: 'merResult' }), to: () => null,
