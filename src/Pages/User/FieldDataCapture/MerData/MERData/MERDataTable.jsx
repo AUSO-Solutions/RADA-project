@@ -50,7 +50,7 @@ const TableInput = ({ type = 'number', onChange = () => null, ...props }) => {
 export default function MERDataTable() {
 
     const { user } = useMe()
-    const { search } = useLocation()
+    const {pathname, search } = useLocation()
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const [loading, setLoading] = useState(false)
@@ -179,8 +179,8 @@ export default function MERDataTable() {
                         {!isEdit && <ImprortResult onProceed={getFileData} />}
                         {isEdit && <div className='flex gap-2' >
                             {<Actions merResult={merResult} title={title} actions={[
-                                { name: 'Query Result', onClick: () => dispatch(openModal({ component: <Query /> })) },
-                                { name: 'Approve', onClick: () => dispatch(openModal({ component: <Approve /> })) },
+                                { name: 'Query Result', onClick: () => dispatch(openModal({ component: <Query header={'Query MER Data'} id={merResult?.id} title={createWellTitle(merResult)} pagelink={pathname + search} /> })) },
+                                { name: 'Approve', onClick: () => dispatch(openModal({ component: <Approve header={'Approve MER Data'} id={merResult?.id} title={createWellTitle(merResult)} pagelink={pathname + search} /> })) },
                                 {
                                     name: 'Extract Well Test', onClick: () => {
                                         dispatch(openModal({
