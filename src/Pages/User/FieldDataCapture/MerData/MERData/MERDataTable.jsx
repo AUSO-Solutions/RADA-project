@@ -181,8 +181,8 @@ export default function MERDataTable() {
                         {!isEdit && <ImprortResult asset={merResult?.asset} onProceed={getFileData} />}
                         {isEdit && <div className='flex gap-2' >
                             {<Actions merResult={merResult} title={title} actions={[
-                                { name: 'Query Result', onClick: () => dispatch(openModal({ component: <Query header={'Query MER Data'} id={merResult?.id} title={createWellTitle(merResult)} pagelink={pathname + search} /> })) },
-                                { name: 'Approve', onClick: () => dispatch(openModal({ component: <Approve header={'Approve MER Data'} id={merResult?.id} title={createWellTitle(merResult)} pagelink={pathname + search} /> })) },
+                                { name: 'Query Result', onClick: () => dispatch(openModal({ component: <Query header={'Query MER Data'} setupType={'merResult'}  id={merResult?.id} title={createWellTitle(merResult)} pagelink={pathname + search} /> })) },
+                                { name: 'Approve', onClick: () => dispatch(openModal({ component: <Approve header={'Approve MER Data'} setupType={'merResult'} id={merResult?.id} title={createWellTitle(merResult)} pagelink={pathname + search} /> })) },
                                 {
                                     name: 'Extract Well Test', onClick: () => {
                                         dispatch(openModal({

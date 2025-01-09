@@ -24,6 +24,7 @@ import { openModal } from 'Store/slices/modalSlice';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { bsw } from 'utils';
 import { firebaseFunctions } from 'Services';
+import { useMe } from 'hooks/useMe';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -42,7 +43,7 @@ const Summary = () => {
     refetch: setupData
   });
   const dispatch = useDispatch()
-
+  const { user } = useMe()
   const tableData = useMemo(() => {
     return res?.data?.length ? JSON.parse(res?.data) : {}
   }, [res])
@@ -200,24 +201,29 @@ const Summary = () => {
             }} />
 
           </div>
-          <Button onClick={(file) => dispatch(openModal({
-            title: '',
-            component: <BroadCast
-              setup={setupData}
-              link={pathname + search}
-              broadcastType={'dailyProduction'}
-              type={'Daily Production/Operation Report '}
-              date={dayjs(setupData?.startDate).format('DD/MMM/YYYY')}
-              title='Broadcast Volume measurement'
-              subject={`${setupData?.asset} Daily Production/Operation Report ${dayjs(setupData?.startDate).format('DD/MMM/YYYY')}`}
-              steps={['Select Group', 'Attachment', 'Broadcast']}
-              stepsComponents={[
-                <SelectGroup />,
-                <Attachment details={`${setupData?.asset} Daily Production/Operation Report ${dayjs(setupData?.startDate).format('DD/MMM/YYYY')}`} />,
-                <BroadCastSuccessfull details={`${setupData?.asset} Daily Production/Operation Report ${dayjs(setupData?.startDate).format('DD/MMM/YYYY')}`} />]} />
-          }))}>
-            Broadcast
-          </Button>
+          {
+            (user.permitted.broadcastData || user.permitted.shareData) &&
+            <Button onClick={(file) => dispatch(openModal({
+              title: '',
+              component: <BroadCast
+                setup={setupData}
+                link={pathname + search}
+                broadcastType={'dailyProduction'}
+                type={'Daily Production/Operation Report '}
+                date={dayjs(setupData?.startDate).format('DD/MMM/YYYY')}
+                title='Broadcast Volume measurement'
+                subject={`${setupData?.asset} Daily Production/Operation Report ${dayjs(setupData?.startDate).format('DD/MMM/YYYY')}`}
+                steps={['Select Group', 'Attachment', 'Broadcast']}
+                stepsComponents={[
+                  <SelectGroup />,
+                  <Attachment details={`${setupData?.asset} Daily Production/Operation Report ${dayjs(setupData?.startDate).format('DD/MMM/YYYY')}`} />,
+                  <BroadCastSuccessfull details={`${setupData?.asset} Daily Production/Operation Report ${dayjs(setupData?.startDate).format('DD/MMM/YYYY')}`} />]} />
+            }))}>
+              {user.permitted.broadcastData ? 'Broadcast' : "Share"}
+            </Button>
+
+
+          }
         </div>
       </div>
 
@@ -251,8 +257,8 @@ const Summary = () => {
         </Text>
 
       </div>
-{/* <img src='https://firebasestorage.googleapis.com/v0/b/ped-application-4d196.appspot.com/o/radaNewLogoo.svg?alt=media&token=e3249009-d0c3-497f-8b2a-873988ad9355' alt='?media&token=475ebfb1-9f96-4b2d-b7f0-12390171a51' /> */}
-{/* https://firebasestorage.googleapis.com/v0/b/ped-application-4d196.appspot.com/o/radaNewLogoo.svg?alt=media&token=e3249009-d0c3-497f-8b2a-873988ad9355 */}
+      {/* <img src='https://firebasestorage.googleapis.com/v0/b/ped-application-4d196.appspot.com/o/radaNewLogoo.svg?alt=media&token=e3249009-d0c3-497f-8b2a-873988ad9355' alt='?media&token=475ebfb1-9f96-4b2d-b7f0-12390171a51' /> */}
+      {/* https://firebasestorage.googleapis.com/v0/b/ped-application-4d196.appspot.com/o/radaNewLogoo.svg?alt=media&token=e3249009-d0c3-497f-8b2a-873988ad9355 */}
 
       {showChart && (
         <div style={{ display: 'flex', flexDirection: 'column', backgroundColor: '#fff', position: 'absolute', top: 0, right: 10, width: '500px', height: 'auto', borderRadius: 5, boxShadow: '2px 1px 5px  #242424' }}>

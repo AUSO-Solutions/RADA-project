@@ -6,6 +6,7 @@ export const updateSetupStatus = async ({ id, setupType, status, statusMessage =
 
     try {
         store.dispatch(setLoadingScreen({ open: true }))
+        console.log({id, setupType, status})
         if (!id || !setupType || !status) throw new Error('Missing field required')
         await firebaseFunctions('updateSetupStatus', { id, setupType, status, statusMessage, subject, groups, users, title, pagelink })
     } catch (error) {

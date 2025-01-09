@@ -1,16 +1,27 @@
 import CheckInput from 'Components/Input/CheckInput'
 import { useFetch } from 'hooks/useFetch'
-import { useUsers } from 'hooks/useUsers'
-import React, { useEffect, useState } from 'react'
+import { useMe } from 'hooks/useMe'
+// import { useUsers } from 'hooks/useUsers'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setFormdata } from 'Store/slices/formdataSlice'
 
 const SelectGroup = ({ onChange = () => null }) => {
     const dispatch = useDispatch()
     const formdata = useSelector(state => state.formdata)
-    const { data: groups } = useFetch({ firebaseFunction: 'getGroups' })
-    const { users } = useUsers()
-    // console.log(users)
+    const { data: allGroups } = useFetch({ firebaseFunction: 'getGroups' })
+    // const { users } = useUsers()
+    const me = useMe()
+    const groups = useMemo(() => {
+        return allGroups.filter(group => me.user.groups.includes(group?.groupName))
+    }, [allGroups, me.user.groups])
+    const users = useMemo(() => {
+        return groups.flatMap(group => group?.members)
+    }, [groups])
+
+
+    console.log(users)
+
     const [selectedGroups, setSelectedGroups] = useState(formdata?.selectedGroups || [])
     const [selectedUsers, setSelectedUsers] = useState(formdata?.selectedUsers || [])
     const singleUser = (user) => ({ name: `${user?.firstName} ${user?.lastName}`, email: user?.email, uid: user?.uid })
@@ -49,17 +60,21 @@ const SelectGroup = ({ onChange = () => null }) => {
     const searchIn = (key, item) => {
         return item?.[key]?.toLowerCase()?.includes(searchWord?.toLowerCase())
     }
-    // console.log(users)
+
 
     return (
         <div className='min-w-[400px]'>
 
             <input className='bg-[lightgray] rounded border outline-none p-2   w-[300px]' placeholder='Search group' onChange={e => setSearchWord(e.target.value)} />
             <div className='border-b py-2'>
-                <CheckInput label={'Select all groups'} checked={selectedGroups.length === groups.length} onChange={() => {
-                    selectAllGroups()
-                    onChange(selectedGroups)
-                }} />
+
+                {me.user.permitted.broadcastData &&
+                    <CheckInput label={'Select all groups'} checked={selectedGroups.length === groups.length} onChange={() => {
+                        selectAllGroups()
+                        onChange(selectedGroups)
+                    }} />
+                }
+
                 <CheckInput label={'Select all users'} checked={selectedUsers.length === users.length} onChange={() => {
                     selectAllUsers()
                     onChange(selectedUsers)
@@ -67,26 +82,40 @@ const SelectGroup = ({ onChange = () => null }) => {
             </div>
             <div className='flex flex-col !h-[300px] !overflow-y-scroll'>
                 <br />
-                Groups : <br />
+
                 {
-                    groups.filter(group => group?.groupName.toLowerCase()?.includes(searchWord?.toLowerCase())).map(group => <div className='border-b py-2'>
-                        <CheckInput label={group?.groupName} key={group?.id} checked={selectedGroups?.map(({ id }) => id).includes(group?.id)} onChange={() => {
-                            selectGroup(group)
-                        }} />
-                    </div>)
-                }<br />
+                    (me.user.permitted.broadcastData) &&
+                    <>
+                        Groups : <br />
+                        {
+                            groups.filter(group => group?.groupName.toLowerCase()?.includes(searchWord?.toLowerCase())).map(group => <div className='border-b py-2'>
+                                <CheckInput label={group?.groupName} key={group?.id} checked={selectedGroups?.map(({ id }) => id).includes(group?.id)} onChange={() => {
+                                    selectGroup(group)
+                                }} />
+                            </div>)
+                        }<br />
+
+                    </>
+                }
+
+
                 Users : <br />
                 {
                     users
+                        // .filter(user => {
+                        //     return searchIn('firstName', user) || searchIn('lastName', user) || searchIn('email', user)
+                        // })
                         .filter(user => {
-                            return searchIn('firstName', user) || searchIn('lastName', user) || searchIn('email', user)
+                            return searchIn('name', user) || searchIn('lastName', user) || searchIn('email', user)
                         })
                         .map(user => <div className='border-b py-2'>
-                            <CheckInput label={`${user?.firstName} ${user?.lastName}`} key={user?.uid} checked={selectedUsers?.map(({ uid }) => uid).includes(user?.uid)} onChange={() => {
+                            <CheckInput label={user?.name} key={user?.uid} checked={selectedUsers?.map(({ uid }) => uid).includes(user?.uid)} onChange={() => {
                                 selectUsers(user)
                             }} />
                         </div>)
                 }
+
+
             </div>
 
         </div>

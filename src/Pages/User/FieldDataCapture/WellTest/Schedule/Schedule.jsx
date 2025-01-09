@@ -328,7 +328,7 @@ const Exists = () => {
                     hidden: (file) => user.permitted.createAndeditWellTestResult && file?.status === 'approved'
                 },
                 {
-                    name: 'Broadcast', to: (file) => null, onClick: (file) => dispatch(openModal({
+                    name: user.permitted.broadcastData ? 'Broadcast' : "Share", to: (file) => null, onClick: (file) => dispatch(openModal({
                         title: '',
                         component: <BroadCast
                             link={`/users/fdc/well-test-data/well-test-table?id=${file?.id}`}
@@ -344,7 +344,7 @@ const Exists = () => {
                                 <BroadCastSuccessfull details={`${file?.asset} Well Test ${dayjs(file?.startDate).format('MMM/YYYY')}`} />]} />
                     })),
                     // permitted: user.permitted.broadcastData,
-                    hidden: (file) => user.permitted.broadcastData && file?.status === 'approved'
+                    hidden: (file) => (user.permitted.broadcastData || user.permitted.shareData) && file?.status === 'approved'
                 },
                 {
                     name: 'Delete', onClick: (file) => deleteSetup({ id: file?.id, setupType: 'wellTestSchedule' }), to: () => null,
