@@ -13,6 +13,7 @@ import { useDispatch } from 'react-redux'
 import { openModal } from 'Store/slices/modalSlice'
 import { createWellTitle } from 'utils'
 import { deleteSetup } from 'utils/deleteSetup'
+import UploadTAR from './UploadTAR'
 
 
 const MERDataTestResults = () => {
@@ -27,8 +28,13 @@ const MERDataTestResults = () => {
 
             <Files files={data} actions={[
                 { name: 'Edit', to: (file) => `/users/fdc/mer-data/mer-data-result-table?id=${file?.id}` },
-                // { name: 'Create IPSC', to: (file) => `/users/fdc/well-test-data?page=ipsc&well-test-result-id=${file?.id}&autoOpenSetupModal=yes` },
-                // { name: 'Delete', to: (file) => `` },
+
+                {
+                    name: 'Upload TAR',
+                    to: (file) => null,
+                    onClick:(file)=> dispatch(openModal({title:"Upload TAR",component:<UploadTAR merResult={file} />})),
+                    hidden: (file) => file?.status === 'approved'
+                },
                 {
                     name: user.permitted.broadcastData ? 'Broadcast' : "Share",
                     to: (file) => null, onClick: (file) => dispatch(openModal({

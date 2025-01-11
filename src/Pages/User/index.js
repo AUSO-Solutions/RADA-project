@@ -9,6 +9,7 @@ import VolumeMeasurementTable from "./FieldDataCapture/DailyoOperation/VolumeMea
 import FGSurveyData from "./FieldDataCapture/FGSurveyData";
 import MERData from "./FieldDataCapture/MerData";
 import MERDataTable from "./FieldDataCapture/MerData/MERData/MERDataTable";
+import TARTable from "./FieldDataCapture/MerData/MERData/TARTable";
 import MERScheduleTable from "./FieldDataCapture/MerData/Schedule/ScheduleTable";
 import WellTest from "./FieldDataCapture/WellTest";
 import IPSCTable from "./FieldDataCapture/WellTest/IPSC/IPSCTable";
@@ -29,6 +30,7 @@ export const user_routes = [
     { path: '/users/fdc/mer-data', Component: <MERData />, layout: true, isPublic: false },
     { path: '/users/fdc/mer-data/schedule-table', Component: < MERScheduleTable />, layout: true, isPublic: false },
     { path: '/users/fdc/mer-data/mer-data-result-table', Component: <MERDataTable />, layout: true, isPublic: false },
+    { path: '/users/fdc/mer-data/tar-table', Component: <TARTable />, layout: true, isPublic: false },
     { path: '/users/fdc/Well-test-data', Component: <WellTest />, layout: true, isPublic: false },
     { path: '/users/fdc/Well-test-data/schedule-table', Component: <ScheduleTable />, layout: true, isPublic: false },
     { path: '/users/fdc/Well-test-data/well-test-table', Component: <WellTestDataTable />, layout: true, isPublic: false },
