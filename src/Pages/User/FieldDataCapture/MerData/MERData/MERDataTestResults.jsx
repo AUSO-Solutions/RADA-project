@@ -13,8 +13,6 @@ import { useDispatch } from 'react-redux'
 import { openModal } from 'Store/slices/modalSlice'
 import { createWellTitle } from 'utils'
 import { deleteSetup } from 'utils/deleteSetup'
-import UploadTAR from './UploadTAR'
-
 
 const MERDataTestResults = () => {
     const { setups: data } = useGetSetups("merResult")
@@ -30,9 +28,9 @@ const MERDataTestResults = () => {
                 { name: 'Edit', to: (file) => `/users/fdc/mer-data/mer-data-result-table?id=${file?.id}` },
 
                 {
-                    name: 'Upload TAR',
-                    to: (file) => null,
-                    onClick:(file)=> dispatch(openModal({title:"Upload TAR",component:<UploadTAR merResult={file} />})),
+                    name: 'Create TAR Result',
+                    to: (file) =>  `/users/fdc/mer-data/tar-table?merResultId=${file?.id}` ,
+                    // onClick:(file)=> dispatch(openModal({title:"Upload TAR",component:<UploadTAR merResult={file} />})),
                     hidden: (file) => file?.status === 'approved'
                 },
                 {

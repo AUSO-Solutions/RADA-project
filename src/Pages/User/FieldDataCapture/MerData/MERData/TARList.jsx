@@ -1,4 +1,3 @@
-
 import dayjs from 'dayjs'
 import { useMe } from 'hooks/useMe'
 import { useGetSetups } from 'hooks/useSetups'
@@ -15,16 +14,15 @@ import { createWellTitle } from 'utils'
 import { deleteSetup } from 'utils/deleteSetup'
 import UploadTAR from './UploadTAR'
 
-
 const TARList = () => {
-    const { setups: data } = useGetSetups("merResult")
+    const { setups: data } = useGetSetups("tarResult")
     const dispatch = useDispatch();
     const { user } = useMe()
 
     return (
         <div className=" flex flex-wrap gap-4 m-5 ">
             <Files files={data} actions={[
-                { name: 'Edit', to: (file) => `/users/fdc/mer-data/mer-data-result-table?id=${file?.id}` },
+                { name: 'Edit', to: (file) => `/users/fdc/mer-data/tar-table?id=${file?.id}` },
                 {
                     name: 'Upload TAR',
                     to: (file) => null,
@@ -51,15 +49,13 @@ const TARList = () => {
                     hidden: (file) => (user.permitted.broadcastData || user.permitted.shareData) && file?.status === 'approved'
                 },
                 {
-                    name: 'Delete', onClick: (file) => deleteSetup({ id: file?.id, setupType: 'merResult' }), to: () => null,
+                    name: 'Delete', onClick: (file) => deleteSetup({ id: file?.id, setupType: 'tarResult' }), to: () => null,
                     hidden: (file) => user.permitted.createAndeditMERdata && file?.status !== 'approved'
                 },
-            ]} name={(file) => `${createWellTitle(file, 'Mer Data')}`} bottomRight={(file) => <SetupStatus setup={file} />} />
+            ]} name={(file) => `${createWellTitle(file, 'TAR Data')}`} bottomRight={(file) => <SetupStatus setup={file} />} />
 
         </div>
     )
-  
-
 }
 
 export default TARList
