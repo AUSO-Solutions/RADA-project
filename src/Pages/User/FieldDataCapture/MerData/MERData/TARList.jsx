@@ -12,7 +12,6 @@ import { useDispatch } from 'react-redux'
 import { openModal } from 'Store/slices/modalSlice'
 import { createWellTitle } from 'utils'
 import { deleteSetup } from 'utils/deleteSetup'
-import UploadTAR from './UploadTAR'
 
 const TARList = () => {
     const { setups: data } = useGetSetups("tarResult")
@@ -23,28 +22,28 @@ const TARList = () => {
         <div className=" flex flex-wrap gap-4 m-5 ">
             <Files files={data} actions={[
                 { name: 'Edit', to: (file) => `/users/fdc/mer-data/tar-table?id=${file?.id}` },
-                {
-                    name: 'Upload TAR',
-                    to: (file) => null,
-                    onClick:(file)=> dispatch(openModal({title:"Upload TAR",component:<UploadTAR merResult={file} />})),
-                    hidden: (file) => file?.status === 'approved'
-                },
+                // {
+                //     name: 'Upload TAR',
+                //     to: (file) => null,
+                //     onClick:(file)=> dispatch(openModal({title:"Upload TAR",component:<UploadTAR merResult={file} />})),
+                //     hidden: (file) => file?.status === 'approved'
+                // },
                 {
                     name: user.permitted.broadcastData ? 'Broadcast' : "Share",
                     to: (file) => null, onClick: (file) => dispatch(openModal({
                         title: '',
                         component: <BroadCast
                             setup={file}
-                            link={`/users/fdc/mer-data/mer-data-result-table?id=${file?.id}`}
-                            type={'MER Data Result'}
+                            link={`/users/fdc/mer-data/tar-table?id=${file?.id}`}
+                            type={'TAR Data Result'}
                             date={dayjs(file?.month).format('MMM/YYYY')}
-                            title='Broadcast MER Data Result'
-                            subject={`${file?.asset} MER Data Result ${dayjs(file?.month).format('MMM/YYYY')}`}
+                            title='Broadcast TAR Data Result'
+                            subject={`${file?.asset} TAR Data Result ${dayjs(file?.month).format('MMM/YYYY')}`}
                             steps={['Select Group', 'Attachment', 'Broadcast']}
                             stepsComponents={[
                                 <SelectGroup />,
-                                <Attachment details={`${file?.asset} MER Data Result ${dayjs(file?.startDate).format('MMM/YYYY')}`} />,
-                                <BroadCastSuccessfull details={`${file?.asset} MER Data Result ${dayjs(file?.startDate).format('MMM/YYYY')}`} />]} />
+                                <Attachment details={`${file?.asset} TAR Data Result ${dayjs(file?.startDate).format('MMM/YYYY')}`} />,
+                                <BroadCastSuccessfull details={`${file?.asset} TAR Data Result ${dayjs(file?.startDate).format('MMM/YYYY')}`} />]} />
                     })),
                     hidden: (file) => (user.permitted.broadcastData || user.permitted.shareData) && file?.status === 'approved'
                 },

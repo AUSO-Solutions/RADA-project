@@ -1,7 +1,7 @@
 import { AttachFileOutlined } from '@mui/icons-material'
 import { colors } from 'Assets'
 import Text from 'Components/Text'
-import React, {  } from 'react'
+import React, { } from 'react'
 import { BsX } from 'react-icons/bs'
 import { useDispatch, useSelector } from 'react-redux'
 import { setFormdata } from 'Store/slices/formdataSlice'
@@ -16,7 +16,6 @@ const Attachment = ({ details }) => {
       <div className='border p-4 rounded bg-[#FAFAFAFA] h-[200px]'>
         <Text className={'py-4'}>
           Broadcast to:
-
         </Text>
         <div>
           <Text>  {formdata?.selectedGroups?.map(group => group?.groupName)?.join(', ')}</Text>
@@ -38,7 +37,7 @@ const Attachment = ({ details }) => {
                 Replace file</Text></label>
             </div>
 
-            : <label htmlFor="fileIput"> <div className='border border-dashed p-2 flex  h-[100px] cursror-pointer rounded items-center justify-center'>
+            : <label htmlFor="fileIput"> <div className='border border-dashed p-2 flex h-[100px] cursror-pointer rounded items-center justify-center'>
 
               <div>
                 <AttachFileOutlined /> Attach File

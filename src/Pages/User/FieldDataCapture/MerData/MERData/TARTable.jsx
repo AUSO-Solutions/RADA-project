@@ -21,7 +21,6 @@ import Actions from 'Partials/Actions/Actions';
 import { createWellTitle } from 'utils';
 import { Approve } from 'Partials/Actions/Approve';
 import { Query } from 'Partials/Actions/Query';
-import ExtractWellTest from './ExtractWellTest';
 import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
 import { useMe } from 'hooks/useMe';
 import { getAssetByName } from 'hooks/useAssetByName';
@@ -146,14 +145,7 @@ export default function TARTable() {
                             {<Actions tarResult={tarResult} title={title} actions={[
                                 { name: 'Query Result', onClick: () => dispatch(openModal({ component: <Query header={'Query TAR Data'} setupType={'tarResult'} id={tarResult?.id} title={createWellTitle(tarResult)} pagelink={pathname + search} /> })) },
                                 { name: 'Approve', onClick: () => dispatch(openModal({ component: <Approve header={'Approve TAR Data'} setupType={'tarResult'} id={tarResult?.id} title={createWellTitle(tarResult)} pagelink={pathname + search} /> })) },
-                                // {
-                                //     name: 'Extract Well Test', onClick: () => {
-                                //         dispatch(openModal({
-                                //             component: <ExtractWellTest tarResult={tarResult}
-                                //             />
-                                //         }))
-                                //     }
-                                // }
+                           
                             ]} />}
                         </div>}
                         {/* {isEdit && <div className='border border-[#00A3FF] px-3 py-1 rounded-md cursor-pointer' onClick={() => setShowChart(true)} >
