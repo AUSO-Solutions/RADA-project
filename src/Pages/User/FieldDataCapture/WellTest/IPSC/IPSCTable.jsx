@@ -18,7 +18,7 @@ import { closeModal, openModal } from 'Store/slices/modalSlice';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { BsThreeDots } from 'react-icons/bs';
-import { bsw, createWellTitle, getWellLastTestResult, sum } from 'utils';
+import { bsw, createWellTitle, getWellLastTestResult, roundUp, sum } from 'utils';
 import IPSCAnalytics from './IPSCAnalytics';
 import ToleranceSettiings from './ToleranceSettiings';
 import { firebaseFunctions } from 'Services';
@@ -138,7 +138,7 @@ export default function IPSCTable() {
     const getTotalOf = (key, flowstation) => {
         const res = Object.values(ipscData?.wellTestResultData || {})?.filter(item => flowstation ? item?.flowstation === flowstation : true)
         const total = sum(res?.map(item => parseFloat(item?.[key] || 0)))
-        return total
+        return roundUp(total)
     }
 
 
@@ -322,9 +322,7 @@ export default function IPSCTable() {
                                             </TableCell>
                                             {
                                                 fields.map(field => <TableCell align="center">
-                                                    {/* {field.fn(well) || (well?.[field.name] ?? "-")} */}
-
-                                                <input type={field.type} defaultValue={field.fn(well) || (well?.[field.name] ?? "-")} onChange={(e)=>handleChange(field.name, e.target.value)} className='text-center' />
+                                                    {roundUp(field.fn(well) || (well?.[field.name] ?? "-"))}
                                                     {/* <TableInput type='number' defaultValue={well?.[field.name]} onChange={(e) => handleChange(field.name, e.target.value)} /> */}
                                                 </TableCell>)
                                             }
@@ -351,7 +349,7 @@ export default function IPSCTable() {
                                 <TableCell style={{ fontWeight: '600' }} align="center" colSpan={6} >String Totals </TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('gross', currFlowstation,)}</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center">{getTotalOf('oilRate', currFlowstation)}</TableCell>
-                                <TableCell style={{ fontWeight: '600' }} align="center">{getTotalOf('gross', currFlowstation) - getTotalOf('oilRate', currFlowstation)}</TableCell>
+                                <TableCell style={{ fontWeight: '600' }} align="center">{roundUp(getTotalOf('gross', currFlowstation) - getTotalOf('oilRate', currFlowstation))}</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('gasRate', currFlowstation)}</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center" >{bsw({ oil: getTotalOf('oilRate', currFlowstation), gross: getTotalOf('gross', currFlowstation) })}</TableCell>
 

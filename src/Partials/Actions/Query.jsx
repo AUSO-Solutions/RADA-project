@@ -9,6 +9,7 @@ import { setFormdata } from 'Store/slices/formdataSlice';
 import SelectGroup from 'Partials/BroadCast/SelectGroup';
 // import { firebaseFunctions } from 'Services';
 import { updateSetupStatus } from './updateSetupStatus';
+import { CloseCircle } from 'iconsax-react';
 
 
 export const Query = ({ title, header, setupType, id, pagelink, onQuery = () => null }) => {
@@ -36,7 +37,10 @@ export const Query = ({ title, header, setupType, id, pagelink, onQuery = () => 
         }
     }
     return <div className='w-[500px] p-1 h-[600px]'>
-        <Text size={24}>{header}</Text>
+        <div className='flex items-center justify-between' >
+            <Text size={24}>{header}</Text>
+            <CloseCircle className='text-red-500' />
+        </div>
 
         <Divider className='!mt-[40px]' />
         {
@@ -51,13 +55,19 @@ export const Query = ({ title, header, setupType, id, pagelink, onQuery = () => 
                     <Text weight={600} color={colors.rada_blue}>{title}</Text>
                 </div>
 
-                <textarea onChange={(e) => dispatch(setFormdata({ name: 'query', value: e.target.value }))} rows={10} className='w-full font-[20px] p-3'>
+                <textarea placeholder='Add a query message' onChange={(e) => dispatch(setFormdata({ name: 'query', value: e.target.value }))} rows={10} className='w-full font-[20px] p-3'>
 
                 </textarea>
 
 
             </div>
         }
+
+        <div className='flex h-[70px] items-center mt-2' >
+            <Text align={'center'} >
+                Are you sure you want to Query this result? Click the “Proceed” button to continue, or click the close icon or outside the modal to close.
+            </Text>
+        </div>
         {
             screens[curr].name === 'sent' && <div className='mt-[100px] h-[300px] border gap-2 flex flex-col items-center justify-center p-2 rounded bg-[#F9FAFA]'>
 

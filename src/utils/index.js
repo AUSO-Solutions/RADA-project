@@ -2,11 +2,12 @@ import dayjs from "dayjs"
 
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { project_storage } from "firebase-config";
+import { store } from "Store";
 // import { findLineByLeastSquares } from "./findLineByLeastSquares";
 import { intersect } from "mathjs";
 
 export const sum = (array = []) => {
-    if (Array.isArray(array) && array?.length) return parseFloat(array.reduce((a, b) => parseFloat(a) + parseFloat(b)))
+    if (Array.isArray(array) && array?.length) return roundUp(parseFloat(array.reduce((a, b) => parseFloat(a) + parseFloat(b))))
     return 0
 }
 export const createWellTitle = (setup, type) => {
@@ -74,8 +75,12 @@ export const genRandomNumber = () => {
 }
 
 export const roundUp = (number) => {
-    return (Math.ceil(number * 1000) / 1000).toFixed(3);
-}
+    if (isNaN(Number(number))) return number;
+    const decimalPlaces = store.getState().decimalPlaces;
+    const factor = Math.pow(10, decimalPlaces);
+    return (Math.ceil(Number(number) * factor) / factor).toFixed(decimalPlaces);
+};
+
 
 const getLineDetails = (line, at1, at2) => {
     const x1 = line[at1]?.x,
@@ -162,7 +167,7 @@ export const bsw = ({ gross, oil, water }) => {
     const result = ((water__ / (parseFloat(oil || 0) + water__)) * 100).toFixed(4)
 
 
-    return isNaN(result) ? '' : result
+    return isNaN(result) ? '' : roundUp(result)
 
 }
 

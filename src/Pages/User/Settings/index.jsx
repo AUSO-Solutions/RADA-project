@@ -4,6 +4,7 @@ import Tab from 'Components/tab'
 import UserDetails from './UserDetails'
 // import GlobalSettings from './GlobalSettings'
 import ChangePassword from './ChangePassword'
+import DecimalPlaces from './SetDecimalPlaces'
 
 
 
@@ -15,6 +16,10 @@ const tabs = [
     {
         title: 'Change password',
         Component: <ChangePassword />
+    },
+    {
+        title: 'Decimal Places',
+        Component: <DecimalPlaces />
     },
     // {
     //     title: 'Global Settings',

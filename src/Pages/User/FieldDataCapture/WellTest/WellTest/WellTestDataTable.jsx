@@ -18,7 +18,7 @@ import { firebaseFunctions } from 'Services';
 import { closeModal, openModal } from 'Store/slices/modalSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { bsw, createWellTitle, sum } from 'utils';
+import { bsw, createWellTitle, roundUp, sum } from 'utils';
 import Actions from 'Partials/Actions/Actions';
 import { Query } from 'Partials/Actions/Query';
 import { Approve } from 'Partials/Actions/Approve';
@@ -264,7 +264,7 @@ export default function WellTestDataTable() {
                                     </TableCell>
                                     {
                                         fields.map(field => <TableCell align="center">
-                                            <TableInput type={field.type || 'number'} required={well.isSelected && field.required} defaultValue={field?.fn(well) || well?.[field.name]} disabled={field?.disabled} onChange={(e) => handleChange(field.name, e.target.value)} />
+                                            <TableInput type={field.type || 'number'} required={well.isSelected && field.required} defaultValue={roundUp(field?.fn(well) || well?.[field.name])} disabled={field?.disabled} onChange={(e) => handleChange(field.name, e.target.value)} />
                                         </TableCell>)
                                     }
                                     <TableCell align="center" sx={{ minWidth: '200px' }} colSpan={3}>

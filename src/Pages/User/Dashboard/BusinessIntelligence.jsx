@@ -11,7 +11,7 @@ import OilProductionVariantChart from "./OilProductionVariantChart";
 import { useFetch } from "hooks/useFetch";
 import { useDispatch, useSelector } from "react-redux";
 import GasProductionVariantChart from "./GasProductionVariantChart";
-import { sum } from "utils";
+import { roundUp, sum } from "utils";
 import { setSetupData } from "Store/slices/setupSlice";
 import dayjs from "dayjs";
 
@@ -106,7 +106,7 @@ const Insights = ({assetOptions=[]}) => {
         );
     };
     const getStatus = (target, actual, reverse = false) => {
-        const percent = ((Math.abs(parseFloat(target) - parseFloat(actual)) / parseFloat(target)) * 100).toFixed(1)
+        const percent = roundUp((Math.abs(parseFloat(target) - parseFloat(actual)) / parseFloat(target)) * 100)
         const check = reverse ? parseFloat(target) < parseFloat(actual) : parseFloat(target) > parseFloat(actual)
         if (check) {
             return {
@@ -127,11 +127,11 @@ const Insights = ({assetOptions=[]}) => {
     return (
         <div className="bg-[#FAFAFA]" >
             <div className="mx-5 pt-3 flex flex-row  gap-5 " >
-                <DashboardCard variance={getStatus(data?.oilTarget / 1000, data?.oilProduced / 1000)} targetVal={`Target: ${parseFloat(data?.oilTarget / 1000 || 0)?.toFixed(1)} kbbls`} img={assets} title={"Oil Produced"} num={`${parseFloat(data?.oilProduced / 1000 || 0)?.toFixed(1)} Kbbls`} />
-                <DashboardCard variance={getStatus(data?.gasProducedTarget, data?.gasProduced)} targetVal={`Target: ${parseFloat(data?.gasProducedTarget || 0)?.toFixed(3)} MMscf`} img={grossprodgas} title={"Gas Produced"} num={`${parseFloat(data?.gasProduced || 0)?.toFixed(3)} MMscf`} />
-                <DashboardCard variance={getStatus(data?.exportGasTarget, data?.gasExported)} targetVal={`Target: ${parseFloat(data?.exportGasTarget || 0)?.toFixed(3)} MMscf`} img={gasexported} title={"Gas Exported"} num={`${parseFloat(data?.gasExported || 0)?.toFixed(3)} MMscf`} />
-                <DashboardCard variance={getStatus(data?.gasFlaredTarget, data?.gasFlared, true)} targetVal={`Target: ${parseFloat(data?.gasFlaredTarget || 0)?.toFixed(3)} MMscf`} img={gasflared} title={"Gas Flared"} num={`${parseFloat(data?.gasFlared || 0)?.toFixed(3)} MMscf`} />
-                <DashboardCard variance={getStatus(data?.gasUtilizedTarget, data?.gasUtilized)} targetVal={`Target: ${parseFloat(data?.gasUtilizedTarget || 0)?.toFixed(3)} MMscf`} img={gasutilized} title={"Gas Utilized"} num={`${parseFloat(data?.gasUtilized || 0)?.toFixed(3)} MMscf`} />
+                <DashboardCard variance={getStatus(data?.oilTarget / 1000, data?.oilProduced / 1000)} targetVal={`Target: ${roundUp(parseFloat(data?.oilTarget / 1000 || 0))} kbbls`} img={assets} title={"Oil Produced"} num={`${roundUp(parseFloat(data?.oilProduced / 1000 || 0))} Kbbls`} />
+                <DashboardCard variance={getStatus(data?.gasProducedTarget, data?.gasProduced)} targetVal={`Target: ${roundUp(parseFloat(data?.gasProducedTarget || 0))} MMscf`} img={grossprodgas} title={"Gas Produced"} num={`${roundUp(parseFloat(data?.gasProduced || 0))} MMscf`} />
+                <DashboardCard variance={getStatus(data?.exportGasTarget, data?.gasExported)} targetVal={`Target: ${roundUp(parseFloat(data?.exportGasTarget || 0))} MMscf`} img={gasexported} title={"Gas Exported"} num={`${roundUp(parseFloat(data?.gasExported || 0))} MMscf`} />
+                <DashboardCard variance={getStatus(data?.gasFlaredTarget, data?.gasFlared, true)} targetVal={`Target: ${roundUp(parseFloat(data?.gasFlaredTarget || 0))} MMscf`} img={gasflared} title={"Gas Flared"} num={`${roundUp(parseFloat(data?.gasFlared || 0))} MMscf`} />
+                <DashboardCard variance={getStatus(data?.gasUtilizedTarget, data?.gasUtilized)} targetVal={`Target: ${roundUp(parseFloat(data?.gasUtilizedTarget || 0))} MMscf`} img={gasutilized} title={"Gas Utilized"} num={`${roundUp(parseFloat(data?.gasUtilized || 0))} MMscf`} />
             </div>
 
             <div className="pt-5 flex flex-row flex-wrap justify-evenly shadow rounded" style={{ rowGap: "12px" }}>
