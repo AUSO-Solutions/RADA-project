@@ -7,6 +7,7 @@ import modalSlice from './slices/modalSlice';
 import setupSlice from './slices/setupSlice';
 import loadingScreenSlice from './slices/loadingScreenSlice';
 import formdataSlice from './slices/formdataSlice';
+import decimalPlacesSlice from './slices/decimalPlaces';
 
 const persistConfig = {
   key: 'root',
@@ -22,7 +23,8 @@ const reducers = combineReducers({
   modal: modalSlice,
   setup: setupSlice,
   loadingScreen: loadingScreenSlice,
-  formdata: formdataSlice
+  formdata: formdataSlice,
+  decimalPlaces: decimalPlacesSlice,
 })
 
 const persistedReducer = persistReducer(persistConfig, reducers);

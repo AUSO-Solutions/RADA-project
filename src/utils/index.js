@@ -2,6 +2,7 @@ import dayjs from "dayjs"
 
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { project_storage } from "firebase-config";
+import { useSelector } from "react-redux";
 // import { findLineByLeastSquares } from "./findLineByLeastSquares";
 
 export const sum = (array = []) => {
@@ -72,9 +73,12 @@ export const genRandomNumber = () => {
     return Math.floor(Math.random() * 100) + 1
 }
 
-export const roundUp = (number) => {
-    return (Math.ceil(number * 1000) / 1000).toFixed(3);
-}
+export const RoundUp = (number) => {
+    const decimalPlaces = useSelector(state => state.decimalPlaces);
+    const factor = Math.pow(10, decimalPlaces);
+    return (Math.ceil(number * factor) / factor).toFixed(decimalPlaces);
+};
+
 
 const getLineDetails = (line, at1, at2) => {
     const x1 = line[at1]?.x,
