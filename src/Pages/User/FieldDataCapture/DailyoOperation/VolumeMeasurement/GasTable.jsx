@@ -108,7 +108,7 @@ export default function GasTable() {
 
     //careful, to also have the value updated before calculated
     const flowStationSetup = setup?.flowStations?.find(({ name }) => name === flowStation)
-    const meterFactor = parseFloat(flowStationSetup?.readings?.[readingIndex]?.meterFactor || 1).toFixed(5)
+    const meterFactor = parseFloat(flowStationSetup?.readings?.[readingIndex]?.meterFactor || 1)
 
     setTableValues(prev => {
       const prevFlowStation = prev?.[flowStation]
@@ -118,7 +118,7 @@ export default function GasTable() {
       const initialReading = field === "initialReading" ? value : (prevFlowStationListIndexValues?.initialReading || 0)
       const difference = roundUp(Math.abs(parseFloat(finalReading) - parseFloat(initialReading)))
       let meterTotal = prevFlowStationListIndexValues?.meterTotal
-      if (field === "meterTotal") { meterTotal = parseFloat(value) } else { meterTotal = (difference * parseFloat(meterFactor || 0).toFixed(5)) }
+      if (field === "meterTotal") { meterTotal = parseFloat(value) } else { meterTotal = (difference * parseFloat(meterFactor || 0)) }
 
       const isNum = typeof readingIndex === 'number'
       let updatedMeters = prevFlowStationList
@@ -138,7 +138,7 @@ export default function GasTable() {
       let updatedFlowStation = {
         ...prevFlowStation,
         meters: updatedMeters,
-        totalGas: sum(Object.values(updatedMeters || {}).map(value => value.meterTotal)).toFixed(5),
+        totalGas: sum(Object.values(updatedMeters || {}).map(value => value.meterTotal)),
       }
       if (flowStationField) {
         updatedFlowStation = {
@@ -156,7 +156,7 @@ export default function GasTable() {
   useEffect(() => {
     const values = (Object.values(tableValues))
     const calcs = {
-      totalGasProduced: sum(Object.values(values || {}).map(item => item?.totalGas || 0))?.toFixed(5),
+      totalGasProduced: sum(Object.values(values || {}).map(item => item?.totalGas || 0)),
     }
     setTotals(calcs)
   }, [tableValues])
@@ -365,7 +365,7 @@ export default function GasTable() {
                                   onChange={(e) => handleChange({ flowStation: name, field: 'finalReading', value: e.target.value, readingIndex, gasType: gasType.value })} />
                               </TableCell>
                               <TableCell align="center">
-                                <TableInput value={flowstationsTargets?.[name]?.[gasType.value]}
+                                <TableInput value={roundUp(flowstationsTargets?.[name]?.[gasType.value])}
                                   disabled type={'number'}
                                 />
                               </TableCell>
@@ -381,7 +381,7 @@ export default function GasTable() {
                           )}
                           <TableRow key={name}>
                             <TableCell sx={{ bgcolor: '#8080807a' }} align="left" className='pl-5 !bg-[#8080807a]' colSpan={5}><div > Total Gas Produced</div></TableCell>
-                            <TableCell sx={{ bgcolor: '#8080807a' }} align="center">{(tableValues?.[name]?.totalGas || 0)}
+                            <TableCell sx={{ bgcolor: '#8080807a' }} align="center">{(roundUp(tableValues?.[name]?.totalGas || 0))}
 
                             </TableCell>
                           </TableRow>
@@ -394,8 +394,8 @@ export default function GasTable() {
             <TableBody>
               <TableRow >
                 <TableCell align="left" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} className='bg-[rgba(0, 163, 255, 0.3)]' colSpan={7}>{"Total Gas Production"}</TableCell>
-                <TableCell align="center" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} className='bg-[rgba(0, 163, 255, 0.3)]' colSpan={1}> {averageTarget?.gasRate}</TableCell>
-                <TableCell align="center" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} >{totals?.totalGasProduced}</TableCell>
+                <TableCell align="center" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} className='bg-[rgba(0, 163, 255, 0.3)]' colSpan={1}> {roundUp(averageTarget?.gasRate)}</TableCell>
+                <TableCell align="center" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} >{roundUp(totals?.totalGasProduced)}</TableCell>
               </TableRow>
             </TableBody>
 

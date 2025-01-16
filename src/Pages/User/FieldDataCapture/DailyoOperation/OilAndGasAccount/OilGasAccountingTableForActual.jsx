@@ -11,7 +11,7 @@ import { useSearchParams } from 'react-router-dom';
 import { firebaseFunctions } from 'Services';
 import { toast } from 'react-toastify';
 import { Button } from 'Components';
-import { sum } from 'utils';
+import { roundUp, sum } from 'utils';
 
 export default function OilGasAccountingTableForActual({ IPSC, flowStation, date = '' }) {
     const [searchParams] = useSearchParams()
@@ -223,10 +223,10 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
                             {searchParams.get('table') === 'deferred-production' && <TableCell align="center">
                                 <input disabled value={well?.downtime} required className='border outline-none px-2 w-[100px] text-center' type='number' max={24} min={0} />
                             </TableCell>}
-                            <TableCell align="center">{results ? well?.gross || 0 : 0}</TableCell>
-                            <TableCell align="center">{results ? well?.oil || 0 : 0}</TableCell>
-                            <TableCell align="center">{results ? well?.gas || 0 : 0}</TableCell>
-                            {searchParams.get('table') === 'actual-production' && <TableCell align="center">{results ? well?.water || 0 : 0}</TableCell>}
+                            <TableCell align="center">{roundUp(results ? well?.gross || 0 : 0)}</TableCell>
+                            <TableCell align="center">{roundUp(results ? well?.oil || 0 : 0)}</TableCell>
+                            <TableCell align="center">{roundUp(results ? well?.gas || 0 : 0)}</TableCell>
+                            {searchParams.get('table') === 'actual-production' && <TableCell align="center">{roundUp(results ? well?.water || 0 : 0)}</TableCell>}
                             {searchParams.get('table') === 'actual-production' && <TableCell style={{ color: 'white', fontWeight: "600", background: parseInt(well?.uptimeProduction) === 0 || !well?.uptimeProduction ? '#FF5252' : '#A0E967' }} align="center">
                                 {(parseInt(well?.uptimeProduction) === 0 || !well?.uptimeProduction) ? 'Closed In' : 'Producing'}
                             </TableCell>}

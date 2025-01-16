@@ -19,7 +19,7 @@ import { closeModal, openModal } from 'Store/slices/modalSlice';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import Actions from 'Partials/Actions/Actions';
-import { createWellTitle, getIntersectionBetweenTwoLines } from 'utils';
+import { RoundUp, createWellTitle, getIntersectionBetweenTwoLines, roundUp } from 'utils';
 import { Approve } from 'Partials/Actions/Approve';
 import { Query } from 'Partials/Actions/Query';
 import ExtractWellTest from './ExtractWellTest';
@@ -50,7 +50,7 @@ const TableInput = ({ type = 'number', onChange = () => null, ...props }) => {
 export default function MERDataTable() {
 
     const { user } = useMe()
-    const {pathname, search } = useLocation()
+    const { pathname, search } = useLocation()
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const [loading, setLoading] = useState(false)
@@ -200,7 +200,7 @@ export default function MERDataTable() {
                 <div className='border rounded flex gap-3 p-2 my-2'>
                     {createWellTitle(merResult)}
                 </div>
-                <TableContainer sx={{maxHeight:700}} className={`m-auto border  pr-5 ${tableStyles.borderedMuiTable}`}>
+                <TableContainer sx={{ maxHeight: 700 }} className={`m-auto border  pr-5 ${tableStyles.borderedMuiTable}`}>
                     <Table stickyHeader sx={{ minWidth: 700 }} >
                         <TableHead>
                             <TableRow sx={{ bgcolor: `rgba(239, 239, 239, 1) !important`, color: 'black', fontWeight: 'bold  !important' }}>
@@ -384,7 +384,7 @@ export default function MERDataTable() {
                                             </select>
                                         </TableCell>
                                         <TableCell align="center" >
-                                            <TableInput type='number' className='p-3 outline-none h-full' onChange={handleExtraChange} name='mer' value={getMer(mer)} />
+                                            <TableInput type='number' className='p-3 outline-none h-full' onChange={handleExtraChange} name='mer' value={roundUp(getMer(mer))} />
                                         </TableCell>
 
 

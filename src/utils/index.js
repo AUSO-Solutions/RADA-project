@@ -2,11 +2,11 @@ import dayjs from "dayjs"
 
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { project_storage } from "firebase-config";
-import { useSelector } from "react-redux";
+import { store } from "Store";
 // import { findLineByLeastSquares } from "./findLineByLeastSquares";
 
 export const sum = (array = []) => {
-    if (Array.isArray(array) && array?.length) return parseFloat(array.reduce((a, b) => parseFloat(a) + parseFloat(b)))
+    if (Array.isArray(array) && array?.length) return roundUp(parseFloat(array.reduce((a, b) => parseFloat(a) + parseFloat(b))))
     return 0
 }
 export const createWellTitle = (setup, type) => {
@@ -73,10 +73,11 @@ export const genRandomNumber = () => {
     return Math.floor(Math.random() * 100) + 1
 }
 
-export const RoundUp = (number) => {
-    const decimalPlaces = useSelector(state => state.decimalPlaces);
+export const roundUp = (number) => {
+    if (isNaN(Number(number))) return number;
+    const decimalPlaces = store.getState().decimalPlaces;
     const factor = Math.pow(10, decimalPlaces);
-    return (Math.ceil(number * factor) / factor).toFixed(decimalPlaces);
+    return (Math.ceil(Number(number) * factor) / factor).toFixed(decimalPlaces);
 };
 
 
@@ -162,7 +163,7 @@ export const bsw = ({ gross, oil, water }) => {
     const result = ((water__ / (parseFloat(oil || 0) + water__)) * 100).toFixed(4)
 
 
-    return isNaN(result) ? '' : result
+    return isNaN(result) ? '' : roundUp(result)
 
 }
 

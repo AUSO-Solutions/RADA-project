@@ -6,7 +6,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import tableStyles from '../table.module.scss'
-import { bsw, sum } from 'utils';
+import { bsw, roundUp, sum } from 'utils';
 import { Paper } from '@mui/material';
 
 
@@ -20,8 +20,8 @@ export default function OilGasAccountingIPSCTable({ IPSC }) {
     }
 
     return (
-        <Paper sx={{ width: '100%', overflow: 'hidden', height:'700px' }}>
-            <TableContainer sx={{ maxHeight:700 }} className={`m-auto border  ${tableStyles.borderedMuiTable}`}>
+        <Paper sx={{ width: '100%', overflow: 'hidden', height: '700px' }}>
+            <TableContainer sx={{ maxHeight: 700 }} className={`m-auto border  ${tableStyles.borderedMuiTable}`}>
                 <Table stickyHeader sx={{ minWidth: 700 }} >
                     <TableHead >
                         <TableRow sx={{ bgcolor: `rgba(239, 239, 239, 1) !important`, color: 'black', fontWeight: 'bold  !important' }}>
@@ -61,10 +61,10 @@ export default function OilGasAccountingIPSCTable({ IPSC }) {
                                     {well?.reservoir}
                                 </TableCell>
                                 <TableCell align="center">
-                                    {well?.fthp}
+                                    {roundUp(well?.fthp)}
                                 </TableCell>
                                 <TableCell align="center">{well?.chp}</TableCell>
-                                <TableCell align="center">{well?.flp}</TableCell>
+                                <TableCell align="center">{roundUp(well?.flp)}</TableCell>
                                 {/* <TableCell align="center">{well?.mlp}</TableCell> */}
                                 <TableCell align="center">
                                     {well?.staticPressure}
@@ -73,9 +73,9 @@ export default function OilGasAccountingIPSCTable({ IPSC }) {
                                 <TableCell align="center">{well?.chokeSize}</TableCell>
                                 {/* <TableCell align="center">{well?.whTemperature}</TableCell> */}
                                 {/* <TableCell align="center">{well?.CITHP}</TableCell> */}
-                                <TableCell align="center">{well?.gross}</TableCell>
+                                <TableCell align="center">{roundUp(well?.gross)}</TableCell>
                                 <TableCell align="center">{well?.bsw}</TableCell>
-                                <TableCell align="center">{well?.oilRate}</TableCell>
+                                <TableCell align="center">{roundUp(well?.oilRate)}</TableCell>
                                 <TableCell align="center">{well?.gasRate}</TableCell>
                             </TableRow>
                         })}

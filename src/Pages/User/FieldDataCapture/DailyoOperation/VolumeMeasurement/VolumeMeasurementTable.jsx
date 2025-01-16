@@ -7,7 +7,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { store } from 'Store';
 import tableStyles from '../table.module.scss'
-import { bsw, sum } from 'utils';
+import { bsw, roundUp, sum } from 'utils';
 import { Button } from 'Components';
 import { camelize, updateFlowstationReading } from './helper';
 import { toast } from 'react-toastify';
@@ -95,7 +95,7 @@ export default function VolumeMeasurementTable() {
     const meterFactor = parseFloat(flowStationSetup?.readings?.[readingIndex]?.meterFactor || 1)
     const deductionMeterFactor = parseFloat(flowStationSetup?.deductionMeterFactor || 1)
     setTableValues(prev => {
-      console.log({prev})
+      console.log({ prev })
       const prevFlowStation = prev?.[flowStation]
       const prevFlowStationList = prevFlowStation?.meters
       const prevFlowStationListIndexValues = prevFlowStation?.meters?.[readingIndex]
@@ -133,7 +133,7 @@ export default function VolumeMeasurementTable() {
         netProduction: deductionDiference
       }
 
-      const subTotal =(parseFloat(sum(Object.values(updatedMeters || {}).map(value => parseFloat(value.netProduction)))) + parseFloat(deductionTotal.toFixed(5) || 0))
+      const subTotal = (parseFloat(sum(Object.values(updatedMeters || {}).map(value => parseFloat(value.netProduction)))) + parseFloat(deductionTotal.toFixed(5) || 0))
       let updatedFlowStation = {
         ...prevFlowStation,
         meters: updatedMeters,
@@ -229,10 +229,10 @@ export default function VolumeMeasurementTable() {
   }, [setup])
 
   const calculatedGrossOrnNet = (subTotal, bsw, type = 'net') => {
-    let netResult = (subTotal * (1 - bsw / 100)).toFixed(3) //for net (Gross* (1-bsw/100))
-    let grossResult = (subTotal / (1 - bsw / 100)).toFixed(3) //for gross
-    if (type === 'gross') return netResult
-    if (type === 'net') return grossResult
+    let netResult = (subTotal * (1 - bsw / 100)) //for net (Gross* (1-bsw/100))
+    let grossResult = (subTotal / (1 - bsw / 100)) //for gross
+    if (type === 'gross') return roundUp(netResult)
+    if (type === 'net') return roundUp(grossResult)
     if (isNaN(netResult || netResult)) return 0
   }
 
@@ -368,7 +368,7 @@ export default function VolumeMeasurementTable() {
           {!IPSC && <Alert severity='error' className='my-2' hidden={!IPSC}>
             No IPSC for this {setup?.asset} this month
           </Alert>}
-          <Table sx={{ minWidth: 700 }} key={date}Yes >
+          <Table sx={{ minWidth: 700 }} key={date} Yes >
             <TableHead >
               <TableRow sx={{ bgcolor: `rgba(239, 239, 239, 1) !important`, color: 'black', fontWeight: 'bold  !important' }}>
                 <TableCell align="left" colSpan={3} >
@@ -401,7 +401,7 @@ export default function VolumeMeasurementTable() {
                 ?.map(
                   ({ name, numberOfUnits, measurementType, readings, ...rest }, flowStationIndex) => {
                     return (
-                      <TableBody key={name}> 
+                      <TableBody key={name}>
                         <TableRow key={name}>
                           <TableCell align="left" rowSpan={parseFloat(numberOfUnits) + ((!measurementType || measurementType === "Metering") ? 2 : 3)} colSpan={3}>
                             {name} ({measurementType || "Metering"}) {measurementType}
@@ -424,10 +424,10 @@ export default function VolumeMeasurementTable() {
                                 <TableCell align="center">
                                   <TableInput type='number' value={tableValues?.[name]?.meters?.[readingIndex]?.finalReading} onChange={(e) => handleChange({ flowStation: name, field: 'finalReading', value: e.target.value, readingIndex: readingIndex })} />
                                 </TableCell>
-                                <TableCell align="center"> {isNet ? tableValues?.[name]?.meters?.[readingIndex]?.netProduction : "-"} </TableCell>
+                                <TableCell align="center"> {(isNet ? tableValues?.[name]?.meters?.[readingIndex]?.netProduction : "-")} </TableCell>
                                 <TableCell align="center">-</TableCell>
                                 <TableCell align="center">-</TableCell>
-                                <TableCell align="center">{isGross ? tableValues?.[name]?.meters?.[readingIndex]?.gross : "-"}</TableCell>
+                                <TableCell align="center">{roundUp(isGross ? tableValues?.[name]?.meters?.[readingIndex]?.gross : "-")}</TableCell>
                               </TableRow>
                             </>
                           )
@@ -448,24 +448,24 @@ export default function VolumeMeasurementTable() {
                               />
                             </TableCell>
                             <TableCell align="center">
-                              {isNet ? tableValues?.[name]?.deductionTotal : "-"}
+                              {roundUp(isNet ? tableValues?.[name]?.deductionTotal : "-")}
                             </TableCell>
                             <TableCell align="center">-</TableCell>
                             <TableCell align="center">-</TableCell>
-                            <TableCell align="center">{isGross ? tableValues?.[name]?.deductionTotal : "-"}</TableCell>
+                            <TableCell align="center">{roundUp(isGross ? tableValues?.[name]?.deductionTotal : "-")}</TableCell>
                           </TableRow>}
 
                         <TableRow key={name}>
                           <TableCell sx={{ bgcolor: 'rgba(178, 181, 182, 0.2)' }} align="left" className='pl-5 !bg-[rgba(178, 181, 182, 0.2)]' colSpan={3}><div className='pl-[30px]'> Sub total</div></TableCell>
                           <TableCell sx={{ bgcolor: 'rgba(178, 181, 182, 0.2)' }} align="center">
-                            {isNet ? (tableValues?.[name]?.subTotal || 0) : calculatedGrossOrnNet(tableValues?.[name]?.subTotal, tableValues?.[name]?.bsw, 'gross')}
+                            {isNet ? roundUp((tableValues?.[name]?.subTotal || 0)) : calculatedGrossOrnNet(tableValues?.[name]?.subTotal, tableValues?.[name]?.bsw, 'gross')}
                           </TableCell>
-                          <TableCell align="center"><TableInput type='number' disabled value={isNet ? flowstationsTargets?.[name]?.oilRate : flowstationsTargets?.[name]?.gross} /></TableCell>
+                          <TableCell align="center"><TableInput type='number' disabled value={roundUp(isNet ? flowstationsTargets?.[name]?.oilRate : flowstationsTargets?.[name]?.gross)} /></TableCell>
                           <TableCell align="center">
                             <TableInput type='number' value={tableValues?.[name]?.bsw} onChange={(e) => handleChange({ flowStation: name, flowStationField: 'bsw', value: e.target.value, readingIndex: null })} />
                           </TableCell>
                           <TableCell align="center">
-                            {isGross ? (tableValues?.[name]?.subTotal || 0) : calculatedGrossOrnNet(tableValues?.[name]?.subTotal, tableValues?.[name]?.bsw, 'net')}
+                            {isGross ? roundUp((tableValues?.[name]?.subTotal || 0)) : calculatedGrossOrnNet(tableValues?.[name]?.subTotal, tableValues?.[name]?.bsw, 'net')}
                           </TableCell>
                         </TableRow>
                       </TableBody>
@@ -476,10 +476,10 @@ export default function VolumeMeasurementTable() {
             <TableBody>
               <TableRow >
                 <TableCell align="left" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} className='bg-[rgba(0, 163, 255, 0.3)]' colSpan={6}>{"Total Net Production"}</TableCell>
-                <TableCell align="center" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} >{totals?.netProductionTotal}</TableCell>
+                <TableCell align="center" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} >{roundUp(totals?.netProductionTotal)}</TableCell>
                 <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{isNet ? sum(Object.values(flowstationsTargets || {}).map(target => target?.oilRate)) : sum(Object.values(flowstationsTargets || {}).map(target => target?.gross))}</TableCell>
-                <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{totals?.bswTotal}</TableCell>
-                <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{totals?.grossTotal}</TableCell>
+                <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{roundUp(totals?.bswTotal)}</TableCell>
+                <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{roundUp(totals?.grossTotal)}</TableCell>
               </TableRow>
             </TableBody>
           </Table>
