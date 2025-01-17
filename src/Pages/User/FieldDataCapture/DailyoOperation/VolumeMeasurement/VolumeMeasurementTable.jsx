@@ -252,7 +252,6 @@ export default function VolumeMeasurementTable() {
       try {
         const { data } = await firebaseFunctions('getOilOrCondensateVolumeByDateAndAsset', { asset: setup?.asset, date: date }, false, { loadingScreen: true })
         setCaptureData(data)
-        console.log(JSON.stringify(tableValues), data?.flowstations)
         const dayTableValues = Object.fromEntries((data?.flowstations || [])?.map(flowstation => {
           return [flowstation?.name, {
             "meters": flowstation?.meters?.map(meter => ({
