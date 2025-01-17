@@ -13,187 +13,339 @@ import { toast } from 'react-toastify';
 import { Button } from 'Components';
 import { roundUp, sum } from 'utils';
 
-export default function OilGasAccountingTableForActual({ IPSC, flowStation, date = '' }) {
-    const [searchParams] = useSearchParams()
-    // const statusArray = ['Producing', 'Closed In']
-    const defermentCategoryArray = ['Scheduled Deferment', 'Unscheduled Deferment', 'Third-Party Deferment', 'N/A']
-    // const defermentDescriptionArray = ['Export Line Sabotage/ Leak', 'Flow station Engine Failure', 'Flowline Leak', 'Flow Station Trip', 'Logistic Problem']
-    const Description = {
-        'Scheduled Deferment': [
-            'Well Test', 'Wellhead Maintenance', 'Flowline Maintenance', 'Bean Change / Check', 'Well Services', 'Data Acquisition', 'Facility Shutdown'
-        ],
-        'Unscheduled Deferment': [
-            'Engine Failure', 'Pump Failure', 'Well No - Flow', 'Mismatch'
-        ],
-        'Third-Party Deferment': [
-            'TFP Outage', 'Export Line Issues', 'Flowline Issue', 'Ovade GP', 'Community Interruption'
-        ],
+export default function OilGasAccountingTableForActual({
+  IPSC,
+  flowStation,
+  date = "",
+}) {
+  const [searchParams] = useSearchParams();
+  // const statusArray = ['Producing', 'Closed In']
+  const defermentCategoryArray = [
+    "Scheduled Deferment",
+    "Unscheduled Deferment",
+    "Third-Party Deferment",
+    "N/A",
+  ];
+  // const defermentDescriptionArray = ['Export Line Sabotage/ Leak', 'Flow station Engine Failure', 'Flowline Leak', 'Flow Station Trip', 'Logistic Problem']
+  const Description = {
+    "Scheduled Deferment": [
+      "Well Test",
+      "Wellhead Maintenance",
+      "Flowline Maintenance",
+      "Bean Change / Check",
+      "Well Services",
+      "Data Acquisition",
+      "Facility Shutdown",
+    ],
+    "Unscheduled Deferment": [
+      "Engine Failure",
+      "Pump Failure",
+      "Well No - Flow",
+      "Mismatch",
+    ],
+    "Third-Party Deferment": [
+      "TFP Outage",
+      "Export Line Issues",
+      "Flowline Issue",
+      "Ovade GP",
+      "Community Interruption",
+    ],
+  };
 
-    }
+  const [wellTestResultData, setWellTestResultData] = useState({});
+  const [results, setResults] = useState(null);
 
-    const [wellTestResultData, setWellTestResultData] = useState({})
-    const [results, setResults] = useState(null)
-
-    useEffect(() => {
-        if (!results) {
-            setWellTestResultData(IPSC?.wellTestResultData)
-            setWellTestResultData(prev => {
-                let updated = IPSC?.wellTestResultData
-                for (const key in IPSC?.wellTestResultData) {
-                    updated[key].defermentCategory = 'Unscheduled Deferment'
-                    updated[key].defermentSubCategory = 'Mismatch'
-                    updated[key].uptimeProduction = '0'
-                    updated[key].remark = ''
-                }
-                return updated
-            })
+  useEffect(() => {
+    if (!results) {
+      setWellTestResultData(IPSC?.wellTestResultData);
+      setWellTestResultData((prev) => {
+        let updated = IPSC?.wellTestResultData;
+        for (const key in IPSC?.wellTestResultData) {
+          updated[key].defermentCategory = "Unscheduled Deferment";
+          updated[key].defermentSubCategory = "Mismatch";
+          updated[key].uptimeProduction = "0";
+          updated[key].remark = "";
         }
-        console.log('-----')
-    }, [IPSC, results])
-
-    // const viewPotential = () => {
-    //     setCalculated(!calculated)
-    //     setWellTestResultData(IPSC?.wellTestResultData)
-    // }
-    const viewResult = async (type) => {
-        try {
-            if (!flowStation) {
-                toast.error('Flowstation must be provided')
-                return
-            }
-            const payload = {
-                flowStation: flowStation,
-                date: dayjs(date).format('YYYY-MM-DD'),
-                asset: IPSC.asset,
-                type,
-                potentialTestData: Object.values(IPSC?.wellTestResultData || {}).map(result => ({
-                    productionString: result?.productionString,
-                    gross: result?.gross || 0,
-                    oilRate: result?.oilRate || 0,
-                    gasRate: result?.gasRate || 0,
-                    bsw: result?.bsw || 0,
-                    reservoir: result?.reservoir,
-                    uptimeProduction: wellTestResultData?.[result?.productionString]?.uptimeProduction || 0,
-                    // downtime: 24 - wellTestResultData?.[result?.productionString]?.uptimeProduction || 0,
-                    status: result?.status,
-                    defermentCategory: wellTestResultData?.[result?.productionString]?.defermentCategory,
-                    defermentSubCategory: wellTestResultData?.[result?.productionString]?.defermentSubCategory,
-                    remark: wellTestResultData?.[result?.productionString]?.remark
-                }))
-            };
-            // console.log(payload)
-            const { data } = await firebaseFunctions('processIPSC', payload, false, { loadingScreen: true })
-            setResults(JSON.parse(data))
-            console.log(JSON.parse(data))
-            toast.success(`Data ${type}d successfully!`)
-        } catch (error) {
-            console.log(error)
-            toast.error(error?.message)
-        }
+        return updated;
+      });
     }
+    console.log("-----");
+  }, [IPSC, results]);
 
-    const onSave = (e) => {
-        e.preventDefault()
-        viewResult('save')
+  // const viewPotential = () => {
+  //     setCalculated(!calculated)
+  //     setWellTestResultData(IPSC?.wellTestResultData)
+  // }
+  const viewResult = async (type) => {
+    try {
+      if (!flowStation) {
+        toast.error("Flowstation must be provided");
+        return;
+      }
+      const payload = {
+        flowStation: flowStation,
+        date: dayjs(date).format("YYYY-MM-DD"),
+        asset: IPSC.asset,
+        type,
+        potentialTestData: Object.values(IPSC?.wellTestResultData || {}).map(
+          (result) => ({
+            productionString: result?.productionString,
+            gross: result?.gross || 0,
+            oilRate: result?.oilRate || 0,
+            gasRate: result?.gasRate || 0,
+            bsw: result?.bsw || 0,
+            reservoir: result?.reservoir,
+            uptimeProduction:
+              wellTestResultData?.[result?.productionString]
+                ?.uptimeProduction || 0,
+            // downtime: 24 - wellTestResultData?.[result?.productionString]?.uptimeProduction || 0,
+            status: result?.status,
+            defermentCategory:
+              wellTestResultData?.[result?.productionString]?.defermentCategory,
+            defermentSubCategory:
+              wellTestResultData?.[result?.productionString]
+                ?.defermentSubCategory,
+            remark: wellTestResultData?.[result?.productionString]?.remark,
+          })
+        ),
+      };
+      // console.log(payload)
+      const { data } = await firebaseFunctions("processIPSC", payload, false, {
+        loadingScreen: true,
+      });
+      setResults(JSON.parse(data));
+      console.log(JSON.parse(data));
+      toast.success(`Data ${type}d successfully!`);
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.message);
     }
-    const onCalculate = () => {
-        viewResult('calculate')
+  };
+
+  const onSave = (e) => {
+    e.preventDefault();
+    viewResult("save");
+  };
+  const onCalculate = () => {
+    viewResult("calculate");
+  };
+
+  const getTotalOf = (key) => {
+    const res = Object.values(wellTestResultData || {});
+    const total = sum(res?.map((item) => parseFloat(item?.[key] || 0)));
+    return total;
+  };
+
+  useEffect(() => {
+    if (results) {
+      console.log({ results });
+      const actualProduction = results?.actualProduction || [];
+      const deferment = results?.deferment?.drainagePoints || [];
+      if (searchParams.get("table") === "actual-production") {
+        // console.log(deferment)
+        const res = Object.fromEntries(
+          actualProduction.map((data) => {
+            const thisDeferment = deferment?.find(
+              (defermentData) =>
+                defermentData?.productionString === data?.productionString
+            );
+            // console.log({ thisDeferment })
+            return [
+              data?.productionString,
+              {
+                ...wellTestResultData[data?.productionString],
+                defermentCategory: thisDeferment?.defermentCategory,
+                defermentSubCategory: thisDeferment?.defermentSubCategory,
+                ...data,
+              },
+            ];
+          })
+        );
+        // console.log(res)
+        setWellTestResultData(res);
+      }
+      if (searchParams.get("table") === "deferred-production") {
+        const res = Object.fromEntries(
+          deferment.map((data) => {
+            return [
+              data?.productionString,
+              { ...wellTestResultData[data?.productionString], ...data },
+            ];
+          })
+        );
+        setWellTestResultData(res);
+      }
     }
+    // eslint-disable-next-line
+  }, [results, searchParams]);
 
+  useEffect(() => {
+    const getSavedResult = async () => {
+      setResults(null);
+      try {
+        const res = await firebaseFunctions(
+          "getOilAndGasAccounting",
+          { asset: IPSC?.asset, flowStation, date },
+          false,
+          { loadingScreen: true }
+        );
+        const account = JSON.parse(res?.data);
+        const savedResult = {
+          actualProduction: account?.actualProduction?.productionData,
+          deferment: account?.deferment?.deferment,
+        };
+        // console.log({savedResult})actualProduction
+        if (res) setResults(savedResult);
+      } catch (error) {
+        setResults(null);
+      }
+    };
+    getSavedResult();
+  }, [IPSC, flowStation, date, searchParams]);
 
-    const getTotalOf = (key) => {
-        const res = Object.values(wellTestResultData || {})
-        const total = sum(res?.map(item => parseFloat(item?.[key] || 0)))
-        return total
-    }
+  const headerStyle = {
+    bgcolor: `rgba(239, 239, 239, 1) !important`,
+    color: "black",
+    fontWeight: "bold  !important",
+  };
 
-    useEffect(() => {
-        if (results) {
-            console.log({ results })
-            const actualProduction = results?.actualProduction || []
-            const deferment = results?.deferment?.drainagePoints || []
-            if (searchParams.get('table') === 'actual-production') {
-                // console.log(deferment)
-                const res = Object.fromEntries(actualProduction.map(data => {
-                    const thisDeferment = deferment?.find(defermentData => defermentData?.productionString === data?.productionString)
-                    // console.log({ thisDeferment })
-                    return [data?.productionString, {
-                        ...wellTestResultData[data?.productionString],
-                        defermentCategory: thisDeferment?.defermentCategory,
-                        defermentSubCategory: thisDeferment?.defermentSubCategory,
-                        ...data
-                    }]
-                }))
-                // console.log(res)
-                setWellTestResultData(res)
-            }
-            if (searchParams.get('table') === 'deferred-production') {
-                const res = Object.fromEntries(deferment.map(data => {
-                    return [data?.productionString, { ...wellTestResultData[data?.productionString], ...data }]
-                }))
-                setWellTestResultData(res)
-            }
-        }
-        // eslint-disable-next-line
-    }, [results, searchParams])
-
-    useEffect(() => {
-        const getSavedResult = async () => {
-            setResults(null)
-            try {
-                const res = await firebaseFunctions('getOilAndGasAccounting', { asset: IPSC?.asset, flowStation, date }, false, { loadingScreen: true })
-                const account = (JSON.parse(res?.data))
-                const savedResult = {
-                    actualProduction: account?.actualProduction?.productionData,
-                    deferment: account?.deferment?.deferment
-                }
-                // console.log({savedResult})actualProduction
-                if (res) setResults(savedResult)
-            } catch (error) {
-                setResults(null)
-            }
-        }
-        getSavedResult()
-    }, [IPSC, flowStation, date, searchParams])
-
-    // console.log(results)
-    return (
-        <TableContainer sx={{ maxHeight: 700 }} component={'form'} onSubmit={onSave} className={`m-auto  ${tableStyles.borderedMuiTable}`}>
-            <Table stickyHeader sx={{ minWidth: 700 }} >
-                <TableHead >
-                    <TableRow sx={{ bgcolor: `rgba(239, 239, 239, 1) !important`, color: 'black', fontWeight: 'bold  !important' }}>
-                        <TableCell style={{ fontWeight: '600' }} align="center" colSpan={2} >
-                            Flow stations ID
-                        </TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >
-                            {searchParams.get('table') === 'deferred-production' ? "Downtime" : "Uptime"} Production
-                        </TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center" colSpan={searchParams.get('table') === 'actual-production' ? 9 : 7} >
-                            {searchParams.get('table') === 'actual-production' && "Actual Production "}
-                            {searchParams.get('table') === 'deferred-production' && "Deferred Production "}
-                            {/* <Text size={14} onClick={viewPotential} className={'cursor-pointer'} color='blue'>View Test Data</Text> */}
-                        </TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell style={{ fontWeight: '600' }} align="center" >
-                            Production String
-                        </TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center" >
-                            Reservoir
-                        </TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center" >
-                            (Hours)
-                        </TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center">Gross<br /> (bbls)</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center">Net Oil<br />  (bbls)</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center">Gas<br />  (mmscf/)</TableCell>
-                        {searchParams.get('table') === 'actual-production' && <TableCell style={{ fontWeight: '600' }} align="center">Water rate<br />  (bbls)</TableCell>}
-                        {searchParams.get('table') === 'actual-production' && <TableCell style={{ fontWeight: '600' }} align="center">Status</TableCell>}
-                        <> <TableCell style={{ fontWeight: '600' }} align="center">Deferment Category</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center">Deferment Description</TableCell></>
-                        {searchParams.get('table') === 'actual-production' && <TableCell style={{ fontWeight: '600' }} align="center">Remarks</TableCell>}
-                    </TableRow>
-                </TableHead>
+  // console.log(results)
+  return (
+    <TableContainer
+      sx={{ maxHeight: 700 }}
+      component={"form"}
+      onSubmit={onSave}
+      className={`m-auto  ${tableStyles.borderedMuiTable}`}
+    >
+      <Table stickyHeader sx={{ minWidth: 700 }}>
+        <TableHead>
+          <TableRow>
+            <TableCell
+              style={{ fontWeight: "600" }}
+              align="center"
+              colSpan={2}
+              sx={headerStyle}
+            >
+              Asset
+            </TableCell>
+            <TableCell
+              style={{ fontWeight: "600" }}
+              align="center"
+              colSpan={1}
+              sx={headerStyle}
+            >
+              {searchParams.get("table") === "deferred-production"
+                ? "Downtime"
+                : "Uptime"}{" "}
+            </TableCell>
+            <TableCell
+              style={{ fontWeight: "600" }}
+              align="center"
+              colSpan={
+                searchParams.get("table") === "actual-production" ? 9 : 7
+              }
+              sx={headerStyle}
+            >
+              {searchParams.get("table") === "actual-production" &&
+                "Actual Production "}
+              {searchParams.get("table") === "deferred-production" &&
+                "Deferred Production "}
+              {/* <Text size={14} onClick={viewPotential} className={'cursor-pointer'} color='blue'>View Test Data</Text> */}
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell
+              style={{ fontWeight: "600" }}
+              align="center"
+              sx={headerStyle}
+            >
+              Production String
+            </TableCell>
+            <TableCell
+              style={{ fontWeight: "600" }}
+              align="center"
+              sx={headerStyle}
+            >
+              Reservoir
+            </TableCell>
+            <TableCell
+              style={{ fontWeight: "600" }}
+              align="center"
+              sx={headerStyle}
+            >
+              (Hours)
+            </TableCell>
+            <TableCell
+              style={{ fontWeight: "600" }}
+              align="center"
+              sx={headerStyle}
+            >
+              Gross
+              <br /> (bbls)
+            </TableCell>
+            <TableCell
+              style={{ fontWeight: "600" }}
+              align="center"
+              sx={headerStyle}
+            >
+              Net Oil
+              <br /> (bbls)
+            </TableCell>
+            <TableCell
+              style={{ fontWeight: "600" }}
+              align="center"
+              sx={headerStyle}
+            >
+              Gas
+              <br /> (mmscf/)
+            </TableCell>
+            {searchParams.get("table") === "actual-production" && (
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                sx={headerStyle}
+              >
+                Water rate
+                <br /> (bbls)
+              </TableCell>
+            )}
+            {searchParams.get("table") === "actual-production" && (
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                sx={headerStyle}
+              >
+                Status
+              </TableCell>
+            )}
+            <>
+              {" "}
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                sx={headerStyle}
+              >
+                Deferment Category
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                sx={headerStyle}
+              >
+                Deferment Description
+              </TableCell>
+            </>
+            {searchParams.get("table") === "actual-production" && (
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                sx={headerStyle}
+              >
+                Remarks
+              </TableCell>
+            )}
+          </TableRow>
+        </TableHead>
 
                 <TableBody>
                     {Object.values(wellTestResultData || {})?.sort((a, b) => a?.productionString - b?.productionString)?.map((well, i) => {
@@ -251,30 +403,49 @@ export default function OilGasAccountingTableForActual({ IPSC, flowStation, date
                         </TableRow>
                     })}
 
-                    <TableRow sx={{ backgroundColor: '#00A3FF4D' }}>
-                        <TableCell style={{ fontWeight: '600' }} align="center" colSpan={3} >Totals </TableCell>
-                        {/* <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('uptimeProduction')}</TableCell> */}
-                        <TableCell style={{ fontWeight: '600' }} align="center">{results ? getTotalOf('gross') : 0}</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center">{results ? getTotalOf('oil') : 0}</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center" >{results ? getTotalOf('gas') : 0}</TableCell>
-                        <TableCell style={{ fontWeight: '600' }} align="center" >{results ? getTotalOf('water') : 0}</TableCell>
-                        {/* <TableCell style={{ fontWeight: '600' }} align="center" >{results ? getTotalOf('gross') - getTotalOf('oil') : 0} </TableCell> */}
-                        <TableCell style={{ fontWeight: '600' }} align="center" colSpan={5}></TableCell>
-                        {/* <TableCell style={{ fontWeight: '600' }} align="center" >-</TableCell> */}
-                        {/* <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('bsw')}</TableCell>
+          <TableRow sx={{ backgroundColor: "#00A3FF4D" }}>
+            <TableCell style={{ fontWeight: "600" }} align="center" colSpan={3}>
+              Totals{" "}
+            </TableCell>
+            {/* <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('uptimeProduction')}</TableCell> */}
+            <TableCell style={{ fontWeight: "600" }} align="center">
+              {results ? getTotalOf("gross") : 0}
+            </TableCell>
+            <TableCell style={{ fontWeight: "600" }} align="center">
+              {results ? getTotalOf("oil") : 0}
+            </TableCell>
+            <TableCell style={{ fontWeight: "600" }} align="center">
+              {results ? getTotalOf("gas") : 0}
+            </TableCell>
+            <TableCell style={{ fontWeight: "600" }} align="center">
+              {results ? getTotalOf("water") : 0}
+            </TableCell>
+            {/* <TableCell style={{ fontWeight: '600' }} align="center" >{results ? getTotalOf('gross') - getTotalOf('oil') : 0} </TableCell> */}
+            <TableCell
+              style={{ fontWeight: "600" }}
+              align="center"
+              colSpan={5}
+            ></TableCell>
+            {/* <TableCell style={{ fontWeight: '600' }} align="center" >-</TableCell> */}
+            {/* <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('bsw')}</TableCell>
                         <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('oilRate')}</TableCell>
                         <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('gasRate')}</TableCell> */}
-
-                    </TableRow>
-
-                </TableBody>
-
-            </Table>
-            <div className='justify-end flex gap-2 my-2'>
-                <Button className={'my-3'} type='button' onClick={onCalculate} width={150}>Calculate</Button>
-                <Button className={'my-3'} type='submit' width={150}>Save</Button>
-            </div>
-        </TableContainer >
-
-    );
+          </TableRow>
+        </TableBody>
+      </Table>
+      <div className="justify-end flex gap-2 my-2">
+        <Button
+          className={"my-3"}
+          type="button"
+          onClick={onCalculate}
+          width={150}
+        >
+          Calculate
+        </Button>
+        <Button className={"my-3"} type="submit" width={150}>
+          Save
+        </Button>
+      </div>
+    </TableContainer>
+  );
 }
