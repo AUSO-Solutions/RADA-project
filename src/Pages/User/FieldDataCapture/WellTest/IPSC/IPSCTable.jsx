@@ -17,7 +17,7 @@ import dayjs from "dayjs";
 import { closeModal, openModal } from "Store/slices/modalSlice";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-import { bsw, createWellTitle, sum, roundUp, getWellLastTestResult } from "utils";
+import { bsw, createWellTitle, sum, roundUp } from "utils";
 import IPSCAnalytics from "./IPSCAnalytics";
 import ToleranceSettiings from "./ToleranceSettiings";
 import { firebaseFunctions } from "Services";

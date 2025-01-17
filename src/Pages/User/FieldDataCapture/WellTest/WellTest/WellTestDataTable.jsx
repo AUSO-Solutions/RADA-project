@@ -23,7 +23,7 @@ import { firebaseFunctions } from "Services";
 import { closeModal, openModal } from "Store/slices/modalSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { bsw, createWellTitle, getWellLastTestResult2, sum, roundUp } from "utils";
+import { bsw, createWellTitle, getWellLastTestResult2, roundUp, sum } from "utils";
 import Actions from "Partials/Actions/Actions";
 import { Query } from "Partials/Actions/Query";
 import { Approve } from "Partials/Actions/Approve";
@@ -215,141 +215,509 @@ export default function WellTestDataTable() {
     fontWeight: "bold  !important",
   };
 
-    return (
-        < form className=' w-[80vw] px-3' onSubmit={(e) => {
-            e.preventDefault()
-            dispatch(openModal({ component: <SaveAs defaultValue={resultData?.title} onSave={save} loading={loading} /> }))
+  return (
+    <form
+      className=" w-[80vw] px-3"
+      onSubmit={(e) => {
+        e.preventDefault();
+        dispatch(
+          openModal({
+            component: (
+              <SaveAs
+                defaultValue={resultData?.title}
+                onSave={save}
+                loading={loading}
+              />
+            ),
+          })
+        );
+      }}
+    >
+      <div className="flex justify-between items-center">
+        <div className="flex gap-4 items-center min-w-fit">
+          <Link
+            to="/users/fdc/well-test-data/"
+            className="flex flex-row gap-2 bg-[#EFEFEF] px-4 py-1 rounded-md"
+          >
+            <ArrowBack />
+            <Text>Files</Text>
+          </Link>
+          <RadaSwitch label="Edit Table" labelPlacement="left" />
+        </div>
+        <Text display={"block"} className={"w-full"} align={"center"}>
+          {" "}
+          {createWellTitle(wellTest)}
+        </Text>
+        <div className="flex justify-end py-2 items-center gap-3">
+          <div className="flex gap-2">
+            {isEdit &&
+              (user.permitted.approveData || user.permitted.queryData) && (
+                <Actions
+                  actions={[
+                    {
+                      name: "Query Result",
+                      onClick: () =>
+                        dispatch(
+                          openModal({
+                            component: (
+                              <Query
+                                header={"Query Well Test Data Result"}
+                                id={wellTest?.id}
+                                setupType={"wellTestResult"}
+                                title={createWellTitle(wellTest)}
+                                pagelink={pathname + search}
+                              />
+                            ),
+                          })
+                        ),
+                      permitted: user.permitted.queryData,
+                    },
+                    {
+                      name: "Approve",
+                      onClick: () =>
+                        dispatch(
+                          openModal({
+                            component: (
+                              <Approve
+                                header={"Approve Well Test Data Result"}
+                                id={wellTest?.id}
+                                setupType={"wellTestResult"}
+                                pagelink={pathname + search}
+                                title={createWellTitle(wellTest)}
+                              />
+                            ),
+                          })
+                        ),
+                      permitted: user.permitted.approveData,
+                    },
+                  ].filter((x) => x.permitted)}
+                />
+              )}
+          </div>
+          <Input
+            type="select"
+            placeholder="Flowstation"
+            onChange={(e) => setCurrFlowstation(e.value)}
+            containerClass={"!w-[250px]"}
+            value={{ label: currFlowstation, value: currFlowstation }}
+            options={wellTest?.flowstations?.map((flowstation) => ({
+              label: flowstation,
+              value: flowstation,
+            }))}
+          />
+          <div className="border border-[#00A3FF] px-3 py-1 rounded-md">
+            <Setting2 color="#00A3FF" />
+          </div>
+        </div>
+      </div>
+      <TableContainer
+        className={`m-auto border  pr-5 ${tableStyles.borderedMuiTable}`}
+      >
+        <Table stickyHeader sx={{ minWidth: 700 }}>
+          <TableHead>
+            <TableRow>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                colSpan={2}
+                sx={headerStyle}
+              >
+                Asset
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                colSpan={1}
+                sx={headerStyle}
+              >
+                Choke{" "}
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                colSpan={1}
+                sx={headerStyle}
+              >
+                Latest Test Date{" "}
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                colSpan={1}
+                sx={headerStyle}
+              >
+                Fluid Type{" "}
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                colSpan={1}
+                sx={headerStyle}
+              >
+                Prod. Method
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                colSpan={1}
+                sx={headerStyle}
+              >
+                Gross
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                colSpan={1}
+                sx={headerStyle}
+              >
+                Oil Rate
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                colSpan={1}
+                sx={headerStyle}
+              >
+                Water Rate
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                colSpan={1}
+                sx={headerStyle}
+              >
+                Gas Rate
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                colSpan={1}
+                sx={headerStyle}
+              >
+                BS&W
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                colSpan={1}
+                sx={headerStyle}
+              >
+                GOR
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                colSpan={1}
+                sx={headerStyle}
+              >
+                FTHP
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                colSpan={1}
+                sx={headerStyle}
+              >
+                FLP
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                colSpan={1}
+                sx={headerStyle}
+              >
+                CHP
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                colSpan={1}
+                sx={headerStyle}
+              >
+                Static Pressure
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                colSpan={1}
+                sx={headerStyle}
+              >
+                Orifice Plate Size
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                colSpan={1}
+                sx={headerStyle}
+              >
+                Sand
+              </TableCell>
 
-        }}>
-            <div className='flex justify-between items-center'>
-                <div className='flex gap-4 items-center min-w-fit'>
-                    <Link to='/users/fdc/well-test-data/' className='flex flex-row gap-2 bg-[#EFEFEF] px-4 py-1 rounded-md' >
-                        <ArrowBack />
-                        <Text>Files</Text>
-                    </Link>
-                    <RadaSwitch label="Edit Table" labelPlacement="left" />
-                </div>
-                <Text display={'block'} className={'w-full'} align={'center'}> {createWellTitle(wellTest)}</Text>
-                <div className='flex justify-end py-2 items-center gap-3'>
-                    <div className='flex gap-2' >
-                        {isEdit && (user.permitted.approveData || user.permitted.queryData) && <Actions actions={[
-                            {
-                                name: 'Query Result',
-                                onClick: () => dispatch(openModal({
-                                    component: <Query header={'Query Well Test Data Result'} id={wellTest?.id}
-                                        setupType={'wellTestResult'} title={createWellTitle(wellTest)} pagelink={pathname + search} />
-                                })),
-                                permitted :  user.permitted.queryData
-                            },
-                            {
-                                name: 'Approve', onClick: () => dispatch(openModal({
-                                    component: <Approve header={'Approve Well Test Data Result'} id={wellTest?.id}
-                                        setupType={'wellTestResult'} pagelink={pathname + search} title={createWellTitle(wellTest)} />
-                                })),
-                                permitted :  user.permitted.approveData
-                            },
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                colSpan={1}
+                sx={headerStyle}
+              >
+                Status
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600", height: "100%" }}
+                align="center"
+                colSpan={1}
+                sx={{
+                  bgcolor: `rgba(0, 163, 255, 1) !important`,
+                  color: "white",
+                  fontWeight: "bold  !important",
+                }}
+              >
+                Actions
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600", height: "100%" }}
+                align="center"
+                colSpan={3}
+                sx={headerStyle}
+              >
+                Remark
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                sx={headerStyle}
+              >
+                Reservoir{" "}
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                sx={headerStyle}
+              >
+                Production string{" "}
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                sx={headerStyle}
+              >
+                Size(/64")
+              </TableCell>
+              <TableCell align="center" sx={headerStyle}></TableCell>
+              <TableCell align="center" sx={headerStyle}></TableCell>
+              <TableCell align="center" sx={headerStyle}></TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                sx={headerStyle}
+              >
+                (blpd)
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                sx={headerStyle}
+              >
+                (bopd)
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                sx={headerStyle}
+              >
+                (bwpd)
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                sx={headerStyle}
+              >
+                (MMscf/day)
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                sx={headerStyle}
+              >
+                (%)
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                sx={headerStyle}
+              >
+                (Scf/Stb)
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                sx={headerStyle}
+              >
+                (Psia)
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                sx={headerStyle}
+              >
+                (Psia)
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                sx={headerStyle}
+              >
+                (Psia)
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                sx={headerStyle}
+              >
+                (Psia)
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                sx={headerStyle}
+              >
+                (Inches)
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                sx={headerStyle}
+              >
+                (pptb)
+              </TableCell>
 
-                        ].filter(x=>x.permitted)} />}
-                    </div>
-                    <div className='border border-[#00A3FF] px-3 py-1 rounded-md' >
-                        <Setting2 color='#00A3FF' />
-                    </div>
-                </div>
-            </div>
-
-            <TableContainer className={`m-auto border  pr-5 ${tableStyles.borderedMuiTable}`}>
-                <Table sx={{ minWidth: 700 }} >
-                    <TableHead>
-                        <TableRow sx={{ bgcolor: `rgba(239, 239, 239, 1) !important`, color: 'black', fontWeight: 'bold  !important' }}>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={2} >Field 1</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Choke </TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Latest Test Date  </TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Fluid Type  </TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Prod. Method</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Gross</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Oil Rate</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Water Rate</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Gas Rate</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >BS&W</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >GOR</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >FTHP</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >FLP</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >CHP</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Static Pressure</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Orifice Plate Size</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" colSpan={1} >Sand</TableCell>
-                            <TableCell style={{ fontWeight: '600', height: '100%' }} align="center" colSpan={3} >Remark</TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell style={{ fontWeight: '600' }} align="center" >Reservoir </TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center" >Production string </TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center">Size(64")</TableCell>
-                            <TableCell align="center"></TableCell>
-                            <TableCell align="center"></TableCell>
-                            <TableCell align="center"></TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center">(blpd)</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center">(bopd)</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center">(bwpd)</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center">(MMscf/day)</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center">(%)</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center">(Scf/Stb)</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center">(Psia)</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center">(Psia)</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center">(Psia)</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center">(Psia)</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center">(Inches)</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center">(pptb)</TableCell>
-                            <TableCell style={{ fontWeight: '600' }} align="center"></TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {
-                            Object.values(wellTestResult || {}).sort((a, b) => ((b?.isSelected ? 1 : 0) - (a?.isSelected ? 1 : 0)))?.map((well, i) => {
-                                const handleChange = (name, value) => {
-                                    setWellTestResult(prev => ({
-                                        ...prev,
-                                        [well?.productionString]: {
-                                            ...prev?.[well?.productionString],
-                                            [name]: value
-                                        }
-                                    }))
-                                }
-                                return <TableRow key={well?.productionString}>
-                                    <TableCell align="center">
-                                        {well?.reservoir}
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        {well?.productionString}
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        {well?.chokeSize}
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        {dayjs(well?.endDate).format("DD/MMM/YYYY")}
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        {well?.fluidType}
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        NF
-                                    </TableCell>
-                                    {
-                                        fields.map(field => <TableCell align="center">
-                                            <TableInput type={field.type || 'number'} required={well.isSelected && field.required} defaultValue={roundUp(field?.fn(well) || well?.[field.name])} disabled={field?.disabled} onChange={(e) => handleChange(field.name, e.target.value)} />
-                                        </TableCell>)
-                                    }
-                                    <TableCell align="center" sx={{ minWidth: '200px' }} colSpan={3}>
-                                        <textarea defaultValue={well.remark} onChange={(e) => handleChange("remark", e.target.value)} className='border outline-none p-1' rows={2} cols={20}>
-                                        </textarea>
-                                    </TableCell>
-                                </TableRow>
-                            })
-                        }
-
-                    </TableBody>
-
-                </Table>
-            </TableContainer>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                sx={headerStyle}
+              ></TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                sx={{
+                  bgcolor: `rgba(0, 163, 255, 1) !important`,
+                  color: "white",
+                  fontWeight: "bold  !important",
+                }}
+              ></TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                sx={headerStyle}
+              ></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {Object.values(wellTestResult || {})
+              .sort((a, b) => (b?.isSelected ? 1 : 0) - (a?.isSelected ? 1 : 0))
+              .filter((well) => well?.flowstation === currFlowstation)
+              ?.map((well, i) => {
+                const handleChange = (name, value) => {
+                  setWellTestResult((prev) => ({
+                    ...prev,
+                    [well?.productionString]: {
+                      ...prev?.[well?.productionString],
+                      [name]: value,
+                    },
+                  }));
+                };
+                const handleExtraChange = (e) => {
+                  const name = e.target.name;
+                  const value = e.target.value;
+                  handleChange(name, value);
+                };
+                return (
+                  <TableRow key={well?.productionString}>
+                    <TableCell align="center">{well?.reservoir}</TableCell>
+                    <TableCell align="center">
+                      {well?.productionString}
+                    </TableCell>
+                    <TableCell align="center">{well?.chokeSize}</TableCell>
+                    <TableCell align="center">
+                      {dayjs(well?.endDate).format("DD/MMM/YYYY")}
+                    </TableCell>
+                    <TableCell align="center">{well?.fluidType}</TableCell>
+                    <TableCell align="center">NF</TableCell>
+                    {fields.map((field) => {
+                      if (field.name !== "status") {
+                        return (
+                          <TableCell align="center">
+                            <TableInput
+                              type={field.type || "number"}
+                              required={well.isSelected && field.required}
+                              defaultValue={
+                                roundUp(field?.fn(well) || well?.[field.name])
+                              }
+                              disabled={field?.disabled}
+                              onChange={(e) =>
+                                handleChange(field.name, e.target.value)
+                              }
+                            />
+                          </TableCell>
+                        );
+                      } else {
+                        return (
+                          <TableCell align="center">
+                            <select
+                              className={`p-3 outline-none h-full`}
+                              onChange={handleExtraChange}
+                              name="status"
+                              defaultValue={"Accepted"}
+                            >
+                              <option value=""></option>
+                              <option value={"Accepted"}>Accepted</option>
+                              <option value={"Rejected"}>Rejected</option>
+                            </select>
+                          </TableCell>
+                        );
+                      }
+                    })}
+                    <TableCell align="center">
+                      <Actions
+                        actions={[
+                          {
+                            name: `Forward from ${
+                              getWellLastTestResult2(
+                                wellTestResults,
+                                wellTest.asset,
+                                well.productionString
+                              )?.wellTestResult?.month || "-"
+                            }`,
+                            onClick: () =>
+                              bringForward(
+                                wellTestResults,
+                                wellTest.asset,
+                                well.productionString
+                              ),
+                          },
+                        ]}
+                      ></Actions>
+                    </TableCell>
+                    <TableCell
+                      align="center"
+                      sx={{ minWidth: "200px" }}
+                      colSpan={3}
+                    >
+                      <textarea
+                        defaultValue={well.remark}
+                        onChange={(e) => handleChange("remark", e.target.value)}
+                        className="border outline-none p-1"
+                        rows={2}
+                        cols={20}
+                      ></textarea>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
       {user.permitted.createAndeditWellTestResult && (
         <div className="flex justify-end py-2">

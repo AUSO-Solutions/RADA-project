@@ -68,7 +68,7 @@ const TableInput = ({ type = "number", onChange = () => null, ...props }) => {
 export default function MERDataTable() {
 
     const { user } = useMe()
-    const { pathname, search } = useLocation()
+    const {  search } = useLocation()
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const [loading, setLoading] = useState(false)

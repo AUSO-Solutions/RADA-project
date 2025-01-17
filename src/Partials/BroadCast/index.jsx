@@ -3,6 +3,7 @@ import { colors } from 'Assets'
 import { Button } from 'Components'
 import RadaStepper from 'Components/Stepper'
 import Text from 'Components/Text'
+import { useMe } from 'hooks/useMe'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { firebaseFunctions } from 'Services'
@@ -10,7 +11,7 @@ import { clearFormdata } from 'Store/slices/formdataSlice'
 import { setLoadingScreen } from 'Store/slices/loadingScreenSlice'
 import { firebaseFileUpload, firebaseGetUploadedFile } from 'utils'
 
-const BroadCast = ({ setup = {}, title = "", steps = [], stepsComponents = [], onBroadcast = () => null, link, subject, type, date, broadcastType='wellTestandMer' }) => {
+const BroadCast = ({ setup = {}, title = "", steps = [], stepsComponents = [], onBroadcast = () => null, link, subject, type, date, broadcastType = 'wellTestandMer' }) => {
     const [activeStep, setActiveStep] = useState(0)
 
     // const typesAllowed = ['wellTestandMer', 'dailyProduction', '']
@@ -36,8 +37,12 @@ const BroadCast = ({ setup = {}, title = "", steps = [], stepsComponents = [], o
             try {
                 console.log('first', link, formdata)
 
-                const filepath = await firebaseFileUpload(formdata?.file, formdata?.file?.name)
-                const file_url = await firebaseGetUploadedFile(filepath)
+                let filepath = "", file_url = "";
+                if (formdata?.file?.name) {
+                    filepath = await firebaseFileUpload(formdata?.file, formdata?.file?.name)
+                    file_url = await firebaseGetUploadedFile(filepath)
+                }
+
                 await firebaseFunctions('broadcast', { groups: formdata?.selectedGroups, asset: setup?.asset, users: formdata?.selectedUsers, attachment: file_url, pagelink: link, subject, type, date, broadcastType })
                 onBroadcast()
                 setActiveStep(prev => {
@@ -56,6 +61,7 @@ const BroadCast = ({ setup = {}, title = "", steps = [], stepsComponents = [], o
             })
         }
     }
+    const me = useMe()
     return (
         <form className='w-[600px] flex flex-col ' onSubmit={next}>
 
@@ -73,7 +79,7 @@ const BroadCast = ({ setup = {}, title = "", steps = [], stepsComponents = [], o
                     Back
                 </Button>
                 <Button width={'177px'} height={'55px'} type='submit'  >
-                    {activeStep === steps.length - 2 ? "Broadcast" : "Next"}
+                    {activeStep === steps.length - 2 ? (me?.user?.permitted.broadcastData ? "Broadcast" : "Share") : "Next"}
                 </Button>
             </Box>}
 
