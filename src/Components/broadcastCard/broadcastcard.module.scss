@@ -1,0 +1,22 @@
+.body{
+    display: flex;
+    justify-content: space-between;
+    background-color: #FAFAFA;
+    width: 100%;
+    height: auto;
+    padding: 15px 20px;
+    border-radius: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+
+    .content{
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        .metering{
+            display: flex;
+            gap: 5px;
+        }
+    }
+}

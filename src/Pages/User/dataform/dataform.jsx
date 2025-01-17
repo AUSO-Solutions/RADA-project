@@ -1,11 +1,15 @@
-import { Button, Input } from 'Components'
+import { Input, RadaForm } from 'Components'
 import Dropdown from 'Components/dropdown'
-import React, { useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
-import { BsXLg } from 'react-icons/bs'
-import { toast } from 'react-toastify';
+import { BsCheck, BsXLg } from 'react-icons/bs'
+// import { toast } from 'react-toastify';
+import { forms } from './formFields';
+import { useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
+import { useQuery } from 'react-query';
 
 
 const DataForm = () => {
@@ -31,15 +35,144 @@ const DataForm = () => {
     setOpen(false);
   };
 
+  const state = useSelector(state => state.auth.user)
+  const { search } = useLocation()
 
+
+  const tabs = [
+    'New field data',
+    'Existing field data'
+  ]
+  // const handleFormChange = (index) => {
+  //   const selectedTab = tabs[index]
+  //   const page = (selectedTab?.replaceAll(' ', '-')?.toLowerCase())
+  //   const link = page === 'existing-field-data' ? `?page=${page}&field-id=1` : `?page=${page}`
+  //   navigate(pathname + link)
+  // }
+  const currentPage = useMemo(() => {
+    const page = new URLSearchParams(search).get("page")?.replaceAll('-', ' ') || " "
+    const fieldId = new URLSearchParams(search).get("field-id")?.replaceAll('-', ' ') || null
+    const currTab_ = page[0].toUpperCase() + page.slice(1);
+    const currTab = tabs.indexOf(currTab_)
+    return {
+      currTab, fieldId
+    }
+    // eslint-disable-next-line
+  }, [search])
+
+  const { data: field } = useQuery(`/fields/get-field-by-id/${currentPage?.fieldId}`, { enabled: Boolean(parseInt(currentPage?.fieldId)) })
+
+  const existing_form_data = useMemo(() => {
+
+    const entries = Object.entries(field || {}) || []
+    return { entries, field: field || {} }
+  }, [field])
+
+
+  const isExist = useCallback((key) => {
+    return existing_form_data.field[key] || false
+  }, [existing_form_data?.field])
+  const getDefaultValue = useCallback((key, innerKey) => {
+    let value = ''
+
+    if (field) {
+      if (field[key]) {
+        if (field[key][innerKey]) {
+          value = field[key][innerKey]
+        }
+      }
+    }
+    return value
+
+  }, [field])
 
   return (
 
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '30px', padding: '10px 10px', justifyContent: 'center', alignItems: 'center' }}>
-      <Dropdown header={'Production Volume'} children={
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
+    <div
+      style={{
+        display: 'grid', gap: '30px',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        // overflowY:'auto',
+        placeItems: 'center'
+        // height: "700px", 
+      }}
+      className=' w-full h-[600px] py-4'
+    >
+      {/* < div style={{ display: 'flex', gap: '20px', }} className='b'>
+        {tabs.map((x, i) => <Tab className='!text-[white]' key={i} text={x} active={i === currentPage.currTab} onClick={() => handleFormChange(i)} />)}
+      </ div> */}
+      {Object.values(forms).map((form) => {
+        return (
+          <Dropdown header={<div className='flex gap-2 items-center'>{form.name} {isExist(form.key) && <BsCheck />} </div>}>
+            <RadaForm
+              method={'post'}
+              btnText={'Save'}
+              btnClass={'px-5'}
+              url={`${form.url}?email=${state.data.email}`}
+              onSuccess={handleOpen}
+            >
+
+              <div className='flex flex-wrap justify-between'>
+                {
+                  form.fields.filter(field => field?.in?.includes('input') || !field?.in?.length).map(field => (
+                    <div className={'!min-w-[47%]'}>
+                      { }
+                      <Input {...field} defaultValue={getDefaultValue(form.key, field.name)} />
+                    </div>
+                  ))
+                }
+              </div>
+
+              {/* <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+                <Input label={'Well ID)'} />
+                <Input label={'Created Date'} />
+
+              </div>
+              <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+                <Input label={'Basic Sediment and Water'} />
+                <Input label={'Net Oil'} />
+
+              </div>
+              <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+                <Input label={'Produced Gas'} />
+                <Input label={'Export Gas '} />
+              </div>
+
+              <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+                <Input label={'Fuel Gas'} />
+                <Input label={'Flare Gas '} />
+              </div>
+
+              <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+                <Input label={'Condensate Produced'} />
+                <Input label={'Loss '} />
+              </div>
+
+              <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+                <Input label={'Water Gas Rate'} />
+                <Input label={'Status '} />
+              </div>
+              <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+
+                <Input label={'Updated Date'} />
+
+              </div>
+              <Button width={'100px'} onClick={() => toast.success('Production Figures Uploaded Successfully')} >Save</Button> */}
+            </RadaForm>
+          </Dropdown >
+        )
+      })}
+
+      {/* <Dropdown header={'Production Volume'}>
+        <RadaForm url={`/fields/create-production-volume-field?email=emmanueloludairo61@gmail.com`} style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
           <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
-            <Input label={'Well ID)'} />
+            <Input label={'Well ID)'} name={'wellIdentity'} />
             <Input label={'Created Date'} />
 
           </div>
@@ -53,7 +186,6 @@ const DataForm = () => {
             <Input label={'Produced Gas'} />
             <Input label={'Export Gas '} />
           </div>
-
           <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
 
             <Input label={'Fuel Gas'} />
@@ -74,11 +206,11 @@ const DataForm = () => {
           <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
 
             <Input label={'Updated Date'} />
-            {/* <Input label={'Status '} /> */}
+
           </div>
           <Button width={'100px'} onClick={() => toast.success('Production Figures Uploaded Successfully')} >Save</Button>
-        </div>
-      } />
+        </RadaForm>
+      </Dropdown >
 
       <Dropdown header={'Cumulative Production'}
         children={
@@ -132,14 +264,14 @@ const DataForm = () => {
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
 
               <Input label={'Updated Date'} />
-              {/* <Input label={'Status'} /> */}
+
             </div>
             <Button width={'100px'} >Save</Button>
           </div>
-        } />
+        } /> */}
 
 
-      <Dropdown header={'Well Flow'}
+      {/* <Dropdown header={'Well Flow'}
         children={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
@@ -171,15 +303,11 @@ const DataForm = () => {
             </div>
             <Button width={'100px'} >Save</Button>
           </div>
-        } />
-
-
-  
+        } /> */}
 
 
 
-  
-      <Button onClick={handleOpen} width={'150px'} >Done</Button>
+      {/* <Button onClick={handleOpen} width={'150px'} >Done</Button> */}
       <Modal
         open={open}
         onClose={handleClose}

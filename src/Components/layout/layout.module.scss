@@ -4,6 +4,14 @@
     display: flex;
     position: fixed;
     background-color: #FFFFFF;
+    .content{
+        width: calc(100% - 250px);
+        // display: none;
+        @media screen and (max-width:900px){
+            width: 100%; 
+        }
+    }
+    
 }
 
 .menubutton {
@@ -16,6 +24,7 @@
         top: 3vh;
         left: 1vw;
         cursor: pointer;
+        
     }
 }
 
@@ -39,10 +48,11 @@
     width: auto;
     height: calc(100vh - 70px - 8vh);
     overflow-y: auto;
-    padding: 20px 24px 40px;
+    // padding: 0 20px;
 
     @media screen and (max-width:600px) {
 
         padding: 10px 10px 20px;
+        
     }
 }

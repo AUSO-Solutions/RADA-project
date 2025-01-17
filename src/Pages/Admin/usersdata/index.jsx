@@ -1,35 +1,19 @@
-import React from 'react'
-import Table from 'Components/table'
-import TableAction from 'Components/tableaction'
-
-const UserData = () => {
+// import React  from 'react'
+// import { forms } from 'Pages/User/dataform/formFields'
+// import { useQuery } from 'react-query'
 
 
-    const actions = [
-        { text: 'Accept', },
-        { text: 'Modify', },
-        { text: 'Rollback', },
-        // { text: 'Delete', onClick: (params) => dispatch(openModal({ title: 'Delete Blog Post', content: <DeleteBlogPost data={params} isDeleted={(res) => setChange(res)} /> })) },
-      ]
-    
+const UserData = ({ url, header, fn = () => null, actions}) => {
+  // const columns = forms[header].fields.map(field => ({ name: field.label, key: field.name }))
 
 
+  // const { data } = useQuery(url)
+  // const updatedColumns = 
   return (
-      <div style={{ padding: '10px 0px 70px 0px' }}>
-        <Table
-          columns={[
-            { Header: ' Name', accessor: '' },
-            { Header: 'Net OIl', accessor: '' },
-            { Header: 'Produced Gas', accessor: '', },
-            { Header: ' Export Gas', accessor: '' },
-            { Header: ' Fuel Gas', accessor: '' },
-            { Header: 'Flare Gas', accessor: '' },
-            // { Header: 'Status', accessor: 'isActive',  },
-            { Header: <></>, accessor: 'action', Cell: ({ row }) => <TableAction actions={actions} data={row.original} /> },
-          ]}
-        //   data={data}
-        />
-      </div >
+    <div style={{ padding: '10px 0px 70px 0px' }} className='w-[100%]'>
+      {/* <TableFilter /> */}
+      {/* <RadaTable columns={columns} data={data} fn={fn} actions={actions} idKey={idKey} {...props} /> */}
+    </div >
   )
 }
 

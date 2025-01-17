@@ -1,9 +1,13 @@
 export const images = {
-    logo: require('./logo.svg').default,
+    logo: require('./logo.png'),
     oml152: require('./oml152.svg').default,
     oml147: require('./oml147.svg').default,
     oml24: require('./oml24.svg').default,
     newcross152: require('./newcross152.svg').default,
-    panocean147: require('./panocean.png').default,
-    nepl24: require('./nepl.png').default
+    panocean147: require('./panocean.png'),
+    nepl24: require('./nepl.png'),
+    newcrossField: require('./newcrossfield.jpg'),
+    setupIcon : require('./setup.png'),
+    file : require('./file.png'),
+    newLogo: require('./radaNewLogoo.svg')
 }

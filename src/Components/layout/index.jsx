@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import styles from "./layout.module.scss";
 import Sidenav from "Components/sidenav";
-import Header from "Components/header";
-import { Typography, useMediaQuery } from "@mui/material";
+import Navbar from "Components/navbar";
+import { useMediaQuery } from "@mui/material";
 import { BsMenuButton } from "react-icons/bs";
 import ClickAway from "../clickaway";
 // import { Button, Text } from '@/components';
-import { Button } from "Components";
+// import { Button } from "Components";
 
 function Layout({ name = "Home", children, btn, goBack = () => null }) {
   const isMobile = useMediaQuery("(min-width:900px)");
@@ -22,31 +22,14 @@ function Layout({ name = "Home", children, btn, goBack = () => null }) {
           <Sidenav />{" "}
         </ClickAway>
       )}
-      <div style={{ width: "100%" }}>
-        <Header />
+      <div className={styles.content}>
+        <Navbar />
         <BsMenuButton
           size={20}
           className={styles.menubutton}
           onClick={() => setShowSide(!showSideBar)}
         />
-        <div className={styles.action}>
-          <Typography
-            style={{ fontSize: "20px", fontWeight: "bold", color: "#9D949C" }}
-            className="flex items-center gap-[10px]"
-          >
-            {" "}
-            {name}{" "}
-          </Typography>
-          {btn && (
-            <Button
-              onClick={() => btn?.onClick()}
-              //  bgcolor={'blue'} color={'red'}
-            >
-              {" "}
-              {btn?.text}
-            </Button>
-          )}
-        </div>
+     
         <div className={styles.layoutChildren}>{children}</div>
       </div>
     </div>

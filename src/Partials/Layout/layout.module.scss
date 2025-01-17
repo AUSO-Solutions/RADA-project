@@ -1,19 +1,32 @@
 .layout {
     width: 100%;
-    height: 100%;
+    height: 100vh !important;
     background-color: white;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    background: linear-gradient(rgb(228, 224, 224), rgba(153, 147, 147, 0.911));
+    // background-image: '../../Assets/images/oml147.svg';
+    // justify-content: center;
+    // overflow-y: scroll;
+
 
     .content {
         display: flex;
         flex-direction: column;
+        width: 100%;
         align-items: center;
         justify-content: center;
-        gap: 24px;
+        overflow-y: scroll;
+        // gap: 24px;
+        height: 100%;
+        // overflow-y: auto;
+
         // width: auto;
-        padding: 62px 0px 14px 0px;
+        padding: 0px 0px 0px 0px;
+        // border-left: 2px solid #0274bd;
+        // border-right: 2px solid #0274bd;
+        // border-bottom: 2px solid #0274bd;
     }
+
 }

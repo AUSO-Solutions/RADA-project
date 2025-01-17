@@ -1,0 +1,37 @@
+.tableContainer {
+    max-width: 100%;
+    overflow: scroll;
+    // background-color: green;
+    border: .1px grey solid;
+    margin: 15px 0;
+    border-radius: 12px;
+}
+
+.table {
+    min-width: 700px !important;
+
+    tr {
+        display: flex;
+    }
+
+    // display: none;
+    th,
+    td {
+        display: flex;
+        // flex-direction: column;
+        width: 150px !important;
+        justify-content: center;
+        align-items: center;
+        padding: 5px 0;
+
+        .inputBox {
+            border: 1px lightgray solid;
+            outline: none;
+            border-radius: 8px;
+            width: 80%;
+            margin: auto;
+            text-align: center;
+            height: 40px;
+        }
+    }
+}

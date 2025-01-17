@@ -9,16 +9,29 @@
     cursor: pointer;
 }
 
+.rightContain {
+    align-items: center;
+    justify-content: space-between;
+    width: 100px;
+    height: 48px;
+    padding: 0 10px;
+    position: relative;
+    // top: 16px;
+    // left: 1298px;
+    gap: 0px;
+    border-radius:24px;
+    display: flex;
+    // opacity: 0px;
+    background: rgba(0, 163, 255, .2);
+
+
+}
+
 .right {
     display: flex;
     align-items: center;
-    gap: 10px;
+    // gap: 10px;
     margin-bottom: 3px;
-    padding:0 50px;
-
-    // position: relative;
-
-    
 }
 
 .circle {
@@ -32,18 +45,23 @@
     justify-content: center;
     font-weight: 700;
     color: black;
+    text-transform: capitalize;
 }
 
-.dropdown{
+.dropdown {
     position: absolute;
-    top: 8vh; 
-    right: 20px; 
-    width: fit-content;
-    height: fit-content; 
+    top: 50px;
+    background-color: #a09d9d;
+    right: 0;
+    // right: 20px;
+    width: 500px;
+    height: 500px;
     border-radius: 8px;
-    border: 1px solid #a09d9d ; 
-    justify-content: center; 
+    border: 1px solid #a09d9d;
+    justify-content: center;
     align-items: center;
-    padding: 10px 10px;
+    padding: 5px 15px;
+    box-shadow: inset grey;
+    z-index: 1000;
     // border: 1px solid #000;
 }

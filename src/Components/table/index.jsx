@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useTable } from 'react-table';
 import styles from './table.module.scss'
-import { Divider, Pagination, TablePagination } from '@mui/material';
+import { Pagination, TablePagination } from '@mui/material';
 import { BsSearch, BsSortUpAlt } from 'react-icons/bs';
 import Skeleton from '@mui/material/Skeleton';
 
 // import PageLoader from 'next/dist/client/page-loader';
 
-function Component({ columns, data }) {
+function Component({ columns, data= { Name : 'Emmanuel',
+NetOil : '98',
+} }) {
+
+
+    
     // Use the state and functions returned from useTable to build your UI
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow, } = useTable({ columns, data, })
 
@@ -50,7 +55,7 @@ const precolumns = [
 ]
 function Table({ columns = precolumns, data = [], handleChangePage, page, count = 10, size = 5, handleChangeRowsPerPage, onSearch = () => null, searchValue ,placeholder='Search'}) {
     const [processedData, setProcessedData] = useState(data)
-    const [search, setSearch] = useState('')
+    // const [search, setSearch] = useState('')
     useEffect(() => {
         setProcessedData(data)
     }, [data])
