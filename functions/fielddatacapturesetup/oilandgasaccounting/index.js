@@ -11,7 +11,13 @@ const processIPSC = onCall(async (request) => {
   try {
     const { data } = request;
     logger.log("Data ----", { data });
-    const { flowStation, date, potentialTestData, asset, type = 'calculate' } = data;
+    const {
+      flowStation,
+      date,
+      potentialTestData,
+      asset,
+      type = "calculate",
+    } = data;
     if (!flowStation || !date || !potentialTestData) {
       throw {
         code: "cancelled",
@@ -28,7 +34,6 @@ const processIPSC = onCall(async (request) => {
         .where("asset", "==", asset)
         .get()
     ).docs.map((doc) => doc.data());
-
 
     const gasVolume = (
       await db
@@ -73,13 +78,10 @@ const processIPSC = onCall(async (request) => {
     }
     const subtotal = {
       ...flowstationData?.subtotal,
-      gas: flowstationDataGas?.subtotal?.totalGas
-    }
+      gas: flowstationDataGas?.subtotal?.totalGas,
+    };
     // console.log({ flowstationData })
-    const result = computeProdDeduction(
-      potentialTestData,
-      subtotal
-    );
+    const result = computeProdDeduction(potentialTestData, subtotal);
 
     // Persit deferment data for the flowstation
     const defermentId = generateRandomID();
@@ -90,24 +92,27 @@ const processIPSC = onCall(async (request) => {
       flowStation,
       deferment: result.deferment,
     };
-    console.log(type)
-    if (type === 'save') {
-      const quer = db.collection("deferments").where('date', "==", date).where('asset', '==', asset).where('flowStation', '==', flowStation)
-      const prev = (await quer.get()).docs[0]
-      const exists = prev?.exists
-      console.log("-------", exists, prev?.data())
-      if (exists) await db.collection("deferments").doc(prev.id).set({ ...defermentData, id: prev?.id });
-      if (!exists) await db.collection("deferments").doc(defermentId).set({ ...defermentData });
+    console.log(type);
+    if (type === "save") {
+      const quer = db
+        .collection("deferments")
+        .where("date", "==", date)
+        .where("asset", "==", asset)
+        .where("flowStation", "==", flowStation);
+      const prev = (await quer.get()).docs[0];
+      const exists = prev?.exists;
+      console.log("-------", exists, prev?.data());
+      if (exists)
+        await db
+          .collection("deferments")
+          .doc(prev.id)
+          .set({ ...defermentData, id: prev?.id });
+      if (!exists)
+        await db
+          .collection("deferments")
+          .doc(defermentId)
+          .set({ ...defermentData });
     }
-
-    // Persist actual production data
-    // let batch = db.batch()
-
-    // result.actualProduction.forEach((doc) => {
-    //   var docRef = db.collection("actualProduction").doc(); //automatically generate unique id
-    //   batch.set(docRef, doc)
-    // })
-    // await batch.commit()
 
     const actualProductionId = generateRandomID();
     const actualProductionData = {
@@ -117,13 +122,25 @@ const processIPSC = onCall(async (request) => {
       flowStation,
       productionData: result.actualProduction,
     };
-    if (type === 'save') {
-      const quer = db.collection("actualProduction").where('date', "==", date).where('asset', '==', asset).where('flowStation', '==', flowStation)
-      const prev = (await quer.get())?.docs[0]
-      const exists = prev?.exists
-      console.log("-------", exists, prev?.data())
-      if (exists) await db.collection("actualProduction").doc(prev.id).set({ ...actualProductionData, id: prev?.id });
-      if (!exists) await db.collection("actualProduction").doc(actualProductionId).set({ ...actualProductionData });
+    if (type === "save") {
+      const quer = db
+        .collection("actualProduction")
+        .where("date", "==", date)
+        .where("asset", "==", asset)
+        .where("flowStation", "==", flowStation);
+      const prev = (await quer.get())?.docs[0];
+      const exists = prev?.exists;
+      console.log("-------", exists, prev?.data());
+      if (exists)
+        await db
+          .collection("actualProduction")
+          .doc(prev.id)
+          .set({ ...actualProductionData, id: prev?.id });
+      if (!exists)
+        await db
+          .collection("actualProduction")
+          .doc(actualProductionId)
+          .set({ ...actualProductionData });
     }
 
     return { status: "success", data: JSON.stringify(result) };
@@ -134,30 +151,34 @@ const processIPSC = onCall(async (request) => {
   }
 });
 
-
 const getOilAndGasAccounting = onCall(async (request) => {
   const { date, asset, flowStation } = request.data;
 
   try {
-    console.log({ date, asset, flowStation })
+    console.log({ date, asset, flowStation });
     const db = admin.firestore();
 
+    const querB = db
+      .collection("deferments")
+      .where("date", "==", date)
+      .where("asset", "==", asset)
+      .where("flowStation", "==", flowStation);
+    const deferment = (await querB.get())?.docs[0]?.data();
 
-
-    const querB = db.collection("deferments").where('date', "==", date).where('asset', '==', asset).where('flowStation', '==', flowStation)
-    const deferment = (await querB.get())?.docs[0]?.data()
-
-
-    const querA = db.collection("actualProduction").where('date', "==", date).where('asset', '==', asset).where('flowStation', '==', flowStation)
-    const actualProduction = (await querA.get())?.docs[0]?.data()
-
+    const querA = db
+      .collection("actualProduction")
+      .where("date", "==", date)
+      .where("asset", "==", asset)
+      .where("flowStation", "==", flowStation);
+    const actualProduction = (await querA.get())?.docs[0]?.data();
 
     if (!actualProduction) {
-      throw ({ code: "not-found", message: "Record not found" });
+      throw { code: "not-found", message: "Record not found" };
     }
     const record = {
-      deferment, actualProduction
-    }
+      deferment,
+      actualProduction,
+    };
     return { status: "success", data: JSON.stringify(record) };
   } catch (error) {
     logger.log("error ===> ", error);
@@ -165,5 +186,6 @@ const getOilAndGasAccounting = onCall(async (request) => {
   }
 });
 module.exports = {
-  processIPSC, getOilAndGasAccounting
+  processIPSC,
+  getOilAndGasAccounting,
 };
