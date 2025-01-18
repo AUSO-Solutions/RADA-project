@@ -19,6 +19,7 @@ export const useMe = () => {
         permitted: {
             "viewDashboard": false,
             "broadcastData":false,
+            "shareData":false,
             "createAndeditDailyOperation": false,
             "createAndeditDailyOperationSETUP": false,
             "createWellTestSchedule": false,

@@ -99,7 +99,7 @@ const Exists = () => {
                 { name: 'View', to: (file) => `/users/fdc/well-test-data/ipsc-table?id=${file?.id}`, permitted: true },
                 // { name: 'Edit', to: (file) => `/users/fdc/well-test-data/well-test-table?id=${file?.id}` },
                 {
-                    name: 'Broadcast', to: (file) => null, onClick: (file) => dispatch(openModal({
+                    name: user.permitted.broadcastData ? 'Broadcast' : "Share", to: (file) => null, onClick: (file) => dispatch(openModal({
                         title: '',
                         component: <BroadCast
                             link={`/users/fdc/well-test-data/ipsc-table?id=${file?.id}`}
@@ -115,7 +115,7 @@ const Exists = () => {
                                 <BroadCastSuccessfull details={`${file?.asset} Well Test IPSC ${dayjs(file?.startDate).format('MMM/YYYY')}`} />]} />
                     })),
                     // permitted: user.permitted.broadcastData,
-                       hidden: (file) => user.permitted.broadcastData && file?.status === 'approved'
+                    hidden: (file) => (user.permitted.broadcastData || user.permitted.shareData) && file?.status === 'approved'
                 },
                 {
                     name: 'Delete', onClick: (file) => deleteSetup({ id: file?.id, setupType: 'IPSC' }), to: () => null,
@@ -124,7 +124,7 @@ const Exists = () => {
 
             ]}
                 name={(file) => `${createWellTitle(file, 'Well Test Result')}`}
-                bottomRight={(file) => <SetupStatus  setup={file}/>}
+                bottomRight={(file) => <SetupStatus setup={file} />}
 
             />
         </div>

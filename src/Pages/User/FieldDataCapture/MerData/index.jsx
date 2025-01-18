@@ -2,13 +2,9 @@ import Header from 'Components/header'
 import React, { useMemo } from 'react'
 import Tab from 'Components/tab'
 import Schedule from './Schedule/Schedule'
-// import IPSC from './IPSC'
-// import WellTestResults from './WellTest/WellTestResults'
-// import CreateIPSC from './IPSC/CreateIPSC'
 import { useLocation, useNavigate } from 'react-router-dom'
 import MERDataTestResults from './MERData/MERDataTestResults'
-// import MERDataTable from './MERData/MERDataTable'
-
+import TARList from './MERData/TARList'
 
 const tabs = [
   {
@@ -19,10 +15,10 @@ const tabs = [
     title: 'MER Result',
     Component: <MERDataTestResults />
   },
-  // {
-  //   title: 'IPSC',
-  //   Component: <CreateIPSC />
-  // },
+  {
+    title: 'TAR ',
+    Component: <TARList />
+  },
 ]
 const MERData = () => {
   const navigate = useNavigate()

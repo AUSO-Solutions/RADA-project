@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import tableStyles from "../table.module.scss";
-import dayjs from "dayjs";
-import { useSearchParams } from "react-router-dom";
-import { firebaseFunctions } from "Services";
-import { toast } from "react-toastify";
-import { Button } from "Components";
-import { sum } from "utils";
+import React, { useEffect, useState } from 'react';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import tableStyles from '../table.module.scss'
+import dayjs from 'dayjs';
+import { useSearchParams } from 'react-router-dom';
+import { firebaseFunctions } from 'Services';
+import { toast } from 'react-toastify';
+import { Button } from 'Components';
+import { roundUp, sum } from 'utils';
 
 export default function OilGasAccountingTableForActual({
   IPSC,
@@ -347,151 +347,61 @@ export default function OilGasAccountingTableForActual({
           </TableRow>
         </TableHead>
 
-        <TableBody>
-          {Object.values(wellTestResultData || {})
-            ?.sort((a, b) => a?.productionString - b?.productionString)
-            ?.map((well, i) => {
-              const handleChange = (e) => {
-                const name = e.target.name;
-                const value = e.target.value;
-                let status =
-                  name === "uptimeProduction"
-                    ? {
-                        status:
-                          parseInt(value) === 0 ? "Closed In" : "Producing",
-                      }
-                    : {};
-                console.log({ name, value });
-                setWellTestResultData((prev) => ({
-                  ...prev,
-                  [well?.productionString]: {
-                    ...well,
-                    ...status,
-                    [name]: value,
-                  },
-                }));
-              };
-              return (
-                <TableRow>
-                  <TableCell align="center">{well?.productionString}</TableCell>
-                  <TableCell align="center">{well?.reservoir}</TableCell>
-                  {searchParams.get("table") === "actual-production" && (
-                    <TableCell align="center">
-                      <input
-                        onChange={handleChange}
-                        step={"any"}
-                        value={well?.uptimeProduction}
-                        required
-                        name="uptimeProduction"
-                        className="border outline-none px-2 w-[100px] text-center"
-                        type="number"
-                        max={24}
-                        min={0}
-                      />
-                    </TableCell>
-                  )}
-                  {searchParams.get("table") === "deferred-production" && (
-                    <TableCell align="center">
-                      <input
-                        disabled
-                        value={well?.downtime}
-                        required
-                        className="border outline-none px-2 w-[100px] text-center"
-                        type="number"
-                        max={24}
-                        min={0}
-                      />
-                    </TableCell>
-                  )}
-                  <TableCell align="center">
-                    {results ? well?.gross || 0 : 0}
-                  </TableCell>
-                  <TableCell align="center">
-                    {results ? well?.oil || 0 : 0}
-                  </TableCell>
-                  <TableCell align="center">
-                    {results ? well?.gas || 0 : 0}
-                  </TableCell>
-                  {searchParams.get("table") === "actual-production" && (
-                    <TableCell align="center">
-                      {results ? well?.water || 0 : 0}
-                    </TableCell>
-                  )}
-                  {searchParams.get("table") === "actual-production" && (
-                    <TableCell
-                      style={{
-                        color: "white",
-                        fontWeight: "600",
-                        background:
-                          parseInt(well?.uptimeProduction) === 0 ||
-                          !well?.uptimeProduction
-                            ? "#FF5252"
-                            : "#A0E967",
-                      }}
-                      align="center"
-                    >
-                      {parseInt(well?.uptimeProduction) === 0 ||
-                      !well?.uptimeProduction
-                        ? "Closed In"
-                        : "Producing"}
-                    </TableCell>
-                  )}
-                  {
-                    <>
-                      {" "}
-                      <TableCell
-                        style={{ background: "#D9E3F9" }}
-                        align="center"
-                      >
-                        {/* {well?.defermentCategory}  */}
-                        <select
-                          disabled={
-                            searchParams.get("table") === "deferred-production"
-                          }
-                          className="bg-[inherit] outline-none"
-                          value={well?.defermentCategory}
-                          defaultValue="Unscheduled Deferment"
-                          onChange={handleChange}
-                          name="defermentCategory"
-                        >
-                          {defermentCategoryArray?.map((category) => (
-                            <option value={category}>{category}</option>
-                          ))}
-                        </select>
-                      </TableCell>
-                      <TableCell
-                        style={{ background: "#E6E4F9" }}
-                        align="center"
-                      >
-                        <select
-                          disabled={
-                            searchParams.get("table") === "deferred-production"
-                          }
-                          className="bg-[inherit] outline-none"
-                          name="defermentSubCategory"
-                          value={well.defermentSubCategory}
-                          onChange={handleChange}
-                        >
-                          {Description[well?.defermentCategory]?.map((desc) => (
-                            <option value={desc}>{desc}</option>
-                          ))}
-                        </select>
-                      </TableCell>
-                    </>
-                  }{" "}
-                  {searchParams.get("table") === "actual-production" && (
-                    <TableCell rowSpan={1} align="center">
-                      <textarea
-                        onChange={handleChange}
-                        name="remark"
-                        className="border outline-none p-2"
-                        value={well?.remark}
-                      ></textarea>
-                    </TableCell>
-                  )}
-                </TableRow>
-              );
-            })}
+                <TableBody>
+                    {Object.values(wellTestResultData || {})?.sort((a, b) => a?.productionString - b?.productionString)?.map((well, i) => {
+                        const handleChange = (e) => {
+                            const name = e.target.name
+                            const value = e.target.value
+                            let status = name === 'uptimeProduction' ? { status: parseInt(value) === 0 ? 'Closed In' : 'Producing' } : {}
+                            console.log({ name, value })
+                            setWellTestResultData(prev => ({
+                                ...prev,
+                                [well?.productionString]: {
+                                    ...well,
+                                    ...status,
+                                    [name]: value,
+                                }
+                            }))
+                        }
+                        return <TableRow>
+                            <TableCell align="center">{well?.productionString}
+                            </TableCell>
+                            <TableCell align="center">
+                                {well?.reservoir}
+                            </TableCell>
+                            {searchParams.get('table') === 'actual-production' && <TableCell align="center">
+                                <input onChange={handleChange} step={'any'} value={well?.uptimeProduction} required name='uptimeProduction' className='border outline-none px-2 w-[100px] text-center' type='number' max={24} min={0} />
+                            </TableCell>}
+                            {searchParams.get('table') === 'deferred-production' && <TableCell align="center">
+                                <input disabled value={well?.downtime} required className='border outline-none px-2 w-[100px] text-center' type='number' max={24} min={0} />
+                            </TableCell>}
+                            <TableCell align="center">{roundUp(results ? well?.gross || 0 : 0)}</TableCell>
+                            <TableCell align="center">{roundUp(results ? well?.oil || 0 : 0)}</TableCell>
+                            <TableCell align="center">{roundUp(results ? well?.gas || 0 : 0)}</TableCell>
+                            {searchParams.get('table') === 'actual-production' && <TableCell align="center">{roundUp(results ? well?.water || 0 : 0)}</TableCell>}
+                            {searchParams.get('table') === 'actual-production' && <TableCell style={{ color: 'white', fontWeight: "600", background: parseInt(well?.uptimeProduction) === 0 || !well?.uptimeProduction ? '#FF5252' : '#A0E967' }} align="center">
+                                {(parseInt(well?.uptimeProduction) === 0 || !well?.uptimeProduction) ? 'Closed In' : 'Producing'}
+                            </TableCell>}
+
+                            {
+                                <> <TableCell style={{ background: '#D9E3F9' }} align="center">
+                                    {/* {well?.defermentCategory}  */}
+                                    <select disabled={searchParams.get('table') === 'deferred-production'} className='bg-[inherit] outline-none' value={well?.defermentCategory} defaultValue='Unscheduled Deferment' onChange={handleChange} name='defermentCategory' >
+                                        {defermentCategoryArray?.map(category => <option value={category}>{category}</option>)}
+                                    </select>
+                                </TableCell>
+                                    <TableCell style={{ background: '#E6E4F9' }} align="center">
+                                        <select disabled={searchParams.get('table') === 'deferred-production'} className='bg-[inherit] outline-none' name='defermentSubCategory' value={well.defermentSubCategory} onChange={handleChange}>
+                                            {Description[well?.defermentCategory]?.map(desc => <option value={desc}>{desc}</option>)}
+                                        </select>
+                                    </TableCell></>
+                            }           {searchParams.get('table') === 'actual-production' && <TableCell rowSpan={1} align="center">
+                                <textarea onChange={handleChange} name='remark' className='border outline-none p-2' value={well?.remark}>
+
+                                </textarea>
+                            </TableCell>}
+                        </TableRow>
+                    })}
 
           <TableRow sx={{ backgroundColor: "#00A3FF4D" }}>
             <TableCell style={{ fontWeight: "600" }} align="center" colSpan={3}>

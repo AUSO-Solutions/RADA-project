@@ -9,6 +9,7 @@ import VolumeMeasurementTable from "./FieldDataCapture/DailyoOperation/VolumeMea
 import FGSurveyData from "./FieldDataCapture/FGSurveyData";
 import MERData from "./FieldDataCapture/MerData";
 import MERDataTable from "./FieldDataCapture/MerData/MERData/MERDataTable";
+import TARTable from "./FieldDataCapture/MerData/MERData/TARTable";
 import MERScheduleTable from "./FieldDataCapture/MerData/Schedule/ScheduleTable";
 import WellTest from "./FieldDataCapture/WellTest";
 import IPSCTable from "./FieldDataCapture/WellTest/IPSC/IPSCTable";
@@ -36,12 +37,6 @@ export const user_routes = [
   {
     path: "/users/fdc/daily",
     Component: <FDC />,
-    layout: true,
-    isPublic: false,
-  },
-  {
-    path: "/users/reports/deferment",
-    Component: <DefermentReport />,
     layout: true,
     isPublic: false,
   },

@@ -23,7 +23,7 @@ import { firebaseFunctions } from "Services";
 import { closeModal, openModal } from "Store/slices/modalSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { bsw, createWellTitle, getWellLastTestResult2, sum } from "utils";
+import { bsw, createWellTitle, getWellLastTestResult2, roundUp, sum } from "utils";
 import Actions from "Partials/Actions/Actions";
 import { Query } from "Partials/Actions/Query";
 import { Approve } from "Partials/Actions/Approve";
@@ -652,7 +652,7 @@ export default function WellTestDataTable() {
                               type={field.type || "number"}
                               required={well.isSelected && field.required}
                               defaultValue={
-                                field?.fn(well) || well?.[field.name]
+                                roundUp(field?.fn(well) || well?.[field.name])
                               }
                               disabled={field?.disabled}
                               onChange={(e) =>

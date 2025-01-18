@@ -1,13 +1,15 @@
-import React from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import tableStyles from "../table.module.scss";
-import { bsw, sum } from "utils";
-import { Paper } from "@mui/material";
+import React from 'react';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import tableStyles from '../table.module.scss'
+import { bsw, roundUp, sum } from 'utils';
+import { Paper } from '@mui/material';
+
+
 
 export default function OilGasAccountingIPSCTable({ IPSC }) {
   const getTotalOf = (key) => {
@@ -169,24 +171,48 @@ export default function OilGasAccountingIPSCTable({ IPSC }) {
               ?.map((well, i) => {
                 return (
                   <TableRow>
-                    <TableCell align="center">
-                      {well?.productionString}
+                    <TableCell align="center">{well?.productionString}
                     </TableCell>
-                    <TableCell align="center">{well?.reservoir}</TableCell>
-                    <TableCell align="center">{well?.fthp}</TableCell>
+                    <TableCell align="center">
+                      {well?.reservoir}
+                    </TableCell>
+                    <TableCell align="center">
+                      {roundUp(well?.fthp)}
+                    </TableCell>
                     <TableCell align="center">{well?.chp}</TableCell>
-                    <TableCell align="center">{well?.flp}</TableCell>
+                    <TableCell align="center">{roundUp(well?.flp)}</TableCell>
                     {/* <TableCell align="center">{well?.mlp}</TableCell> */}
-                    <TableCell align="center">{well?.staticPressure}</TableCell>
+                    <TableCell align="center">
+                      {well?.staticPressure}
+                    </TableCell>
                     {/* <TableCell align="center">{well?.lp}</TableCell> */}
                     <TableCell align="center">{well?.chokeSize}</TableCell>
                     {/* <TableCell align="center">{well?.whTemperature}</TableCell> */}
                     {/* <TableCell align="center">{well?.CITHP}</TableCell> */}
-                    <TableCell align="center">{well?.gross}</TableCell>
+                    <TableCell align="center">{roundUp(well?.gross)}</TableCell>
                     <TableCell align="center">{well?.bsw}</TableCell>
-                    <TableCell align="center">{well?.oilRate}</TableCell>
+                    <TableCell align="center">{roundUp(well?.oilRate)}</TableCell>
                     <TableCell align="center">{well?.gasRate}</TableCell>
                   </TableRow>
+                  // <TableRow>
+                  //   <TableCell align="center">
+                  //     {well?.productionString}
+                  //   </TableCell>
+                  //   <TableCell align="center">{well?.reservoir}</TableCell>
+                  //   <TableCell align="center">{well?.fthp}</TableCell>
+                  //   <TableCell align="center">{well?.chp}</TableCell>
+                  //   <TableCell align="center">{well?.flp}</TableCell>
+                  //   {/* <TableCell align="center">{well?.mlp}</TableCell> */}
+                  //   <TableCell align="center">{well?.staticPressure}</TableCell>
+                  //   {/* <TableCell align="center">{well?.lp}</TableCell> */}
+                  //   <TableCell align="center">{well?.chokeSize}</TableCell>
+                  //   {/* <TableCell align="center">{well?.whTemperature}</TableCell> */}
+                  //   {/* <TableCell align="center">{well?.CITHP}</TableCell> */}
+                  //   <TableCell align="center">{well?.gross}</TableCell>
+                  //   <TableCell align="center">{well?.bsw}</TableCell>
+                  //   <TableCell align="center">{well?.oilRate}</TableCell>
+                  //   <TableCell align="center">{well?.gasRate}</TableCell>
+                  // </TableRow>
                 );
               })}
             <TableRow sx={{ backgroundColor: "#00A3FF4D" }}>

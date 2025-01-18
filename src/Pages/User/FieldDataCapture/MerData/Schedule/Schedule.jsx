@@ -107,7 +107,7 @@ const Exists = () => {
                         hidden: (file) => user.permitted.createAndeditMERdata && file?.status === 'approved'
                     },
                     {
-                        name: 'Broadcast', to: (file) => null, onClick: (file) => dispatch(openModal({
+                        name: user.permitted.broadcastData ? 'Broadcast' : "Share", to: (file) => null, onClick: (file) => dispatch(openModal({
                             title: '',
                             component: <BroadCast
                                 setup={file}
@@ -122,7 +122,7 @@ const Exists = () => {
                                     <Attachment details={`${file?.asset} MER Data ${dayjs(file?.startDate).format('MMM/YYYY')}`} />,
                                     <BroadCastSuccessfull details={`${file?.asset} MER Data ${dayjs(file?.startDate).format('MMM/YYYY')}`} />]} />
                         })),
-                        hidden: (file) => user.permitted.broadcastData && file?.status === 'approved'
+                        hidden: (file) =>(user.permitted.broadcastData || user.permitted.shareData) && file?.status === 'approved'
                     },
 
 

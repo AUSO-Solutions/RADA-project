@@ -17,7 +17,7 @@ import dayjs from "dayjs";
 import { closeModal, openModal } from "Store/slices/modalSlice";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-import { bsw, createWellTitle, sum } from "utils";
+import { bsw, createWellTitle, sum, roundUp } from "utils";
 import IPSCAnalytics from "./IPSCAnalytics";
 import ToleranceSettiings from "./ToleranceSettiings";
 import { firebaseFunctions } from "Services";
@@ -120,38 +120,28 @@ export default function IPSCTable() {
   };
 
   const fields = [
-    { name: "gross", type: "number", fn: () => null },
-    { name: "oilRate", type: "number", fn: () => null },
+    { name: 'gross', type: "number", fn: () => null },
+    { name: 'oilRate', type: "number", fn: () => null },
     // { name: 'waterRate', type: "number",fn: () => null  },
-    {
-      name: "waterRate",
-      type: "number",
-      fn: (value) => (value.gross || 0) - (value.oilRate || 0),
-      disabled: true,
-    },
-    { name: "gasRate", type: "number", fn: () => null },
-    {
-      name: "bsw",
-      type: "number",
-      fn: (value) => bsw({ gross: value.gross, oil: value.oilRate }),
-    },
-    { name: "wgr", type: "number", fn: () => null },
-    { name: "gor", type: "number", fn: () => null },
+    { name: 'waterRate', type: "number", fn: (value) => (value.gross || 0) - (value.oilRate || 0), disabled: true },
+    { name: 'gasRate', type: "number", fn: () => null },
+    { name: 'bsw', type: "number", fn: (value) => bsw({ gross: value.gross, oil: value.oilRate }) },
+    { name: 'wgr', type: "number", fn: () => null },
+    { name: 'gor', type: "number", fn: () => null },
     // { name: 'totalGas', type: "number",fn: () => null  },
-    { name: "fthp", type: "number", fn: () => null },
-    { name: "flp", type: "number", fn: () => null },
-    { name: "chp", type: "number", fn: () => null },
-    { name: "staticPressure", type: "number", fn: () => null },
-    { name: "orificePlateSize", type: "number", fn: () => null },
-    { name: "sand", type: "number", fn: () => null },
-  ];
+    { name: 'fthp', type: "number", fn: () => null },
+    { name: 'flp', type: "number", fn: () => null },
+    { name: 'chp', type: "number", fn: () => null },
+    { name: 'staticPressure', type: "number", fn: () => null },
+    { name: 'orificePlateSize', type: "number", fn: () => null },
+    { name: 'sand', type: "number", fn: () => null },
+  ]
   const getTotalOf = (key, flowstation) => {
-    const res = Object.values(ipscData?.wellTestResultData || {})?.filter(
-      (item) => (flowstation ? item?.flowstation === flowstation : true)
-    );
-    const total = sum(res?.map((item) => parseFloat(item?.[key] || 0)));
-    return total;
-  };
+    const res = Object.values(ipscData?.wellTestResultData || {})?.filter(item => flowstation ? item?.flowstation === flowstation : true)
+    const total = sum(res?.map(item => parseFloat(item?.[key] || 0)))
+    return roundUp(total)
+  }
+
 
   useEffect(() => {
     const ipscResults = Object.values(ipscData?.wellTestResultData || {});
@@ -594,7 +584,10 @@ export default function IPSCTable() {
                 ></TableCell>
               </TableRow>
             </TableHead>
+
+
             <TableBody>
+
               {Object.values(ipscData?.wellTestResultData || {})
                 .sort((a, b) =>
                   a?.productionString.localeCompare(b?.productionString)
@@ -604,6 +597,7 @@ export default function IPSCTable() {
                 )
                 ?.filter((well) => well?.flowstation === currFlowstation)
                 ?.map((well, i) => {
+
                   const handleChange = (name, value, type = "number") => {
                     setIpscData((prev) => {
                       prev.wellTestResultData[well?.productionString] = {
@@ -613,7 +607,6 @@ export default function IPSCTable() {
                       return prev;
                     });
                   };
-
                   return (
                     <TableRow key={well?.productionString}>
                       <TableCell align="center">{well?.reservoir}</TableCell>
@@ -633,81 +626,47 @@ export default function IPSCTable() {
                       <TableCell align="center">
                         {dayjs(well?.endDate).format("DD/MMM/YYYY")}
 
-                        <input
-                          type="text"
-                          defaultValue={well?.chokeSize}
-                          onChange={(e) =>
-                            handleChange("chokeSize", e.target.value)
-                          }
-                          className="text-center"
-                        />
+                        <input type="text" defaultValue={well?.chokeSize} onChange={(e) => handleChange('chokeSize', e.target.value)} className='text-center' />
                       </TableCell>
-                      <TableCell align="center">{well?.fluidType}</TableCell>
-                      <TableCell align="center">NF</TableCell>
-                      {fields.map((field) => (
-                        <TableCell align="center">
-                          {/* {field.fn(well) || (well?.[field.name] ?? "-")} */}
-
-                          <input
-                            type={field.type}
-                            defaultValue={
-                              field.fn(well) || (well?.[field.name] ?? "-")
-                            }
-                            onChange={(e) =>
-                              handleChange(field.name, e.target.value)
-                            }
-                            className="text-center"
-                          />
+                      <TableCell align="center">
+                        {well?.fluidType}
+                      </TableCell>
+                      <TableCell align="center">
+                        NF
+                      </TableCell>
+                      {
+                        fields.map(field => <TableCell align="center">
+                          {roundUp(field.fn(well) || (well?.[field.name] ?? "-"))}
                           {/* <TableInput type='number' defaultValue={well?.[field.name]} onChange={(e) => handleChange(field.name, e.target.value)} /> */}
-                        </TableCell>
-                      ))}
-                      <TableCell
-                        align="center"
-                        sx={{ minWidth: "200px" }}
-                        colSpan={3}
-                      >
+                        </TableCell>)
+                      }
+                      <TableCell align="center" sx={{ minWidth: '200px' }} colSpan={3}>
                         {well?.remark || "No remark"}
-                        <textarea
-                          defaultValue={well.remark}
-                          onChange={(e) =>
-                            handleChange("remark", e.target.value)
-                          }
-                          className="border outline-none p-1"
-                          rows={2}
-                          cols={20}
-                        ></textarea>
+                        <textarea defaultValue={well.remark} onChange={(e) => handleChange("remark", e.target.value)} className='border outline-none p-1' rows={2} cols={20}>
+                        </textarea>
                       </TableCell>
-                    </TableRow>
-                  );
-                })}
+                      {/* <TableCell align="center" colSpan={1}>
+                        <Actions actions={[
+                          { name: `Forward from ${getWellLastTestResult(wellTestResults, wellTestResult, well.productionString)?.wellTestResult?.month || "-"}`, onClick: () => bringForward(wellTestResults, wellTestResult, well.productionString) },
+                        ]} >
 
-              <TableRow sx={{ backgroundColor: "#00A3FF4D" }}>
-                <TableCell
-                  style={{ fontWeight: "600" }}
-                  align="center"
-                  colSpan={6}
-                >
-                  String Totals{" "}
-                </TableCell>
-                <TableCell style={{ fontWeight: "600" }} align="center">
-                  {getTotalOf("gross", currFlowstation)}
-                </TableCell>
-                <TableCell style={{ fontWeight: "600" }} align="center">
-                  {getTotalOf("oilRate", currFlowstation)}
-                </TableCell>
-                <TableCell style={{ fontWeight: "600" }} align="center">
-                  {getTotalOf("gross", currFlowstation) -
-                    getTotalOf("oilRate", currFlowstation)}
-                </TableCell>
-                <TableCell style={{ fontWeight: "600" }} align="center">
-                  {getTotalOf("gasRate", currFlowstation)}
-                </TableCell>
-                <TableCell style={{ fontWeight: "600" }} align="center">
-                  {bsw({
-                    oil: getTotalOf("oilRate", currFlowstation),
-                    gross: getTotalOf("gross", currFlowstation),
-                  })}
-                </TableCell>
+                          {
+                            well?.isSelected ? '-' : <Tooltip title="Delete"><BsThreeDots className='cursor-pointer w-full ' /></Tooltip>
+                          }
+                        </Actions>
+                      </TableCell> */}
+                    </TableRow>
+                  )
+
+                })
+              }
+              <TableRow sx={{ backgroundColor: '#00A3FF4D' }}>
+                <TableCell style={{ fontWeight: '600' }} align="center" colSpan={6} >String Totals </TableCell>
+                <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('gross', currFlowstation,)}</TableCell>
+                <TableCell style={{ fontWeight: '600' }} align="center">{getTotalOf('oilRate', currFlowstation)}</TableCell>
+                <TableCell style={{ fontWeight: '600' }} align="center">{roundUp(getTotalOf('gross', currFlowstation) - getTotalOf('oilRate', currFlowstation))}</TableCell>
+                <TableCell style={{ fontWeight: '600' }} align="center" >{getTotalOf('gasRate', currFlowstation)}</TableCell>
+                <TableCell style={{ fontWeight: '600' }} align="center" >{bsw({ oil: getTotalOf('oilRate', currFlowstation), gross: getTotalOf('gross', currFlowstation) })}</TableCell>
 
                 <TableCell align="center" colSpan={10}></TableCell>
                 <TableCell
@@ -717,6 +676,7 @@ export default function IPSCTable() {
                 ></TableCell>
               </TableRow>
             </TableBody>
+
           </Table>
         </TableContainer>
       )}

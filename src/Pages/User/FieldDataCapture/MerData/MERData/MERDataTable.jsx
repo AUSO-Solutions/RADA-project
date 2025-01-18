@@ -19,7 +19,7 @@ import { closeModal, openModal } from "Store/slices/modalSlice";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import Actions from "Partials/Actions/Actions";
-import { createWellTitle } from "utils";
+import { createWellTitle , roundUp} from "utils";
 import { Approve } from "Partials/Actions/Approve";
 import { Query } from "Partials/Actions/Query";
 import ExtractWellTest from "./ExtractWellTest";
@@ -66,33 +66,22 @@ const TableInput = ({ type = "number", onChange = () => null, ...props }) => {
 };
 
 export default function MERDataTable() {
-  const { user } = useMe();
-  const { search } = useLocation();
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  // const [merSchedule, setMerSchedule] =  useState({})
-  const [merResult, setMerResult] = useState({});
-  const id = useMemo(() => new URLSearchParams(search).get("id"), [search]);
-  const scheduleId = useMemo(
-    () => new URLSearchParams(search).get("scheduleId"),
-    [search]
-  );
-  const { data: res } = useFetch({
-    firebaseFunction: "getSetup",
-    payload: { setupType: "merSchedule", id: scheduleId || id },
-  });
-  const { data: res2 } = useFetch({
-    firebaseFunction: "getSetup",
-    payload: { setupType: "merResult", id },
-    dontFetch: !id,
-  });
-  console.log({ res2 });
-  const [title, setTitle] = useState("");
-  const isEdit = useMemo(() => {
-    return !scheduleId;
-  }, [scheduleId]);
-  const [showChart, setShowChart] = useState(false);
+
+    const { user } = useMe()
+    const {  search } = useLocation()
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+    const [loading, setLoading] = useState(false)
+    // const [merSchedule, setMerSchedule] =  useState({})
+    const [merResult, setMerResult] = useState({})
+    const id = useMemo(() => new URLSearchParams(search).get('id'), [search])
+    const scheduleId = useMemo(() => new URLSearchParams(search).get('scheduleId'), [search])
+    const { data: res } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'merSchedule', id: scheduleId || id } })
+    const { data: res2 } = useFetch({ firebaseFunction: 'getSetup', payload: { setupType: 'merResult', id }, dontFetch: !id })
+    console.log({res2})
+    const [title, setTitle] = useState('')
+    const isEdit = useMemo(() => { return !scheduleId }, [scheduleId])
+    const [showChart, setShowChart] = useState(false)
 
   useEffect(() => {
     const inheritMerSchedule = async () => {
@@ -787,91 +776,38 @@ export default function MERDataTable() {
                         ))}
                       </TableCell>
 
-                      <TableCell
-                        align="center"
-                        className={`${tableStyles.cellNoPadding} `}
-                      >
-                        <TableInput
-                          onChange={(e) => handleChokeItemChange(e, i)}
-                          name="initialReservoirPressure"
-                          defaultValue={mer?.initialReservoirPressure}
-                        />
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        className={`${tableStyles.cellNoPadding} `}
-                      >
-                        <TableInput
-                          onChange={(e) => handleChokeItemChange(e, i)}
-                          name="currentReservoirPressure"
-                          defaultValue={mer?.currentReservoirPressure}
-                        />
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        className={`${tableStyles.cellNoPadding} `}
-                      >
-                        <TableInput
-                          onChange={(e) => handleChokeItemChange(e, i)}
-                          name="fbhp"
-                          defaultValue={mer?.fbhp}
-                        />
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        className={`${tableStyles.cellNoPadding} `}
-                      >
-                        {chokes?.map((choke, i) => (
-                          <div className="border-b">
-                            <TableInput
-                              onChange={(e) => handleChokeItemChange(e, i)}
-                              name="fthp"
-                              defaultValue={choke?.fthp}
-                            />
-                          </div>
-                        ))}
-                      </TableCell>
-                      <TableCell align="center">
-                        <TableInput
-                          type="number"
-                          className="p-3 outline-none h-full"
-                          onChange={handleExtraChange}
-                          name="drawdown"
-                          defaultValue={
-                            mer?.currentReservoirPressure - mer?.fbhp
-                          }
-                        />
-                      </TableCell>
-                      <TableCell align="center">
-                        <TableInput
-                          type="number"
-                          className="p-3 outline-none h-full"
-                          onChange={handleExtraChange}
-                          name="api"
-                          defaultValue={mer?.api}
-                        />
-                      </TableCell>
-                      <TableCell align="center">
-                        <select
-                          className="p-3 outline-none h-full"
-                          onChange={handleExtraChange}
-                          name="fluidType"
-                          defaultValue={mer?.fluidType}
-                        >
-                          <option value=""></option>
-                          <option value="Oil">Oil</option>
-                          <option value="Gas">Gas</option>
-                        </select>
-                      </TableCell>
-                      <TableCell align="center">
-                        <TableInput
-                          type="number"
-                          className="p-3 outline-none h-full"
-                          onChange={handleExtraChange}
-                          name="mer"
-                          defaultValue={mer?.mer}
-                        />
-                      </TableCell>
+                                        <TableCell align="center" className={`${tableStyles.cellNoPadding} `}>
+                                            <TableInput onChange={(e) => handleChokeItemChange(e, i)} name='initialReservoirPressure' defaultValue={mer?.initialReservoirPressure} />
+                                        </TableCell>
+                                        <TableCell align="center" className={`${tableStyles.cellNoPadding} `}>
+                                            <TableInput onChange={(e) => handleChokeItemChange(e, i)} name='currentReservoirPressure' defaultValue={mer?.currentReservoirPressure} />
+                                        </TableCell>
+                                        <TableCell align="center" className={`${tableStyles.cellNoPadding} `}>
+                                            <TableInput onChange={(e) => handleChokeItemChange(e, i)} name='fbhp' defaultValue={mer?.fbhp} />
+                                        </TableCell>
+                                        <TableCell align="center" className={`${tableStyles.cellNoPadding} `}>
+                                            {chokes?.map((choke, i) =>
+                                            (<div className='border-b'>
+                                                <TableInput onChange={(e) => handleChokeItemChange(e, i)} name='fthp' defaultValue={choke?.fthp} />
+                                            </div>)
+                                            )}
+                                        </TableCell>
+                                        <TableCell align="center" >
+                                            <TableInput type='number' className='p-3 outline-none h-full' onChange={handleExtraChange} name='drawdown' defaultValue={mer?.currentReservoirPressure - mer?.fbhp} />
+                                        </TableCell>
+                                        <TableCell align="center" >
+                                            <TableInput type='number' className='p-3 outline-none h-full' onChange={handleExtraChange} name='api' defaultValue={mer?.api} />
+                                        </TableCell>
+                                        <TableCell align="center" >
+                                            <select className='p-3 outline-none h-full' onChange={handleExtraChange} name='fluidType' defaultValue={mer?.fluidType} >
+                                                <option value=""></option>
+                                                <option value="Oil">Oil</option>
+                                                <option value="Gas">Gas</option>
+                                            </select>
+                                        </TableCell>
+                                        <TableCell align="center" >
+                                            <TableInput type='number' className='p-3 outline-none h-full' onChange={handleExtraChange} name='mer' value={roundUp((mer?.mer))} />
+                                        </TableCell>
 
                       <TableCell
                         align="center"

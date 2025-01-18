@@ -38,7 +38,7 @@ const WellTestResults = () => {
                     hidden: (file) => user.permitted.createAndeditIPSC && file?.status === 'approved'
                 },
                 {
-                    name: 'Broadcast',
+                    name: user.permitted.broadcastData ? 'Broadcast' : "Share",
                     to: (file) => null,
                     onClick: (file) => dispatch(openModal({
                         title: '',
@@ -55,7 +55,7 @@ const WellTestResults = () => {
                                 <Attachment details={`${file?.asset} Well Test Result ${dayjs(file?.startDate).format('MMM/YYYY')}`} />,
                                 <BroadCastSuccessfull details={`${file?.asset} Well Test Result ${dayjs(file?.startDate).format('MMM/YYYY')}`} />]} />
                     })),
-                    hidden: (file) => user.permitted.broadcastData && file?.status === 'approved'
+                    hidden: (file) => (user.permitted.broadcastData || user.permitted.shareData) && file?.status === 'approved'
                 },
                 {
                     name: 'Delete', onClick: (file) => deleteSetup({ id: file?.id, setupType: 'wellTestResult' }), to: () => null,

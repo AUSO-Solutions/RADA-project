@@ -16,7 +16,7 @@ const UserDetails = () => {
     return (
         <div className='m-5'>
             <RadaForm
-            className={'w-[500px]'}
+                className={'w-[500px]'}
                 validationSchema={schema}
                 noToken
                 btnText={'Submit'}
@@ -27,8 +27,8 @@ const UserDetails = () => {
                 }}
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', width: '600px', gap: '20px' }} >
                 {/* <Stack direction={'row'} spacing={1}> */}
-                    <Input label={'First Name'} name='firstName' defaultValue={user?.firstName} />
-                    <Input label={'Last Name'} name='lastName' defaultValue={user?.lastName} />
+                <Input label={'First Name'} name='firstName' defaultValue={user?.firstName} />
+                <Input label={'Last Name'} name='lastName' defaultValue={user?.lastName} />
                 {/* </Stack> */}
                 <Input label={'Email'} name='email' defaultValue={user?.email} />
 
