@@ -11,6 +11,7 @@ const DefermentReport = () => {
   const assets = useAssetByName(setupData?.asset);
   const { assetNames } = useAssetNames();
   const [tab, setTab] = useState(0);
+  console.log(assets);
 
   const assetOptions = useMemo(() => {
     const originalList = assetNames?.map((assetName) => ({
@@ -39,35 +40,25 @@ const DefermentReport = () => {
   return (
     <div className="h-full">
       <Header name={"Production Deferment Report"} />
-      <div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            paddingRight: 40,
-          }}
-        >
-          <tabs
-            style={{
-              display: "flex",
-              gap: "40px",
-              paddingLeft: "40px",
-              BorderBottom: "1px solid rgba(230, 230, 230, 1)",
-            }}
-          >
-            {tabs.map((x, i) => (
-              <Tab
-                key={`${x.title}-${i}`}
-                text={x.title}
-                active={i === tab}
-                onClick={() => setTab(i)}
-              />
-            ))}
-          </tabs>
-        </div>
-      </div>
+
+      <tabs
+        style={{
+          display: "flex",
+          gap: "40px",
+          paddingLeft: "40px",
+          borderBottom: "1px solid rgba(230, 230, 230, 1)",
+        }}
+      >
+        {tabs.map((x, i) => (
+          <Tab
+            key={`${x.title}-${i}`}
+            text={x.title}
+            active={i === tab}
+            onClick={() => setTab(i)}
+          />
+        ))}
+      </tabs>
+      {tabs[tab].Component}
     </div>
   );
 };

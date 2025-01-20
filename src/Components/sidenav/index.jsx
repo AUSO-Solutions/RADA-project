@@ -37,8 +37,7 @@ function Sidenav() {
     };
   }, [pathname]);
   const { user } = useMe();
-  console.log(sidebar);
-  // console.log(user)
+
   const paths = useMemo(
     () => ({
       admin: [

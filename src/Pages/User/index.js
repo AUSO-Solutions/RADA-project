@@ -77,6 +77,12 @@ export const user_routes = [
     isPublic: false,
   },
   {
+    path: "/users/fdc/mer-data/tar-table",
+    Component: <TARTable />,
+    layout: true,
+    isPublic: false,
+  },
+  {
     path: "/users/fdc/Well-test-data",
     Component: <WellTest />,
     layout: true,
@@ -103,6 +109,12 @@ export const user_routes = [
   {
     path: "/users/fdc/survey-data",
     Component: <FGSurveyData />,
+    layout: true,
+    isPublic: false,
+  },
+  {
+    path: "/users/reports/deferment",
+    Component: <DefermentReport />,
     layout: true,
     isPublic: false,
   },
