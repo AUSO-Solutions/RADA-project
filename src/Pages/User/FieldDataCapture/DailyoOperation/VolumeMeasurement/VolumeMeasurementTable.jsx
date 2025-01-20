@@ -27,7 +27,7 @@ import { firebaseFunctions } from 'Services';
 import AttachSetup from './AttachSetup';
 import { Alert } from '@mui/material';
 import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
-import Note from '../Note';
+import Highlight from '../Highlight';
 import { useGetSetups } from 'hooks/useSetups';
 import { useMe } from 'hooks/useMe';
 import { closeModal } from 'Store/slices/modalSlice';
@@ -126,7 +126,7 @@ export default function VolumeMeasurementTable() {
       flowStationSetup?.deductionMeterFactor || 1
     );
     setTableValues((prev) => {
-      console.log(Object.values(prev).map((item) => item?.meters[0]));
+      // console.log(Object.values(prev).map((item) => item?.meters[0]));
       const prevFlowStation = prev?.[flowStation];
       const prevFlowStationList = prevFlowStation?.meters;
       const prevFlowStationListIndexValues =
@@ -163,18 +163,18 @@ export default function VolumeMeasurementTable() {
       if (field && isNum) {
         updatedMeters = isNum
           ? {
-              ...prevFlowStationList,
-              [readingIndex]: {
-                ...prevFlowStationListIndexValues,
-                [field]: value,
-                netProduction,
-                gross,
-                serialNumber:
-                  flowStationSetup?.readings?.[readingIndex]?.serialNumber,
-                reportType: currReport,
-                meterFactor: meterFactor,
-              },
-            }
+            ...prevFlowStationList,
+            [readingIndex]: {
+              ...prevFlowStationListIndexValues,
+              [field]: value,
+              netProduction,
+              gross,
+              serialNumber:
+                flowStationSetup?.readings?.[readingIndex]?.serialNumber,
+              reportType: currReport,
+              meterFactor: meterFactor,
+            },
+          }
           : prevFlowStationList;
       }
       let deduction = {
@@ -196,7 +196,7 @@ export default function VolumeMeasurementTable() {
       if (flowStationField) {
         updatedFlowStation = {
           ...updatedFlowStation,
-          [flowStationField]: parseFloat(value),
+          [flowStationField]: isNaN(parseFloat(value)) ? value : parseFloat(value),
           deduction,
         };
       }
@@ -209,28 +209,21 @@ export default function VolumeMeasurementTable() {
 
   useEffect(() => {
     const values = Object.values(tableValues);
-    console.log(
-      values,
-      sum(
-        values.map((value) =>
-          calculatedGrossOrnNet(value?.subTotal, value?.bsw, "gross")
-        )
-      )
-    );
+
     const netProductionTotal = isNet
       ? sum(Object.values(values || {}).map((item) => item?.subTotal || 0))
       : sum(
-          values.map((value) =>
-            calculatedGrossOrnNet(value?.subTotal, value?.bsw, "gross")
-          )
-        );
+        values.map((value) =>
+          calculatedGrossOrnNet(value?.subTotal, value?.bsw, "gross")
+        )
+      );
     const grossTotal = isGross
       ? sum(Object.values(values || {}).map((item) => item?.subTotal || 0))
       : sum(
-          values.map((value) =>
-            calculatedGrossOrnNet(value?.subTotal, value?.bsw, "net")
-          )
-        );
+        values.map((value) =>
+          calculatedGrossOrnNet(value?.subTotal, value?.bsw, "net")
+        )
+      );
     const netTargetTotal = sum(
       Object.values(flowstationsTargets || {}).map((target) => target?.oilRate)
     );
@@ -268,6 +261,7 @@ export default function VolumeMeasurementTable() {
             "subTotal": flowstation?.reportType === "netProduction" ? flowstation?.subtotal?.netProduction : flowstation?.subtotal?.gross,
             "reportType": flowstation?.reportType === "netProduction" ? "Net Oil/ Condensate" : 'Gross Liquid',
             "measurementType": flowstation?.measurementType,
+            "highlight": flowstation?.highlight,
             "deductionInitialReading": flowstation?.deduction?.initialReading,
             "deduction": flowstation?.deduction,
             "deductionFinalReading": flowstation?.deduction?.finalReading,
@@ -326,40 +320,24 @@ export default function VolumeMeasurementTable() {
     // eslint-disable-next-line
   }, [setup]);
 
-  const calculatedGrossOrnNet = (subTotal, bsw, type = 'net') => {
+  const calculatedGrossOrnNet = (subTotal, bsw, type = 'net', useRoundup = true) => {
     let netResult = (subTotal * (1 - bsw / 100)) //for net (Gross* (1-bsw/100))
     let grossResult = (subTotal / (1 - bsw / 100)) //for gross
-    if (type === 'gross') return roundUp(netResult)
-    if (type === 'net') return roundUp(grossResult)
+    if (type === 'gross') return netResult
+    if (type === 'net') return grossResult
     if (isNaN(netResult || netResult)) return 0
   }
 
-  const addNote = async (note) => {
-    dispatch(setLoadingScreen({ open: true }));
-    try {
-      await firebaseFunctions("addNoteToVolumeCapture", {
-        date: captureData?.date,
-        asset: captureData?.asset,
-        note,
-        type: "liquid",
-      });
-      setCaptureData((prev) => ({ ...prev, note }));
-      toast.success("Note added successfully");
-      dispatch(closeModal());
-    } catch (error) {
-    } finally {
-      dispatch(setLoadingScreen({ open: false }));
-    }
-  };
 
   const averageTarget = IPSC?.averageTarget;
   const save = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     const setup = store.getState().setup;
     const flowStations = Object.entries(tableValues).map((value) => ({
       name: value[0],
       ...value[1],
     }));
+    // console.log(flowStations)
     const reportTypes = {
       "Gross Liquid": "gross",
       "Net Oil/ Condensate": "netProduction",
@@ -376,34 +354,35 @@ export default function VolumeMeasurementTable() {
         const addDeduction =
           flowStation?.measurementType === "tankDipping"
             ? {
-                deduction: {
-                  initialReading: flowStation?.deductionInitialReading,
-                  finalReading: flowStation?.deductionFinalReading,
-                  meterFactor: flowStation?.deduction?.meterFactor,
-                  netProduction: flowStation?.deductionTotal,
-                },
-              }
+              deduction: {
+                initialReading: flowStation?.deductionInitialReading,
+                finalReading: flowStation?.deductionFinalReading,
+                meterFactor: flowStation?.deduction?.meterFactor,
+                netProduction: flowStation?.deductionTotal,
+              },
+            }
             : {};
         return {
           name: flowStation?.name,
           reportType: reportTypes[currReport],
           measurementType: flowStation?.measurementType,
+          highlight: flowStation?.highlight,
           subtotal: {
             gross: isGross
               ? flowStation?.subTotal
               : calculatedGrossOrnNet(
-                  flowStation?.subTotal,
-                  flowStation?.bsw,
-                  "net"
-                ),
+                flowStation?.subTotal,
+                flowStation?.bsw,
+                "net"
+              ),
             bsw: flowStation?.bsw,
             netProduction: isNet
               ? flowStation?.subTotal
               : calculatedGrossOrnNet(
-                  flowStation?.subTotal,
-                  flowStation?.bsw,
-                  "gross"
-                ),
+                flowStation?.subTotal,
+                flowStation?.bsw,
+                "gross"
+              ),
             netTarget: flowstationsTargets?.[flowStation?.name]?.oilRate,
             grossTarget: flowstationsTargets?.[flowStation?.name]?.gross,
           },
@@ -421,7 +400,7 @@ export default function VolumeMeasurementTable() {
     };
     dispatch(setLoadingScreen({ open: true }));
     try {
-      // console.log(payload)
+      console.log(payload)
       await firebaseFunctions("captureOilOrCondensate", payload);
       toast.success("Successful");
     } catch (error) {
@@ -430,6 +409,16 @@ export default function VolumeMeasurementTable() {
     } finally {
       dispatch(setLoadingScreen({ open: false }));
     }
+  };
+  // console.log(tableValues)
+  const addHighlight = async (highlightData) => {
+    const { flowstation, highlightType, highlight } = highlightData
+
+    const prevHighlight = tableValues[flowstation]?.highlight
+    handleChange({ flowStation: flowstation, 'flowStationField': `highlight`, 'value': { ...prevHighlight, [highlightType]: highlight }, readingIndex: null })
+    dispatch(closeModal())
+    
+    // save()
   };
   const navigate = useNavigate();
   const onSelectReportType = (e) => {
@@ -479,10 +468,11 @@ export default function VolumeMeasurementTable() {
           <RadaSwitch label="Edit Table" labelPlacement="left" />
         </div>
         <div className="flex items-center gap-2 ">
-          <Note
+          <Highlight
             title="Volume measurement Highlight"
-            onSave={addNote}
-            defaultValue={captureData?.note}
+            onSave={addHighlight}
+            // defaultValue={captureData?.note}
+            captureData={tableValues}
           />
           <AttachSetup setup={setup} />
           <Link to={"/users/fdc/daily?tab=volume-measurement"}>
@@ -671,14 +661,14 @@ export default function VolumeMeasurementTable() {
                         <TableRow key={name}>
                           <TableCell sx={{ bgcolor: 'rgba(178, 181, 182, 0.2)' }} align="left" className='pl-5 !bg-[rgba(178, 181, 182, 0.2)]' colSpan={3}><div className='pl-[30px]'> Sub total</div></TableCell>
                           <TableCell sx={{ bgcolor: 'rgba(178, 181, 182, 0.2)' }} align="center">
-                            {isNet ? roundUp((tableValues?.[name]?.subTotal || 0)) : calculatedGrossOrnNet(tableValues?.[name]?.subTotal, tableValues?.[name]?.bsw, 'gross')}
+                            {isNet ? roundUp((tableValues?.[name]?.subTotal || 0)) : roundUp(calculatedGrossOrnNet(tableValues?.[name]?.subTotal, tableValues?.[name]?.bsw, 'gross'))}
                           </TableCell>
                           <TableCell align="center"><TableInput type='number' disabled value={roundUp(isNet ? flowstationsTargets?.[name]?.oilRate : flowstationsTargets?.[name]?.gross)} /></TableCell>
                           <TableCell align="center">
                             <TableInput type='number' value={tableValues?.[name]?.bsw} onChange={(e) => handleChange({ flowStation: name, flowStationField: 'bsw', value: e.target.value, readingIndex: null })} />
                           </TableCell>
                           <TableCell align="center">
-                            {isGross ? roundUp((tableValues?.[name]?.subTotal || 0)) : calculatedGrossOrnNet(tableValues?.[name]?.subTotal, tableValues?.[name]?.bsw, 'net')}
+                            {isGross ? roundUp((tableValues?.[name]?.subTotal || 0)) : roundUp(calculatedGrossOrnNet(tableValues?.[name]?.subTotal, tableValues?.[name]?.bsw, 'net'))}
                           </TableCell>
                         </TableRow>
                       </TableBody>
@@ -690,7 +680,7 @@ export default function VolumeMeasurementTable() {
               <TableRow >
                 <TableCell align="left" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} className='bg-[rgba(0, 163, 255, 0.3)]' colSpan={6}>{"Total Net Production"}</TableCell>
                 <TableCell align="center" sx={{ bgcolor: 'rgba(0, 163, 255, 0.3)' }} >{roundUp(totals?.netProductionTotal)}</TableCell>
-                <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{isNet ? sum(Object.values(flowstationsTargets || {}).map(target => target?.oilRate)) : sum(Object.values(flowstationsTargets || {}).map(target => target?.gross))}</TableCell>
+                <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{isNet ? sum(Object.values(flowstationsTargets || {}).map(target => target?.oilRate), { useRoundup: true }) : sum(Object.values(flowstationsTargets || {}).map(target => target?.gross), { useRoundup: true })}</TableCell>
                 <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{roundUp(totals?.bswTotal)}</TableCell>
                 <TableCell align="center" sx={{ bgcolor: 'rgba(249, 249, 249, 1)' }}>{roundUp(totals?.grossTotal)}</TableCell>
               </TableRow>

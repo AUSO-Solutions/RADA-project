@@ -6,9 +6,13 @@ import { store } from "Store";
 // import { findLineByLeastSquares } from "./findLineByLeastSquares";
 import { intersect } from "mathjs";
 
-export const sum = (array = []) => {
-    if (Array.isArray(array) && array?.length) return roundUp(parseFloat(array.reduce((a, b) => parseFloat(a) + parseFloat(b))))
-    return 0
+export const sum = (array = [], options) => {
+  if (Array.isArray(array) && array?.length) {
+    const result = parseFloat(array.reduce((a, b) => parseFloat(a) + parseFloat(b)))
+    if (options?.useRoundUp) return roundUp(result)
+    else return result
+  }
+  return 0
 }
 export const createWellTitle = (setup, type) => {
   const field = setup?.field ? `/${setup?.field}/` : "/";
@@ -132,10 +136,10 @@ export const genRandomNumber = () => {
 };
 
 export const roundUp = (number) => {
-    if (isNaN(Number(number))) return number;
-    const decimalPlaces = store.getState().decimalPlaces;
-    const factor = Math.pow(10, decimalPlaces);
-    return (Math.ceil(Number(number) * factor) / factor).toFixed(decimalPlaces);
+  if (isNaN(Number(number))) return number;
+  const decimalPlaces = store.getState().decimalPlaces;
+  const factor = Math.pow(10, decimalPlaces);
+  return (Math.ceil(Number(number) * factor) / factor).toFixed(decimalPlaces);
 };
 
 
@@ -270,11 +274,11 @@ export const getIntersectionBetweenTwoLines = (
   // Math.sin
 };
 export const bsw = ({ gross, oil, water }) => {
-    let water__ = (water || 0) || parseFloat(gross || 0) - parseFloat(oil || 0)
-    const result = ((water__ / (parseFloat(oil || 0) + water__)) * 100).toFixed(4)
+  let water__ = (water || 0) || parseFloat(gross || 0) - parseFloat(oil || 0)
+  const result = ((water__ / (parseFloat(oil || 0) + water__)) * 100).toFixed(4)
 
 
-    return isNaN(result) ? '' : roundUp(result)
+  return isNaN(result) ? '' : roundUp(result)
 
 }
 
