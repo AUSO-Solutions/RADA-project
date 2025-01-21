@@ -31,7 +31,7 @@ import { useGetSetups } from 'hooks/useSetups';
 import { useMe } from 'hooks/useMe';
 import { permissions } from 'Assets/permissions';
 import { closeModal } from 'Store/slices/modalSlice';
-import Note from '../Note';
+import Note from '../Highlight';
 
 
 // const TableInput = ({ type = '', ...props }) => {
