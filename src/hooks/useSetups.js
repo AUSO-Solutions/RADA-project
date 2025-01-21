@@ -12,7 +12,7 @@ export const useGetSetups = (setupType, extras) => {
         const q = query(collection(db, "setups", setupType, "setupList"));
         const unsubscribe = onSnapshot(q, (snapshot) => {
             // console.log(snapshot.docChanges().map(item => item?.doc?.data()))
-            console.log('changes')
+            // console.log('changes')
             setRefetch(Math.random())
         });
         return () => unsubscribe()

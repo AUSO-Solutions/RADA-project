@@ -13,7 +13,7 @@ const Files = ({
     name = () => null,
     bottomRight = () => null
 }) => {
-
+// console.log(files)
     const [menuViewed, setMenuViewed] = useState(null)
     const viewMenu = (i) => {
         setMenuViewed(prev => {

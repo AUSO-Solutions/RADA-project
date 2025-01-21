@@ -31,12 +31,8 @@ import { useGetSetups } from 'hooks/useSetups';
 import { useMe } from 'hooks/useMe';
 import { permissions } from 'Assets/permissions';
 import { closeModal } from 'Store/slices/modalSlice';
-import Note from '../Highlight';
+import Highlight from '../Highlight';
 
-
-// const TableInput = ({ type = '', ...props }) => {
-//   return <input className='p-1 text-center w-[70px] border outline-none' step="any" type={type} {...props} />
-// }
 const TableInput = (props) => {
   return <input className='p-1 text-center w-[70px] border outline-none' required {...props} step={'any'}
     onKeyPress={(e) => {
@@ -95,23 +91,6 @@ export default function GasTable() {
   })
   const gasTypes = ["Gas Flared USM", "Fuel Gas", "Export Gas"].map(type => ({ label: type, value: camelize(type) }))
 
-  const addNote = async (note) => {
-    dispatch(setLoadingScreen({ open: true }))
-    try {
-      // await firebaseFunctions('addNoteToVolumeCapture', { id: captureData?.id, note, type: 'gas' })
-
-      await firebaseFunctions('addNoteToVolumeCapture', { date: captureData?.date, asset: captureData?.asset, note, type: 'gas' })
-      setCaptureData(prev => ({ ...prev, note }))
-      toast.success('Note added successfully')
-      dispatch(closeModal())
-    } catch (error) {
-      console.log(error)
-    } finally {
-      dispatch(setLoadingScreen({ open: false }))
-    }
-  }
-
-
   const handleChange = ({ flowStation, field, value, readingIndex, flowStationField, gasType }) => {
 
     //careful, to also have the value updated before calculated
@@ -151,7 +130,7 @@ export default function GasTable() {
       if (flowStationField) {
         updatedFlowStation = {
           ...updatedFlowStation,
-          [flowStationField]: parseFloat(value),
+          [flowStationField]: isNaN(parseFloat(value)) ? value : parseFloat(value),
         }
       }
       return {
@@ -161,6 +140,16 @@ export default function GasTable() {
     })
 
   }
+  const addHighlight = async (highlightData) => {
+    Object.entries(highlightData).map(entry => {
+      const flowStation = entry[0]
+      const value = entry[1]
+      handleChange({ flowStation, 'flowStationField': `highlight`, value, readingIndex: null })
+      return null
+    })
+    // save()
+    dispatch(closeModal())
+  };
   useEffect(() => {
     const values = (Object.values(tableValues))
     const calcs = {
@@ -188,9 +177,9 @@ export default function GasTable() {
                   "initialReading": meter[1]?.initialReading || null
                 }
               ]
-            )))
-            ,
-            "totalGas": flowstation?.subtotal?.totalGas
+            ))),
+            "totalGas": flowstation?.subtotal?.totalGas,
+            "highlight":flowstation?.highlight
           }]
         }))
         setTableValues(dayTableValues)
@@ -234,20 +223,24 @@ export default function GasTable() {
 
     e.preventDefault()
     const setup = store.getState().setup
-    const flowStations = Object.entries(tableValues).map(value => ({
-      name: value[0],
-      subtotal: {
-        gasFlaredUSMTarget: flowstationsTargets?.[value[0]]?.gasFlaredUSM,
-        exportGasTarget: flowstationsTargets?.[value[0]]?.exportGas,
-        fuelGasTarget: flowstationsTargets?.[value[0]]?.fuelGas,
-        fuelGas: Object.values(value[1]?.meters || {})?.find(meter => meter?.gasType === 'fuelGas')?.meterTotal,
-        exportGas: Object.values(value[1]?.meters || {})?.find(meter => meter?.gasType === 'exportGas')?.meterTotal,
-        gasFlaredUSM: Object.values(value[1]?.meters || {})?.find(meter => meter?.gasType === 'gasFlaredUSM')?.meterTotal,
-        totalGasTarget: flowstationsTargets?.[value[0]]?.gasFlaredUSM + flowstationsTargets?.[value[0]]?.exportGas + flowstationsTargets?.[value[0]]?.fuelGas,
-        totalGas: value[1]?.totalGas
-      },
-      ...value[1]
-    }))
+    const flowStations = Object.entries(tableValues).map(value => {
+
+      console.log(value)
+      return {
+        name: value[0],
+        subtotal: {
+          gasFlaredUSMTarget: flowstationsTargets?.[value[0]]?.gasFlaredUSM,
+          exportGasTarget: flowstationsTargets?.[value[0]]?.exportGas,
+          fuelGasTarget: flowstationsTargets?.[value[0]]?.fuelGas,
+          fuelGas: Object.values(value[1]?.meters || {})?.find(meter => meter?.gasType === 'fuelGas')?.meterTotal,
+          exportGas: Object.values(value[1]?.meters || {})?.find(meter => meter?.gasType === 'exportGas')?.meterTotal,
+          gasFlaredUSM: Object.values(value[1]?.meters || {})?.find(meter => meter?.gasType === 'gasFlaredUSM')?.meterTotal,
+          totalGasTarget: flowstationsTargets?.[value[0]]?.gasFlaredUSM + flowstationsTargets?.[value[0]]?.exportGas + flowstationsTargets?.[value[0]]?.fuelGas,
+          totalGas: value[1]?.totalGas
+        },
+        ...value[1]
+      }
+    })
     // console.log(flowStations)
     const payload = {
       date: date,
@@ -290,7 +283,13 @@ export default function GasTable() {
       </div>
       <div className='flex items-center gap-2 '>
 
-        <Note title='Volume measurement Highlight' onSave={addNote} defaultValue={captureData?.note} />
+        {/* <Note title='Volume measurement Highlight' onSave={addNote} defaultValue={captureData?.note} /> */}
+
+        <Highlight
+          title="Volume measurement Highlight"
+          onSave={addHighlight}
+          captureData={tableValues}
+        />
         <AttachSetup setup={setup} />
         <Link to={'/users/fdc/daily?tab=volume-measurement'}>   <Text className={'cursor-pointer'} color={colors.rada_blue}>View setups</Text></Link>
         <RadaDatePicker onChange={onDateChange} value={date} max={dayjs().format('YYYY-MM-DD')} />

@@ -26,6 +26,7 @@ import { bsw } from 'utils';
 import { firebaseFunctions } from 'Services';
 import { useMe } from 'hooks/useMe';
 
+
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const createOpt = item => ({ label: item, value: item })
@@ -47,14 +48,14 @@ const Summary = () => {
   const tableData = useMemo(() => {
     return res?.data?.length ? JSON.parse(res?.data) : {}
   }, [res])
-  console.log(tableData)
+  // console.log(tableData)
   const assets = useAssetByName(setupData?.asset)
   const { assetNames } = useAssetNames()
   const [showChart, setShowChart] = useState(false);
   // const switches = ['Oil/Condensate', 'Gas'];
   const [curr, setCurr] = useState({})
   const [notes, setNotes] = useState({
-    liquidNote: '', gasNote: ''
+    liquidNote: [], gasNote: []
   })
   // console.log(curr)
 
@@ -63,9 +64,18 @@ const Summary = () => {
       try {
         const { data: liquidData } = await firebaseFunctions('getOilOrCondensateVolumeByDateAndAsset', { asset: setupData?.asset, date: setupData?.startDate }, false, { loadingScreen: false })
         const { data: gasData } = await firebaseFunctions('getGasVolumeByDateAndAsset', { asset: setupData?.asset, date: setupData?.startDate }, false, { loadingScreen: false })
-        setNotes({ gasNote: gasData?.note, liquidNote: liquidData?.note })
+
+        const liquidNote = liquidData.flowstations.map(flowstation => (
+          { flowstation: flowstation?.name, highlight: flowstation.highlight }
+        ))
+        const gasNote = gasData.flowstations.map(flowstation => ({
+          flowstation: flowstation?.name, highlight: flowstation.highlight
+        }))
+        console.log({ gasNote, liquidNote })
+        setNotes({ gasNote, liquidNote })
+
       } catch (error) {
-        setNotes({ gasNote: '', liquidNote: '' })
+        setNotes({ gasNote: [], liquidNote: [] })
       }
     }
     if (setupData?.asset && setupData?.startDate) getNotes()
@@ -251,10 +261,31 @@ const Summary = () => {
       <div className='pl-[30px]'>
         <Text weight={600} size={16}>
           Highlights   </Text> <br />
-        <Text weight={400} size={14}>
-          Gas :  {notes?.gasNote || 'No note'} <br />
-          Liquid :  {notes?.liquidNote || 'No note'}
-        </Text>
+        <div>
+          <Text weight={600} size={14}>Gas :</Text>
+          {notes?.gasNote?.map(note => (
+            <div>
+              <Text weight={600} > {note.flowstation}  </Text>
+              <div> <Text weight={500}> Production Highlight</Text> : { <div dangerouslySetInnerHTML={{ __html: note?.highlight?.production || "N/A" }} /> }</div>
+              <div> <Text weight={500}>Operation Highlight</Text> : { <div dangerouslySetInnerHTML={{ __html: note?.highlight?.operation || "N/A" }} /> }</div>
+              <div> <Text weight={500}> Maintenance Highlight</Text> : { <div dangerouslySetInnerHTML={{ __html: note?.highlight?.maintenance }} /> || "N/A"}</div>
+            </div>
+          ))}
+
+        </div>
+        <div>
+          <Text weight={600} size={14}>Liquid :</Text>
+          {notes?.liquidNote?.map(note => (
+            <div>
+              <Text weight={600} > {note.flowstation}  </Text>
+              <div> <Text weight={500}> Production Highlight</Text> : { <div dangerouslySetInnerHTML={{ __html: note?.highlight?.production || "N/A" }} /> }</div>
+              <div> <Text weight={500}>Operation Highlight</Text> : { <div dangerouslySetInnerHTML={{ __html: note?.highlight?.operation || "N/A" }} /> }</div>
+              <div> <Text weight={500}> Maintenance Highlight</Text> : { <div dangerouslySetInnerHTML={{ __html: note?.highlight?.maintenance || "N/A" }} /> }</div>
+            </div>
+          ))}
+
+        </div>
+
 
       </div>
       {/* <img src='https://firebasestorage.googleapis.com/v0/b/ped-application-4d196.appspot.com/o/radaNewLogoo.svg?alt=media&token=e3249009-d0c3-497f-8b2a-873988ad9355' alt='?media&token=475ebfb1-9f96-4b2d-b7f0-12390171a51' /> */}
