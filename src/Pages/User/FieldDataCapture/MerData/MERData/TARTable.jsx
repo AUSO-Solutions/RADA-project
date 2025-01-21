@@ -165,7 +165,7 @@ export default function TARTable() {
                                 <TableCell style={{ fontWeight: '600' }} align="center">Field</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center">Start Date</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center">End Date</TableCell>
-                                <TableCell style={{ fontWeight: '600' }} align="center">Duration(HRS)</TableCell>
+                                <TableCell style={{ fontWeight: '600' }} align="center">Duration</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center">Fluid Type</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center">Rada MER</TableCell>
                                 <TableCell style={{ fontWeight: '600' }} align="center">TAR MER</TableCell>
@@ -207,7 +207,7 @@ export default function TARTable() {
                                             <TableInput type='datetime-local' onChange={handleExtraChange} name='endDate' value={dayjs(mer?.endDate).format("YYYY-MM-DDTHH:mm")} />
                                         </TableCell>
                                         <TableCell align="center" className={`${tableStyles.cellNoPadding} `}>
-                                            <TableInput onChange={handleExtraChange} type='text' value={`${dayjs(mer?.endDate).diff(mer?.startDate, "months")} months`} />
+                                            <TableInput onChange={handleExtraChange} type='text' value={`${dayjs(mer?.endDate).diff(mer?.startDate, "months") + 1} months`} />
                                         </TableCell>
                                         <TableCell align="center" >
                                             <select className='p-3 outline-none h-full' onChange={handleExtraChange} name='fluidType'  >
@@ -218,7 +218,7 @@ export default function TARTable() {
                                             </select>
                                         </TableCell>
                                         <TableCell align="center" >
-                                            <TableInput type='number' className='p-3 outline-none h-full' onChange={handleExtraChange} name='RADA_MER' defaultValue={mer?.RADA_MER} />
+                                            <TableInput type='number' className='p-3 outline-none h-full' onChange={handleExtraChange} name='RADA_MER' defaultValue={mer?.RADA_MER || 0} />
                                         </TableCell>
                                         <TableCell align="center" >
                                             <TableInput type='number' className='p-3 outline-none h-full' onChange={handleExtraChange} name='TAR_MER' defaultValue={mer?.TAR_MER} />
