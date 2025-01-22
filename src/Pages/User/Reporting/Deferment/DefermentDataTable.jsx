@@ -33,7 +33,7 @@ const DefermentDataTable = ({ assetOptions = [] }) => {
   const assets = useAssetByName(setupData?.asset);
 
   const res = useFetch({
-    firebaseFunction: "fetchDefermentData",
+    firebaseFunction: "getDefermentData",
     payload: {
       asset: query?.asset,
       flowStation: query?.flowStation,

@@ -8,7 +8,7 @@ const {
   aggregateDeferment,
 } = require("./helper");
 
-const fetchDefermentData = onCall(async (request) => {
+const getDefermentData = onCall(async (request) => {
   try {
     const { data } = request;
     logger.log("Data ---", { data });
@@ -51,5 +51,5 @@ const fetchDefermentData = onCall(async (request) => {
 });
 
 module.exports = {
-  fetchDefermentData,
+  getDefermentData,
 };
