@@ -22,9 +22,9 @@ export const useFetch = ({
           loadingScreen,
           useToken,
         });
-        // console.log(res);
         setData(res?.data);
       } catch (error) {
+        console.log(error);
       } finally {
         setLoading(false);
       }
