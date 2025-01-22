@@ -9,7 +9,7 @@ const RadioSelect = ({ list = [], onChange = () => null, defaultValue="", requir
             <input type="text" value={selected} hidden  required={required}/>
             {list?.map((item, i) => {
                 return (
-                    <div
+                    <div key={item}
                         style={{ backgroundColor: 'rgba(250, 250, 250, 1)', height: '40px' }}
                         className='text-center py-1 flex items-center justify-center gap-2 cursor-pointer  px-3'
                         onClick={

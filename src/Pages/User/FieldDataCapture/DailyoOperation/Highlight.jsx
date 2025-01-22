@@ -1,35 +1,46 @@
 import { Box } from '@mui/material'
 import { Button } from 'Components'
 import Text from 'Components/Text'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { BsChevronRight } from 'react-icons/bs'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import { openModal } from 'Store/slices/modalSlice'
 import Editor from 'react-simple-wysiwyg';
+import { ArrowBack } from '@mui/icons-material'
+import { setDefaultHighlights, setHighlights } from 'Store/slices/highlightsSlice'
 
 
-const NoteBox = ({ onSave, highlightType, flowstation, captureData }) => {
-    const prev = captureData[flowstation]?.highlight?.[highlightType]
-    // console.log(captureData)
+const GoBack = ({ onBack = () => null }) => {
+    return <><ArrowBack className='cursor-pointer absolute border !rounded-full shadow flex items-cennter justify-center top-2 b' onClick={onBack} /></>
+}
+
+const NoteBox = ({ onSave, onChange, highlightType, flowstation, captureData, onBack = () => null }) => {
+
+    const { data: highlights } = useSelector(state => state.highlights)
+    const prev = highlights?.[flowstation]?.[highlightType]
     const [html, setHtml] = useState(prev)
     const saveNote = () => {
         if (!html) {
             toast.error("Please provide a note")
             return
         }
-        onSave(html, highlightType, flowstation)
+        onSave(highlights)
     }
     return (
-        <div className=' flex flex-col  '>
-            <Editor value={html} onChange={(event) => setHtml(event.target.value)} />
+        <div className=' flex flex-col w-[]  '>
+            <GoBack onBack={() => onBack(highlightType, flowstation, html)} />
+            <Editor value={html} onChange={(event) => {
+                setHtml(event.target.value)
+                onChange(event.target.value, highlightType, flowstation)
+            }} />
             <Button className={'mt-2'} onClick={saveNote}>Save</Button>
         </div>
     )
 }
 
 
-const SelectFlowstation = ({ captureData, onSelect = () => null }) => {
+const SelectFlowstation = ({ captureData, onSelect = () => null, }) => {
     return (
         <Box sx={{ width: "400px" }}>
             <Text size={18} weight={600} color={'grey'}> Select Flowstation</Text><br />
@@ -45,17 +56,22 @@ const SelectFlowstation = ({ captureData, onSelect = () => null }) => {
         </Box>
     )
 }
-const SelectHighlightType = ({ onSelect = () => null, flowstation }) => {
+const SelectHighlightType = ({ onSelect = () => null, flowstation, onBack = () => null, captureData }) => {
 
     const highlightTypes = ['production', 'maintenance', 'operation']
+
     return (
         <Box sx={{ width: "400px" }}>
+
+            <GoBack onBack={() => onBack(flowstation)} />
             <Text size={18} weight={600} color={'grey'}> Select Highlight type for {flowstation}</Text><br />
             <div className='flex flex-col gap-2 '>
                 {
                     highlightTypes.map(highlightType => {
                         return <div onClick={() => onSelect(highlightType, flowstation)} className='border rounded-[12px] cursor-pointer  !w-[100%] p-2 flex items-center justify-between'>
-                            <Text className={'capitalize'}>{highlightType}</Text> <BsChevronRight />
+                            <Text className={'capitalize'}>{highlightType} {
+                                // captureData[flowstation]?.highlight?.[highlightType] ? 
+                            } </Text> <BsChevronRight />
                         </div>
                     })
                 }
@@ -64,12 +80,23 @@ const SelectHighlightType = ({ onSelect = () => null, flowstation }) => {
     )
 }
 
-const Note = ({ title = "Highlight", onSave = () => null, captureData }) => {
+const Note = ({ title = "Highlight", onChange = () => null, captureData, onSave=()=>null }) => {
 
     const dispatch = useDispatch()
 
-    const save = (highlight, highlightType, flowstation) => {
-        onSave({
+    useEffect(() => {
+        const highlights = Object.fromEntries(Object.entries(captureData || {}).map(entry => [entry[0], entry[1]?.highlight]))
+        dispatch(setDefaultHighlights(highlights))
+        // console.log('--------')
+    }, [captureData,dispatch])
+
+    const change = (highlight, highlightType, flowstation) => { 
+        dispatch(setHighlights({
+            flowstation: flowstation,
+            highlightType: highlightType,
+            highlight: highlight
+        }))
+        onChange({
             flowstation: flowstation,
             highlightType: highlightType,
             highlight: highlight
@@ -77,11 +104,22 @@ const Note = ({ title = "Highlight", onSave = () => null, captureData }) => {
     }
 
     const openNotes = (highlightType, flowstation) => {
-        dispatch(openModal({ title: <><span className='capitalize'>{highlightType}</span> highlight for {flowstation} </>, component: <NoteBox highlightType={highlightType} flowstation={flowstation} onSave={save} captureData={captureData} /> }))
+        dispatch(openModal({
+            title: <><span className='capitalize'>{highlightType}</span> highlight for {flowstation} </>,
+            component: <NoteBox
+                // highlights={highlights.current}
+                highlightType={highlightType}
+                flowstation={flowstation} onChange={change} captureData={captureData}
+                onBack={(highlight) => openHighlights(flowstation)} onSave={onSave}
+            />
+        }))
     }
 
     const openHighlights = (flowstation) => {
-        dispatch(openModal({ title: "Highlight Type", component: <SelectHighlightType onSelect={openNotes} flowstation={flowstation} /> }))
+        dispatch(openModal({
+            title: "Highlight Type", component: <SelectHighlightType onSelect={openNotes} flowstation={flowstation} captureData={captureData}
+                onBack={() => openNoteBox(flowstation)} />
+        }))
     }
 
     const openNoteBox = () => {

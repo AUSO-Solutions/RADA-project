@@ -1,128 +1,123 @@
 .body {
-    min-width: 300px;
-    height: 100%;
-    border-right: 1px solid #c8dad1;
-    background-color: white;
-    // padding: 10px;
+  min-width: 300px;
+  height: 100%;
+  border-right: 1px solid #c8dad1;
+  background-color: white;
+  // padding: 10px;
 
-    @media screen and (max-width:600px) {
-        width: 70%;
-        position: absolute;
-        z-index: 10;
-    }
+  @media screen and (max-width: 600px) {
+    width: 70%;
+    position: absolute;
+    z-index: 10;
+  }
 }
 
 .sidebarHeader {
-    height: 10vh;
-    background-color: #ffffff;
-    display: flex;
-    flex-direction: column;
-    width: 90%;
-    justify-content: center;
-    align-items: start;
-    margin: auto;
-    cursor: pointer;
-    // padding-bottom: 10px;
-    padding-left: 30px;
-    border-bottom: 2px solid rgba(226, 226, 226, 1);
-    // .lowerBorder {
-    //     height: 10px;
-    //     width: 100%;
-    //     margin: auto !important;
-    // }
-
+  height: 10vh;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  justify-content: center;
+  align-items: start;
+  margin: auto;
+  cursor: pointer;
+  // padding-bottom: 10px;
+  padding-left: 30px;
+  border-bottom: 2px solid rgba(226, 226, 226, 1);
+  // .lowerBorder {
+  //     height: 10px;
+  //     width: 100%;
+  //     margin: auto !important;
+  // }
 }
 
 .barsContainer {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 
-    // justify-content: space-between;
+  // justify-content: space-between;
 }
 
 .barSelected {
-    // color: #000000;
-    color: rgba(0, 163, 255, 1);
-    // background-color: #0274bd;
-    padding-left: 24px;
-    display: flex;
-    gap: 10px;
-    font-weight: 900 !important;
-    border-left: 3px rgba(0, 163, 255, 1) solid;
+  // color: #000000;
+  color: rgba(0, 163, 255, 1);
+  // background-color: #0274bd;
+  padding-left: 24px;
+  display: flex;
+  gap: 10px;
+  font-weight: 900 !important;
+  border-left: 3px rgba(0, 163, 255, 1) solid;
 }
 
 .bars {
-    display: flex;
-    align-items: center;
-    height: 70px;
-    cursor: pointer;
-    text-transform: capitalize;
-    padding-left: 50px !important;
-    // border: 1px red solid;
+  display: flex;
+  align-items: center;
+  height: 70px;
+  cursor: pointer;
+  text-transform: capitalize;
+  padding-left: 50px !important;
+  // border: 1px red solid;
 
+  @media screen and (max-width: 900px) {
+    padding: 10px 11px;
+  }
 
-    @media screen and (max-width:900px) {
-
-        padding: 10px 11px;
-    }
-
-    &:hover {
-        color: #0274bd;
-    }
-
+  &:hover {
+    color: #0274bd;
+  }
 }
 
 .barUnSelected {
-    color: #000000;
-    background-color: none;
-    padding-left: 0px;
-    display: flex;
-    gap: 10px;
-
+  color: #000000;
+  background-color: none;
+  padding-left: 0px;
+  display: flex;
+  gap: 10px;
 }
 
 .children {
-    padding-left: 100px;
+  padding-left: 100px;
+  padding-right: 2px;
 
-    .child {
-        display: flex;
-        align-items: center;
-        height: 50px;
-        cursor: pointer;
-        text-transform: capitalize;
-        padding-left: 30px !important;
-        &:hover {
-            color: #0274bd;
-        }
-    }
-
-    .child_selected {
-        color: rgba(0, 163, 255, 1);
-        border-left: 3px rgba(0, 163, 255, 1) solid;
-    }
-}
-
-.barText {
-    font-family: Poppins;
-    font-size: 20px;
-    font-weight: 400;
-    // line-height: 24px;
-    text-align: left;
-
-}
-
-.logout {
+  .child {
     display: flex;
     align-items: center;
+
     height: 50px;
     cursor: pointer;
     text-transform: capitalize;
-    padding: 10px 21px;
-    font-style: normal;
-    font-weight: 500;
-    font-size: 18px;
-    line-height: 161.1%;
-    margin-top: 200px;
-    color: #143f2a;
+    padding-left: 30px !important;
+    &:hover {
+      color: #0274bd;
+    }
+  }
 
+  .child_selected {
+    color: rgba(0, 163, 255, 1);
+    border-left: 3px rgba(0, 163, 255, 1) solid;
+  }
+}
+
+.barText {
+  font-family: Poppins;
+  font-size: 20px;
+  font-weight: 400;
+  // line-height: 24px;
+  text-align: left;
+}
+
+.logout {
+  display: flex;
+  align-items: center;
+  height: 50px;
+  cursor: pointer;
+  text-transform: capitalize;
+  padding: 10px 21px;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 161.1%;
+  margin-top: 200px;
+  color: #143f2a;
 }

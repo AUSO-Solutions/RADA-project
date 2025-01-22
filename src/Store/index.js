@@ -8,11 +8,12 @@ import setupSlice from './slices/setupSlice';
 import loadingScreenSlice from './slices/loadingScreenSlice';
 import formdataSlice from './slices/formdataSlice';
 import decimalPlacesSlice from './slices/decimalPlaces';
+import highlightsSlice from './slices/highlightsSlice';
 
 const persistConfig = {
   key: 'root',
   storage,
-  blacklist: ['modal', 'loadingScreen', 'formdata']
+  blacklist: ['modal', 'loadingScreen', 'formdata', "highlights"]
   // Specify the reducers you want to persist
   // whitelist: ['user'], // In this example, we persist the 'user' reducer
 };
@@ -25,6 +26,7 @@ const reducers = combineReducers({
   loadingScreen: loadingScreenSlice,
   formdata: formdataSlice,
   decimalPlaces: decimalPlacesSlice,
+  highlights: highlightsSlice,
 })
 
 const persistedReducer = persistReducer(persistConfig, reducers);

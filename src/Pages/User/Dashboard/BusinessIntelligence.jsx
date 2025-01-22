@@ -29,7 +29,7 @@ const Insights = ({assetOptions=[]}) => {
     });
 
     const data = useMemo(() => {
-        if (res?.data.length) return (JSON.parse(res?.data))
+        if (res?.data?.length) return (JSON.parse(res?.data))
         return {}
     }, [res?.data])
     // console.log(data)

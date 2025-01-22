@@ -31,7 +31,6 @@ import Highlight from '../Highlight';
 import { useGetSetups } from 'hooks/useSetups';
 import { useMe } from 'hooks/useMe';
 import { closeModal } from 'Store/slices/modalSlice';
-// import {  permissions } from 'Assets/permissions';
 
 const TableInput = (props) => {
   return (
@@ -91,6 +90,7 @@ export default function VolumeMeasurementTable() {
   const isGross = currReport === "Gross Liquid";
 
   const { setups: IPSCs } = useGetSetups("IPSC");
+  // console.log(IPSCs)
   const IPSC = IPSCs?.find(
     (IPSC) =>
       IPSC?.month === dayjs(date).format("YYYY-MM") &&
@@ -412,14 +412,16 @@ export default function VolumeMeasurementTable() {
   };
   // console.log(tableValues)
   const addHighlight = async (highlightData) => {
-    const { flowstation, highlightType, highlight } = highlightData
-
-    const prevHighlight = tableValues[flowstation]?.highlight
-    handleChange({ flowStation: flowstation, 'flowStationField': `highlight`, 'value': { ...prevHighlight, [highlightType]: highlight }, readingIndex: null })
-    dispatch(closeModal())
-    
+    Object.entries(highlightData).map(entry => {
+      const flowStation = entry[0]
+      const value =  entry[1]
+      handleChange({ flowStation, 'flowStationField': `highlight`, value, readingIndex: null })
+      return null
+    })
     // save()
+    dispatch(closeModal())
   };
+  // console.log(tableValues)
   const navigate = useNavigate();
   const onSelectReportType = (e) => {
     if (e === "Gas") {
@@ -451,6 +453,10 @@ export default function VolumeMeasurementTable() {
     });
   };
 
+  const headerProps = {
+    align: 'center',
+    sx: { fontWeight: "bold  !important" }
+  }
   return (
     <>
       <div className="flex justify-between my-2 px-2 items-center">
@@ -471,7 +477,6 @@ export default function VolumeMeasurementTable() {
           <Highlight
             title="Volume measurement Highlight"
             onSave={addHighlight}
-            // defaultValue={captureData?.note}
             captureData={tableValues}
           />
           <AttachSetup setup={setup} />
@@ -508,34 +513,19 @@ export default function VolumeMeasurementTable() {
                   Flow stations {date}
                 </TableCell>
                 <TableCell
-                  align="center"
-                  colSpan={3}
-                  sx={{ fontWeight: "bold  !important" }}
-                >
+                  colSpan={3} {...headerProps} >
                   Meter/Tank Readings
                 </TableCell>
-                <TableCell
-                  align="center"
-                  sx={{ fontWeight: "bold  !important" }}
-                >
+                <TableCell {...headerProps} >
                   Net Production
                 </TableCell>
-                <TableCell
-                  align="center"
-                  sx={{ fontWeight: "bold  !important" }}
-                >
+                <TableCell {...headerProps} >
                   {isNet ? "Net" : "Gross"} Target
                 </TableCell>
-                <TableCell
-                  align="center"
-                  sx={{ fontWeight: "bold  !important" }}
-                >
+                <TableCell {...headerProps} >
                   BS&W
                 </TableCell>
-                <TableCell
-                  align="center"
-                  sx={{ fontWeight: "bold  !important" }}
-                >
+                <TableCell {...headerProps} >
                   Gross
                 </TableCell>
               </TableRow>
@@ -547,53 +537,32 @@ export default function VolumeMeasurementTable() {
                 }}
               >
                 <TableCell
-                  align="left"
                   colSpan={3}
+                  align="left"
                   sx={{ fontWeight: "bold  !important" }}
                 >
                   Input Values for each flow station
                 </TableCell>
-                <TableCell
-                  align="center"
-                  sx={{ fontWeight: "bold  !important" }}
-                >
+                <TableCell {...headerProps} >
                   {" "}
                   Meter/Tank Name
                 </TableCell>
-                <TableCell
-                  align="center"
-                  sx={{ fontWeight: "bold  !important" }}
-                >
+                <TableCell {...headerProps} >
                   Initial (bbls)
                 </TableCell>
-                <TableCell
-                  align="center"
-                  sx={{ fontWeight: "bold  !important" }}
-                >
+                <TableCell {...headerProps} >
                   Final (bbls)
                 </TableCell>
-                <TableCell
-                  align="center"
-                  sx={{ fontWeight: "bold  !important" }}
-                >
+                <TableCell {...headerProps} >
                   bbls
                 </TableCell>
-                <TableCell
-                  align="center"
-                  sx={{ fontWeight: "bold  !important" }}
-                >
+                <TableCell {...headerProps} >
                   bbls
                 </TableCell>
-                <TableCell
-                  align="center"
-                  sx={{ fontWeight: "bold  !important" }}
-                >
+                <TableCell {...headerProps} >
                   %
                 </TableCell>
-                <TableCell
-                  align="center"
-                  sx={{ fontWeight: "bold  !important" }}
-                >
+                <TableCell {...headerProps} >
                   bbls
                 </TableCell>
               </TableRow>
@@ -605,7 +574,7 @@ export default function VolumeMeasurementTable() {
                   ({ name, numberOfUnits, measurementType, readings, ...rest }, flowStationIndex) => {
                     return (
                       <TableBody key={name}>
-                        <TableRow key={name}>
+                        <TableRow >
                           <TableCell align="left" rowSpan={parseFloat(numberOfUnits) + ((!measurementType || measurementType === "Metering") ? 2 : 3)} colSpan={3}>
                             {name} ({measurementType || "Metering"}) {measurementType}
                           </TableCell>
@@ -658,7 +627,7 @@ export default function VolumeMeasurementTable() {
                             <TableCell align="center">{roundUp(isGross ? tableValues?.[name]?.deductionTotal : "-")}</TableCell>
                           </TableRow>}
 
-                        <TableRow key={name}>
+                        <TableRow >
                           <TableCell sx={{ bgcolor: 'rgba(178, 181, 182, 0.2)' }} align="left" className='pl-5 !bg-[rgba(178, 181, 182, 0.2)]' colSpan={3}><div className='pl-[30px]'> Sub total</div></TableCell>
                           <TableCell sx={{ bgcolor: 'rgba(178, 181, 182, 0.2)' }} align="center">
                             {isNet ? roundUp((tableValues?.[name]?.subTotal || 0)) : roundUp(calculatedGrossOrnNet(tableValues?.[name]?.subTotal, tableValues?.[name]?.bsw, 'gross'))}
