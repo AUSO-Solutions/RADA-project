@@ -64,7 +64,7 @@ const {
   processIPSC,
   getOilAndGasAccounting,
 } = require("./fielddatacapturesetup/oilandgasaccounting/");
-const { fetchDefermentData } = require("./reporting");
+const { getDefermentData } = require("./reporting");
 const { getInsight } = require("./admin/insights");
 const { getInsights } = require("./admin/insights/index2");
 const { getSurveillanceData } = require("./admin/surveillance/index2");
@@ -137,5 +137,5 @@ module.exports = {
   getSurveillanceData,
   getOverviewData,
 
-  fetchDefermentData,
+  getDefermentData,
 };

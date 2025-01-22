@@ -13,7 +13,6 @@ export const useFetch = ({
 
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(false);
-  console.log(data);
   useEffect(() => {
     const getData = async () => {
       setLoading(true);
@@ -22,9 +21,9 @@ export const useFetch = ({
           loadingScreen,
           useToken,
         });
-        console.log(res);
         setData(res?.data);
       } catch (error) {
+        console.log(error);
       } finally {
         setLoading(false);
       }
