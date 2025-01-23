@@ -3,44 +3,57 @@ const admin = require("firebase-admin");
 const logger = require("firebase-functions/logger");
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const {
-  getDatesForCurrentMonth,
+  // getDatesForCurrentMonth,
   getDatesBetween,
   aggregateDeferment,
 } = require("./helper");
+const dayjs = require("dayjs");
 
 const getDefermentData = onCall(async (request) => {
   try {
     const { data } = request;
     logger.log("Data ---", { data });
-    const { asset, flowstation, startDate, endDate } = data;
-    if (!asset || !flowstation) {
+    const { asset, flowstation, startDate = dayjs(), endDate = dayjs() } = data;
+    if (!asset) {
       throw {
         code: "cancelled",
-        message: "Missing required fields",
+        message: `Please provide an Asset name`,
       };
     }
-    console.log({ asset, flowstation, startDate, endDate });
 
-    let dates = [];
-    if (!startDate || !endDate) {
-      dates = getDatesForCurrentMonth();
-    } else {
-      dates = getDatesBetween();
-    }
+    if (!startDate || !endDate)
+      throw { code: "cancelled", message: "Please provide start or end dates" };
+    if (!dayjs(startDate).isValid() || !dayjs(endDate).isValid())
+      throw { code: "cancelled", message: "Invalid start or end dates" };
 
-    const start = dates[0];
-    const end = dates[dates.length - 1];
+    const startDate_ = dayjs(startDate).format("YYYY-MM-DD");
+    const endDate_ = dayjs(endDate).format("YYYY-MM-DD");
+
+    let dates = getDatesBetween(startDate_, endDate_);
+    // if (!startDate || !endDate) {
+    //   dates = getDatesForCurrentMonth();
+    // } else {
+    //   dates = getDatesBetween();
+    // }
+
+    const start = dayjs(dates[0]).format("YYYY-MM-DD");
+    const end = dayjs(dates[dates.length - 1]).format("YYYY-MM-DD");
 
     const db = admin.firestore();
-    const query = db
+    let query = db
       .collection("deferments")
       .where("asset", "==", asset)
-      .where("flowStation", "==", flowstation)
       .where("date", ">=", start)
-      .where("date", "<=", end)
-      .orderBy("date");
+      .where("date", "<=", end);
+    if (flowstation) {
+      query = query.where("flowStation", "==", flowstation);
+    }
+    query = query.orderBy("date");
 
-    const deferments = (await query.get())?.docs.data();
+    const deferments = (await query.get())?.docs.map(
+      (doc) => doc?.data() || {}
+    );
+    console.log(deferments);
     const result = aggregateDeferment(deferments);
     return { status: "success", data: JSON.stringify(result) };
   } catch (error) {

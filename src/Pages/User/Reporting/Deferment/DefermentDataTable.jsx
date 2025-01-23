@@ -31,18 +31,19 @@ const DefermentDataTable = ({ assetOptions = [] }) => {
   const setupData = useSelector((state) => state?.setup);
   const { assetNames } = useAssetNames();
   const assets = useAssetByName(setupData?.asset);
+  const [frequency, setFrequency] = useState("Day");
 
   const res = useFetch({
     firebaseFunction: "getDefermentData",
     payload: {
       asset: query?.asset,
-      flowStation: query?.flowStation,
+      flowstation: query?.flowStation || "OML 147 Flowstation",
       startDate: query?.startDate,
       endDate: query.endDate,
     },
     refetch: query,
   });
-  console.log(res);
+  console.log(frequency);
 
   // const data = useMemo(() => {
   //   if (res?.data) return JSON.parse(res?.data);
@@ -64,7 +65,7 @@ const DefermentDataTable = ({ assetOptions = [] }) => {
   useEffect(() => {
     const asset = searchParams.get("asset") || assetNames?.[0];
     const flowstation = searchParams.get("flowstation") || "";
-    const frequency = searchParams.get("frequency") || "Day";
+    // const frequency = searchParams.get("frequency") || "Day";
     const startDate =
       searchParams.get("startDate") ||
       dayjs().subtract(1, "day").format("YYYY-MM-DD");
@@ -74,7 +75,7 @@ const DefermentDataTable = ({ assetOptions = [] }) => {
 
     dispatch(setSetupData({ name: "asset", value: asset }));
     dispatch(setSetupData({ name: "flowstation", value: flowstation }));
-    dispatch(setSetupData({ name: "frequency", value: frequency }));
+    // dispatch(setSetupData({ name: "frequency", value: frequency }));
     dispatch(setSetupData({ name: "startDate", value: startDate }));
     dispatch(setSetupData({ name: "endDate", value: endDate }));
   }, [dispatch, assetOptions, assetNames, searchParams]);
@@ -132,48 +133,24 @@ const DefermentDataTable = ({ assetOptions = [] }) => {
               }}
             />
           </div>
-          {setupData.frequency === "Day" ? (
-            <div>
-              <input
-                type="date"
-                name=""
-                className="border p-2  rounded-[12px]"
-                value={setupData?.startDate}
-                onChange={(e) => {
-                  setSearchParams((prev) => {
-                    prev.set(
-                      "startDate",
-                      dayjs(e.target.value).format("YYYY-MM-DD")
-                    );
-                    prev.set(
-                      "endDate",
-                      dayjs(e.target.value).format("YYYY-MM-DD")
-                    );
-                    return prev;
-                  });
-                }}
-              />
-            </div>
-          ) : (
-            <DateRangePicker
-              startDate={setupData?.startDate}
-              endDate={setupData?.endDate}
-              onChange={(e) => {
-                dispatch(
-                  setSetupData({
-                    name: "startDate",
-                    value: dayjs(e?.startDate).format("YYYY-MM-DD"),
-                  })
-                );
-                dispatch(
-                  setSetupData({
-                    name: "endDate",
-                    value: dayjs(e?.endDate).format("YYYY-MM-DD"),
-                  })
-                );
-              }}
-            />
-          )}
+          <DateRangePicker
+            startDate={setupData?.startDate}
+            endDate={setupData?.endDate}
+            onChange={(e) => {
+              dispatch(
+                setSetupData({
+                  name: "startDate",
+                  value: dayjs(e?.startDate).format("YYYY-MM-DD"),
+                })
+              );
+              dispatch(
+                setSetupData({
+                  name: "endDate",
+                  value: dayjs(e?.endDate).format("YYYY-MM-DD"),
+                })
+              );
+            }}
+          />
 
           <div className="flex items-center justify-normal gap-1">
             <div className="text-4">Frequency</div>
@@ -186,12 +163,7 @@ const DefermentDataTable = ({ assetOptions = [] }) => {
                   value: freq,
                   label: freq,
                 }))}
-                onChange={(e) => {
-                  setSearchParams((prev) => {
-                    prev.set("frequency", e?.value);
-                    return prev;
-                  });
-                }}
+                onChange={(e) => setFrequency(e?.value)}
               />
             </div>
           </div>
