@@ -11,7 +11,7 @@ export const useFetch = ({
 }) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
-  console.log(payload);
+
   useEffect(() => {
     const getData = async () => {
       setLoading(true);

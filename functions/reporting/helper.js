@@ -45,21 +45,33 @@ function aggregateDeferment(data) {
   const yearlyAggregateMap = new Map();
   let yearlyAggregateIndex = 0;
   let yearlyAggregate = [];
+  let dailyData = [];
 
   for (let item of data) {
-    for (let deferment of item.deferment) {
+    for (let deferment of item.deferment.drainagePoints) {
+      // Create the daily data
+      dailyData.push({
+        date: item.date,
+        flowstation: item.flowStation,
+        ...deferment,
+      });
+
       const date = new Date(item.date);
 
       // Aggregation Monthly Data based on Drainage Point
       const monthYear = `${date.getUTCMonth() + 1}-${date.getFullYear()}`;
-      const key = `${deferment.productString}-${deferment.defermentCategory}-${deferment.defermentSubCategory}-${monthYear}`;
+      const key = `${deferment.productionString}-${deferment.defermentCategory}-${deferment.defermentSubCategory}-${monthYear}`;
       if (!monthlyMap.has(key)) {
-        monthlyData.push({ date: monthYear, ...deferment });
+        monthlyData.push({
+          date: `01-${monthYear}`,
+          flowstation: item.flowStation,
+          ...deferment,
+        });
         monthlyMap.set(key, monthlyIndex);
         monthlyIndex++;
       } else {
         let index = monthlyMap.get(key);
-        monthlyData[index].downtime += deferment.downtime;
+        monthlyData[index].downtime += deferment?.downtime || 0;
         monthlyData[index].gross += deferment.gross;
         monthlyData[index].oil += deferment.oil;
         monthlyData[index].gas += deferment.gas;
@@ -77,13 +89,13 @@ function aggregateDeferment(data) {
               oil: deferment.oil,
               gas: deferment.gas,
               gross: deferment.gross,
-              downtime: deferment.downtime,
+              downtime: deferment.downtime || 0,
               subcategories: {
                 [String(deferment.defermentSubCategory)]: {
                   oil: deferment.oil,
                   gas: deferment.gas,
                   gross: deferment.gross,
-                  downtime: deferment.downtime,
+                  downtime: deferment.downtime || 0,
                 },
               },
             },
@@ -153,14 +165,19 @@ function aggregateDeferment(data) {
 
       // Aggregation yearly based on Drainage Point
       const year = date.getFullYear();
-      const yearKey = `${deferment.productString}-${deferment.defermentCategory}-${deferment.defermentSubCategory}-${year}`;
-      if (!yearlyMap.has(key)) {
-        yearlyData.push({ date: year, ...deferment });
+      const yearKey = `${deferment.productionString}-${deferment.defermentCategory}-${deferment.defermentSubCategory}-${year}`;
+
+      if (!yearlyMap.has(yearKey)) {
+        yearlyData.push({
+          date: `01-01-${year}`,
+          flowstation: item.flowStation,
+          ...deferment,
+        });
         yearlyMap.set(key, yearlyIndex);
         yearlyIndex++;
       } else {
         let yearIndex = yearlyMap.get(yearKey);
-        yearlyData[yearIndex].downtime += deferment.downtime;
+        yearlyData[yearIndex].downtime += deferment.downtime || 0;
         yearlyData[yearIndex].gross += deferment.gross;
         yearlyData[yearIndex].oil += deferment.oil;
         yearlyData[yearIndex].gas += deferment.gas;
@@ -176,13 +193,13 @@ function aggregateDeferment(data) {
               oil: deferment.oil,
               gas: deferment.gas,
               gross: deferment.gross,
-              downtime: deferment.downtime,
+              downtime: deferment.downtime || 0,
               subcategories: {
                 [String(deferment.defermentSubCategory)]: {
                   oil: deferment.oil,
                   gas: deferment.gas,
                   gross: deferment.gross,
-                  downtime: deferment.downtime,
+                  downtime: deferment.downtime || 0,
                 },
               },
             },
@@ -191,7 +208,7 @@ function aggregateDeferment(data) {
             oil: deferment.oil,
             gas: deferment.gas,
             gross: deferment.gross,
-            downtime: deferment.downtime,
+            downtime: deferment.downtime || 0,
           },
         };
         yearlyAggregate.push(result);
@@ -241,17 +258,20 @@ function aggregateDeferment(data) {
             oil: deferment.oil,
             gas: deferment.gas,
             gross: deferment.gross,
-            downtime: deferment.downtime,
+            downtime: deferment.downtime || 0,
           };
         }
       }
     }
   }
+  console.log({ monthlyMap, yearlyMap });
 
   return {
-    dailyData: data,
-    monthlyData: { core: monthlyData, aggregate: monthlyAggregate },
-    yearlyData: { core: yearlyData, aggregate: yearlyAggregate },
+    dailyData,
+    monthlyData,
+    yearlyData,
+    monthlyAggregate,
+    yearlyAggregate,
   };
 }
 
