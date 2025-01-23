@@ -28,6 +28,7 @@ import { useMe } from 'hooks/useMe';
 import Draggable from 'react-draggable';
 import { ResizableBox } from 'react-resizable';
 import "react-resizable/css/styles.css";
+import DateRangePicker from 'Components/DatePicker';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -199,14 +200,28 @@ const Summary = () => {
             />
           </div>
           <div  >
-            <input type="date" name="" className='border p-2  rounded-[12px]' id="" value={setupData?.startDate} onChange={e => {
+            {/* <input type="date" name="" className='border p-2  rounded-[12px]' id="" value={setupData?.startDate} onChange={e => {
               setSearchParams(prev => {
                 prev.set('startDate', dayjs(e.target.value).format('YYYY-MM-DD'))
                 prev.set('endDate', dayjs(e.target.value).format('YYYY-MM-DD'))
                 return prev
               })
-            }} />
-
+            }} /> */}
+            <DateRangePicker
+              startDate={setupData?.startDate}
+              endDate={setupData?.endDate}
+              // value={setupData?.startDate}
+              onChange={e =>  
+                // {
+                // dispatch(setSetupData({ name: 'startDate', value: dayjs(e?.startDate).format('YYYY-MM-DD') }))
+                // dispatch(setSetupData({ name: 'endDate', value: dayjs(e?.endDate).format('YYYY-MM-DD') }))
+                {
+                setSearchParams(prev => {
+                  prev.set('startDate', dayjs(e.startDate).format('YYYY-MM-DD'))
+                  prev.set('endDate', dayjs(e.endDate).format('YYYY-MM-DD'))
+                  return prev
+                })
+              }} />
           </div>
           {
             (user.permitted.broadcastData || user.permitted.shareData) &&
