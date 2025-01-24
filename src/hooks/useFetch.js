@@ -9,11 +9,9 @@ export const useFetch = ({
   loadingScreen = false,
   useToken = false,
 }) => {
-  // console.log(firebaseFunction);
-
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
-  // console.log(data);
+
   useEffect(() => {
     const getData = async () => {
       setLoading(true);
