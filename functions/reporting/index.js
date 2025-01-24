@@ -53,8 +53,8 @@ const getDefermentData = onCall(async (request) => {
     const deferments = (await query.get())?.docs.map(
       (doc) => doc?.data() || {}
     );
-    console.log(deferments);
     const result = aggregateDeferment(deferments);
+    console.log(result);
     return { status: "success", data: JSON.stringify(result) };
   } catch (error) {
     console.log({ error });

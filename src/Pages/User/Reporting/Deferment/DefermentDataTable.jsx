@@ -77,10 +77,13 @@ const DefermentDataTable = ({ assetOptions = [] }) => {
     [data]
   );
 
-  const totalOil = useMemo(() => Object.values(data.totalOil || 0), [data]);
-  const totalGas = useMemo(() => Object.values(data.totalGas || {}), [data]);
+  const totalOil = useMemo(() => data.totalOil || 0, [data]);
+  const totalGas = useMemo(() => data.totalGas || 0, [data]);
 
   console.log({
+    dailyData,
+    monthlyData,
+    yearlyData,
     dailyAggregate,
     monthlyAggregate,
     yearlyAggregate,
@@ -119,7 +122,7 @@ const DefermentDataTable = ({ assetOptions = [] }) => {
     if (freq === "Day") {
       setDateFormat("DD-MM-YYYY");
     } else if (freq === "Month") {
-      setDateFormat("MM-YYYY");
+      setDateFormat("MMM YYYY");
     } else {
       setDateFormat("YYYY");
     }
@@ -331,7 +334,7 @@ const DefermentDataTable = ({ assetOptions = [] }) => {
                 colSpan={2}
                 sx={headerStyle}
               >
-                hour
+                {frequency === "Day" ? "hour" : "day"}
               </TableCell>
               <TableCell
                 style={{ fontWeight: "600" }}
@@ -379,6 +382,9 @@ const DefermentDataTable = ({ assetOptions = [] }) => {
                   ? currFlowstation === well.flowstation
                   : true
               )
+              .sort((a, b) =>
+                a.productionString.localeCompare(b.productionString)
+              )
               .map((well, index) => (
                 <TableRow key={`${well?.productionString}-${index}`}>
                   <TableCell align="center" colSpan={2}>
@@ -391,7 +397,11 @@ const DefermentDataTable = ({ assetOptions = [] }) => {
                     {dayjs(well?.date).format(dateFormat)}
                   </TableCell>
                   <TableCell align="center" colSpan={2}>
-                    {roundUp(well?.downtime)}
+                    {roundUp(
+                      frequency === "Day"
+                        ? well?.downtime
+                        : well?.downtime / 24.0
+                    )}
                   </TableCell>
                   <TableCell align="center" colSpan={2}>
                     {roundUp(well?.gross)}
