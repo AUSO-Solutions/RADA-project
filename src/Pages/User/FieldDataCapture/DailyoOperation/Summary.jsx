@@ -268,8 +268,6 @@ const Summary = () => {
         </div>
       </div>
       {showChart && (
-
-
         <Draggable
           cancel=".react-resizable-handle"
         >
