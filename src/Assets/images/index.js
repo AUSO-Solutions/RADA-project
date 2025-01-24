@@ -10,6 +10,6 @@ export const images = {
   setupIcon: require("./setup.png"),
   file: require("./file.png"),
   newLogo: require("./radaNewLogoo.svg"),
-//   excelLogo: require("./Microsoft_Excel.svg").default,
-//   pdfLogo: require("./pdf-logo.svg").default,
+  excelLogo: require("./Microsoft_Excel.svg").default,
+  pdfLogo: require("./pdf-logo.svg").default,
 };
