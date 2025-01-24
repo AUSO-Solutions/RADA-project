@@ -22,10 +22,14 @@ import SelectGroup from 'Partials/BroadCast/SelectGroup';
 import BroadCastSuccessfull from 'Partials/BroadCast/BroadCastSuccessfull';
 import { openModal } from 'Store/slices/modalSlice';
 import { useLocation, useSearchParams } from 'react-router-dom';
-import { bsw } from 'utils';
+import { bsw, roundUp } from 'utils';
 import { firebaseFunctions } from 'Services';
 import { useMe } from 'hooks/useMe';
-
+import RadioSelect from './RadioSelect';
+import Draggable from 'react-draggable';
+import { ResizableBox } from 'react-resizable';
+import "react-resizable/css/styles.css";
+import DateRangePicker from 'Components/DatePicker';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -55,27 +59,29 @@ const Summary = () => {
   // const switches = ['Oil/Condensate', 'Gas'];
   const [curr, setCurr] = useState({})
   const [notes, setNotes] = useState({
-    liquidNote: [], gasNote: []
+    liquid: [], gas: []
   })
   // console.log(curr)
+  const [chartWidth, setChartWidth] = useState(400);
+  const [chartHeight, setChartHeight] = useState(350);
 
   useEffect(() => {
     const getNotes = async () => {
       try {
         const { data: liquidData } = await firebaseFunctions('getOilOrCondensateVolumeByDateAndAsset', { asset: setupData?.asset, date: setupData?.startDate }, false, { loadingScreen: false })
         const { data: gasData } = await firebaseFunctions('getGasVolumeByDateAndAsset', { asset: setupData?.asset, date: setupData?.startDate }, false, { loadingScreen: false })
-
-        const liquidNote = liquidData.flowstations.map(flowstation => (
+        // console.log(liquidData, gasData)
+        const liquid = liquidData.flowstations.map(flowstation => (
           { flowstation: flowstation?.name, highlight: flowstation.highlight }
         ))
-        const gasNote = gasData.flowstations.map(flowstation => ({
+        const gas = gasData.flowstations.map(flowstation => ({
           flowstation: flowstation?.name, highlight: flowstation.highlight
         }))
-        console.log({ gasNote, liquidNote })
-        setNotes({ gasNote, liquidNote })
+        console.log({ gas, liquid })
+        setNotes({ gas, liquid })
 
       } catch (error) {
-        setNotes({ gasNote: [], liquidNote: [] })
+        setNotes({ gas: [], liquid: [] })
       }
     }
     if (setupData?.asset && setupData?.startDate) getNotes()
@@ -83,13 +89,13 @@ const Summary = () => {
   }, [setupData?.asset, setupData?.startDate])
   const values = useMemo(() => {
     return [
-      { name: "Gross Liquid (bbls/day)", target: parseFloat(tableData.grossTarget || 0).toFixed(3), actual: parseFloat(tableData.grossProduction || 0).toFixed(3) },
+      { name: "Gross Liquid (bbls/day)", target: roundUp(parseFloat(tableData.grossTarget || 0)), actual: roundUp(parseFloat(tableData.grossProduction || 0)) },
       { name: "BS&W (%)", target: bsw({ gross: tableData.grossTarget, oil: tableData.oilTarget }), actual: bsw({ gross: tableData.grossProduction, oil: tableData.oilProduced }) },
-      { name: "Net Oil (bbls/day)", target: parseFloat(tableData.oilTarget || 0).toFixed(3), actual: parseFloat(tableData.oilProduced || 0).toFixed(3) },
-      { name: "Produced Gas (mmscf)", target: parseFloat(tableData.gasProducedTarget || 0).toFixed(3), actual: parseFloat(tableData.gasProduced || 0).toFixed(3) },
-      { name: "Export Gas (mmscf)", target: parseFloat(tableData.exportGasTarget || 0).toFixed(3), actual: parseFloat(tableData.gasExported || 0).toFixed(3) },
-      { name: "Fuel Gas Consumed (mmscf)", target: parseFloat(tableData.gasUtilizedTarget || 0).toFixed(3), actual: parseFloat(tableData.gasUtilized || 0).toFixed(3) },
-      { name: "Flare Gas (mmscf)", target: parseFloat(tableData.gasFlaredTarget || 0).toFixed(3), actual: parseFloat(tableData.gasFlared || 0).toFixed(3) },
+      { name: "Net Oil (bbls/day)", target: roundUp(parseFloat(tableData.oilTarget || 0)), actual: roundUp(parseFloat(tableData.oilProduced || 0)) },
+      { name: "Produced Gas (mmscf)", target: roundUp(parseFloat(tableData.gasProducedTarget || 0)), actual: roundUp(parseFloat(tableData.gasProduced || 0)) },
+      { name: "Export Gas (mmscf)", target: roundUp(parseFloat(tableData.exportGasTarget || 0)), actual: roundUp(parseFloat(tableData.gasExported || 0)) },
+      { name: "Fuel Gas Consumed (mmscf)", target: roundUp(parseFloat(tableData.gasUtilizedTarget || 0)), actual: roundUp(parseFloat(tableData.gasUtilized || 0)) },
+      { name: "Flare Gas (mmscf)", target: roundUp(parseFloat(tableData.gasFlaredTarget || 0)), actual: roundUp(parseFloat(tableData.gasFlared || 0)) },
       // { name: "Condensate Produced (bbls)" },
       // { name: "Barged Crude (bbls)" },
       // { name: "Export Gas (BOE)" },
@@ -144,7 +150,7 @@ const Summary = () => {
 
   };
 
-
+  const highlightTypes = ['Production', 'Maintenance', 'Operation']
 
   useEffect(() => {
     // console.log(searchParams)
@@ -159,8 +165,19 @@ const Summary = () => {
     dispatch(setSetupData({ name: 'endDate', value: endDate }))
   }, [searchParams, dispatch, assetNames])
 
+  const [currentHighlight, setCurrentHighlight] = useState({
+    volumeType: "Gas",
+    flowstation: "",
+    highlightType: ""
+  })
+  const currentNote = useMemo(() => {
+    const result = notes?.[currentHighlight.volumeType.toLowerCase()]?.find(note => note?.flowstation === currentHighlight.flowstation)?.highlight?.[currentHighlight.highlightType?.toLowerCase()]
+    if (!result) return "No highlight!"
+      return result
+
+  }, [currentHighlight.flowstation, currentHighlight.highlightType, currentHighlight.volumeType, notes])
   return (
-    <div className='relative' >
+    <div className='relative !z-[1000] ' >
       <div className='w-full flex flex-row justify-between p-4' >
         <div onClick={() => setShowChart(!showChart)} className='w-[100px] h-[40px] bg-[#FAFAFA] cursor-pointer rounded-2xl border-2 flex items-center gap-2 justify-center' >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -202,14 +219,28 @@ const Summary = () => {
             />
           </div>
           <div  >
-            <input type="date" name="" className='border p-2  rounded-[12px]' id="" value={setupData?.startDate} onChange={e => {
+            {/* <input type="date" name="" className='border p-2  rounded-[12px]' id="" value={setupData?.startDate} onChange={e => {
               setSearchParams(prev => {
                 prev.set('startDate', dayjs(e.target.value).format('YYYY-MM-DD'))
                 prev.set('endDate', dayjs(e.target.value).format('YYYY-MM-DD'))
                 return prev
               })
-            }} />
-
+            }} /> */}
+            <DateRangePicker
+              startDate={setupData?.startDate}
+              endDate={setupData?.endDate}
+              // value={setupData?.startDate}
+              onChange={e =>  
+                // {
+                // dispatch(setSetupData({ name: 'startDate', value: dayjs(e?.startDate).format('YYYY-MM-DD') }))
+                // dispatch(setSetupData({ name: 'endDate', value: dayjs(e?.endDate).format('YYYY-MM-DD') }))
+                {
+                setSearchParams(prev => {
+                  prev.set('startDate', dayjs(e.startDate).format('YYYY-MM-DD'))
+                  prev.set('endDate', dayjs(e.endDate).format('YYYY-MM-DD'))
+                  return prev
+                })
+              }} />
           </div>
           {
             (user.permitted.broadcastData || user.permitted.shareData) &&
@@ -236,6 +267,49 @@ const Summary = () => {
           }
         </div>
       </div>
+      {showChart && (
+        <Draggable
+          cancel=".react-resizable-handle"
+        >
+          <ResizableBox
+            width={chartWidth}
+            height={chartHeight}
+            minConstraints={[400, 450]}
+            maxConstraints={[1000, 800]}
+            resizeHandles={['se']}
+            onResizeStop={(e, data) => {
+              setChartWidth(data.size.width);
+              setChartHeight(data.size.height);
+            }}
+            style={{ position: 'fixed', bottom: 100, right: 10, zIndex: 1000 }}
+          >
+            <div className='p-3' style={{ display: 'flex', cursor: 'move', flexDirection: 'column', backgroundColor: '#fff', width: '100%', height: 'auto', borderRadius: 5, boxShadow: '2px 1px 5px  #242424' }}>
+              <div style={{ margin: "10 0", paddingRight: 20, paddingLeft: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Text weight={700} size={'16px'} > <Input type='select' onChange={(e) => setCurr(values.find(value => value.name === e.value))} containerClass={'!w-[200px]'} options={values.map(value => ({ label: value.name, value: value.name }))} /></Text>
+                <Close style={{ cursor: 'pointer' }} onClick={() => setShowChart(false)} />
+              </div>
+
+              {/* <div className=' ml-5 mt-5 '> */}
+              {/* <RadioSelect list={switches}
+
+/> */}
+              {/* <Input type='select' containerClass={'!w-[200px]'} options={values.map(value=>({label:value.name,value:value.name}))}/> */}
+              {/* </div> */}
+
+              {/* <div style={{ height: '100%', width: '100%', padding: 20, display: 'flex', justifyContent: 'center', alignItems: 'center', }} > */}
+              <Bar
+                key={`${chartWidth}-${chartHeight}`}
+                data={data} options={options}
+                width={chartWidth} height={chartHeight}
+              />
+              {/* </div> */}
+
+            </div>
+          </ResizableBox>
+        </Draggable>
+
+
+      )}
 
 
       <div className='mt-5' >
@@ -256,34 +330,39 @@ const Summary = () => {
           data={values} />
 
 
+
       </div>
 
-      <div className='pl-[30px]'>
-        <Text weight={600} size={16}>
-          Highlights   </Text> <br />
-        <div>
-          <Text weight={600} size={14}>Gas :</Text>
-          {notes?.gasNote?.map(note => (
-            <div>
-              <Text weight={600} > {note.flowstation}  </Text>
-              <div> <Text weight={500}> Production Highlight</Text> : { <div dangerouslySetInnerHTML={{ __html: note?.highlight?.production || "N/A" }} /> }</div>
-              <div> <Text weight={500}>Operation Highlight</Text> : { <div dangerouslySetInnerHTML={{ __html: note?.highlight?.operation || "N/A" }} /> }</div>
-              <div> <Text weight={500}> Maintenance Highlight</Text> : { <div dangerouslySetInnerHTML={{ __html: note?.highlight?.maintenance }} /> || "N/A"}</div>
-            </div>
-          ))}
-
+      <div className=' border flex rounded m-2 !min-h-[300px]'>
+        <div className='w-[20%] border-r p-2'>
+          <Text weight={600} size={16}> Highlights   </Text>
+          <RadioSelect list={['Gas', 'Liquid']} defaultValue={currentHighlight.volumeType} onChange={(e) => setCurrentHighlight(prev => ({ ...prev, volumeType: e }))} />
+          <Input type='select' placeholder='Select flowstation' options={notes.gas.map(note => ({ label: note.flowstation, value: note?.flowstation }))} containerClass={'w-[100px]'} onChange={(e) => setCurrentHighlight(prev => ({ ...prev, flowstation: e.value }))} />
+          <Input type='select' placeholder='Select highlight type' options={highlightTypes.map(highlightType => ({ label: highlightType, value: highlightType }))} containerClass={'w-[100px] mt-4'} onChange={(e) => setCurrentHighlight(prev => ({ ...prev, highlightType: e.value }))} />
         </div>
-        <div>
-          <Text weight={600} size={14}>Liquid :</Text>
-          {notes?.liquidNote?.map(note => (
-            <div>
-              <Text weight={600} > {note.flowstation}  </Text>
-              <div> <Text weight={500}> Production Highlight</Text> : { <div dangerouslySetInnerHTML={{ __html: note?.highlight?.production || "N/A" }} /> }</div>
-              <div> <Text weight={500}>Operation Highlight</Text> : { <div dangerouslySetInnerHTML={{ __html: note?.highlight?.operation || "N/A" }} /> }</div>
-              <div> <Text weight={500}> Maintenance Highlight</Text> : { <div dangerouslySetInnerHTML={{ __html: note?.highlight?.maintenance || "N/A" }} /> }</div>
-            </div>
-          ))}
-
+        <div className='w-[80%] p-2'>
+          <Text weight={600} size={16}> {currentHighlight.highlightType} highlight for {currentHighlight.flowstation}({currentHighlight.volumeType}) :</Text> <br />
+          {<div dangerouslySetInnerHTML={{ __html: currentNote }} />}
+          {/* {currentHighlight.volumeType === 'Gas' && <div>
+            {notes?.gas?.map(note => (
+              <div>
+                <Text weight={600} > {note.flowstation}  </Text>
+                <div> <Text weight={500}> Production Highlight</Text> : {<div dangerouslySetInnerHTML={{ __html: note?.highlight?.production || "N/A" }} />}</div>
+                <div> <Text weight={500}>Operation Highlight</Text> : {<div dangerouslySetInnerHTML={{ __html: note?.highlight?.operation || "N/A" }} />}</div>
+                <div> <Text weight={500}> Maintenance Highlight</Text> : {<div dangerouslySetInnerHTML={{ __html: note?.highlight?.maintenance }} /> || "N/A"}</div>
+              </div>
+            ))}
+          </div>}
+          {currentHighlight.volumeType === 'Liquid' && <div>
+            {notes?.liquid?.map(note => (
+              <div>
+                <Text weight={600} > {note.flowstation}  </Text>
+                <div> <Text weight={500}> Production Highlight</Text> : {<div dangerouslySetInnerHTML={{ __html: note?.highlight?.production || "N/A" }} />}</div>
+                <div> <Text weight={500}>Operation Highlight</Text> : {<div dangerouslySetInnerHTML={{ __html: note?.highlight?.operation || "N/A" }} />}</div>
+                <div> <Text weight={500}> Maintenance Highlight</Text> : {<div dangerouslySetInnerHTML={{ __html: note?.highlight?.maintenance }} /> || "N/A"}</div>
+              </div>
+            ))}
+          </div>} */}
         </div>
 
 
@@ -291,26 +370,8 @@ const Summary = () => {
       {/* <img src='https://firebasestorage.googleapis.com/v0/b/ped-application-4d196.appspot.com/o/radaNewLogoo.svg?alt=media&token=e3249009-d0c3-497f-8b2a-873988ad9355' alt='?media&token=475ebfb1-9f96-4b2d-b7f0-12390171a51' /> */}
       {/* https://firebasestorage.googleapis.com/v0/b/ped-application-4d196.appspot.com/o/radaNewLogoo.svg?alt=media&token=e3249009-d0c3-497f-8b2a-873988ad9355 */}
 
-      {showChart && (
-        <div style={{ display: 'flex', flexDirection: 'column', backgroundColor: '#fff', position: 'absolute', top: 0, right: 10, width: '500px', height: 'auto', borderRadius: 5, boxShadow: '2px 1px 5px  #242424' }}>
-          <div style={{ margin: "10 0", paddingRight: 20, paddingLeft: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Text weight={700} size={'16px'} > <Input type='select' onChange={(e) => setCurr(values.find(value => value.name === e.value))} containerClass={'!w-[200px]'} options={values.map(value => ({ label: value.name, value: value.name }))} /></Text>
-            <Close style={{ cursor: 'pointer' }} onClick={() => setShowChart(false)} />
-          </div>
 
-          {/* <div className=' ml-5 mt-5 '> */}
-          {/* <RadioSelect list={switches}
-          
-            /> */}
-          {/* <Input type='select' containerClass={'!w-[200px]'} options={values.map(value=>({label:value.name,value:value.name}))}/> */}
-          {/* </div> */}
 
-          {/* <div style={{ height: '100%', width: '100%', padding: 20, display: 'flex', justifyContent: 'center', alignItems: 'center', }} > */}
-          <Bar data={data} options={options} height={"300px"} width={'400px'} />
-          {/* </div> */}
-
-        </div>
-      )}
 
 
     </div>

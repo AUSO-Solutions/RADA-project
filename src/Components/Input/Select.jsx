@@ -34,12 +34,14 @@ const RadaSelect = ({ name, placeholder, onChange, options, isMulti, ...rest }) 
                     onChange(e)
                 }
             }} isDisabled={rest.disabled} {...rest}
+            menuPortalTarget={document.body} 
                 styles={{
                     control: (baseStyles) => ({ ...baseStyles, borderRadius: '12px' }),
                     // container: (baseStyles) => ({ ...baseStyles, height: 'auto', padding: 0, }),
                     valueContainer: (baseStyles) => ({ ...baseStyles, height: '40px', padding: 0, paddingLeft: 10 }),
                     indicatorSeparator: (baseStyles) => ({ display: 'none' }),
                     input: (baseStyles) => ({ ...baseStyles, padding: 0, }),
+                    menuPortal: base => ({ ...base, zIndex: 9999 }) ,
                     menu: base => ({ ...base, zIndex: "100000 !important" })
                 }} />
         </>
