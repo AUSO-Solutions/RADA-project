@@ -333,12 +333,12 @@ const Summary = () => {
 
       </div>
 
-      <div className=' border flex rounded m-4 !min-h-[200px]'>
+      <div className=' border flex rounded m-2 !min-h-[300px]'>
         <div className='w-[20%] border-r p-2'>
           <Text weight={600} size={16}> Highlights   </Text>
           <RadioSelect list={['Gas', 'Liquid']} defaultValue={currentHighlight.volumeType} onChange={(e) => setCurrentHighlight(prev => ({ ...prev, volumeType: e }))} />
-          <Input type='select' options={notes.gas.map(note => ({ label: note.flowstation, value: note?.flowstation }))} containerClass={'w-[100px]'} onChange={(e) => setCurrentHighlight(prev => ({ ...prev, flowstation: e.value }))} />
-          <Input type='select' options={highlightTypes.map(highlightType => ({ label: highlightType, value: highlightType }))} containerClass={'w-[100px] mt-4'} onChange={(e) => setCurrentHighlight(prev => ({ ...prev, highlightType: e.value }))} />
+          <Input type='select' placeholder='Select flowstation' options={notes.gas.map(note => ({ label: note.flowstation, value: note?.flowstation }))} containerClass={'w-[100px]'} onChange={(e) => setCurrentHighlight(prev => ({ ...prev, flowstation: e.value }))} />
+          <Input type='select' placeholder='Select highlight type' options={highlightTypes.map(highlightType => ({ label: highlightType, value: highlightType }))} containerClass={'w-[100px] mt-4'} onChange={(e) => setCurrentHighlight(prev => ({ ...prev, highlightType: e.value }))} />
         </div>
         <div className='w-[80%] p-2'>
           <Text weight={600} size={16}> {currentHighlight.highlightType} highlight for {currentHighlight.flowstation}({currentHighlight.volumeType}) :</Text> <br />
