@@ -22,11 +22,14 @@ import SelectGroup from 'Partials/BroadCast/SelectGroup';
 import BroadCastSuccessfull from 'Partials/BroadCast/BroadCastSuccessfull';
 import { openModal } from 'Store/slices/modalSlice';
 import { useLocation, useSearchParams } from 'react-router-dom';
-import { bsw } from 'utils';
+import { bsw, roundUp } from 'utils';
 import { firebaseFunctions } from 'Services';
 import { useMe } from 'hooks/useMe';
 import RadioSelect from './RadioSelect';
-
+import Draggable from 'react-draggable';
+import { ResizableBox } from 'react-resizable';
+import "react-resizable/css/styles.css";
+import DateRangePicker from 'Components/DatePicker';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -59,6 +62,8 @@ const Summary = () => {
     liquid: [], gas: []
   })
   // console.log(curr)
+  const [chartWidth, setChartWidth] = useState(400);
+  const [chartHeight, setChartHeight] = useState(350);
 
   useEffect(() => {
     const getNotes = async () => {
@@ -84,13 +89,19 @@ const Summary = () => {
   }, [setupData?.asset, setupData?.startDate])
   const values = useMemo(() => {
     return [
-      { name: "Gross Liquid (bbls/day)", target: parseFloat(tableData.grossTarget || 0).toFixed(3), actual: parseFloat(tableData.grossProduction || 0).toFixed(3) },
+      { name: "Gross Liquid (bbls/day)", target: roundUp(parseFloat(tableData.grossTarget || 0)), actual: roundUp(parseFloat(tableData.grossProduction || 0)) },
       { name: "BS&W (%)", target: bsw({ gross: tableData.grossTarget, oil: tableData.oilTarget }), actual: bsw({ gross: tableData.grossProduction, oil: tableData.oilProduced }) },
-      { name: "Net Oil (bbls/day)", target: parseFloat(tableData.oilTarget || 0).toFixed(3), actual: parseFloat(tableData.oilProduced || 0).toFixed(3) },
-      { name: "Produced Gas (mmscf)", target: parseFloat(tableData.gasProducedTarget || 0).toFixed(3), actual: parseFloat(tableData.gasProduced || 0).toFixed(3) },
-      { name: "Export Gas (mmscf)", target: parseFloat(tableData.exportGasTarget || 0).toFixed(3), actual: parseFloat(tableData.gasExported || 0).toFixed(3) },
-      { name: "Fuel Gas Consumed (mmscf)", target: parseFloat(tableData.gasUtilizedTarget || 0).toFixed(3), actual: parseFloat(tableData.gasUtilized || 0).toFixed(3) },
-      { name: "Flare Gas (mmscf)", target: parseFloat(tableData.gasFlaredTarget || 0).toFixed(3), actual: parseFloat(tableData.gasFlared || 0).toFixed(3) },
+      { name: "Net Oil (bbls/day)", target: roundUp(parseFloat(tableData.oilTarget || 0)), actual: roundUp(parseFloat(tableData.oilProduced || 0)) },
+      { name: "Produced Gas (mmscf)", target: roundUp(parseFloat(tableData.gasProducedTarget || 0)), actual: roundUp(parseFloat(tableData.gasProduced || 0)) },
+      { name: "Export Gas (mmscf)", target: roundUp(parseFloat(tableData.exportGasTarget || 0)), actual: roundUp(parseFloat(tableData.gasExported || 0)) },
+      { name: "Fuel Gas Consumed (mmscf)", target: roundUp(parseFloat(tableData.gasUtilizedTarget || 0)), actual: roundUp(parseFloat(tableData.gasUtilized || 0)) },
+      { name: "Flare Gas (mmscf)", target: roundUp(parseFloat(tableData.gasFlaredTarget || 0)), actual: roundUp(parseFloat(tableData.gasFlared || 0)) },
+      // { name: "Condensate Produced (bbls)" },
+      // { name: "Barged Crude (bbls)" },
+      // { name: "Export Gas (BOE)" },
+      // { name: "Total bopd + BOE" },
+      // { name: "Condensate Shipped (bbls)" },
+      // { name: "Cumulative Offtake (bbls)" },
 
     ]
   }, [tableData])
@@ -208,14 +219,28 @@ const Summary = () => {
             />
           </div>
           <div  >
-            <input type="date" name="" className='border p-2  rounded-[12px]' id="" value={setupData?.startDate} onChange={e => {
+            {/* <input type="date" name="" className='border p-2  rounded-[12px]' id="" value={setupData?.startDate} onChange={e => {
               setSearchParams(prev => {
                 prev.set('startDate', dayjs(e.target.value).format('YYYY-MM-DD'))
                 prev.set('endDate', dayjs(e.target.value).format('YYYY-MM-DD'))
                 return prev
               })
-            }} />
-
+            }} /> */}
+            <DateRangePicker
+              startDate={setupData?.startDate}
+              endDate={setupData?.endDate}
+              // value={setupData?.startDate}
+              onChange={e =>  
+                // {
+                // dispatch(setSetupData({ name: 'startDate', value: dayjs(e?.startDate).format('YYYY-MM-DD') }))
+                // dispatch(setSetupData({ name: 'endDate', value: dayjs(e?.endDate).format('YYYY-MM-DD') }))
+                {
+                setSearchParams(prev => {
+                  prev.set('startDate', dayjs(e.startDate).format('YYYY-MM-DD'))
+                  prev.set('endDate', dayjs(e.endDate).format('YYYY-MM-DD'))
+                  return prev
+                })
+              }} />
           </div>
           {
             (user.permitted.broadcastData || user.permitted.shareData) &&
@@ -242,6 +267,49 @@ const Summary = () => {
           }
         </div>
       </div>
+      {showChart && (
+        <Draggable
+          cancel=".react-resizable-handle"
+        >
+          <ResizableBox
+            width={chartWidth}
+            height={chartHeight}
+            minConstraints={[400, 450]}
+            maxConstraints={[1000, 800]}
+            resizeHandles={['se']}
+            onResizeStop={(e, data) => {
+              setChartWidth(data.size.width);
+              setChartHeight(data.size.height);
+            }}
+            style={{ position: 'fixed', bottom: 100, right: 10, zIndex: 1000 }}
+          >
+            <div className='p-3' style={{ display: 'flex', cursor: 'move', flexDirection: 'column', backgroundColor: '#fff', width: '100%', height: 'auto', borderRadius: 5, boxShadow: '2px 1px 5px  #242424' }}>
+              <div style={{ margin: "10 0", paddingRight: 20, paddingLeft: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Text weight={700} size={'16px'} > <Input type='select' onChange={(e) => setCurr(values.find(value => value.name === e.value))} containerClass={'!w-[200px]'} options={values.map(value => ({ label: value.name, value: value.name }))} /></Text>
+                <Close style={{ cursor: 'pointer' }} onClick={() => setShowChart(false)} />
+              </div>
+
+              {/* <div className=' ml-5 mt-5 '> */}
+              {/* <RadioSelect list={switches}
+
+/> */}
+              {/* <Input type='select' containerClass={'!w-[200px]'} options={values.map(value=>({label:value.name,value:value.name}))}/> */}
+              {/* </div> */}
+
+              {/* <div style={{ height: '100%', width: '100%', padding: 20, display: 'flex', justifyContent: 'center', alignItems: 'center', }} > */}
+              <Bar
+                key={`${chartWidth}-${chartHeight}`}
+                data={data} options={options}
+                width={chartWidth} height={chartHeight}
+              />
+              {/* </div> */}
+
+            </div>
+          </ResizableBox>
+        </Draggable>
+
+
+      )}
 
 
       <div className='mt-5' >
@@ -260,6 +328,7 @@ const Summary = () => {
             },
           ]}
           data={values} />
+
 
 
       </div>
@@ -301,26 +370,8 @@ const Summary = () => {
       {/* <img src='https://firebasestorage.googleapis.com/v0/b/ped-application-4d196.appspot.com/o/radaNewLogoo.svg?alt=media&token=e3249009-d0c3-497f-8b2a-873988ad9355' alt='?media&token=475ebfb1-9f96-4b2d-b7f0-12390171a51' /> */}
       {/* https://firebasestorage.googleapis.com/v0/b/ped-application-4d196.appspot.com/o/radaNewLogoo.svg?alt=media&token=e3249009-d0c3-497f-8b2a-873988ad9355 */}
 
-      {showChart && (
-        <div style={{ display: 'flex', flexDirection: 'column', backgroundColor: '#fff', position: 'absolute', top: 0, right: 10, width: '500px', height: 'auto', borderRadius: 5, boxShadow: '2px 1px 5px  #242424' }}>
-          <div style={{ margin: "10 0", paddingRight: 20, paddingLeft: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Text weight={700} size={'16px'} > <Input type='select' onChange={(e) => setCurr(values.find(value => value.name === e.value))} containerClass={'!w-[200px]'} options={values.map(value => ({ label: value.name, value: value.name }))} /></Text>
-            <Close style={{ cursor: 'pointer' }} onClick={() => setShowChart(false)} />
-          </div>
 
-          {/* <div className=' ml-5 mt-5 '> */}
-          {/* <RadioSelect list={switches}
-          
-            /> */}
-          {/* <Input type='select' containerClass={'!w-[200px]'} options={values.map(value=>({label:value.name,value:value.name}))}/> */}
-          {/* </div> */}
 
-          {/* <div style={{ height: '100%', width: '100%', padding: 20, display: 'flex', justifyContent: 'center', alignItems: 'center', }} > */}
-          <Bar data={data} options={options} height={"300px"} width={'400px'} />
-          {/* </div> */}
-
-        </div>
-      )}
 
 
     </div>

@@ -8,12 +8,14 @@ import { intersect } from "mathjs";
 
 export const sum = (array = [], options) => {
   if (Array.isArray(array) && array?.length) {
-    const result = parseFloat(array.reduce((a, b) => parseFloat(a) + parseFloat(b)))
-    if (options?.useRoundUp) return roundUp(result)
-    else return result
+    const result = parseFloat(
+      array.reduce((a, b) => parseFloat(a) + parseFloat(b))
+    );
+    if (options?.useRoundUp) return roundUp(result);
+    else return result;
   }
-  return 0
-}
+  return 0;
+};
 export const createWellTitle = (setup, type) => {
   const field = setup?.field ? `/${setup?.field}/` : "/";
   return `${setup?.title || ""} ${setup?.asset}${field}${dayjs(
@@ -79,12 +81,12 @@ export const getWellLastTestResult2 = (
   const monthYear = getMonthYear();
   let lastTestResult = null,
     productionStringData = null;
-  const remainingWellTestRessults = wellTestResults.filter((result) => {
+  const remainingWellTestResults = wellTestResults.filter((result) => {
     return result?.month < monthYear && asset === result.asset;
   });
 
   // ?.filter(result => result.wellTestResultData[productionString])
-  const matches = remainingWellTestRessults.sort((a, b) => b?.month - a?.month);
+  const matches = remainingWellTestResults.sort((a, b) => b?.month - a?.month);
   for (let index = 0; index < matches.length; index++) {
     const match = matches[index];
     // console.log(match.wellTestResultData)
@@ -141,7 +143,6 @@ export const roundUp = (number) => {
   const factor = Math.pow(10, decimalPlaces);
   return (Math.ceil(Number(number) * factor) / factor).toFixed(decimalPlaces);
 };
-
 
 const getLineDetails = (line, at1, at2) => {
   const x1 = line[at1]?.x,
@@ -274,13 +275,13 @@ export const getIntersectionBetweenTwoLines = (
   // Math.sin
 };
 export const bsw = ({ gross, oil, water }) => {
-  let water__ = (water || 0) || parseFloat(gross || 0) - parseFloat(oil || 0)
-  const result = ((water__ / (parseFloat(oil || 0) + water__)) * 100).toFixed(4)
+  let water__ = water || 0 || parseFloat(gross || 0) - parseFloat(oil || 0);
+  const result = ((water__ / (parseFloat(oil || 0) + water__)) * 100).toFixed(
+    4
+  );
 
-
-  return isNaN(result) ? '' : roundUp(result)
-
-}
+  return isNaN(result) ? "" : roundUp(result);
+};
 
 export const getHeights = () => {
   const wH = window.innerHeight;
