@@ -64,6 +64,30 @@ const DefermentDataTable = ({ assetOptions = [] }) => {
     [data]
   );
 
+  const dailyAggregate = useMemo(
+    () => Object.values(data.dailyAggregate || {}),
+    [data]
+  );
+  const monthlyAggregate = useMemo(
+    () => Object.values(data.monthlyAggregate || {}),
+    [data]
+  );
+  const yearlyAggregate = useMemo(
+    () => Object.values(data.yearlyAggregate || {}),
+    [data]
+  );
+
+  const totalOil = useMemo(() => Object.values(data.totalOil || 0), [data]);
+  const totalGas = useMemo(() => Object.values(data.totalGas || {}), [data]);
+
+  console.log({
+    dailyAggregate,
+    monthlyAggregate,
+    yearlyAggregate,
+    totalOil,
+    totalGas,
+  });
+
   useEffect(() => {
     if (frequency === "Month") {
       setTableData(monthlyData);
@@ -355,8 +379,8 @@ const DefermentDataTable = ({ assetOptions = [] }) => {
                   ? currFlowstation === well.flowstation
                   : true
               )
-              .map((well) => (
-                <TableRow key={well?.productionString}>
+              .map((well, index) => (
+                <TableRow key={`${well?.productionString}-${index}`}>
                   <TableCell align="center" colSpan={2}>
                     {well?.flowstation}
                   </TableCell>
