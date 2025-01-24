@@ -25,6 +25,7 @@ import { useLocation, useSearchParams } from 'react-router-dom';
 import { bsw } from 'utils';
 import { firebaseFunctions } from 'Services';
 import { useMe } from 'hooks/useMe';
+import RadioSelect from './RadioSelect';
 
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -55,7 +56,7 @@ const Summary = () => {
   // const switches = ['Oil/Condensate', 'Gas'];
   const [curr, setCurr] = useState({})
   const [notes, setNotes] = useState({
-    liquidNote: [], gasNote: []
+    liquid: [], gas: []
   })
   // console.log(curr)
 
@@ -64,18 +65,18 @@ const Summary = () => {
       try {
         const { data: liquidData } = await firebaseFunctions('getOilOrCondensateVolumeByDateAndAsset', { asset: setupData?.asset, date: setupData?.startDate }, false, { loadingScreen: false })
         const { data: gasData } = await firebaseFunctions('getGasVolumeByDateAndAsset', { asset: setupData?.asset, date: setupData?.startDate }, false, { loadingScreen: false })
-
-        const liquidNote = liquidData.flowstations.map(flowstation => (
+        // console.log(liquidData, gasData)
+        const liquid = liquidData.flowstations.map(flowstation => (
           { flowstation: flowstation?.name, highlight: flowstation.highlight }
         ))
-        const gasNote = gasData.flowstations.map(flowstation => ({
+        const gas = gasData.flowstations.map(flowstation => ({
           flowstation: flowstation?.name, highlight: flowstation.highlight
         }))
-        console.log({ gasNote, liquidNote })
-        setNotes({ gasNote, liquidNote })
+        console.log({ gas, liquid })
+        setNotes({ gas, liquid })
 
       } catch (error) {
-        setNotes({ gasNote: [], liquidNote: [] })
+        setNotes({ gas: [], liquid: [] })
       }
     }
     if (setupData?.asset && setupData?.startDate) getNotes()
@@ -90,12 +91,6 @@ const Summary = () => {
       { name: "Export Gas (mmscf)", target: parseFloat(tableData.exportGasTarget || 0).toFixed(3), actual: parseFloat(tableData.gasExported || 0).toFixed(3) },
       { name: "Fuel Gas Consumed (mmscf)", target: parseFloat(tableData.gasUtilizedTarget || 0).toFixed(3), actual: parseFloat(tableData.gasUtilized || 0).toFixed(3) },
       { name: "Flare Gas (mmscf)", target: parseFloat(tableData.gasFlaredTarget || 0).toFixed(3), actual: parseFloat(tableData.gasFlared || 0).toFixed(3) },
-      // { name: "Condensate Produced (bbls)" },
-      // { name: "Barged Crude (bbls)" },
-      // { name: "Export Gas (BOE)" },
-      // { name: "Total bopd + BOE" },
-      // { name: "Condensate Shipped (bbls)" },
-      // { name: "Cumulative Offtake (bbls)" },
 
     ]
   }, [tableData])
@@ -144,7 +139,7 @@ const Summary = () => {
 
   };
 
-
+  const highlightTypes = ['Production', 'Maintenance', 'Operation']
 
   useEffect(() => {
     // console.log(searchParams)
@@ -159,8 +154,19 @@ const Summary = () => {
     dispatch(setSetupData({ name: 'endDate', value: endDate }))
   }, [searchParams, dispatch, assetNames])
 
+  const [currentHighlight, setCurrentHighlight] = useState({
+    volumeType: "Gas",
+    flowstation: "",
+    highlightType: ""
+  })
+  const currentNote = useMemo(() => {
+    const result = notes?.[currentHighlight.volumeType.toLowerCase()]?.find(note => note?.flowstation === currentHighlight.flowstation)?.highlight?.[currentHighlight.highlightType?.toLowerCase()]
+    if (!result) return "No highlight!"
+      return result
+
+  }, [currentHighlight.flowstation, currentHighlight.highlightType, currentHighlight.volumeType, notes])
   return (
-    <div className='relative' >
+    <div className='relative !z-[1000] ' >
       <div className='w-full flex flex-row justify-between p-4' >
         <div onClick={() => setShowChart(!showChart)} className='w-[100px] h-[40px] bg-[#FAFAFA] cursor-pointer rounded-2xl border-2 flex items-center gap-2 justify-center' >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -258,32 +264,36 @@ const Summary = () => {
 
       </div>
 
-      <div className='pl-[30px]'>
-        <Text weight={600} size={16}>
-          Highlights   </Text> <br />
-        <div>
-          <Text weight={600} size={14}>Gas :</Text>
-          {notes?.gasNote?.map(note => (
-            <div>
-              <Text weight={600} > {note.flowstation}  </Text>
-              <div> <Text weight={500}> Production Highlight</Text> : { <div dangerouslySetInnerHTML={{ __html: note?.highlight?.production || "N/A" }} /> }</div>
-              <div> <Text weight={500}>Operation Highlight</Text> : { <div dangerouslySetInnerHTML={{ __html: note?.highlight?.operation || "N/A" }} /> }</div>
-              <div> <Text weight={500}> Maintenance Highlight</Text> : { <div dangerouslySetInnerHTML={{ __html: note?.highlight?.maintenance }} /> || "N/A"}</div>
-            </div>
-          ))}
-
+      <div className=' border flex rounded m-4 !min-h-[200px]'>
+        <div className='w-[20%] border-r p-2'>
+          <Text weight={600} size={16}> Highlights   </Text>
+          <RadioSelect list={['Gas', 'Liquid']} defaultValue={currentHighlight.volumeType} onChange={(e) => setCurrentHighlight(prev => ({ ...prev, volumeType: e }))} />
+          <Input type='select' options={notes.gas.map(note => ({ label: note.flowstation, value: note?.flowstation }))} containerClass={'w-[100px]'} onChange={(e) => setCurrentHighlight(prev => ({ ...prev, flowstation: e.value }))} />
+          <Input type='select' options={highlightTypes.map(highlightType => ({ label: highlightType, value: highlightType }))} containerClass={'w-[100px] mt-4'} onChange={(e) => setCurrentHighlight(prev => ({ ...prev, highlightType: e.value }))} />
         </div>
-        <div>
-          <Text weight={600} size={14}>Liquid :</Text>
-          {notes?.liquidNote?.map(note => (
-            <div>
-              <Text weight={600} > {note.flowstation}  </Text>
-              <div> <Text weight={500}> Production Highlight</Text> : { <div dangerouslySetInnerHTML={{ __html: note?.highlight?.production || "N/A" }} /> }</div>
-              <div> <Text weight={500}>Operation Highlight</Text> : { <div dangerouslySetInnerHTML={{ __html: note?.highlight?.operation || "N/A" }} /> }</div>
-              <div> <Text weight={500}> Maintenance Highlight</Text> : { <div dangerouslySetInnerHTML={{ __html: note?.highlight?.maintenance || "N/A" }} /> }</div>
-            </div>
-          ))}
-
+        <div className='w-[80%] p-2'>
+          <Text weight={600} size={16}> {currentHighlight.highlightType} highlight for {currentHighlight.flowstation}({currentHighlight.volumeType}) :</Text> <br />
+          {<div dangerouslySetInnerHTML={{ __html: currentNote }} />}
+          {/* {currentHighlight.volumeType === 'Gas' && <div>
+            {notes?.gas?.map(note => (
+              <div>
+                <Text weight={600} > {note.flowstation}  </Text>
+                <div> <Text weight={500}> Production Highlight</Text> : {<div dangerouslySetInnerHTML={{ __html: note?.highlight?.production || "N/A" }} />}</div>
+                <div> <Text weight={500}>Operation Highlight</Text> : {<div dangerouslySetInnerHTML={{ __html: note?.highlight?.operation || "N/A" }} />}</div>
+                <div> <Text weight={500}> Maintenance Highlight</Text> : {<div dangerouslySetInnerHTML={{ __html: note?.highlight?.maintenance }} /> || "N/A"}</div>
+              </div>
+            ))}
+          </div>}
+          {currentHighlight.volumeType === 'Liquid' && <div>
+            {notes?.liquid?.map(note => (
+              <div>
+                <Text weight={600} > {note.flowstation}  </Text>
+                <div> <Text weight={500}> Production Highlight</Text> : {<div dangerouslySetInnerHTML={{ __html: note?.highlight?.production || "N/A" }} />}</div>
+                <div> <Text weight={500}>Operation Highlight</Text> : {<div dangerouslySetInnerHTML={{ __html: note?.highlight?.operation || "N/A" }} />}</div>
+                <div> <Text weight={500}> Maintenance Highlight</Text> : {<div dangerouslySetInnerHTML={{ __html: note?.highlight?.maintenance }} /> || "N/A"}</div>
+              </div>
+            ))}
+          </div>} */}
         </div>
 
 
