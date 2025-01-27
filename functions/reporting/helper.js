@@ -53,8 +53,8 @@ function aggregateDeferment(data) {
 
   for (let item of data) {
     // Add the total
-    totalOil += item.totalOilDeferment || 0;
-    totalGas += item.totalGasDeferment || 0;
+    totalOil += item.deferment.totalOilDeferment || 0;
+    totalGas += item.deferment.totalGasDeferment || 0;
 
     for (let deferment of item.deferment.drainagePoints) {
       // Create the daily data
@@ -67,11 +67,11 @@ function aggregateDeferment(data) {
       const date = new Date(item.date);
 
       // Aggregation Monthly Data based on Drainage Point
-      const monthYear = `${date.getUTCMonth() + 1}-${date.getFullYear()}`;
+      const monthYear = `${date.getFullYear()}-${date.getUTCMonth() + 1}`;
       const key = `${deferment.productionString}-${deferment.defermentCategory}-${deferment.defermentSubCategory}-${monthYear}`;
       if (!monthlyMap.has(key)) {
         monthlyData.push({
-          date: `01-${monthYear}`,
+          date: `${monthYear}-01`,
           flowstation: item.flowStation,
           ...deferment,
         });
@@ -91,7 +91,7 @@ function aggregateDeferment(data) {
 
       if (!yearlyMap.has(yearKey)) {
         yearlyData.push({
-          date: `01-01-${year}`,
+          date: `${year}-01-01`,
           flowstation: item.flowStation,
           ...deferment,
         });
@@ -122,45 +122,61 @@ function aggregateDeferment(data) {
       subGasThirdParty: {},
     };
 
-    res.totalOilScheduled = item.oilScheduledDeferment?.total || 0;
-    res.totalOilUnscheduled = item.oilUnscheduledDeferment?.total || 0;
-    res.totalOilThirdParty = item.oilThirdPartyDeferment?.total || 0;
-    res.totalGasScheduled = item.gasScheduledDeferment?.total || 0;
-    res.totalGasUnscheduled = item.gasUnscheduledDeferment?.total || 0;
-    res.totalGasThirdParty = item.gasThirdPartyDeferment?.total || 0;
+    res.totalOilScheduled = item.deferment.oilScheduledDeferment?.total || 0;
+    res.totalOilUnscheduled =
+      item.deferment.oilUnscheduledDeferment?.total || 0;
+    res.totalOilThirdParty = item.deferment.oilThirdPartyDeferment?.total || 0;
+    res.totalGasScheduled = item.deferment.gasScheduledDeferment?.total || 0;
+    res.totalGasUnscheduled =
+      item.deferment.gasUnscheduledDeferment?.total || 0;
+    res.totalGasThirdParty = item.deferment.gasThirdPartyDeferment?.total || 0;
 
-    let keys = Object.keys(item.oilScheduledDeferment?.subcategories || {});
+    let keys = Object.keys(
+      item.deferment.oilScheduledDeferment?.subcategories || {}
+    );
     keys.forEach((key) => {
-      res.subOilScheduled[key] = item.oilScheduledDeferment.subcategories[key];
+      res.subOilScheduled[key] =
+        item.deferment.oilScheduledDeferment.subcategories[key];
     });
 
-    keys = Object.keys(item.oilUnscheduledDeferment?.subcategories || {});
+    keys = Object.keys(
+      item.deferment.oilUnscheduledDeferment?.subcategories || {}
+    );
     keys.forEach((key) => {
       res.subOilUnscheduled[key] =
-        item.oilUnscheduledDeferment.subcategories[key];
+        item.deferment.oilUnscheduledDeferment.subcategories[key];
     });
 
-    keys = Object.keys(item.oilThirdPartyDeferment?.subcategories || {});
+    keys = Object.keys(
+      item.deferment.oilThirdPartyDeferment?.subcategories || {}
+    );
     keys.forEach((key) => {
       res.subOilUnscheduled[key] =
-        item.oilThirdPartyDeferment.subcategories[key];
+        item.deferment.oilThirdPartyDeferment.subcategories[key];
     });
 
-    keys = Object.keys(item.gasScheduledDeferment?.subcategories || {});
+    keys = Object.keys(
+      item.deferment.gasScheduledDeferment?.subcategories || {}
+    );
     keys.forEach((key) => {
-      res.subGasScheduled[key] = item.gasScheduledDeferment.subcategories[key];
+      res.subGasScheduled[key] =
+        item.deferment.gasScheduledDeferment.subcategories[key];
     });
 
-    keys = Object.keys(item.gasUnscheduledDeferment?.subcategories || {});
+    keys = Object.keys(
+      item.deferment.gasUnscheduledDeferment?.subcategories || {}
+    );
     keys.forEach((key) => {
       res.subGasUnscheduled[key] =
-        item.gasUnscheduledDeferment.subcategories[key];
+        item.deferment.gasUnscheduledDeferment.subcategories[key];
     });
 
-    keys = Object.keys(item.oilThirdPartyDeferment?.subcategories || {});
+    keys = Object.keys(
+      item.deferment.oilThirdPartyDeferment?.subcategories || {}
+    );
     keys.forEach((key) => {
       res.subOilUnscheduled[key] =
-        item.oilThirdPartyDeferment.subcategories[key];
+        item.deferment.oilThirdPartyDeferment.subcategories[key];
     });
 
     dailyAggregate.push(res);
