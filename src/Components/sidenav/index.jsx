@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 // import Img152 from '../../Assets/images/newcross152.svg'
 // import { useSelector } from "react-redux";
 
-import { images, permissions } from "Assets";
+import { permissions } from "Assets";
 import Text from "Components/Text";
 import {
   Bubble,
