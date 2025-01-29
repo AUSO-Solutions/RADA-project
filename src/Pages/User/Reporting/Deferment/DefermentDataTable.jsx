@@ -140,78 +140,77 @@ const DefermentDataTable = () => {
                 Deferment Description
               </TableCell>
             </TableRow>
-            <TableRow
-              style={{
-                position: "sticky",
-                top: 0,
-                zIndex: 1, // Ensure it's above other rows
-              }}
-            >
-              <TableCell
-                style={{ fontWeight: "600" }}
-                align="center"
-                colSpan={2}
-                sx={headerStyle}
-              ></TableCell>
-              <TableCell
-                style={{ fontWeight: "600" }}
-                align="center"
-                colSpan={2}
-                sx={headerStyle}
-              ></TableCell>
-              <TableCell
-                style={{ fontWeight: "600" }}
-                align="center"
-                colSpan={2}
-                sx={headerStyle}
-              ></TableCell>
-              <TableCell
-                style={{ fontWeight: "600" }}
-                align="center"
-                colSpan={2}
-                sx={headerStyle}
-              >
-                {defermentData.frequency === "Day" ? "hour" : "day"}
-              </TableCell>
-              <TableCell
-                style={{ fontWeight: "600" }}
-                align="center"
-                colSpan={2}
-                sx={headerStyle}
-              >
-                blpd
-              </TableCell>
-              <TableCell
-                style={{ fontWeight: "600" }}
-                align="center"
-                colSpan={2}
-                sx={headerStyle}
-              >
-                bopd
-              </TableCell>
-              <TableCell
-                style={{ fontWeight: "600" }}
-                align="center"
-                colSpan={2}
-                sx={headerStyle}
-              >
-                MMscf/d
-              </TableCell>
-              <TableCell
-                style={{ fontWeight: "600" }}
-                align="center"
-                colSpan={2}
-                sx={headerStyle}
-              ></TableCell>
-              <TableCell
-                style={{ fontWeight: "600" }}
-                align="center"
-                colSpan={2}
-                sx={headerStyle}
-              ></TableCell>
-            </TableRow>
           </TableHead>
-
+          <TableRow
+          // style={{
+          //   position: "sticky",
+          //   top: 0,
+          //   zIndex: 1, // Ensure it's above other rows
+          // }}
+          >
+            <TableCell
+              style={{ fontWeight: "600" }}
+              align="center"
+              colSpan={2}
+              sx={headerStyle}
+            ></TableCell>
+            <TableCell
+              style={{ fontWeight: "600" }}
+              align="center"
+              colSpan={2}
+              sx={headerStyle}
+            ></TableCell>
+            <TableCell
+              style={{ fontWeight: "600" }}
+              align="center"
+              colSpan={2}
+              sx={headerStyle}
+            ></TableCell>
+            <TableCell
+              style={{ fontWeight: "600" }}
+              align="center"
+              colSpan={2}
+              sx={headerStyle}
+            >
+              {defermentData.frequency === "Day" ? "hour" : "day"}
+            </TableCell>
+            <TableCell
+              style={{ fontWeight: "600" }}
+              align="center"
+              colSpan={2}
+              sx={headerStyle}
+            >
+              blpd
+            </TableCell>
+            <TableCell
+              style={{ fontWeight: "600" }}
+              align="center"
+              colSpan={2}
+              sx={headerStyle}
+            >
+              bopd
+            </TableCell>
+            <TableCell
+              style={{ fontWeight: "600" }}
+              align="center"
+              colSpan={2}
+              sx={headerStyle}
+            >
+              MMscf/d
+            </TableCell>
+            <TableCell
+              style={{ fontWeight: "600" }}
+              align="center"
+              colSpan={2}
+              sx={headerStyle}
+            ></TableCell>
+            <TableCell
+              style={{ fontWeight: "600" }}
+              align="center"
+              colSpan={2}
+              sx={headerStyle}
+            ></TableCell>
+          </TableRow>
           <TableBody>
             {tableData
               .filter((well) =>

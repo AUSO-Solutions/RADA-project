@@ -1,21 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import RadioSelect from "Pages/User/FieldDataCapture/DailyoOperation/RadioSelect";
-import {
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  Line,
-  ResponsiveContainer,
-  ComposedChart,
-} from "recharts";
 import { roundUp } from "utils";
-import Text from "Components/Text";
 import dayjs from "dayjs";
 import RadaPieChart from "./PieChart";
+import BarChart from "./BarChart";
 
 const DefermentChart = () => {
   const query = useSelector((state) => state?.setup);
@@ -327,8 +316,6 @@ const DefermentChart = () => {
     }
   }, [dateFormat, defermentData, fluidType]);
 
-  console.log(chartData);
-
   return (
     <div className="relative">
       <div className="flex justify-start gap-4 pt-4">
@@ -343,104 +330,35 @@ const DefermentChart = () => {
         {defermentData.chartType === "Production Deferment Profile" ? (
           <div className="w-full pr-4">
             <div className="h-full w-full bg-[#fafafa]">
-              <div className="w-full flex justify-center items-center">
-                <Text size={"18px"} weight={"600"}>{`${fluidType} ${
-                  defermentData.chartType
-                } for ${query?.asset || "OML 24"} (${
+              <BarChart
+                chartData={chartData}
+                fluidType={fluidType}
+                title={`${query?.asset} ${
+                  query.flowstation && query.flowstation !== "All"
+                    ? `- ${query.flowstation}`
+                    : ""
+                } ${fluidType} ${defermentData.chartType} (${
                   fluidType === "Net Oil/Condensate" ? "bopd" : "MMscf/d"
-                })`}</Text>
-              </div>
-
-              <ResponsiveContainer width="100%" height={450}>
-                <ComposedChart
-                  data={chartData}
-                  width={"100%"}
-                  height={"100%"}
-                  margin={{ top: 20, right: 20, left: 0, bottom: 0 }}
-                >
-                  <CartesianGrid strokeDasharray={"3 3"} />
-                  <XAxis dataKey={"x"} />
-                  <YAxis />
-                  <YAxis
-                    yAxisId={"right"}
-                    orientation="right"
-                    // domain={["dataMin", "dataMax"]}
-                  />
-                  <Tooltip />
-                  <Legend verticalAlign="bottom" align="center" height={36} />
-
-                  <Bar
-                    dataKey="Scheduled Deferment"
-                    stackId="a"
-                    fill="purple"
-                  />
-                  <Bar dataKey="Unscheduled Deferment" stackId="a" fill="red" />
-                  <Bar
-                    dataKey="Third-Party Deferment"
-                    stackId="a"
-                    fill="blue"
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey={
-                      fluidType === "Net Oil/Condensate"
-                        ? "Total Oil"
-                        : "Total Gas"
-                    }
-                    stroke="#FF8042"
-                    strokeWidth={2}
-                    yAxisId={"right"}
-                  />
-                </ComposedChart>
-              </ResponsiveContainer>
-
-              {/* <ResponsiveContainer width="100%" height={450}>
-                <BarChart
-                  width={"100%"}
-                  height={"100%"}
-                  data={chartData}
-                  margin={{ top: 20, right: 20, left: 0, bottom: 0 }}
-                >
-                  <CartesianGrid strokeDasharray={"3 3"} />
-                  <XAxis dataKey={"x"} />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend verticalAlign="bottom" align="center" height={36} />
-                  <Bar
-                    dataKey="Scheduled Deferment"
-                    stackId="a"
-                    fill="purple"
-                  />
-                  <Bar dataKey="Unscheduled Deferment" stackId="a" fill="red" />
-                  <Bar
-                    dataKey="Third-Party Deferment"
-                    stackId="a"
-                    fill="blue"
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey={
-                      fluidType === "Net Oil/Condensate"
-                        ? "Total Oil"
-                        : "Total Gas"
-                    }
-                    stroke="#FF8042"
-                    strokeWidth={2}
-                  />
-                </BarChart>
-              </ResponsiveContainer> */}
+                })`}
+              />
             </div>
           </div>
         ) : (
           <RadaPieChart
             data={pieData.data}
             colors={pieData.colors}
-            title={`${fluidType} ${defermentData.chartType} for ${
-              query?.asset || "OML 24"
-            } (${fluidType === "Net Oil/Condensate" ? "bopd" : "MMscf/d"})`}
-            title_empty={`No ${fluidType} ${
-              defermentData.chartType
-            } Data for in ${query?.asset || "OML 24"}`}
+            title={`${query?.asset} ${
+              query.flowstation && query.flowstation !== "All"
+                ? `- ${query.flowstation}`
+                : ""
+            } ${fluidType} ${defermentData.chartType} (${
+              fluidType === "Net Oil/Condensate" ? "bopd" : "MMscf/d"
+            })`}
+            title_empty={`No Data for ${query?.asset} ${
+              query.flowstation && query.flowstation !== "All"
+                ? `- ${query.flowstation}`
+                : ""
+            } ${fluidType} ${defermentData.chartType}`}
           />
         )}
       </div>
