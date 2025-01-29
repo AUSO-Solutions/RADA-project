@@ -280,21 +280,14 @@ function aggregateDeferment(data) {
   for (let item of dailyAggregate) {
     const date = new Date(item.date);
     const monthYear = `${date.getUTCMonth() + 1}-${date.getFullYear()}`;
-    let prev = monthlyAggregate.length - 1;
     if (!monthlyAggregateMap.has(monthYear)) {
-      monthlyAggregate.push({
-        ...item,
-        totalOil:
-          item.totalOil + prev > -1 ? monthlyAggregate[prev]?.totalOil : 0,
-        totalGas:
-          item.totalGas + prev > -1 ? monthlyAggregate[prev]?.totalGas : 0,
-      });
+      monthlyAggregate.push(item);
       monthlyAggregateMap.set(monthYear, monthlyAggregateIndex);
       monthlyAggregateIndex++;
     } else {
       let index = monthlyAggregateMap.get(monthYear);
-      monthlyAggregate[index].totalOil += item.totalOil;
-      monthlyAggregate[index].totalGas += item.totalGas;
+      monthlyAggregate[index].totalOil = item.totalOil;
+      monthlyAggregate[index].totalGas = item.totalGas;
       monthlyAggregate[index].totalOilScheduled += item.totalOilScheduled;
       monthlyAggregate[index].totalOilUnscheduled += item.totalOilUnscheduled;
       monthlyAggregate[index].totalOilThirdParty += item.totalOilThirdParty;
@@ -307,21 +300,15 @@ function aggregateDeferment(data) {
   for (let item of monthlyAggregate) {
     const date = new Date(item.date);
     const year = date.getFullYear();
-    let prev = yearlyAggregate.length - 1;
+
     if (!yearlyAggregateMap.has(year)) {
-      yearlyAggregate.push({
-        ...item,
-        totalOil:
-          item.totalOil + prev > -1 ? yearlyAggregate[prev]?.totalOil : 0,
-        totalGas:
-          item.totalGas + prev > -1 ? yearlyAggregate[prev]?.totalGas : 0,
-      });
+      yearlyAggregate.push(item);
       yearlyAggregateMap.set(year, yearlyAggregateIndex);
       yearlyAggregateIndex++;
     } else {
       let index = yearlyAggregateMap.get(year);
-      yearlyAggregate[index].totalGas += item.totalGas;
-      yearlyAggregate[index].totalOil += item.totalOil;
+      yearlyAggregate[index].totalGas = item.totalGas;
+      yearlyAggregate[index].totalOil = item.totalOil;
       yearlyAggregate[index].totalOilScheduled += item.totalOilScheduled;
       yearlyAggregate[index].totalOilUnscheduled += item.totalOilUnscheduled;
       yearlyAggregate[index].totalOilThirdParty += item.totalOilThirdParty;
