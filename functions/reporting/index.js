@@ -30,11 +30,6 @@ const getDefermentData = onCall(async (request) => {
     const endDate_ = dayjs(endDate).format("YYYY-MM-DD");
 
     let dates = getDatesBetween(startDate_, endDate_);
-    // if (!startDate || !endDate) {
-    //   dates = getDatesForCurrentMonth();
-    // } else {
-    //   dates = getDatesBetween();
-    // }
 
     const start = dayjs(dates[0]).format("YYYY-MM-DD");
     const end = dayjs(dates[dates.length - 1]).format("YYYY-MM-DD");
@@ -45,7 +40,7 @@ const getDefermentData = onCall(async (request) => {
       .where("asset", "==", asset)
       .where("date", ">=", start)
       .where("date", "<=", end);
-    if (flowstation) {
+    if (flowstation && flowstation !== "All") {
       query = query.where("flowStation", "==", flowstation);
     }
     query = query.orderBy("date");
@@ -54,7 +49,6 @@ const getDefermentData = onCall(async (request) => {
       (doc) => doc?.data() || {}
     );
     const result = aggregateDeferment(deferments);
-    console.log(result);
     return { status: "success", data: JSON.stringify(result) };
   } catch (error) {
     console.log({ error });
