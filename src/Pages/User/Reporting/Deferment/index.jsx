@@ -364,6 +364,12 @@ const DefermentReport = () => {
                   })
                 );
                 dispatch(
+                  setSetupData({
+                    name: "flowstation",
+                    value: "All",
+                  })
+                );
+                dispatch(
                   setDefermentData({
                     name: "flowstation",
                     value: "All",
@@ -425,31 +431,35 @@ const DefermentReport = () => {
             }}
           />
 
-          <div className="flex items-center justify-normal gap-1">
-            <div className="text-4">Frequency</div>
-            <div className="w-[120px]">
-              <Input
-                placeholder={"Day"}
-                required
-                type="select"
-                options={aggregationFrequency?.map((freq) => ({
-                  value: freq,
-                  label: freq,
-                }))}
-                onChange={(e) => {
-                  setFrequency(e?.value);
-                  dispatch(
-                    setDefermentData({
-                      name: "frequency",
-                      value: e?.value,
-                    })
-                  );
-                }}
-                value={{ value: frequency, label: frequency }}
-                defaultValue={"Day"}
-              />
+          {((defermentData.chartType === "Production Deferment Profile" &&
+            tab === 1) ||
+            tab === 0) && (
+            <div className="flex items-center justify-normal gap-1">
+              <div className="text-4">Frequency</div>
+              <div className="w-[120px]">
+                <Input
+                  placeholder={"Day"}
+                  required
+                  type="select"
+                  options={aggregationFrequency?.map((freq) => ({
+                    value: freq,
+                    label: freq,
+                  }))}
+                  onChange={(e) => {
+                    setFrequency(e?.value);
+                    dispatch(
+                      setDefermentData({
+                        name: "frequency",
+                        value: e?.value,
+                      })
+                    );
+                  }}
+                  value={{ value: frequency, label: frequency }}
+                  defaultValue={"Day"}
+                />
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
       {tabs[tab].Component}
@@ -533,15 +543,3 @@ const PDFComponent = ({ data }) => {
     </Document>
   );
 };
-
-//   return (
-//     <div>
-//       {/* The PDFDownloadLink component allows the user to download the generated PDF */}
-// <PDFDownloadLink document={<MyDocument />} fileName="table.pdf">
-//   {({ loading }) => (loading ? 'Loading document...' : 'Download PDF')}
-// </PDFDownloadLink>
-//     </div>
-//   );
-// };
-
-// export default ExportPDF;

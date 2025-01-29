@@ -1,5 +1,12 @@
 import React from "react";
-import { PieChart, Pie, Tooltip, Cell, Legend, Label } from "recharts";
+import {
+  PieChart,
+  Pie,
+  Tooltip,
+  Cell,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 import Text from "Components/Text";
 
 const RadaPieChart = ({ data, title, colors, title_empty }) => {
@@ -20,37 +27,36 @@ const RadaPieChart = ({ data, title, colors, title_empty }) => {
               </Text>
             </div>
             <div className="w-full flex items-center justify-center">
-              <PieChart width={500} height={500}>
-                <Pie
-                  data={data}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={150}
-                  fill="#8884d8"
-                  label
-                  // paddingAngle={1}
-                >
-                  {data.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={colors[index]} />
-                  ))}
-                  {/* {data.map((entry, index) => (
-                    <Label
-                      value={(entry) =>
-                        `${entry.value} (${((entry.value / 1200) * 100).toFixed(
-                          2
-                        )}%)`
-                      }
-                      position="center"
-                      fill="#fff"
-                      key={`${entry.name}`}
-                    />
-                  ))} */}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
+              <ResponsiveContainer width={"100%"} height={420}>
+                <PieChart>
+                  <Pie
+                    data={data}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    // innerRadius={60}
+                    outerRadius={180}
+                    fill="#8884d8"
+                    // paddingAngle={2}
+                    label={({ name, value, percent }) =>
+                      `${name}: ${value.toFixed(2)} (${(percent * 100).toFixed(
+                        1
+                      )}%)`
+                    }
+                  >
+                    {data.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={colors[index]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend
+                    layout="vertical"
+                    align="right"
+                    verticalAlign="middle"
+                  />
+                </PieChart>
+              </ResponsiveContainer>
             </div>
           </>
         )}
