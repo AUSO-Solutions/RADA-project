@@ -334,8 +334,59 @@ function aggregateDeferment(data) {
   };
 }
 
+function aggregateActualProduction(data) {
+  const monthlyMap = new Map();
+  let monthlyIndex = 0;
+  let monthlyData = [];
+
+  let dailyData = [];
+
+  for (let item of data) {
+    for (let production of item.productionData) {
+      // Create the daily data
+      dailyData.push({
+        date: item.date,
+        flowstation: item.flowStation,
+        ...production,
+      });
+
+      const date = new Date(item.date);
+
+      // Aggregation Monthly Data based on Drainage Point
+      const monthYear = `${date.getFullYear()}-${date.getUTCMonth() + 1}`;
+      const key = `${production.productionString}-${monthYear}`;
+      if (!monthlyMap.has(key)) {
+        monthlyData.push({
+          date: `${monthYear}-01`,
+          flowstation: item.flowStation,
+          tph: production.thp || 0,
+          bean: production.bean || 0,
+          ...production,
+        });
+        monthlyMap.set(key, monthlyIndex);
+        monthlyIndex++;
+      } else {
+        let index = monthlyMap.get(key);
+        monthlyData[index].uptimeProduction +=
+          production?.uptimeProduction || 0;
+        monthlyData[index].gross += production.gross || 0;
+        monthlyData[index].oil += production.oil || 0;
+        monthlyData[index].gas += production.gas || 0;
+        monthlyData[index].water += production.water || 0;
+        monthlyData[index].thp = production.thp || 0;
+        monthlyData[index].bean = production.bean || 0;
+      }
+    }
+  }
+  return {
+    dailyData,
+    monthlyData,
+  };
+}
+
 module.exports = {
   getDatesForCurrentMonth,
   getDatesBetween,
   aggregateDeferment,
+  aggregateActualProduction,
 };

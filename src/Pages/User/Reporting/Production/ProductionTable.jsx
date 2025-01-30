@@ -16,41 +16,38 @@ const headerStyle = {
   fontWeight: "bold  !important",
 };
 
-const DefermentDataTable = () => {
-  const defermentData = useSelector((state) => state?.deferments);
+const ReconciledProductionDataTable = () => {
+  const productionData = useSelector((state) => state?.reconciledProduction);
   const [dateFormat, setDateFormat] = useState("DD-MM-YYYY");
 
   const initialState = () => {
-    if (defermentData.frequency === "Month") {
-      return defermentData.monthlyData || [];
-    } else if (defermentData.frequency === "Year") {
-      return defermentData.yearlyData || [];
+    if (productionData.frequency === "Month") {
+      return productionData.monthlyData || [];
     } else {
-      return defermentData.dailyData || [];
+      return productionData.dailyData || [];
     }
   };
+  console.log(productionData);
 
   const [tableData, setTableData] = useState(initialState);
 
   useEffect(() => {
-    if (defermentData?.frequency === "Month") {
-      setTableData(defermentData.monthlyData || []);
-    } else if (defermentData?.frequency === "Year") {
-      setTableData(defermentData.yearlyData || []);
+    if (productionData?.frequency === "Month") {
+      setTableData(productionData.monthlyData || []);
     } else {
-      setTableData(defermentData.dailyData || []);
+      setTableData(productionData.dailyData || []);
     }
-  }, [defermentData]);
+  }, [productionData]);
 
   useEffect(() => {
-    if (defermentData.frequency === "Day") {
+    if (productionData.frequency === "Day") {
       setDateFormat("DD-MM-YYYY");
-    } else if (defermentData.frequency === "Month") {
+    } else if (productionData.frequency === "Month") {
       setDateFormat("MMM YYYY");
     } else {
       setDateFormat("YYYY");
     }
-  }, [defermentData.frequency]);
+  }, [productionData.frequency]);
 
   return (
     <div className="relative">
@@ -166,7 +163,7 @@ const DefermentDataTable = () => {
               colSpan={2}
               sx={headerStyle}
             >
-              {defermentData.frequency === "Day" ? "hour" : "day"}
+              {productionData.frequency === "Day" ? "hour" : "day"}
             </TableCell>
             <TableCell
               style={{ fontWeight: "600" }}
@@ -208,8 +205,8 @@ const DefermentDataTable = () => {
           <TableBody>
             {tableData
               .filter((well) =>
-                defermentData.flowstation !== "All"
-                  ? defermentData.flowstation === well.flowstation
+                productionData.flowstation !== "All"
+                  ? productionData.flowstation === well.flowstation
                   : true
               )
               .sort((a, b) =>
@@ -228,7 +225,7 @@ const DefermentDataTable = () => {
                   </TableCell>
                   <TableCell align="center" colSpan={2}>
                     {roundUp(
-                      defermentData.frequency === "Day"
+                      productionData.frequency === "Day"
                         ? well?.downtime
                         : well?.downtime / 24.0
                     )}
@@ -257,4 +254,4 @@ const DefermentDataTable = () => {
   );
 };
 
-export default DefermentDataTable;
+export default ReconciledProductionDataTable;
