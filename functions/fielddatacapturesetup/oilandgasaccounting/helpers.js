@@ -5,14 +5,16 @@ const computeProdDeduction = (potentialData, flowstationData) => {
   let totalUptimeGas = 0;
 
   let uptimeProduction = [];
-  console.log(flowstationData);
   // Estimate Uptime Production
   potentialData.forEach((prodString) => {
     // Estimate uptime gross
     const fractionalUptime = parseFloat(prodString.uptimeProduction || 0) / 24;
     const gross = fractionalUptime * parseFloat(prodString.gross);
     const oil = fractionalUptime * parseFloat(prodString.oilRate);
-    const water = fractionalUptime * parseFloat(prodString.gross) * (parseFloat(prodString.bsw) / 100);
+    const water =
+      fractionalUptime *
+      parseFloat(prodString.gross) *
+      (parseFloat(prodString.bsw) / 100);
     const gas = fractionalUptime * parseFloat(prodString.gasRate);
 
     // Get the running subtotal
@@ -28,6 +30,8 @@ const computeProdDeduction = (potentialData, flowstationData) => {
       status: prodString.status,
       uptimeProduction: prodString.uptimeProduction,
       remark: prodString.remark,
+      thp: prodString.thp,
+      bean: prodString.bean,
       gross,
       oil,
       gas,
@@ -42,8 +46,9 @@ const computeProdDeduction = (potentialData, flowstationData) => {
     const gross = (prodString.gross / totalUptimeGross) * flowstationData.gross;
     const oil =
       (prodString.oil / totalUptimeNet) * flowstationData.netProduction;
-    const waterRF = (prodString.water / totalUptimeWater)
-    const water = waterRF * (flowstationData.gross - flowstationData.netProduction);
+    const waterRF = prodString.water / totalUptimeWater;
+    const water =
+      waterRF * (flowstationData.gross - flowstationData.netProduction);
     const gas = (prodString.gas / totalUptimeGas) * flowstationData.gas;
 
     // console.log({ water, waterRF })
@@ -54,15 +59,17 @@ const computeProdDeduction = (potentialData, flowstationData) => {
       status: prodString.status,
       uptimeProduction: prodString.uptimeProduction,
       remark: prodString.remark,
+      thp: prodString.thp,
+      bean: prodString.bean,
       gross,
       oil,
       gas,
       water,
-      waterRF
+      waterRF,
     });
   });
 
-  console.log(actualProduction)
+  console.log(actualProduction);
 
   // Estimate Deductions
   const drainagePoints = [];
@@ -80,15 +87,14 @@ const computeProdDeduction = (potentialData, flowstationData) => {
   let waterThirdPartyDeferment = { total: 0, subcategories: {} };
 
   for (let i = 0; i < potentialData.length; i++) {
-    const gross_ = potentialData[i].gross - actualProduction[i].gross
+    const gross_ = potentialData[i].gross - actualProduction[i].gross;
     const gross = gross_ > 0 ? gross_ : 0;
-    const oil_ = potentialData[i].oilRate - actualProduction[i].oil
+    const oil_ = potentialData[i].oilRate - actualProduction[i].oil;
     const oil = oil_ > 0 ? oil_ : 0;
     const water = potentialData[i].waterRate - actualProduction[i].water;
-    const gas_ = potentialData[i].gasRate - actualProduction[i].gas
+    const gas_ = potentialData[i].gasRate - actualProduction[i].gas;
     const gas = gas_ > 0 ? gas_ : 0;
     const downtime = 24 - potentialData[i].uptimeProduction;
-
 
     const productionString = potentialData[i].productionString;
     const defermentCategory = potentialData[i].defermentCategory;
