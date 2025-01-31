@@ -16,38 +16,27 @@ const headerStyle = {
   fontWeight: "bold  !important",
 };
 
-const ReconciledProductionDataTable = () => {
+const ReconciledProductionDataTable = ({
+  monthlyData,
+  dailyData,
+  frequency,
+}) => {
   const productionData = useSelector((state) => state?.reconciledProduction);
   const [dateFormat, setDateFormat] = useState("DD-MM-YYYY");
 
-  const initialState = () => {
-    if (productionData.frequency === "Month") {
-      return productionData.monthlyData || [];
-    } else {
-      return productionData.dailyData || [];
-    }
-  };
-  console.log(productionData);
-
-  const [tableData, setTableData] = useState(initialState);
+  const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
-    if (productionData?.frequency === "Month") {
-      setTableData(productionData.monthlyData || []);
-    } else {
-      setTableData(productionData.dailyData || []);
-    }
-  }, [productionData]);
-
-  useEffect(() => {
-    if (productionData.frequency === "Day") {
-      setDateFormat("DD-MM-YYYY");
-    } else if (productionData.frequency === "Month") {
+    if (frequency === "Month") {
+      setTableData(monthlyData || []);
       setDateFormat("MMM YYYY");
     } else {
-      setDateFormat("YYYY");
+      setTableData(dailyData || []);
+      setDateFormat("DD-MM-YYYY");
     }
-  }, [productionData.frequency]);
+  }, [dailyData, frequency, monthlyData]);
+
+  console.log({ tableData, frequency, monthlyData, dailyData });
 
   return (
     <div className="relative">
@@ -94,7 +83,23 @@ const ReconciledProductionDataTable = () => {
                 colSpan={2}
                 sx={headerStyle}
               >
-                Downtime
+                Uptime
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                colSpan={2}
+                sx={headerStyle}
+              >
+                Bean-size
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                colSpan={2}
+                sx={headerStyle}
+              >
+                THP
               </TableCell>
               <TableCell
                 style={{ fontWeight: "600" }}
@@ -118,23 +123,15 @@ const ReconciledProductionDataTable = () => {
                 colSpan={2}
                 sx={headerStyle}
               >
+                Water
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                colSpan={2}
+                sx={headerStyle}
+              >
                 Gas
-              </TableCell>
-              <TableCell
-                style={{ fontWeight: "600" }}
-                align="center"
-                colSpan={2}
-                sx={headerStyle}
-              >
-                Deferment Category
-              </TableCell>
-              <TableCell
-                style={{ fontWeight: "600" }}
-                align="center"
-                colSpan={2}
-                sx={headerStyle}
-              >
-                Deferment Description
               </TableCell>
             </TableRow>
           </TableHead>
@@ -171,6 +168,22 @@ const ReconciledProductionDataTable = () => {
               colSpan={2}
               sx={headerStyle}
             >
+              /64
+            </TableCell>
+            <TableCell
+              style={{ fontWeight: "600" }}
+              align="center"
+              colSpan={2}
+              sx={headerStyle}
+            >
+              psi
+            </TableCell>
+            <TableCell
+              style={{ fontWeight: "600" }}
+              align="center"
+              colSpan={2}
+              sx={headerStyle}
+            >
               blpd
             </TableCell>
             <TableCell
@@ -187,28 +200,19 @@ const ReconciledProductionDataTable = () => {
               colSpan={2}
               sx={headerStyle}
             >
-              MMscf/d
+              blpd
             </TableCell>
             <TableCell
               style={{ fontWeight: "600" }}
               align="center"
               colSpan={2}
               sx={headerStyle}
-            ></TableCell>
-            <TableCell
-              style={{ fontWeight: "600" }}
-              align="center"
-              colSpan={2}
-              sx={headerStyle}
-            ></TableCell>
+            >
+              MMscf/d
+            </TableCell>
           </TableRow>
           <TableBody>
             {tableData
-              .filter((well) =>
-                productionData.flowstation !== "All"
-                  ? productionData.flowstation === well.flowstation
-                  : true
-              )
               .sort((a, b) =>
                 a.productionString.localeCompare(b.productionString)
               )
@@ -226,9 +230,15 @@ const ReconciledProductionDataTable = () => {
                   <TableCell align="center" colSpan={2}>
                     {roundUp(
                       productionData.frequency === "Day"
-                        ? well?.downtime
-                        : well?.downtime / 24.0
+                        ? well?.uptimeProduction
+                        : well?.uptimeProduction / 24.0
                     )}
+                  </TableCell>
+                  <TableCell align="center" colSpan={2}>
+                    {well?.bean !== 0 ? well?.bean : ""}
+                  </TableCell>
+                  <TableCell align="center" colSpan={2}>
+                    {well?.thp !== 0 ? well?.thp : ""}
                   </TableCell>
                   <TableCell align="center" colSpan={2}>
                     {roundUp(well?.gross)}
@@ -237,13 +247,10 @@ const ReconciledProductionDataTable = () => {
                     {roundUp(well?.oil)}
                   </TableCell>
                   <TableCell align="center" colSpan={2}>
+                    {roundUp(well?.water)}
+                  </TableCell>
+                  <TableCell align="center" colSpan={2}>
                     {roundUp(well?.gas)}
-                  </TableCell>
-                  <TableCell align="center" colSpan={2}>
-                    {well?.defermentCategory}
-                  </TableCell>
-                  <TableCell align="center" colSpan={2}>
-                    {well?.defermentSubCategory}
                   </TableCell>
                 </TableRow>
               ))}
