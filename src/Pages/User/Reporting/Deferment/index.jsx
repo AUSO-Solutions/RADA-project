@@ -12,17 +12,16 @@ import { Setting2 } from "iconsax-react";
 import { Input } from "Components";
 import { useAssetByName } from "hooks/useAssetByName";
 import DateRangePicker from "Components/DatePicker";
-import { setDefermentData } from "Store/slices/defermentSlice";
 import excelIcon from "Assets/images/excel.svg";
 import pdfIcon from "Assets/images/pdf.svg";
 import * as XLSX from "xlsx";
 import { roundUp } from "utils";
 import {
-  Document,
-  Page,
-  Text,
-  View,
-  StyleSheet,
+  // Document,
+  // Page,
+  // Text,
+  // View,
+  // StyleSheet,
   PDFDownloadLink,
 } from "@react-pdf/renderer";
 
@@ -43,11 +42,20 @@ const DefermentReport = () => {
   const setupData = useSelector((state) => state?.setup);
   const assets = useAssetByName(setupData?.asset);
   const [currFlowstation, setCurrFlowstation] = useState("All");
-  const defermentData = useSelector((state) => state?.deferments);
-  const [frequency, setFrequency] = useState(defermentData.frequency || "Day");
-  const [chartType, setChartType] = useState(
-    defermentData.chartType || "Production Deferment Profile"
-  );
+  const [frequency, setFrequency] = useState("Day");
+  const [chartType, setChartType] = useState("Production Deferment Profile");
+  const [dailyData, setDailyData] = useState([]);
+  const [monthlyData, setMonthlyData] = useState([]);
+  const [yearlyData, setYearlyData] = useState([]);
+  const [dailyAggregate, setDailyAggregate] = useState([]);
+  const [monthlyAggregate, setMonthlyAggregate] = useState([]);
+  const [yearlyAggregate, setYearlyAggregate] = useState([]);
+  const [oilScheduledDeferment, setOilScheduledDeferment] = useState({});
+  const [oilUnscheduledDeferment, setOilUnscheduledDeferment] = useState({});
+  const [oilThirdPartyDeferment, setOilThirdPartyDeferment] = useState({});
+  const [gasScheduledDeferment, setGasScheduledDeferment] = useState({});
+  const [gasUnscheduledDeferment, setGasUnscheduledDeferment] = useState({});
+  const [gasThirdPartyDeferment, setGasThirdPartyDeferment] = useState({});
 
   const res = useFetch({
     firebaseFunction: "getDefermentData",
@@ -68,176 +76,34 @@ const DefermentReport = () => {
     return dayjs(previousDate).format("YYYY-MM-DD");
   };
 
-  const monthlyData = useMemo(() => {
-    if (res?.data?.monthlyData) {
-      Object.values(JSON.parse(res?.data.monthlyData || "") || {});
-    }
-  }, [res?.data]);
-
-  const yearlyData = useMemo(() => {
-    if (res?.data?.yearlyData) {
-      Object.values(JSON.parse(res?.data.yearlyData || "") || {});
-    }
-  }, [res?.data]);
-
-  const dailyData = useMemo(() => {
-    if (res?.data?.dailyData) {
-      Object.values(JSON.parse(res?.data.dailyData || "") || {});
-    }
-  }, [res?.data]);
-
   useEffect(() => {
-    const data = res?.data ? JSON.parse(res?.data || "") : {};
-    dispatch(
-      setDefermentData({
-        name: "monthlyData",
-        value: Object.values(data.monthlyData || {}),
-      })
-    );
-    dispatch(
-      setDefermentData({
-        name: "dailyData",
-        value: Object.values(data.dailyData || {}),
-      })
-    );
-    dispatch(
-      setDefermentData({
-        name: "yearlyData",
-        value: Object.values(data.yearlyData || {}),
-      })
-    );
-    dispatch(
-      setDefermentData({
-        name: "dailyAggregate",
-        value: Object.values(data.dailyAggregate || {}),
-      })
-    );
-    dispatch(
-      setDefermentData({
-        name: "monthlyAggregate",
-        value: Object.values(data.monthlyAggregate || {}),
-      })
-    );
-    dispatch(
-      setDefermentData({
-        name: "yearlyAggregate",
-        value: Object.values(data.yearlyAggregate || {}),
-      })
-    );
-    dispatch(
-      setDefermentData({
-        name: "oilScheduledDeferment",
-        value: data.oilScheduledDeferment || {},
-      })
-    );
-    dispatch(
-      setDefermentData({
-        name: "oilUnscheduledDeferment",
-        value: data.oilUnscheduledDeferment || {},
-      })
-    );
-    dispatch(
-      setDefermentData({
-        name: "oilThirdPartyDeferment",
-        value: data.oilThirdPartyDeferment || {},
-      })
-    );
-    dispatch(
-      setDefermentData({
-        name: "gasScheduledDeferment",
-        value: data.gasScheduledDeferment || {},
-      })
-    );
-    dispatch(
-      setDefermentData({
-        name: "gasUnscheduledDeferment",
-        value: data.gasUnscheduledDeferment || {},
-      })
-    );
-    dispatch(
-      setDefermentData({
-        name: "gasThirdPartyDeferment",
-        value: data.gasThirdPartyDeferment || {},
-      })
-    );
-  }, [dispatch, res?.data]);
+    const data = res?.data ? JSON.parse(res?.data) : {};
+    setDailyData(Object.values(data.dailyData || {}));
+    setMonthlyData(Object.values(data.monthlyData || {}));
+    setYearlyData(Object.values(data.yearlyData || {}));
+    setDailyAggregate(Object.values(data.dailyAggregate || {}));
+    setMonthlyAggregate(Object.values(data.monthlyAggregate || {}));
+    setYearlyAggregate(Object.values(data.yearlyAggregate || {}));
+    setOilScheduledDeferment(data.oilScheduledDeferment || {});
+    setOilUnscheduledDeferment(data.oilUnscheduledDeferment || {});
+    setOilThirdPartyDeferment(data.oilThirdPartyDeferment || {});
+    setGasScheduledDeferment(data.oilScheduledDeferment || {});
+    setGasUnscheduledDeferment(data.oilUnscheduledDeferment || {});
+    setGasThirdPartyDeferment(data.oilThirdPartyDeferment || {});
+  }, [res?.data]);
 
-  const generateReportData = () => {
-    let data = [];
-    if (defermentData?.frequency === "Month") {
-      data = (defermentData.monthlyData || [])
-        .map((well) => ({
-          Date: dayjs(well.date).format("MMM YYYY"),
-          Flowstation: well.flowstation,
-          "Production String": well.productionString,
-          "Gross (blpd)": roundUp(well.gross),
-          "Oil (bopd)": roundUp(well.oil),
-          "Gas (MMscf/d)": roundUp(well.gas),
-          "Water (blpd)": roundUp(well.water),
-          "Downtime (days)": roundUp(well.downtime / 24),
-          "Deferment Category": well.defermentCategory,
-          "Deferment Subcategory": well.defermentSubCategory,
-        }))
-        .filter((well) =>
-          defermentData.flowstation !== "All"
-            ? defermentData.flowstation === well.Flowstation
-            : true
-        )
-        .sort((a, b) =>
-          a["Production String"].localeCompare(b["Production String"])
-        );
-    } else if (defermentData?.frequency === "Year") {
-      data = (defermentData.yearlyData || [])
-        .map((well) => ({
-          Date: dayjs(well.date).format("YYYY"),
-          Flowstation: well.flowstation,
-          "Production String": well.productionString,
-          "Gross (blpd)": roundUp(well.gross),
-          "Oil (bopd)": roundUp(well.oil),
-          "Gas (MMscf/d)": roundUp(well.gas),
-          "Water (blpd)": roundUp(well.water),
-          "Downtime (days)": roundUp(well.downtime / 24),
-          "Deferment Category": well.defermentCategory,
-          "Deferment Subcategory": well.defermentSubCategory,
-        }))
-        .filter((well) =>
-          defermentData.flowstation !== "All"
-            ? defermentData.flowstation === well.Flowstation
-            : true
-        )
-        .sort((a, b) =>
-          a["Production String"].localeCompare(b["Production String"])
-        );
+  const exportResultToExcel = () => {
+    let tableData = [];
+    if (frequency === "Day") {
+      tableData = dailyData;
+    } else if (frequency === "Month") {
+      tableData = monthlyData;
     } else {
-      data = (defermentData.dailyData || [])
-        .map((well) => ({
-          Date: dayjs(well.date).format("DD-MM-YYYY"),
-          Flowstation: well.flowstation,
-          "Production String": well.productionString,
-          "Gross (blpd)": roundUp(well.gross),
-          "Oil (bopd)": roundUp(well.oil),
-          "Gas (MMscf/d)": roundUp(well.gas),
-          "Water (blpd)": roundUp(well.water),
-          "Downtime (hrs)": roundUp(well.downtime),
-          "Deferment Category": well.defermentCategory,
-          "Deferment Subcategory": well.defermentSubCategory,
-        }))
-        .filter((well) =>
-          defermentData.flowstation !== "All"
-            ? defermentData.flowstation === well.Flowstation
-            : true
-        )
-        .sort((a, b) =>
-          a["Production String"].localeCompare(b["Production String"])
-        );
+      tableData = yearlyData;
     }
 
-    return data;
-  };
+    const data = generateReportData(frequency, tableData, query?.flowstation);
 
-  const exportToExcel = () => {
-    const data = generateReportData();
-    // Convert JSON data to a worksheet
     const ws = XLSX.utils.json_to_sheet(data);
 
     ws["!cols"] = [
@@ -264,13 +130,50 @@ const DefermentReport = () => {
     () => [
       {
         title: "Multi-variable Report",
+        Component: (
+          <DefermentDataTable
+            dailyData={dailyData}
+            monthlyData={monthlyData}
+            frequency={frequency}
+            yearlyData={yearlyData}
+          />
+        ),
       },
       {
         title: "Chart",
-        Component: <DefermentChart />,
+        Component: (
+          <DefermentChart
+            dailyAggregate={dailyAggregate}
+            monthlyAggregate={monthlyAggregate}
+            yearlyAggregate={yearlyAggregate}
+            oilScheduledDeferment={oilScheduledDeferment}
+            oilUnscheduledDeferment={oilUnscheduledDeferment}
+            oilThirdPartyDeferment={oilThirdPartyDeferment}
+            gasScheduledDeferment={gasScheduledDeferment}
+            gasUnscheduledDeferment={gasUnscheduledDeferment}
+            gasThirdPartyDeferment={gasThirdPartyDeferment}
+            chartType={chartType}
+            frequency={frequency}
+          />
+        ),
       },
     ],
-    []
+    [
+      chartType,
+      dailyAggregate,
+      dailyData,
+      frequency,
+      gasScheduledDeferment,
+      gasThirdPartyDeferment,
+      gasUnscheduledDeferment,
+      monthlyAggregate,
+      monthlyData,
+      oilScheduledDeferment,
+      oilThirdPartyDeferment,
+      oilUnscheduledDeferment,
+      yearlyAggregate,
+      yearlyData,
+    ]
   );
 
   useEffect(() => {
@@ -314,17 +217,13 @@ const DefermentReport = () => {
                   src={excelIcon}
                   alt="Excel"
                   className="w-[40px] h-[40px]"
-                  onClick={exportToExcel}
+                  onClick={exportResultToExcel}
                 />
                 <PDFDownloadLink
-                  document={<PDFComponent data={generateReportData()} />}
+                  // document={<PDFComponent data={generateReportData(frequency, tableData, query?.flowstation)} />}
                   fileName="deferment-report.pdf"
                 >
-                  <img
-                    src={pdfIcon}
-                    alt="Excel"
-                    className="w-[40px] h-[40px]"
-                  />
+                  <img src={pdfIcon} alt="pdf" className="w-[40px] h-[40px]" />
                 </PDFDownloadLink>
 
                 <Setting2
@@ -347,12 +246,6 @@ const DefermentReport = () => {
                   }))}
                   onChange={(e) => {
                     setChartType(e?.value);
-                    dispatch(
-                      setDefermentData({
-                        name: "chartType",
-                        value: e?.value,
-                      })
-                    );
                   }}
                   value={{ value: chartType, label: chartType }}
                   defaultValue={"Production Deferment Profile"}
@@ -386,12 +279,6 @@ const DefermentReport = () => {
                     value: "All",
                   })
                 );
-                dispatch(
-                  setDefermentData({
-                    name: "flowstation",
-                    value: "All",
-                  })
-                );
               }}
               value={{
                 value: setupData.asset || "OML 24",
@@ -413,12 +300,6 @@ const DefermentReport = () => {
                 setCurrFlowstation(e?.value);
                 dispatch(
                   setSetupData({
-                    name: "flowstation",
-                    value: e?.value,
-                  })
-                );
-                dispatch(
-                  setDefermentData({
                     name: "flowstation",
                     value: e?.value,
                   })
@@ -448,8 +329,7 @@ const DefermentReport = () => {
             }}
           />
 
-          {((defermentData.chartType === "Production Deferment Profile" &&
-            tab === 1) ||
+          {((chartType === "Production Deferment Profile" && tab === 1) ||
             tab === 0) && (
             <div className="flex items-center justify-normal gap-1">
               <div className="text-4">Frequency</div>
@@ -464,12 +344,6 @@ const DefermentReport = () => {
                   }))}
                   onChange={(e) => {
                     setFrequency(e?.value);
-                    dispatch(
-                      setDefermentData({
-                        name: "frequency",
-                        value: e?.value,
-                      })
-                    );
                   }}
                   value={{ value: frequency, label: frequency }}
                   defaultValue={"Day"}
@@ -486,77 +360,143 @@ const DefermentReport = () => {
 
 export default DefermentReport;
 
-const styles = StyleSheet.create({
-  page: {
-    backgroundColor: "#fff",
-    padding: 20,
-  },
-  title: {
-    fontSize: 8, // Set font size for title to 8 (smallest)
-    marginBottom: 10,
-  },
-  table: {
-    display: "table",
-    width: "auto",
-    margin: "20px 0",
-  },
-  tableRow: {
-    flexDirection: "row",
-    // borderBottom: "1px dashed black",
-    padding: 1, // Vertical padding in rows
-  },
-  tableCol: {
-    width: "11.11%", // Each column takes up 1/9 of the table (100% / 9 columns)
-    padding: "1px 1px", // Reduced horizontal padding in cells
-    borderRight: "1px dashed black", // Dashed border for right side
-    borderBottom: "1px dashed black", // Dashed border for bottom side
-  },
-  tableCell: {
-    paddingLeft: 5,
-    paddingRight: 5,
-  },
-  headerText: {
-    fontSize: 4,
-    fontWeight: "bold",
-  },
-  rowText: {
-    fontSize: 4,
-  },
-});
+const generateReportData = (frequency, tableData = [], flowstation) => {
+  let data = [];
+  if (frequency === "Month") {
+    data = tableData
+      .map((well) => ({
+        Date: dayjs(well.date).format("MMM YYYY"),
+        Flowstation: well.flowstation,
+        "Production String": well.productionString,
+        "Gross (blpd)": roundUp(well.gross),
+        "Oil (bopd)": roundUp(well.oil),
+        "Gas (MMscf/d)": roundUp(well.gas),
+        "Water (blpd)": roundUp(well.water),
+        "Downtime (days)": roundUp(well.downtime / 24),
+        "Deferment Category": well.defermentCategory,
+        "Deferment Subcategory": well.defermentSubCategory,
+      }))
+      .filter((well) =>
+        flowstation !== "All" ? flowstation === well.Flowstation : true
+      )
+      .sort((a, b) =>
+        a["Production String"].localeCompare(b["Production String"])
+      );
+  } else if (frequency === "Year") {
+    data = tableData
+      .map((well) => ({
+        Date: dayjs(well.date).format("YYYY"),
+        Flowstation: well.flowstation,
+        "Production String": well.productionString,
+        "Gross (blpd)": roundUp(well.gross),
+        "Oil (bopd)": roundUp(well.oil),
+        "Gas (MMscf/d)": roundUp(well.gas),
+        "Water (blpd)": roundUp(well.water),
+        "Downtime (days)": roundUp(well.downtime / 24),
+        "Deferment Category": well.defermentCategory,
+        "Deferment Subcategory": well.defermentSubCategory,
+      }))
+      .filter((well) =>
+        flowstation !== "All" ? flowstation === well.Flowstation : true
+      )
+      .sort((a, b) =>
+        a["Production String"].localeCompare(b["Production String"])
+      );
+  } else {
+    data = tableData
+      .map((well) => ({
+        Date: dayjs(well.date).format("DD-MM-YYYY"),
+        Flowstation: well.flowstation,
+        "Production String": well.productionString,
+        "Gross (blpd)": roundUp(well.gross),
+        "Oil (bopd)": roundUp(well.oil),
+        "Gas (MMscf/d)": roundUp(well.gas),
+        "Water (blpd)": roundUp(well.water),
+        "Downtime (hrs)": roundUp(well.downtime),
+        "Deferment Category": well.defermentCategory,
+        "Deferment Subcategory": well.defermentSubCategory,
+      }))
+      .filter((well) =>
+        flowstation !== "All" ? flowstation === well.Flowstation : true
+      )
+      .sort((a, b) =>
+        a["Production String"].localeCompare(b["Production String"])
+      );
+  }
+  return data;
+};
+
+// const styles = StyleSheet.create({
+//   page: {
+//     backgroundColor: "#fff",
+//     padding: 20,
+//   },
+//   title: {
+//     fontSize: 8, // Set font size for title to 8 (smallest)
+//     marginBottom: 10,
+//   },
+//   table: {
+//     display: "table",
+//     width: "auto",
+//     margin: "20px 0",
+//   },
+//   tableRow: {
+//     flexDirection: "row",
+//     // borderBottom: "1px dashed black",
+//     padding: 1, // Vertical padding in rows
+//   },
+//   tableCol: {
+//     width: "11.11%", // Each column takes up 1/9 of the table (100% / 9 columns)
+//     padding: "1px 1px", // Reduced horizontal padding in cells
+//     borderRight: "1px dashed black", // Dashed border for right side
+//     borderBottom: "1px dashed black", // Dashed border for bottom side
+//   },
+//   tableCell: {
+//     paddingLeft: 5,
+//     paddingRight: 5,
+//   },
+//   headerText: {
+//     fontSize: 4,
+//     fontWeight: "bold",
+//   },
+//   rowText: {
+//     fontSize: 4,
+//   },
+// });
 
 // Create a PDF Document with a Table
-const PDFComponent = ({ data }) => {
-  const headers = Object.keys(data[0] || {});
+// const PDFComponent = ({ data }) => {
+//   const headers = Object.keys(data[0] || {});
 
-  return (
-    <Document>
-      <Page size="A4" style={styles.page}>
-        {/* Table */}
-        <View style={styles.table}>
-          <View style={styles.tableRow}>
-            {headers.map((header, index) => (
-              <Text
-                key={`${header}-${index}`}
-                style={[styles.tableCol, styles.headerText]}
-              >
-                {header}
-              </Text>
-            ))}
-          </View>
-          {data.map((row, index) => (
-            <View key={index} style={styles.tableRow}>
-              {headers.map((header, index) => (
-                <Text
-                  key={`${header}-${index}`}
-                  style={[styles.tableCol, styles.rowText]}
-                >
-                  {row[header]}
-                </Text>
-              ))}
-            </View>
-          ))}
-        </View>
-      </Page>
-    </Document>
-  );
-};
+//   return (
+//     <Document>
+//       <Page size="A4" style={styles.page}>
+//         {/* Table */}
+//         <View style={styles.table}>
+//           <View style={styles.tableRow}>
+//             {headers.map((header, index) => (
+//               <Text
+//                 key={`${header}-${index}`}
+//                 style={[styles.tableCol, styles.headerText]}
+//               >
+//                 {header}
+//               </Text>
+//             ))}
+//           </View>
+//           {data.map((row, index) => (
+//             <View key={index} style={styles.tableRow}>
+//               {headers.map((header, index) => (
+//                 <Text
+//                   key={`${header}-${index}`}
+//                   style={[styles.tableCol, styles.rowText]}
+//                 >
+//                   {row[header]}
+//                 </Text>
+//               ))}
+//             </View>
+//           ))}
+//         </View>
+//       </Page>
+//     </Document>
+//   );
+// };

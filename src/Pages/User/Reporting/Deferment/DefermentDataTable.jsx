@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import dayjs from "dayjs";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -16,41 +15,28 @@ const headerStyle = {
   fontWeight: "bold  !important",
 };
 
-const DefermentDataTable = () => {
-  const defermentData = useSelector((state) => state?.deferments);
+const DefermentDataTable = ({
+  monthlyData,
+  dailyData,
+  yearlyData,
+  frequency,
+}) => {
   const [dateFormat, setDateFormat] = useState("DD-MM-YYYY");
 
-  const initialState = () => {
-    if (defermentData.frequency === "Month") {
-      return defermentData.monthlyData || [];
-    } else if (defermentData.frequency === "Year") {
-      return defermentData.yearlyData || [];
-    } else {
-      return defermentData.dailyData || [];
-    }
-  };
-
-  const [tableData, setTableData] = useState(initialState);
+  const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
-    if (defermentData?.frequency === "Month") {
-      setTableData(defermentData.monthlyData || []);
-    } else if (defermentData?.frequency === "Year") {
-      setTableData(defermentData.yearlyData || []);
-    } else {
-      setTableData(defermentData.dailyData || []);
-    }
-  }, [defermentData]);
-
-  useEffect(() => {
-    if (defermentData.frequency === "Day") {
-      setDateFormat("DD-MM-YYYY");
-    } else if (defermentData.frequency === "Month") {
+    if (frequency === "Month") {
+      setTableData(monthlyData);
       setDateFormat("MMM YYYY");
-    } else {
+    } else if (frequency === "Year") {
+      setTableData(yearlyData);
       setDateFormat("YYYY");
+    } else {
+      setTableData(dailyData);
+      setDateFormat("DD-MM-YYYY");
     }
-  }, [defermentData.frequency]);
+  }, [dailyData, frequency, monthlyData, yearlyData]);
 
   return (
     <div className="relative">
@@ -166,7 +152,7 @@ const DefermentDataTable = () => {
               colSpan={2}
               sx={headerStyle}
             >
-              {defermentData.frequency === "Day" ? "hour" : "day"}
+              {frequency === "Day" ? "hour" : "day"}
             </TableCell>
             <TableCell
               style={{ fontWeight: "600" }}
@@ -205,52 +191,49 @@ const DefermentDataTable = () => {
               sx={headerStyle}
             ></TableCell>
           </TableRow>
-          <TableBody>
-            {tableData
-              .filter((well) =>
-                defermentData.flowstation !== "All"
-                  ? defermentData.flowstation === well.flowstation
-                  : true
-              )
-              .sort((a, b) =>
-                a.productionString.localeCompare(b.productionString)
-              )
-              .map((well, index) => (
-                <TableRow key={`${well?.productionString}-${index}`}>
-                  <TableCell align="center" colSpan={2}>
-                    {well?.flowstation}
-                  </TableCell>
-                  <TableCell align="center" colSpan={2}>
-                    {well?.productionString}
-                  </TableCell>
-                  <TableCell align="center" colSpan={2}>
-                    {dayjs(well?.date).format(dateFormat)}
-                  </TableCell>
-                  <TableCell align="center" colSpan={2}>
-                    {roundUp(
-                      defermentData.frequency === "Day"
-                        ? well?.downtime
-                        : well?.downtime / 24.0
-                    )}
-                  </TableCell>
-                  <TableCell align="center" colSpan={2}>
-                    {roundUp(well?.gross)}
-                  </TableCell>
-                  <TableCell align="center" colSpan={2}>
-                    {roundUp(well?.oil)}
-                  </TableCell>
-                  <TableCell align="center" colSpan={2}>
-                    {roundUp(well?.gas)}
-                  </TableCell>
-                  <TableCell align="center" colSpan={2}>
-                    {well?.defermentCategory}
-                  </TableCell>
-                  <TableCell align="center" colSpan={2}>
-                    {well?.defermentSubCategory}
-                  </TableCell>
-                </TableRow>
-              ))}
-          </TableBody>
+          {tableData.length > 0 && (
+            <TableBody>
+              {tableData
+                .sort((a, b) =>
+                  a.productionString.localeCompare(b.productionString)
+                )
+                .map((well, index) => (
+                  <TableRow key={`${well?.productionString}-${index}`}>
+                    <TableCell align="center" colSpan={2}>
+                      {well?.flowstation}
+                    </TableCell>
+                    <TableCell align="center" colSpan={2}>
+                      {well?.productionString}
+                    </TableCell>
+                    <TableCell align="center" colSpan={2}>
+                      {dayjs(well?.date).format(dateFormat)}
+                    </TableCell>
+                    <TableCell align="center" colSpan={2}>
+                      {roundUp(
+                        frequency === "Day"
+                          ? well?.downtime
+                          : well?.downtime / 24.0
+                      )}
+                    </TableCell>
+                    <TableCell align="center" colSpan={2}>
+                      {roundUp(well?.gross)}
+                    </TableCell>
+                    <TableCell align="center" colSpan={2}>
+                      {roundUp(well?.oil)}
+                    </TableCell>
+                    <TableCell align="center" colSpan={2}>
+                      {roundUp(well?.gas)}
+                    </TableCell>
+                    <TableCell align="center" colSpan={2}>
+                      {well?.defermentCategory}
+                    </TableCell>
+                    <TableCell align="center" colSpan={2}>
+                      {well?.defermentSubCategory}
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          )}
         </Table>
       </TableContainer>
     </div>

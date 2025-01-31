@@ -11,7 +11,6 @@ import { Setting2 } from "iconsax-react";
 import { Input } from "Components";
 import { useAssetByName } from "hooks/useAssetByName";
 import DateRangePicker from "Components/DatePicker";
-import { setReconciledProductionData } from "Store/slices/reconciledProductionSlice";
 import excelIcon from "Assets/images/excel.svg";
 import * as XLSX from "xlsx";
 import { roundUp } from "utils";
@@ -27,8 +26,9 @@ const ProductionReport = () => {
   const setupData = useSelector((state) => state?.setup);
   const assets = useAssetByName(setupData?.asset);
   const [currFlowstation, setCurrFlowstation] = useState("All");
-  const productionData = useSelector((state) => state?.reconciledProduction);
-  const [frequency, setFrequency] = useState(productionData.frequency || "Day");
+  const [frequency, setFrequency] = useState("Day");
+  const [dailyData, setDailyData] = useState([]);
+  const [monthlyData, setMonthlyData] = useState([]);
 
   const res = useFetch({
     firebaseFunction: "getReconciledProductionData",
@@ -49,93 +49,66 @@ const ProductionReport = () => {
     return dayjs(previousDate).format("YYYY-MM-DD");
   };
 
-  const dailyData = useMemo(() => {
-    if (res?.data) {
-      const data = JSON.parse(res?.data) || {};
-      return Object.values(data.dailyData || {});
-    } else {
-      return [];
-    }
-  }, [res?.data]);
-
-  const monthlyData = useMemo(() => {
-    if (res?.data) {
-      const data = JSON.parse(res?.data) || {};
-      return Object.values(data.monthlyData || {});
-    } else {
-      return [];
-    }
-  }, [res?.data]);
-
   useEffect(() => {
     const data = res?.data ? JSON.parse(res?.data) : {};
-    dispatch(
-      setReconciledProductionData({
-        name: "monthlyData",
-        value: Object.values(data.monthlyData || {}),
-      })
-    );
-    dispatch(
-      setReconciledProductionData({
-        name: "dailyData",
-        value: Object.values(data.dailyData || {}),
-      })
-    );
-  }, [dispatch, res?.data]);
+    setDailyData(Object.values(data.dailyData || {}));
+    setMonthlyData(Object.values(data.monthlyData || {}));
+  }, [res?.data]);
 
-  const generateReportData = () => {
-    let data = [];
-    if (productionData?.frequency === "Month") {
-      data = (productionData.monthlyData || [])
-        .map((well) => ({
-          Date: dayjs(well.date).format("MMM YYYY"),
-          Flowstation: well.flowstation,
-          "Production String": well.productionString,
-          "Gross (blpd)": roundUp(well.gross),
-          "Oil (bopd)": roundUp(well.oil),
-          "Gas (MMscf/d)": roundUp(well.gas),
-          "Water (blpd)": roundUp(well.water),
-          "Downtime (days)": roundUp(well.downtime / 24),
-          "Deferment Category": well.defermentCategory,
-          "Deferment Subcategory": well.defermentSubCategory,
-        }))
-        .filter((well) =>
-          productionData.flowstation !== "All"
-            ? productionData.flowstation === well.Flowstation
-            : true
-        )
-        .sort((a, b) =>
-          a["Production String"].localeCompare(b["Production String"])
-        );
-    } else {
-      data = (productionData.dailyData || [])
-        .map((well) => ({
-          Date: dayjs(well.date).format("DD-MM-YYYY"),
-          Flowstation: well.flowstation,
-          "Production String": well.productionString,
-          "Gross (blpd)": roundUp(well.gross),
-          "Oil (bopd)": roundUp(well.oil),
-          "Gas (MMscf/d)": roundUp(well.gas),
-          "Water (blpd)": roundUp(well.water),
-          "Downtime (hrs)": roundUp(well.downtime),
-          "Deferment Category": well.defermentCategory,
-          "Deferment Subcategory": well.defermentSubCategory,
-        }))
-        .filter((well) =>
-          productionData.flowstation !== "All"
-            ? productionData.flowstation === well.Flowstation
-            : true
-        )
-        .sort((a, b) =>
-          a["Production String"].localeCompare(b["Production String"])
-        );
-    }
+  // const generateReportData = () => {
+  //   let data = [];
+  //   if (frequency === "Month") {
+  //     data = (monthlyData || [])
+  //       .map((well) => ({
+  //         Date: dayjs(well.date).format("MMM YYYY"),
+  //         Flowstation: well.flowstation,
+  //         "Production String": well.productionString,
+  //         "Gross (blpd)": roundUp(well.gross),
+  //         "Oil (bopd)": roundUp(well.oil),
+  //         "Gas (MMscf/d)": roundUp(well.gas),
+  //         "Water (blpd)": roundUp(well.water),
+  //         "Downtime (days)": roundUp(well.downtime / 24),
+  //         "Deferment Category": well.defermentCategory,
+  //         "Deferment Subcategory": well.defermentSubCategory,
+  //       }))
+  //       .filter((well) =>
+  //         query?.flowstation !== "All"
+  //           ? query?.flowstation === well.Flowstation
+  //           : true
+  //       )
+  //       .sort((a, b) =>
+  //         a["Production String"].localeCompare(b["Production String"])
+  //       );
+  //   } else {
+  //     data = (dailyData || [])
+  //       .map((well) => ({
+  //         Date: dayjs(well.date).format("DD-MM-YYYY"),
+  //         Flowstation: well.flowstation,
+  //         "Production String": well.productionString,
+  //         "Gross (blpd)": roundUp(well.gross),
+  //         "Oil (bopd)": roundUp(well.oil),
+  //         "Gas (MMscf/d)": roundUp(well.gas),
+  //         "Water (blpd)": roundUp(well.water),
+  //         "Downtime (hrs)": roundUp(well.downtime),
+  //         "Deferment Category": well.defermentCategory,
+  //         "Deferment Subcategory": well.defermentSubCategory,
+  //       }))
+  //       .filter((well) =>
+  //         query?.flowstation !== "All"
+  //           ? query?.flowstation === well.Flowstation
+  //           : true
+  //       )
+  //       .sort((a, b) =>
+  //         a["Production String"].localeCompare(b["Production String"])
+  //       );
+  //   }
 
-    return data;
-  };
+  //   return data;
+  // };
 
   const exportToExcel = () => {
-    const data = generateReportData();
+    const tableData = frequency === "Day" ? dailyData : monthlyData;
+    const data = generateReportData(frequency, tableData, query?.flowstation);
     // Convert JSON data to a worksheet
     const ws = XLSX.utils.json_to_sheet(data);
 
@@ -143,6 +116,8 @@ const ProductionReport = () => {
       { width: 12 },
       { width: 20 },
       { width: 20 },
+      { width: 20 },
+      { width: 15 },
       { width: 15 },
       { width: 15 },
       { width: 15 },
@@ -156,7 +131,7 @@ const ProductionReport = () => {
     XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
 
     // Write the Excel file and trigger download
-    XLSX.writeFile(wb, `Deferment_Report.xlsx`);
+    XLSX.writeFile(wb, `Production_Report.xlsx`);
   };
 
   const tabs = useMemo(
@@ -253,12 +228,6 @@ const ProductionReport = () => {
                     value: "All",
                   })
                 );
-                dispatch(
-                  setReconciledProductionData({
-                    name: "flowstation",
-                    value: "All",
-                  })
-                );
               }}
               value={{
                 value: setupData.asset || "OML 24",
@@ -280,12 +249,6 @@ const ProductionReport = () => {
                 setCurrFlowstation(e?.value);
                 dispatch(
                   setSetupData({
-                    name: "flowstation",
-                    value: e?.value,
-                  })
-                );
-                dispatch(
-                  setReconciledProductionData({
                     name: "flowstation",
                     value: e?.value,
                   })
@@ -328,12 +291,6 @@ const ProductionReport = () => {
                 }))}
                 onChange={(e) => {
                   setFrequency(e?.value);
-                  dispatch(
-                    setReconciledProductionData({
-                      name: "frequency",
-                      value: e?.value,
-                    })
-                  );
                 }}
                 value={{ value: frequency, label: frequency }}
                 defaultValue={"Day"}
@@ -348,3 +305,51 @@ const ProductionReport = () => {
 };
 
 export default ProductionReport;
+
+const generateReportData = (frequency, tableData = [], flowstation) => {
+  let data = [];
+  if (frequency === "Month") {
+    data = (tableData || [])
+      .map((well) => ({
+        Date: dayjs(well.date).format("MMM YYYY"),
+        Flowstation: well.flowstation,
+        "Production String": well.productionString,
+        "Producing Days (days)": roundUp(well?.uptimeProduction / 24),
+        "Bean (/64)": well?.bean !== 0 ? well?.bean : "",
+        "THP (psi)": well?.thp !== 0 ? well?.thp : "",
+        "Gross (blpd)": roundUp(well.gross),
+        "Oil (bopd)": roundUp(well.oil),
+        "Gas (MMscf/d)": roundUp(well.gas),
+        "Water (blpd)": roundUp(well.water),
+        "Downtime (days)": roundUp(well.downtime / 24),
+      }))
+      .filter((well) =>
+        flowstation !== "All" ? flowstation === well.Flowstation : true
+      )
+      .sort((a, b) =>
+        a["Production String"].localeCompare(b["Production String"])
+      );
+  } else {
+    data = tableData
+      .map((well) => ({
+        Date: dayjs(well.date).format("DD-MM-YYYY"),
+        Flowstation: well.flowstation,
+        "Production String": well.productionString,
+        "Producing Hours (hrs)": roundUp(well?.uptimeProductino),
+        "Bean (/64)": well?.bean !== 0 ? well?.bean : "",
+        "THP (psi)": well?.thp !== 0 ? well?.thp : "",
+        "Gross (blpd)": roundUp(well.gross),
+        "Oil (bopd)": roundUp(well.oil),
+        "Gas (MMscf/d)": roundUp(well.gas),
+        "Water (blpd)": roundUp(well.water),
+      }))
+      .filter((well) =>
+        flowstation !== "All" ? flowstation === well.Flowstation : true
+      )
+      .sort((a, b) =>
+        a["Production String"].localeCompare(b["Production String"])
+      );
+  }
+
+  return data;
+};

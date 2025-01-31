@@ -13,7 +13,7 @@ const RadaPieChart = ({ data, title, colors, title_empty }) => {
   return (
     <div className="w-full pr-4">
       <div className="h-full p-4 w-full bg-[#fafafa]">
-        {colors.length === 0 ? (
+        {colors?.length === 0 ? (
           <div className=" w-full h-[400px] flex justify-center items-center">
             <Text Text size={"28px"} weight={600} height={"100%"}>
               {title_empty}
@@ -45,7 +45,7 @@ const RadaPieChart = ({ data, title, colors, title_empty }) => {
                       )}%)`
                     }
                   >
-                    {data.map((entry, index) => (
+                    {data?.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={colors[index]} />
                     ))}
                   </Pie>

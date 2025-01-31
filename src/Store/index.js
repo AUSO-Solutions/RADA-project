@@ -9,8 +9,6 @@ import loadingScreenSlice from "./slices/loadingScreenSlice";
 import formdataSlice from "./slices/formdataSlice";
 import decimalPlacesSlice from "./slices/decimalPlaces";
 import highlightsSlice from "./slices/highlightsSlice";
-import defermentSlice from "./slices/defermentSlice";
-import reconciledProductionSlice from "./slices/reconciledProductionSlice";
 
 const persistConfig = {
   key: "root",
@@ -29,8 +27,6 @@ const reducers = combineReducers({
   formdata: formdataSlice,
   decimalPlaces: decimalPlacesSlice,
   highlights: highlightsSlice,
-  deferments: defermentSlice,
-  reconciledProduction: reconciledProductionSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, reducers);

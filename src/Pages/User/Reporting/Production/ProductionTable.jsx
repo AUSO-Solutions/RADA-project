@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import dayjs from "dayjs";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -21,7 +20,6 @@ const ReconciledProductionDataTable = ({
   dailyData,
   frequency,
 }) => {
-  const productionData = useSelector((state) => state?.reconciledProduction);
   const [dateFormat, setDateFormat] = useState("DD-MM-YYYY");
 
   const [tableData, setTableData] = useState([]);
@@ -35,8 +33,6 @@ const ReconciledProductionDataTable = ({
       setDateFormat("DD-MM-YYYY");
     }
   }, [dailyData, frequency, monthlyData]);
-
-  console.log({ tableData, frequency, monthlyData, dailyData });
 
   return (
     <div className="relative">
@@ -160,7 +156,7 @@ const ReconciledProductionDataTable = ({
               colSpan={2}
               sx={headerStyle}
             >
-              {productionData.frequency === "Day" ? "hour" : "day"}
+              {frequency === "Day" ? "hour" : "day"}
             </TableCell>
             <TableCell
               style={{ fontWeight: "600" }}
@@ -211,50 +207,52 @@ const ReconciledProductionDataTable = ({
               MMscf/d
             </TableCell>
           </TableRow>
-          <TableBody>
-            {tableData
-              .sort((a, b) =>
-                a.productionString.localeCompare(b.productionString)
-              )
-              .map((well, index) => (
-                <TableRow key={`${well?.productionString}-${index}`}>
-                  <TableCell align="center" colSpan={2}>
-                    {well?.flowstation}
-                  </TableCell>
-                  <TableCell align="center" colSpan={2}>
-                    {well?.productionString}
-                  </TableCell>
-                  <TableCell align="center" colSpan={2}>
-                    {dayjs(well?.date).format(dateFormat)}
-                  </TableCell>
-                  <TableCell align="center" colSpan={2}>
-                    {roundUp(
-                      productionData.frequency === "Day"
-                        ? well?.uptimeProduction
-                        : well?.uptimeProduction / 24.0
-                    )}
-                  </TableCell>
-                  <TableCell align="center" colSpan={2}>
-                    {well?.bean !== 0 ? well?.bean : ""}
-                  </TableCell>
-                  <TableCell align="center" colSpan={2}>
-                    {well?.thp !== 0 ? well?.thp : ""}
-                  </TableCell>
-                  <TableCell align="center" colSpan={2}>
-                    {roundUp(well?.gross)}
-                  </TableCell>
-                  <TableCell align="center" colSpan={2}>
-                    {roundUp(well?.oil)}
-                  </TableCell>
-                  <TableCell align="center" colSpan={2}>
-                    {roundUp(well?.water)}
-                  </TableCell>
-                  <TableCell align="center" colSpan={2}>
-                    {roundUp(well?.gas)}
-                  </TableCell>
-                </TableRow>
-              ))}
-          </TableBody>
+          {tableData.length > 0 && (
+            <TableBody>
+              {tableData
+                .sort((a, b) =>
+                  a.productionString.localeCompare(b.productionString)
+                )
+                .map((well, index) => (
+                  <TableRow key={`${well?.productionString}-${index}`}>
+                    <TableCell align="center" colSpan={2}>
+                      {well?.flowstation}
+                    </TableCell>
+                    <TableCell align="center" colSpan={2}>
+                      {well?.productionString}
+                    </TableCell>
+                    <TableCell align="center" colSpan={2}>
+                      {dayjs(well?.date).format(dateFormat)}
+                    </TableCell>
+                    <TableCell align="center" colSpan={2}>
+                      {roundUp(
+                        frequency === "Day"
+                          ? well?.uptimeProduction
+                          : well?.uptimeProduction / 24.0
+                      )}
+                    </TableCell>
+                    <TableCell align="center" colSpan={2}>
+                      {well?.bean !== 0 ? well?.bean : ""}
+                    </TableCell>
+                    <TableCell align="center" colSpan={2}>
+                      {well?.thp !== 0 ? well?.thp : ""}
+                    </TableCell>
+                    <TableCell align="center" colSpan={2}>
+                      {roundUp(well?.gross)}
+                    </TableCell>
+                    <TableCell align="center" colSpan={2}>
+                      {roundUp(well?.oil)}
+                    </TableCell>
+                    <TableCell align="center" colSpan={2}>
+                      {roundUp(well?.water)}
+                    </TableCell>
+                    <TableCell align="center" colSpan={2}>
+                      {roundUp(well?.gas)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          )}
         </Table>
       </TableContainer>
     </div>

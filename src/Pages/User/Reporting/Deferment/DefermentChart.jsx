@@ -6,156 +6,41 @@ import dayjs from "dayjs";
 import RadaPieChart from "./PieChart";
 import BarChart from "./BarChart";
 
-const DefermentChart = () => {
+const DefermentChart = ({
+  chartType,
+  dailyAggregate,
+
+  frequency,
+  gasScheduledDeferment,
+  gasThirdPartyDeferment,
+  gasUnscheduledDeferment,
+  monthlyAggregate,
+
+  oilScheduledDeferment,
+  oilThirdPartyDeferment,
+  oilUnscheduledDeferment,
+  yearlyAggregate,
+}) => {
   const query = useSelector((state) => state?.setup);
-  const defermentData = useSelector((state) => state?.deferments);
   const [fluidType, setFluidType] = useState("Net Oil/Condensate");
-
-  const initialBarState = () => {
-    if (defermentData.chartType === "Production Deferment Profile") {
-      if (defermentData.frequency === "Month") {
-        return defermentData.monthlyData || [];
-      } else if (defermentData.frequency === "Year") {
-        return defermentData.yearlyData || [];
-      } else {
-        return defermentData.dailyData || [];
-      }
-    }
-  };
-
-  const initialPieState = () => {
-    if (defermentData.chartType === "Scheduled Deferment") {
-      if (fluidType === "Net Oil/Condensate") {
-        const result = Object.entries(
-          defermentData.oilScheduledDeferment?.subs
-        ).map(([key, value]) => ({
-          name: key,
-          value: Number(roundUp(value)),
-        }));
-        const colors = Object.keys(
-          defermentData.oilScheduledDeferment?.subs
-        ).map(() => getRandomColor());
-
-        const data = {
-          data: result,
-          colors,
-        };
-        return data;
-      } else {
-        const result = Object.entries(
-          defermentData.gasScheduledDeferment?.subs
-        ).map(([key, value]) => ({
-          name: key,
-          value: Number(roundUp(value)),
-        }));
-        const colors = Object.keys(
-          defermentData.gasScheduledDeferment?.subs
-        ).map(() => getRandomColor());
-
-        const data = {
-          data: result,
-          colors,
-        };
-        return data;
-      }
-    } else if (defermentData.chartType === "Unscheduled Deferment") {
-      if (fluidType === "Net Oil/Condensate") {
-        const result = Object.entries(
-          defermentData.oilUnscheduledDeferment?.subs
-        ).map(([key, value]) => ({
-          name: key,
-          value: Number(roundUp(value)),
-        }));
-        const colors = Object.keys(
-          defermentData.oilUnscheduledDeferment?.subs
-        ).map(() => getRandomColor());
-
-        const data = {
-          data: result,
-          colors,
-        };
-        return data;
-      } else {
-        const result = Object.entries(
-          defermentData.gasUnscheduledDeferment?.subs
-        ).map(([key, value]) => ({
-          name: key,
-          value: Number(roundUp(value)),
-        }));
-        const colors = Object.keys(
-          defermentData.gasUnscheduledDeferment?.subs
-        ).map(() => getRandomColor());
-
-        const data = {
-          data: result,
-          colors,
-        };
-        return data;
-      }
-    } else {
-      if (fluidType === "Net Oil/Condensate") {
-        const result = Object.entries(
-          defermentData.oilThirdPartyDeferment?.subs
-        ).map(([key, value]) => ({
-          name: key,
-          value: Number(roundUp(value)),
-        }));
-        const colors = Object.keys(
-          defermentData.oilThirdPartyDeferment?.subs
-        ).map(() => getRandomColor());
-
-        const data = {
-          data: result,
-          colors,
-        };
-        return data;
-      } else {
-        const result = Object.entries(
-          defermentData.gasThirdPartyDeferment?.subs
-        ).map(([key, value]) => ({
-          name: key,
-          value: Number(roundUp(value)),
-        }));
-        const colors = Object.keys(
-          defermentData.gasThirdPartyDeferment?.subs
-        ).map(() => getRandomColor());
-
-        const data = {
-          data: result,
-          colors,
-        };
-        return data;
-      }
-    }
-  };
-
-  const initialDateFormat = () => {
-    if (defermentData.frequency === "Day") {
-      return "DD-MM-YYYY";
-    } else if (defermentData.frequency === "Month") {
-      return "MMM YYYY";
-    } else {
-      return "YYYY";
-    }
-  };
-  const [dateFormat, setDateFormat] = useState(initialDateFormat);
-  const [chartData, setChartData] = useState(initialBarState);
-  const [pieData, setPieData] = useState(initialPieState);
+  const [dateFormat, setDateFormat] = useState();
+  const [chartData, setChartData] = useState([]);
+  const [pieData, setPieData] = useState({});
   useEffect(() => {
-    if (defermentData.frequency === "Day") {
+    if (frequency === "Day") {
       setDateFormat("DD-MM-YYYY");
-    } else if (defermentData.frequency === "Month") {
+    } else if (frequency === "Month") {
       setDateFormat("MMM YYYY");
     } else {
       setDateFormat("YYYY");
     }
-  }, [defermentData.frequency]);
+  }, [frequency]);
 
   useEffect(() => {
-    if (defermentData.chartType === "Production Deferment Profile") {
-      if (defermentData.frequency === "Month") {
+    if (chartType === "Production Deferment Profile") {
+      if (frequency === "Month") {
         if (fluidType === "Net Oil/Condensate") {
-          const data = defermentData.monthlyAggregate.map((item) => ({
+          const data = monthlyAggregate.map((item) => ({
             x: dayjs(item.date).format(dateFormat),
             "Scheduled Deferment": roundUp(item.totalOilScheduled),
             "Unscheduled Deferment": roundUp(item.totalOilUnscheduled),
@@ -164,7 +49,7 @@ const DefermentChart = () => {
           }));
           setChartData(data);
         } else {
-          const data = defermentData.monthlyAggregate.map((item) => ({
+          const data = monthlyAggregate.map((item) => ({
             x: dayjs(item.date).format(dateFormat),
             "Scheduled Deferment": roundUp(item.totalGasScheduled),
             "Unscheduled Deferment": roundUp(item.totalGasUnscheduled),
@@ -173,9 +58,9 @@ const DefermentChart = () => {
           }));
           setChartData(data);
         }
-      } else if (defermentData?.frequency === "Year") {
+      } else if (frequency === "Year") {
         if (fluidType === "Net Oil/Condensate") {
-          const data = defermentData.yearlyAggregate.map((item) => ({
+          const data = yearlyAggregate.map((item) => ({
             x: dayjs(item.date).format(dateFormat),
             "Scheduled Deferment": roundUp(item.totalOilScheduled),
             "Unscheduled Deferment": roundUp(item.totalOilUnscheduled),
@@ -184,7 +69,7 @@ const DefermentChart = () => {
           }));
           setChartData(data);
         } else {
-          const data = defermentData.yearlyAggregate.map((item) => ({
+          const data = yearlyAggregate.map((item) => ({
             x: dayjs(item.date).format(dateFormat),
             "Scheduled Deferment": roundUp(item.totalGasScheduled),
             "Unscheduled Deferment": roundUp(item.totalGasUnscheduled),
@@ -195,7 +80,7 @@ const DefermentChart = () => {
         }
       } else {
         if (fluidType === "Net Oil/Condensate") {
-          const data = defermentData.dailyAggregate.map((item) => ({
+          const data = dailyAggregate.map((item) => ({
             x: dayjs(item.date).format(dateFormat),
             "Scheduled Deferment": roundUp(item.totalOilScheduled),
             "Unscheduled Deferment": roundUp(item.totalOilUnscheduled),
@@ -204,7 +89,7 @@ const DefermentChart = () => {
           }));
           setChartData(data);
         } else {
-          const data = defermentData.dailyAggregate.map((item) => ({
+          const data = dailyAggregate.map((item) => ({
             x: dayjs(item.date).format(dateFormat),
             "Scheduled Deferment": roundUp(item.totalGasScheduled),
             "Unscheduled Deferment": roundUp(item.totalGasUnscheduled),
@@ -214,17 +99,17 @@ const DefermentChart = () => {
           setChartData(data);
         }
       }
-    } else if (defermentData.chartType === "Scheduled Deferment") {
+    } else if (chartType === "Scheduled Deferment") {
       if (fluidType === "Net Oil/Condensate") {
-        const result = Object.entries(
-          defermentData.oilScheduledDeferment?.subs
-        ).map(([key, value]) => ({
-          name: key,
-          value: Number(roundUp(value)),
-        }));
-        const colors = Object.keys(
-          defermentData.oilScheduledDeferment?.subs
-        ).map(() => getRandomColor());
+        const result = Object.entries(oilScheduledDeferment?.subs).map(
+          ([key, value]) => ({
+            name: key,
+            value: Number(roundUp(value)),
+          })
+        );
+        const colors = Object.keys(oilScheduledDeferment?.subs).map(() =>
+          getRandomColor()
+        );
 
         const data = {
           data: result,
@@ -232,15 +117,15 @@ const DefermentChart = () => {
         };
         setPieData(data);
       } else {
-        const result = Object.entries(
-          defermentData.oilScheduledDeferment?.subs
-        ).map(([key, value]) => ({
-          name: key,
-          value: Number(roundUp(value)),
-        }));
-        const colors = Object.keys(
-          defermentData.gasScheduledDeferment?.subs
-        ).map(() => getRandomColor());
+        const result = Object.entries(gasScheduledDeferment?.subs).map(
+          ([key, value]) => ({
+            name: key,
+            value: Number(roundUp(value)),
+          })
+        );
+        const colors = Object.keys(gasScheduledDeferment?.subs).map(() =>
+          getRandomColor()
+        );
 
         const data = {
           data: result,
@@ -248,17 +133,17 @@ const DefermentChart = () => {
         };
         setPieData(data);
       }
-    } else if (defermentData.chartType === "Unscheduled Deferment") {
+    } else if (chartType === "Unscheduled Deferment") {
       if (fluidType === "Net Oil/Condensate") {
-        const result = Object.entries(
-          defermentData.oilUnscheduledDeferment?.subs
-        ).map(([key, value]) => ({
-          name: key,
-          value: Number(roundUp(value)),
-        }));
-        const colors = Object.keys(
-          defermentData.oilUnscheduledDeferment?.subs
-        ).map(() => getRandomColor());
+        const result = Object.entries(oilUnscheduledDeferment?.subs).map(
+          ([key, value]) => ({
+            name: key,
+            value: Number(roundUp(value)),
+          })
+        );
+        const colors = Object.keys(oilUnscheduledDeferment?.subs).map(() =>
+          getRandomColor()
+        );
 
         const data = {
           data: result,
@@ -266,15 +151,15 @@ const DefermentChart = () => {
         };
         setPieData(data);
       } else {
-        const result = Object.entries(
-          defermentData.gasUnscheduledDeferment?.subs
-        ).map(([key, value]) => ({
-          name: key,
-          value: Number(roundUp(value)),
-        }));
-        const colors = Object.keys(
-          defermentData.gasUnscheduledDeferment?.subs
-        ).map(() => getRandomColor());
+        const result = Object.entries(gasUnscheduledDeferment?.subs).map(
+          ([key, value]) => ({
+            name: key,
+            value: Number(roundUp(value)),
+          })
+        );
+        const colors = Object.keys(gasUnscheduledDeferment?.subs).map(() =>
+          getRandomColor()
+        );
         const data = {
           data: result,
           colors,
@@ -283,30 +168,30 @@ const DefermentChart = () => {
       }
     } else {
       if (fluidType === "Net Oil/Condensate") {
-        const result = Object.entries(
-          defermentData.oilThirdPartyDeferment?.subs
-        ).map(([key, value]) => ({
-          name: key,
-          value: Number(roundUp(value)),
-        }));
-        const colors = Object.keys(
-          defermentData.oilThirdPartyDeferment?.subs
-        ).map(() => getRandomColor());
+        const result = Object.entries(oilThirdPartyDeferment?.subs).map(
+          ([key, value]) => ({
+            name: key,
+            value: Number(roundUp(value)),
+          })
+        );
+        const colors = Object.keys(oilThirdPartyDeferment?.subs).map(() =>
+          getRandomColor()
+        );
         const data = {
           data: result,
           colors,
         };
         setPieData(data);
       } else {
-        const result = Object.entries(
-          defermentData.gasThirdPartyDeferment?.subs
-        ).map(([key, value]) => ({
-          name: key,
-          value: Number(roundUp(value)),
-        }));
-        const colors = Object.keys(
-          defermentData.gasThirdPartyDeferment?.subs
-        ).map(() => getRandomColor());
+        const result = Object.entries(gasThirdPartyDeferment?.subs).map(
+          ([key, value]) => ({
+            name: key,
+            value: Number(roundUp(value)),
+          })
+        );
+        const colors = Object.keys(gasThirdPartyDeferment?.subs).map(() =>
+          getRandomColor()
+        );
         const data = {
           data: result,
           colors,
@@ -314,7 +199,21 @@ const DefermentChart = () => {
         setPieData(data);
       }
     }
-  }, [dateFormat, defermentData, fluidType]);
+  }, [
+    chartType,
+    dailyAggregate,
+    dateFormat,
+    fluidType,
+    frequency,
+    gasScheduledDeferment?.subs,
+    gasThirdPartyDeferment?.subs,
+    gasUnscheduledDeferment?.subs,
+    monthlyAggregate,
+    oilScheduledDeferment?.subs,
+    oilThirdPartyDeferment?.subs,
+    oilUnscheduledDeferment?.subs,
+    yearlyAggregate,
+  ]);
 
   return (
     <div className="relative">
@@ -327,7 +226,7 @@ const DefermentChart = () => {
           />
         </div>
 
-        {defermentData.chartType === "Production Deferment Profile" ? (
+        {chartType === "Production Deferment Profile" ? (
           <div className="w-full pr-4">
             <div className="h-full w-full bg-[#fafafa]">
               <BarChart
@@ -337,7 +236,7 @@ const DefermentChart = () => {
                   query.flowstation && query.flowstation !== "All"
                     ? `- ${query.flowstation}`
                     : ""
-                } ${fluidType} ${defermentData.chartType} (${
+                } ${fluidType} ${chartType} (${
                   fluidType === "Net Oil/Condensate" ? "bopd" : "MMscf/d"
                 })`}
               />
@@ -351,14 +250,14 @@ const DefermentChart = () => {
               query.flowstation && query.flowstation !== "All"
                 ? `- ${query.flowstation}`
                 : ""
-            } ${fluidType} ${defermentData.chartType} (${
+            } ${fluidType} ${chartType} (${
               fluidType === "Net Oil/Condensate" ? "bopd" : "MMscf/d"
             })`}
             title_empty={`No Data for ${query?.asset} ${
               query.flowstation && query.flowstation !== "All"
                 ? `- ${query.flowstation}`
                 : ""
-            } ${fluidType} ${defermentData.chartType}`}
+            } ${fluidType} ${chartType}`}
           />
         )}
       </div>
