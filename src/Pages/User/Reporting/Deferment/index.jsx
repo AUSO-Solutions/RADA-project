@@ -264,6 +264,7 @@ const DefermentReport = () => {
     () => [
       {
         title: "Multi-variable Report",
+        Component: <DefermentDataTable />
       },
       {
         title: "Chart",
