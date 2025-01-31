@@ -16,41 +16,27 @@ const headerStyle = {
   fontWeight: "bold  !important",
 };
 
-const DefermentDataTable = () => {
-  const defermentData = useSelector((state) => state?.deferments);
+const ReconciledProductionDataTable = ({
+  monthlyData,
+  dailyData,
+  frequency,
+}) => {
+  const productionData = useSelector((state) => state?.reconciledProduction);
   const [dateFormat, setDateFormat] = useState("DD-MM-YYYY");
 
-  const initialState = () => {
-    if (defermentData.frequency === "Month") {
-      return defermentData.monthlyData || [];
-    } else if (defermentData.frequency === "Year") {
-      return defermentData.yearlyData || [];
-    } else {
-      return defermentData.dailyData || [];
-    }
-  };
-
-  const [tableData, setTableData] = useState(initialState);
+  const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
-    if (defermentData?.frequency === "Month") {
-      setTableData(defermentData.monthlyData || []);
-    } else if (defermentData?.frequency === "Year") {
-      setTableData(defermentData.yearlyData || []);
-    } else {
-      setTableData(defermentData.dailyData || []);
-    }
-  }, [defermentData]);
-
-  useEffect(() => {
-    if (defermentData.frequency === "Day") {
-      setDateFormat("DD-MM-YYYY");
-    } else if (defermentData.frequency === "Month") {
+    if (frequency === "Month") {
+      setTableData(monthlyData || []);
       setDateFormat("MMM YYYY");
     } else {
-      setDateFormat("YYYY");
+      setTableData(dailyData || []);
+      setDateFormat("DD-MM-YYYY");
     }
-  }, [defermentData.frequency]);
+  }, [dailyData, frequency, monthlyData]);
+
+  console.log({ tableData, frequency, monthlyData, dailyData });
 
   return (
     <div className="relative">
@@ -97,7 +83,23 @@ const DefermentDataTable = () => {
                 colSpan={2}
                 sx={headerStyle}
               >
-                Downtime
+                Uptime
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                colSpan={2}
+                sx={headerStyle}
+              >
+                Bean-size
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                colSpan={2}
+                sx={headerStyle}
+              >
+                THP
               </TableCell>
               <TableCell
                 style={{ fontWeight: "600" }}
@@ -121,23 +123,15 @@ const DefermentDataTable = () => {
                 colSpan={2}
                 sx={headerStyle}
               >
+                Water
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "600" }}
+                align="center"
+                colSpan={2}
+                sx={headerStyle}
+              >
                 Gas
-              </TableCell>
-              <TableCell
-                style={{ fontWeight: "600" }}
-                align="center"
-                colSpan={2}
-                sx={headerStyle}
-              >
-                Deferment Category
-              </TableCell>
-              <TableCell
-                style={{ fontWeight: "600" }}
-                align="center"
-                colSpan={2}
-                sx={headerStyle}
-              >
-                Deferment Description
               </TableCell>
             </TableRow>
           </TableHead>
@@ -166,7 +160,23 @@ const DefermentDataTable = () => {
               colSpan={2}
               sx={headerStyle}
             >
-              {defermentData.frequency === "Day" ? "hour" : "day"}
+              {productionData.frequency === "Day" ? "hour" : "day"}
+            </TableCell>
+            <TableCell
+              style={{ fontWeight: "600" }}
+              align="center"
+              colSpan={2}
+              sx={headerStyle}
+            >
+              /64
+            </TableCell>
+            <TableCell
+              style={{ fontWeight: "600" }}
+              align="center"
+              colSpan={2}
+              sx={headerStyle}
+            >
+              psi
             </TableCell>
             <TableCell
               style={{ fontWeight: "600" }}
@@ -190,28 +200,19 @@ const DefermentDataTable = () => {
               colSpan={2}
               sx={headerStyle}
             >
-              MMscf/d
+              blpd
             </TableCell>
             <TableCell
               style={{ fontWeight: "600" }}
               align="center"
               colSpan={2}
               sx={headerStyle}
-            ></TableCell>
-            <TableCell
-              style={{ fontWeight: "600" }}
-              align="center"
-              colSpan={2}
-              sx={headerStyle}
-            ></TableCell>
+            >
+              MMscf/d
+            </TableCell>
           </TableRow>
           <TableBody>
             {tableData
-              .filter((well) =>
-                defermentData.flowstation !== "All"
-                  ? defermentData.flowstation === well.flowstation
-                  : true
-              )
               .sort((a, b) =>
                 a.productionString.localeCompare(b.productionString)
               )
@@ -228,10 +229,16 @@ const DefermentDataTable = () => {
                   </TableCell>
                   <TableCell align="center" colSpan={2}>
                     {roundUp(
-                      defermentData.frequency === "Day"
-                        ? well?.downtime
-                        : well?.downtime / 24.0
+                      productionData.frequency === "Day"
+                        ? well?.uptimeProduction
+                        : well?.uptimeProduction / 24.0
                     )}
+                  </TableCell>
+                  <TableCell align="center" colSpan={2}>
+                    {well?.bean !== 0 ? well?.bean : ""}
+                  </TableCell>
+                  <TableCell align="center" colSpan={2}>
+                    {well?.thp !== 0 ? well?.thp : ""}
                   </TableCell>
                   <TableCell align="center" colSpan={2}>
                     {roundUp(well?.gross)}
@@ -240,13 +247,10 @@ const DefermentDataTable = () => {
                     {roundUp(well?.oil)}
                   </TableCell>
                   <TableCell align="center" colSpan={2}>
+                    {roundUp(well?.water)}
+                  </TableCell>
+                  <TableCell align="center" colSpan={2}>
                     {roundUp(well?.gas)}
-                  </TableCell>
-                  <TableCell align="center" colSpan={2}>
-                    {well?.defermentCategory}
-                  </TableCell>
-                  <TableCell align="center" colSpan={2}>
-                    {well?.defermentSubCategory}
                   </TableCell>
                 </TableRow>
               ))}
@@ -257,4 +261,4 @@ const DefermentDataTable = () => {
   );
 };
 
-export default DefermentDataTable;
+export default ReconciledProductionDataTable;

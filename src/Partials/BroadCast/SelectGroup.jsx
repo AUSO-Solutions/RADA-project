@@ -9,14 +9,16 @@ import { setFormdata } from 'Store/slices/formdataSlice'
 const SelectGroup = ({ onChange = () => null }) => {
     const dispatch = useDispatch()
     const formdata = useSelector(state => state.formdata)
-    const { data: allGroups } = useFetch({ firebaseFunction: 'getGroups' })
+    const { data } = useFetch({ firebaseFunction: 'getGroups' })
+    console.log(data)
     // const { users } = useUsers()
     const me = useMe()
+    const allGroups = data
     const groups = useMemo(() => {
-        return allGroups.filter(group => me.user.groups.includes(group?.groupName))
+        return allGroups?.filter(group => me.user.groups.includes(group?.groupName))
     }, [allGroups, me.user.groups])
     const users = useMemo(() => {
-        return groups.flatMap(group => group?.members)
+        return groups?.flatMap(group => group?.members)
     }, [groups])
 
 
@@ -27,7 +29,7 @@ const SelectGroup = ({ onChange = () => null }) => {
     const singleUser = (user) => ({ name: `${user?.firstName} ${user?.lastName}`, email: user?.email, uid: user?.uid })
     const selectAllGroups = () => {
         setSelectedGroups(prev => {
-            if (prev.length === groups.length) return []
+            if (prev?.length === groups?.length) return []
             return groups
         })
     }
@@ -69,13 +71,13 @@ const SelectGroup = ({ onChange = () => null }) => {
             <div className='border-b py-2'>
 
                 {me.user.permitted.broadcastData &&
-                    <CheckInput label={'Select all groups'} checked={selectedGroups.length === groups.length} onChange={() => {
+                    <CheckInput label={'Select all groups'} checked={selectedGroups?.length === groups?.length} onChange={() => {
                         selectAllGroups()
                         onChange(selectedGroups)
                     }} />
                 }
 
-                <CheckInput label={'Select all users'} checked={selectedUsers.length === users.length} onChange={() => {
+                <CheckInput label={'Select all users'} checked={selectedUsers?.length === users?.length} onChange={() => {
                     selectAllUsers()
                     onChange(selectedUsers)
                 }} />
@@ -88,7 +90,7 @@ const SelectGroup = ({ onChange = () => null }) => {
                     <>
                         Groups : <br />
                         {
-                            groups.filter(group => group?.groupName.toLowerCase()?.includes(searchWord?.toLowerCase())).map(group => <div className='border-b py-2'>
+                            groups?.filter(group => group?.groupName.toLowerCase()?.includes(searchWord?.toLowerCase())).map(group => <div className='border-b py-2'>
                                 <CheckInput label={group?.groupName} key={group?.id} checked={selectedGroups?.map(({ id }) => id).includes(group?.id)} onChange={() => {
                                     selectGroup(group)
                                 }} />
@@ -105,7 +107,7 @@ const SelectGroup = ({ onChange = () => null }) => {
                         // .filter(user => {
                         //     return searchIn('firstName', user) || searchIn('lastName', user) || searchIn('email', user)
                         // })
-                        .filter(user => {
+                        ?.filter(user => {
                             return searchIn('name', user) || searchIn('lastName', user) || searchIn('email', user)
                         })
                         .map(user => <div className='border-b py-2'>

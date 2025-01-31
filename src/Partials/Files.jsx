@@ -23,7 +23,7 @@ const Files = ({
     }
     return (
         // <div className=" flex flex-wrap gap-4 m-5 ">
-        files?.map((file, i) => <div onClick={() => viewMenu(i)} className="w-[250px] relative border !shadow rounded-[8px] px-3 flex items-center cursor-pointer gap-3">
+        files?.map((file, i) => <div key={i}  onClick={() => viewMenu(i)} className="w-[250px] relative border !shadow rounded-[8px] px-3 flex items-center cursor-pointer gap-3">
             <img src={images.file} alt="file" height={83} width={83} />   <Text className={''} size={12}>{name(file) || file?.title}</Text>
             {
                 menuViewed === i && <div className="absolute w-fit shadow !z-[100] flex flex-col gap-2 right-[-50px] text-[white] rounded shadow top-[50px] py-1 !w-[100px] bg-[grey]">

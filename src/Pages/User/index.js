@@ -19,6 +19,7 @@ import Settings from "./Settings";
 import DataForm from "./dataform/dataform";
 import Homepage from "./homepage";
 import DefermentReport from "./Reporting/Deferment";
+import ProductionReport from "./Reporting/Production";
 
 export const user_routes = [
   { path: "/", Component: <Homepage />, layout: false, isPublic: true },
@@ -115,6 +116,12 @@ export const user_routes = [
   {
     path: "/users/reports/deferment",
     Component: <DefermentReport />,
+    layout: true,
+    isPublic: false,
+  },
+  {
+    path: "/users/reports/reconciled",
+    Component: <ProductionReport />,
     layout: true,
     isPublic: false,
   },

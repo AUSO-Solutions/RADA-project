@@ -2,7 +2,7 @@
 const admin = require("firebase-admin");
 const logger = require("firebase-functions/logger");
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
-const { transporter, sender, appLogo } = require("../helpers");
+const { transporter, sender, appLogo, mailgunTransporter } = require("../helpers");
 const { broadcastTemplate } = require("../helpers/email_templates/broadcastTemplate");
 
 const broadcast = onCall(async (request) => {
@@ -39,7 +39,16 @@ const broadcast = onCall(async (request) => {
                     console.log('Email sent: ' + info.response);
                 }
             });
+
+            mailgunTransporter({
+                to:address,
+                html:broadcastTemplate({ date, pageLink: link + pagelink, attactedFile: attachment, name, asset, broadcastType }),
+                subject,
+            })
+            
         })
+
+        
 
         // transporter().sendMultiple(msg, function (error, info) {
         //     if (error) {

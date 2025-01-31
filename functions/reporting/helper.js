@@ -41,8 +41,8 @@ function aggregateDeferment(data) {
 
   let dailyData = [];
 
-  let totalOil = 0;
-  let totalGas = 0;
+  let dailyAggregateMap = new Map();
+  let dailyAggregateIndex = 0;
   let dailyAggregate = [];
   let monthlyAggregate = [];
   let monthlyAggregateMap = new Map();
@@ -51,11 +51,37 @@ function aggregateDeferment(data) {
   let yearlyAggregateMap = new Map();
   let yearlyAggregateIndex = 0;
 
-  for (let item of data) {
-    // Add the total
-    totalOil += item.deferment.totalOilDeferment || 0;
-    totalGas += item.deferment.totalGasDeferment || 0;
+  let oilScheduledDeferment = {
+    total: 0,
+    subs: {},
+  };
 
+  let oilUnscheduledDeferment = {
+    total: 0,
+    subs: {},
+  };
+
+  let oilThirdPartyDeferment = {
+    total: 0,
+    subs: {},
+  };
+
+  let gasScheduledDeferment = {
+    total: 0,
+    subs: {},
+  };
+
+  let gasUnscheduledDeferment = {
+    total: 0,
+    subs: {},
+  };
+
+  let gasThirdPartyDeferment = {
+    total: 0,
+    subs: {},
+  };
+
+  for (let item of data) {
     for (let deferment of item.deferment.drainagePoints) {
       // Create the daily data
       dailyData.push({
@@ -95,7 +121,7 @@ function aggregateDeferment(data) {
           flowstation: item.flowStation,
           ...deferment,
         });
-        yearlyMap.set(key, yearlyIndex);
+        yearlyMap.set(yearKey, yearlyIndex);
         yearlyIndex++;
       } else {
         let yearIndex = yearlyMap.get(yearKey);
@@ -106,247 +132,189 @@ function aggregateDeferment(data) {
       }
     }
 
-    let res = {
-      date: item.date,
-      totalOilScheduled: 0,
-      totalOilUnscheduled: 0,
-      totalOilThirdParty: 0,
-      totalGasScheduled: 0,
-      totalGasUnscheduled: 0,
-      totalGasThirdParty: 0,
-      subOilScheduled: {},
-      subGasScheduled: {},
-      subOilUnscheduled: {},
-      subGasUnscheduled: {},
-      subOilThirdParty: {},
-      subGasThirdParty: {},
-    };
-
-    res.totalOilScheduled = item.deferment.oilScheduledDeferment?.total || 0;
-    res.totalOilUnscheduled =
+    // Aggregation for pie chart
+    oilScheduledDeferment.total +=
+      item.deferment.oilScheduledDeferment?.total || 0;
+    oilUnscheduledDeferment.total +=
       item.deferment.oilUnscheduledDeferment?.total || 0;
-    res.totalOilThirdParty = item.deferment.oilThirdPartyDeferment?.total || 0;
-    res.totalGasScheduled = item.deferment.gasScheduledDeferment?.total || 0;
-    res.totalGasUnscheduled =
+    oilThirdPartyDeferment.total +=
+      item.deferment.oilThirdPartyDeferment?.total || 0;
+    gasScheduledDeferment.total +=
+      item.deferment.gasScheduledDeferment?.total || 0;
+    gasUnscheduledDeferment.total +=
       item.deferment.gasUnscheduledDeferment?.total || 0;
-    res.totalGasThirdParty = item.deferment.gasThirdPartyDeferment?.total || 0;
+    gasThirdPartyDeferment.total +=
+      item.deferment.gasThirdPartyDeferment?.total || 0;
 
     let keys = Object.keys(
       item.deferment.oilScheduledDeferment?.subcategories || {}
     );
     keys.forEach((key) => {
-      res.subOilScheduled[key] =
-        item.deferment.oilScheduledDeferment.subcategories[key];
+      if (key in oilScheduledDeferment.subs) {
+        oilScheduledDeferment.subs[key] +=
+          item.deferment.oilScheduledDeferment?.subcategories[key];
+      } else {
+        oilScheduledDeferment.subs[key] =
+          item.deferment.oilScheduledDeferment?.subcategories[key];
+      }
     });
 
     keys = Object.keys(
       item.deferment.oilUnscheduledDeferment?.subcategories || {}
     );
     keys.forEach((key) => {
-      res.subOilUnscheduled[key] =
-        item.deferment.oilUnscheduledDeferment.subcategories[key];
+      if (key in oilUnscheduledDeferment.subs) {
+        oilUnscheduledDeferment.subs[key] +=
+          item.deferment.oilUnscheduledDeferment?.subcategories[key];
+      } else {
+        oilUnscheduledDeferment.subs[key] =
+          item.deferment.oilUnscheduledDeferment?.subcategories[key];
+      }
     });
 
     keys = Object.keys(
       item.deferment.oilThirdPartyDeferment?.subcategories || {}
     );
     keys.forEach((key) => {
-      res.subOilUnscheduled[key] =
-        item.deferment.oilThirdPartyDeferment.subcategories[key];
+      if (key in oilThirdPartyDeferment.subs) {
+        oilThirdPartyDeferment.subs[key] +=
+          item.deferment.oilThirdPartyDeferment?.subcategories[key];
+      } else {
+        oilThirdPartyDeferment.subs[key] =
+          item.deferment.oilThirdPartyDeferment?.subcategories[key];
+      }
     });
 
     keys = Object.keys(
       item.deferment.gasScheduledDeferment?.subcategories || {}
     );
     keys.forEach((key) => {
-      res.subGasScheduled[key] =
-        item.deferment.gasScheduledDeferment.subcategories[key];
+      if (key in gasScheduledDeferment.subs) {
+        gasScheduledDeferment.subs[key] +=
+          item.deferment.gasScheduledDeferment?.subcategories[key];
+      } else {
+        gasScheduledDeferment.subs[key] =
+          item.deferment.gasScheduledDeferment?.subcategories[key];
+      }
     });
 
     keys = Object.keys(
       item.deferment.gasUnscheduledDeferment?.subcategories || {}
     );
     keys.forEach((key) => {
-      res.subGasUnscheduled[key] =
-        item.deferment.gasUnscheduledDeferment.subcategories[key];
+      if (key in gasUnscheduledDeferment.subs) {
+        gasUnscheduledDeferment.subs[key] +=
+          item.deferment.gasUnscheduledDeferment?.subcategories[key];
+      } else {
+        gasUnscheduledDeferment.subs[key] =
+          item.deferment.gasUnscheduledDeferment?.subcategories[key];
+      }
     });
 
     keys = Object.keys(
-      item.deferment.oilThirdPartyDeferment?.subcategories || {}
+      item.deferment.gasThirdPartyDeferment?.subcategories || {}
     );
     keys.forEach((key) => {
-      res.subOilUnscheduled[key] =
-        item.deferment.oilThirdPartyDeferment.subcategories[key];
+      if (key in gasThirdPartyDeferment.subs) {
+        gasThirdPartyDeferment.subs[key] +=
+          item.deferment.gasThirdPartyDeferment?.subcategories[key];
+      } else {
+        gasThirdPartyDeferment.subs[key] =
+          item.deferment.gasThirdPartyDeferment?.subcategories[key];
+      }
     });
 
-    dailyAggregate.push(res);
+    const key = item.date;
+    let prev = dailyAggregate.length - 1;
+    if (!dailyAggregateMap.has(key)) {
+      let res = {
+        date: item.date,
+        totalOil: prev > -1 ? dailyAggregate[prev]?.totalOil : 0,
+        totalGas: prev > -1 ? dailyAggregate[prev]?.totalGas : 0,
+        totalOilScheduled: 0,
+        totalOilUnscheduled: 0,
+        totalOilThirdParty: 0,
+        totalGasScheduled: 0,
+        totalGasUnscheduled: 0,
+        totalGasThirdParty: 0,
+      };
+
+      res.totalOil += item.deferment.totalOilDeferment || 0;
+      res.totalGas += item.deferment.totalGasDeferment || 0;
+      res.totalOilScheduled = item.deferment.oilScheduledDeferment?.total || 0;
+      res.totalOilUnscheduled =
+        item.deferment.oilUnscheduledDeferment?.total || 0;
+      res.totalOilThirdParty =
+        item.deferment.oilThirdPartyDeferment?.total || 0;
+      res.totalGasScheduled = item.deferment.gasScheduledDeferment?.total || 0;
+      res.totalGasUnscheduled =
+        item.deferment.gasUnscheduledDeferment?.total || 0;
+      res.totalGasThirdParty =
+        item.deferment.gasThirdPartyDeferment?.total || 0;
+
+      dailyAggregate.push(res);
+      dailyAggregateMap.set(key, dailyAggregateIndex);
+      dailyAggregateIndex += 1;
+    } else {
+      let index = dailyAggregateMap.get(key);
+
+      dailyAggregate[index].totalOil += item.deferment.totalOilDeferment || 0;
+      dailyAggregate[index].totalGas += item.deferment.totalGasDeferment || 0;
+      dailyAggregate[index].totalOilScheduled +=
+        item.deferment.oilScheduledDeferment.total || 0;
+      dailyAggregate[index].totalOilUnscheduled +=
+        item.deferment.oilUnscheduledDeferment.total || 0;
+      dailyAggregate[index].totalOilThirdParty +=
+        item.deferment.oilThirdPartyDeferment?.total || 0;
+      dailyAggregate[index].totalGasScheduled +=
+        item.deferment.gasScheduledDeferment?.total || 0;
+      dailyAggregate[index].totalGasUnscheduled +=
+        item.deferment.gasUnscheduledDeferment?.total || 0;
+      dailyAggregate[index].totalGasThirdParty +=
+        item.deferment.gasThirdPartyDeferment?.total || 0;
+    }
   }
+
+  const savedDailyAggregate = JSON.parse(JSON.stringify(dailyAggregate));
 
   for (let item of dailyAggregate) {
     const date = new Date(item.date);
     const monthYear = `${date.getUTCMonth() + 1}-${date.getFullYear()}`;
     if (!monthlyAggregateMap.has(monthYear)) {
       monthlyAggregate.push(item);
-      monthlyMap.set(monthYear, monthlyAggregateIndex);
+      monthlyAggregateMap.set(monthYear, monthlyAggregateIndex);
       monthlyAggregateIndex++;
     } else {
       let index = monthlyAggregateMap.get(monthYear);
+      monthlyAggregate[index].totalOil = item.totalOil;
+      monthlyAggregate[index].totalGas = item.totalGas;
       monthlyAggregate[index].totalOilScheduled += item.totalOilScheduled;
       monthlyAggregate[index].totalOilUnscheduled += item.totalOilUnscheduled;
       monthlyAggregate[index].totalOilThirdParty += item.totalOilThirdParty;
       monthlyAggregate[index].totalGasScheduled += item.totalGasScheduled;
       monthlyAggregate[index].totalGasUnscheduled += item.totalGasUnscheduled;
       monthlyAggregate[index].totalGasThirdParty += item.totalGasThirdParty;
-
-      let keys = Object.keys(item.subOilScheduled);
-      keys.forEach((key) => {
-        if (key in monthlyAggregate[index].subOilScheduled) {
-          monthlyAggregate[index].subOilScheduled[key] +=
-            item.subOilScheduled[key];
-        } else {
-          monthlyAggregate[index].subOilScheduled[key] =
-            item.subOilScheduled[key];
-        }
-      });
-
-      keys = Object.keys(item.subOilUnscheduled);
-      keys.forEach((key) => {
-        if (key in monthlyAggregate[index].subOilUnscheduled) {
-          monthlyAggregate[index].subOilUnscheduled[key] +=
-            item.subOilUnscheduled[key];
-        } else {
-          monthlyAggregate[index].subOilUnscheduled[key] =
-            item.subOilUnscheduled[key];
-        }
-      });
-
-      keys = Object.keys(item.subOilThirdParty);
-      keys.forEach((key) => {
-        if (key in monthlyAggregate[index].subOilThirdParty) {
-          monthlyAggregate[index].subOilThirdParty[key] +=
-            item.subOilThirdParty[key];
-        } else {
-          monthlyAggregate[index].subOilThirdParty[key] =
-            item.subOilThirdParty[key];
-        }
-      });
-
-      keys = Object.keys(item.subGasScheduled);
-      keys.forEach((key) => {
-        if (key in monthlyAggregate[index].subGasScheduled) {
-          monthlyAggregate[index].subGasScheduled[key] +=
-            item.subGasScheduled[key];
-        } else {
-          monthlyAggregate[index].subGasScheduled[key] =
-            item.subGasScheduled[key];
-        }
-      });
-
-      keys = Object.keys(item.subGasUnscheduled);
-      keys.forEach((key) => {
-        if (key in monthlyAggregate[index].subGasUnscheduled) {
-          monthlyAggregate[index].subGasUnscheduled[key] +=
-            item.subGasUnscheduled[key];
-        } else {
-          monthlyAggregate[index].subGasUnscheduled[key] =
-            item.subGasUnscheduled[key];
-        }
-      });
-
-      keys = Object.keys(item.subGasThirdParty);
-      keys.forEach((key) => {
-        if (key in monthlyAggregate[index].subGasThirdParty) {
-          monthlyAggregate[index].subGasThirdParty[key] +=
-            item.subGasThirdParty[key];
-        } else {
-          monthlyAggregate[index].subGasThirdParty[key] =
-            item.subGasThirdParty[key];
-        }
-      });
     }
   }
 
   for (let item of monthlyAggregate) {
     const date = new Date(item.date);
     const year = date.getFullYear();
+
     if (!yearlyAggregateMap.has(year)) {
       yearlyAggregate.push(item);
       yearlyAggregateMap.set(year, yearlyAggregateIndex);
       yearlyAggregateIndex++;
     } else {
       let index = yearlyAggregateMap.get(year);
+      yearlyAggregate[index].totalGas = item.totalGas;
+      yearlyAggregate[index].totalOil = item.totalOil;
       yearlyAggregate[index].totalOilScheduled += item.totalOilScheduled;
       yearlyAggregate[index].totalOilUnscheduled += item.totalOilUnscheduled;
       yearlyAggregate[index].totalOilThirdParty += item.totalOilThirdParty;
       yearlyAggregate[index].totalGasScheduled += item.totalGasScheduled;
       yearlyAggregate[index].totalGasUnscheduled += item.totalGasUnscheduled;
       yearlyAggregate[index].totalGasThirdParty += item.totalGasThirdParty;
-
-      let keys = Object.keys(item.subOilScheduled);
-      keys.forEach((key) => {
-        if (key in yearlyAggregate[index].subOilScheduled) {
-          yearlyAggregate[index].subOilScheduled[key] +=
-            item.subOilScheduled[key];
-        } else {
-          yearlyAggregate[index].subOilScheduled[key] =
-            item.subOilScheduled[key];
-        }
-      });
-
-      keys = Object.keys(item.subOilUnscheduled);
-      keys.forEach((key) => {
-        if (key in yearlyAggregate[index].subOilUnscheduled) {
-          yearlyAggregate[index].subOilUnscheduled[key] +=
-            item.subOilUnscheduled[key];
-        } else {
-          yearlyAggregate[index].subOilUnscheduled[key] =
-            item.subOilUnscheduled[key];
-        }
-      });
-
-      keys = Object.keys(item.subOilThirdParty);
-      keys.forEach((key) => {
-        if (key in yearlyAggregate[index].subOilThirdParty) {
-          yearlyAggregate[index].subOilThirdParty[key] +=
-            item.subOilThirdParty[key];
-        } else {
-          yearlyAggregate[index].subOilThirdParty[key] =
-            item.subOilThirdParty[key];
-        }
-      });
-
-      keys = Object.keys(item.subGasScheduled);
-      keys.forEach((key) => {
-        if (key in yearlyAggregate[index].subGasScheduled) {
-          yearlyAggregate[index].subGasScheduled[key] +=
-            item.subGasScheduled[key];
-        } else {
-          yearlyAggregate[index].subGasScheduled[key] =
-            item.subGasScheduled[key];
-        }
-      });
-
-      keys = Object.keys(item.subGasUnscheduled);
-      keys.forEach((key) => {
-        if (key in yearlyAggregate[index].subGasUnscheduled) {
-          yearlyAggregate[index].subGasUnscheduled[key] +=
-            item.subGasUnscheduled[key];
-        } else {
-          yearlyAggregate[index].subGasUnscheduled[key] =
-            item.subGasUnscheduled[key];
-        }
-      });
-
-      keys = Object.keys(item.subGasThirdParty);
-      keys.forEach((key) => {
-        if (key in yearlyAggregate[index].subGasThirdParty) {
-          yearlyAggregate[index].subGasThirdParty[key] +=
-            item.subGasThirdParty[key];
-        } else {
-          yearlyAggregate[index].subGasThirdParty[key] =
-            item.subGasThirdParty[key];
-        }
-      });
     }
   }
 
@@ -354,11 +322,69 @@ function aggregateDeferment(data) {
     dailyData,
     monthlyData,
     yearlyData,
-    dailyAggregate,
+    dailyAggregate: savedDailyAggregate,
     monthlyAggregate,
     yearlyAggregate,
-    totalOil,
-    totalGas,
+    oilScheduledDeferment,
+    oilUnscheduledDeferment,
+    oilThirdPartyDeferment,
+    gasScheduledDeferment,
+    gasUnscheduledDeferment,
+    gasThirdPartyDeferment,
+  };
+}
+
+function aggregateActualProduction(data) {
+  const monthlyMap = new Map();
+  let monthlyIndex = 0;
+  let monthlyData = [];
+
+  let dailyData = [];
+
+  for (let item of data) {
+    for (let production of item.productionData) {
+      // Create the daily data
+      dailyData.push({
+        date: item.date,
+        flowstation: item.flowStation,
+        ...production,
+      });
+
+      const date = new Date(item.date);
+
+      // Aggregation Monthly Data based on Drainage Point
+      const monthYear = `${date.getFullYear()}-${date.getUTCMonth() + 1}`;
+      const key = `${production.productionString}-${monthYear}`;
+      if (!monthlyMap.has(key)) {
+        monthlyData.push({
+          date: `${monthYear}-01`,
+          flowstation: item.flowStation,
+          thp: production.thp || 0,
+          bean: production.bean || 0,
+          uptimeProduction: parseFloat(production.uptimeProduction) || 0,
+          ...production,
+        });
+        console.log(monthlyData);
+        monthlyMap.set(key, monthlyIndex);
+        monthlyIndex++;
+      } else {
+        let index = monthlyMap.get(key);
+        monthlyData[index].uptimeProduction +=
+          parseFloat(production?.uptimeProduction) || 0;
+        monthlyData[index].gross += production.gross || 0;
+        monthlyData[index].oil += production.oil || 0;
+        monthlyData[index].gas += production.gas || 0;
+        monthlyData[index].water += production.water || 0;
+        monthlyData[index].thp = production.thp || 0;
+        monthlyData[index].bean = production.bean || 0;
+      }
+    }
+  }
+
+  console.log(monthlyData);
+  return {
+    dailyData,
+    monthlyData,
   };
 }
 
@@ -366,4 +392,5 @@ module.exports = {
   getDatesForCurrentMonth,
   getDatesBetween,
   aggregateDeferment,
+  aggregateActualProduction,
 };
