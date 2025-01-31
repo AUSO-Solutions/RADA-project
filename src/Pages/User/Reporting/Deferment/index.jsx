@@ -69,25 +69,25 @@ const DefermentReport = () => {
   };
 
   const monthlyData = useMemo(() => {
-    if (res?.data?.length) {
-      Object.values(JSON.parse(res?.data.monthlyData) || {});
+    if (res?.data?.monthlyData) {
+      Object.values(JSON.parse(res?.data.monthlyData || "") || {});
     }
   }, [res?.data]);
 
   const yearlyData = useMemo(() => {
-    if (res?.data?.length) {
-      Object.values(JSON.parse(res?.data.yearlyData) || {});
+    if (res?.data?.yearlyData) {
+      Object.values(JSON.parse(res?.data.yearlyData || "") || {});
     }
   }, [res?.data]);
 
   const dailyData = useMemo(() => {
-    if (res?.data?.length) {
-      Object.values(JSON.parse(res?.data.dailyData) || {});
+    if (res?.data?.dailyData) {
+      Object.values(JSON.parse(res?.data.dailyData || "") || {});
     }
   }, [res?.data]);
 
   useEffect(() => {
-    const data = res?.data ? JSON.parse(res?.data) : {};
+    const data = res?.data ? JSON.parse(res?.data || "") : {};
     dispatch(
       setDefermentData({
         name: "monthlyData",
