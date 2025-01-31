@@ -68,6 +68,24 @@ const DefermentReport = () => {
     return dayjs(previousDate).format("YYYY-MM-DD");
   };
 
+  const monthlyData = useMemo(() => {
+    if (res?.data?.length) {
+      Object.values(JSON.parse(res?.data.monthlyData) || {});
+    }
+  }, [res?.data]);
+
+  const yearlyData = useMemo(() => {
+    if (res?.data?.length) {
+      Object.values(JSON.parse(res?.data.yearlyData) || {});
+    }
+  }, [res?.data]);
+
+  const dailyData = useMemo(() => {
+    if (res?.data?.length) {
+      Object.values(JSON.parse(res?.data.dailyData) || {});
+    }
+  }, [res?.data]);
+
   useEffect(() => {
     const data = res?.data ? JSON.parse(res?.data) : {};
     dispatch(
@@ -246,7 +264,6 @@ const DefermentReport = () => {
     () => [
       {
         title: "Multi-variable Report",
-        Component: <DefermentDataTable />,
       },
       {
         title: "Chart",

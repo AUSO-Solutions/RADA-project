@@ -359,16 +359,18 @@ function aggregateActualProduction(data) {
         monthlyData.push({
           date: `${monthYear}-01`,
           flowstation: item.flowStation,
-          tph: production.thp || 0,
+          thp: production.thp || 0,
           bean: production.bean || 0,
+          uptimeProduction: parseFloat(production.uptimeProduction) || 0,
           ...production,
         });
+        console.log(monthlyData);
         monthlyMap.set(key, monthlyIndex);
         monthlyIndex++;
       } else {
         let index = monthlyMap.get(key);
         monthlyData[index].uptimeProduction +=
-          production?.uptimeProduction || 0;
+          parseFloat(production?.uptimeProduction) || 0;
         monthlyData[index].gross += production.gross || 0;
         monthlyData[index].oil += production.oil || 0;
         monthlyData[index].gas += production.gas || 0;
@@ -378,6 +380,8 @@ function aggregateActualProduction(data) {
       }
     }
   }
+
+  console.log(monthlyData);
   return {
     dailyData,
     monthlyData,

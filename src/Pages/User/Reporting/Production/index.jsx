@@ -49,6 +49,24 @@ const ProductionReport = () => {
     return dayjs(previousDate).format("YYYY-MM-DD");
   };
 
+  const dailyData = useMemo(() => {
+    if (res?.data) {
+      const data = JSON.parse(res?.data) || {};
+      return Object.values(data.dailyData || {});
+    } else {
+      return [];
+    }
+  }, [res?.data]);
+
+  const monthlyData = useMemo(() => {
+    if (res?.data) {
+      const data = JSON.parse(res?.data) || {};
+      return Object.values(data.monthlyData || {});
+    } else {
+      return [];
+    }
+  }, [res?.data]);
+
   useEffect(() => {
     const data = res?.data ? JSON.parse(res?.data) : {};
     dispatch(
@@ -145,10 +163,16 @@ const ProductionReport = () => {
     () => [
       {
         title: "Multi-variable Report",
-        Component: <ReconciledProductionDataTable />,
+        Component: (
+          <ReconciledProductionDataTable
+            dailyData={dailyData}
+            monthlyData={monthlyData}
+            frequency={frequency}
+          />
+        ),
       },
     ],
-    []
+    [dailyData, frequency, monthlyData]
   );
 
   useEffect(() => {
