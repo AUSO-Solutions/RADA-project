@@ -55,57 +55,6 @@ const ProductionReport = () => {
     setMonthlyData(Object.values(data.monthlyData || {}));
   }, [res?.data]);
 
-  // const generateReportData = () => {
-  //   let data = [];
-  //   if (frequency === "Month") {
-  //     data = (monthlyData || [])
-  //       .map((well) => ({
-  //         Date: dayjs(well.date).format("MMM YYYY"),
-  //         Flowstation: well.flowstation,
-  //         "Production String": well.productionString,
-  //         "Gross (blpd)": roundUp(well.gross),
-  //         "Oil (bopd)": roundUp(well.oil),
-  //         "Gas (MMscf/d)": roundUp(well.gas),
-  //         "Water (blpd)": roundUp(well.water),
-  //         "Downtime (days)": roundUp(well.downtime / 24),
-  //         "Deferment Category": well.defermentCategory,
-  //         "Deferment Subcategory": well.defermentSubCategory,
-  //       }))
-  //       .filter((well) =>
-  //         query?.flowstation !== "All"
-  //           ? query?.flowstation === well.Flowstation
-  //           : true
-  //       )
-  //       .sort((a, b) =>
-  //         a["Production String"].localeCompare(b["Production String"])
-  //       );
-  //   } else {
-  //     data = (dailyData || [])
-  //       .map((well) => ({
-  //         Date: dayjs(well.date).format("DD-MM-YYYY"),
-  //         Flowstation: well.flowstation,
-  //         "Production String": well.productionString,
-  //         "Gross (blpd)": roundUp(well.gross),
-  //         "Oil (bopd)": roundUp(well.oil),
-  //         "Gas (MMscf/d)": roundUp(well.gas),
-  //         "Water (blpd)": roundUp(well.water),
-  //         "Downtime (hrs)": roundUp(well.downtime),
-  //         "Deferment Category": well.defermentCategory,
-  //         "Deferment Subcategory": well.defermentSubCategory,
-  //       }))
-  //       .filter((well) =>
-  //         query?.flowstation !== "All"
-  //           ? query?.flowstation === well.Flowstation
-  //           : true
-  //       )
-  //       .sort((a, b) =>
-  //         a["Production String"].localeCompare(b["Production String"])
-  //       );
-  //   }
-
-  //   return data;
-  // };
-
   const exportToExcel = () => {
     const tableData = frequency === "Day" ? dailyData : monthlyData;
     const data = generateReportData(frequency, tableData, query?.flowstation);

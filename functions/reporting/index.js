@@ -6,6 +6,8 @@ const {
   getDatesBetween,
   aggregateDeferment,
   aggregateActualProduction,
+  getStartOfMonth,
+  aggregateOperationsData,
 } = require("./helper");
 const dayjs = require("dayjs");
 
@@ -105,7 +107,73 @@ const getReconciledProductionData = onCall(async (request) => {
   }
 });
 
+const getOperationsData = onCall(async (request) => {
+  try {
+    const { data } = request;
+    logger.log("Data ---", { data });
+    const { asset, date = dayjs() } = data;
+    if (!asset) {
+      throw {
+        code: "cancelled",
+        message: `Please provide an Asset name`,
+      };
+    }
+
+    if (!date) {
+      throw {
+        code: "cancelled",
+        message: `Please provide a valid date`,
+      };
+    }
+
+    const date_ = dayjs(date).format("YYYY-MM-DD");
+    const start = getStartOfMonth(date_);
+
+    const db = admin.firestore();
+    const liquidVolumes = (
+      await db
+        .collection("liquidVolumes")
+        .where("asset", "==", asset)
+        .where("date", ">=", start)
+        .where("date", "<=", date_)
+        .orderBy("date")
+        .get()
+    ).docs.map((doc) => doc.data());
+
+    const gasVolumes = (
+      await db
+        .collection("gasVolumes")
+        .where("asset", "==", asset)
+        .where("date", ">=", start)
+        .where("date", "<=", date_)
+        .orderBy("date")
+        .get()
+    ).docs.map((doc) => doc.data());
+
+    const production = (
+      await db
+        .collection("actualProduction")
+        .where("asset", "==", asset)
+        .where("date", "==", date_)
+        .get()
+    ).docs.map((doc) => doc.data());
+
+    const result = aggregateOperationsData(
+      liquidVolumes,
+      gasVolumes,
+      production
+    );
+
+    return { status: "success", data: JSON.stringify(result) };
+  } catch (error) {
+    console.log({ error });
+    if (error.message) throw new HttpsError(error?.code, error?.message);
+    throw error;
+  }
+});
+
 module.exports = {
   getDefermentData,
   getReconciledProductionData,
+  getOperationsData,
 };

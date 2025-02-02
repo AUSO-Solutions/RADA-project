@@ -67,6 +67,7 @@ const {
 const {
   getDefermentData,
   getReconciledProductionData,
+  getOperationsData,
 } = require("./reporting");
 const { getInsight } = require("./admin/insights");
 const { getInsights } = require("./admin/insights/index2");
@@ -142,4 +143,5 @@ module.exports = {
 
   getDefermentData,
   getReconciledProductionData,
+  getOperationsData,
 };

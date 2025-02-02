@@ -13,6 +13,14 @@ function getDatesForCurrentMonth() {
   return dates;
 }
 
+const getStartOfMonth = () => {
+  const today = new Date();
+  const currentMonth = today.getMonth();
+  const currentYear = today.getFullYear();
+
+  return new Date(currentYear, currentMonth, 1);
+};
+
 function getDatesBetween(startDate, endDate) {
   const dates = [];
 
@@ -356,21 +364,22 @@ function aggregateActualProduction(data) {
       const monthYear = `${date.getFullYear()}-${date.getUTCMonth() + 1}`;
       const key = `${production.productionString}-${monthYear}`;
       if (!monthlyMap.has(key)) {
+        const uptime = Number(production.uptimeProduction || 0);
         monthlyData.push({
           date: `${monthYear}-01`,
           flowstation: item.flowStation,
           thp: production.thp || 0,
           bean: production.bean || 0,
-          uptimeProduction: parseFloat(production.uptimeProduction) || 0,
+          uptimeProduction: uptime,
           ...production,
         });
-        console.log(monthlyData);
         monthlyMap.set(key, monthlyIndex);
         monthlyIndex++;
       } else {
         let index = monthlyMap.get(key);
-        monthlyData[index].uptimeProduction +=
-          parseFloat(production?.uptimeProduction) || 0;
+        const uptime = Number(production.uptimeProduction || 0);
+        const prev = Number(monthlyData[index]["uptimeProduction"]);
+        monthlyData[index]["uptimeProduction"] = uptime + prev;
         monthlyData[index].gross += production.gross || 0;
         monthlyData[index].oil += production.oil || 0;
         monthlyData[index].gas += production.gas || 0;
@@ -380,17 +389,151 @@ function aggregateActualProduction(data) {
       }
     }
   }
-
-  console.log(monthlyData);
   return {
     dailyData,
     monthlyData,
   };
 }
 
+const aggregateOperationsData = (liquidVolumes, gasVolumes, production) => {
+  // Volumes Data Prep and Aggregate
+  let oilProduced = [];
+  let gasProduced = [];
+  let gasExported = [];
+  let gasFlared = [];
+  let gasUtilised = [];
+
+  let totalGross = 0;
+  let totalOil = 0;
+  let totalGas = 0;
+  let totalFlaredGas = 0;
+  let totalExportGas = 0;
+  let totalUtilisedGas = 0;
+
+  const flowstationsMap = new Map();
+  let flowstationIndex = 0;
+
+  const len = liquidVolumes.length;
+
+  let facilities = [];
+
+  for (let i = 0; i < len; i++) {
+    const oil = {};
+    const gas = { date: gasVolumes[i].date };
+    const gExport = { date: gasVolumes[i].date };
+    const flared = { date: gasVolumes[i].date };
+    const utilised = { date: gasVolumes[i].date };
+
+    for (let flowstation of gasVolumes[i].flowstations) {
+      gas[[flowstation.name]] = flowstation?.subtotal?.totalGas || 0;
+      gExport[[flowstation.name]] = flowstation?.subtotal?.export || 0;
+      flared[[flowstation.name]] = flowstation?.subtotal?.gasFlaredUSM || 0;
+      utilised[[flowstation.name]] = flowstation?.subtotal?.gasFlaredUSM || 0;
+
+      totalGas += flowstation?.subtotal?.totalGas || 0;
+      totalExportGas += flowstation?.subtotal?.export || 0;
+      totalFlaredGas += flowstation?.subtotal?.gasFlaredUSM || 0;
+      totalUtilisedGas += flowstation?.subtotal?.gasFlaredUSM || 0;
+    }
+
+    for (let flowstation of liquidVolumes[i].flowstations) {
+      oil[[flowstation.name]] = flowstation?.subtotal?.netProduction || 0;
+
+      totalOil += flowstation?.subtotal?.netProduction || 0;
+      totalGross += flowstation?.subtotal?.gross || 0;
+    }
+    oilProduced.push(oil);
+    gasProduced.push(gas);
+    gasExported.push(gExport);
+    gasFlared.push(flared);
+    gasUtilised.push(utilised);
+
+    if (i === len - 1) {
+      const liquid = liquidVolumes[i];
+      const gas = gasVolumes[i];
+
+      // Add the data in the oil flowstations to the facilities
+      for (let flowstation in liquid.flowstations) {
+        const name = flowstation.name;
+
+        facilities.push({
+          flowstation: name,
+          gross: flowstation?.subtotal?.gross || 0,
+          net: flowstation?.subtotal?.netProduction || 0,
+          bsw: flowstation?.subtotal?.bsw || 0,
+        });
+        flowstationsMap.set(name, flowstationIndex);
+        flowstationIndex++;
+      }
+
+      // Loop through the gas data to add the gas flowstation data to corresponding oil flowstations
+      for (let flowstation in gas.flowstations) {
+        const name = flowstation.name;
+        if (flowstationIndex.has(name)) {
+          const index = flowstationsMap.get(name);
+          facilities[index]["producedGas"] =
+            flowstation?.subtotal?.totalGas || 0;
+          facilities[index]["utilisedGas"] =
+            flowstation?.subtotal?.fuelGas || 0;
+          facilities[index]["flaredGas"] =
+            flowstation?.subtotal?.gasFlaredUSM || 0;
+          facilities[index]["exportGas"] =
+            flowstation?.subtotal?.exportGas || 0;
+        } else {
+          facilities.push({
+            flowstation: name,
+            producedGas: flowstation?.subtotal?.totalGas || 0,
+            utilisedGas: flowstation?.subtotal?.fuelGas || 0,
+            flaredGas: flowstation?.subtotal?.gasFlaredUSM || 0,
+            exportGas: flowstation?.subtotal?.exportGas || 0,
+          });
+          flowstationsMap.set(name, flowstationIndex);
+          flowstationIndex++;
+        }
+      }
+    }
+  }
+
+  const summary = {
+    totalGross,
+    totalOil,
+    totalGas,
+    totalFlaredGas,
+    totalExportGas,
+    totalUtilisedGas,
+    bsw: ((totalGross - totalOil) * 100) / totalGross,
+  };
+
+  // Actual Production Aggregation
+  let sortedProduction = {};
+
+  for (let data of production) {
+    const flowstation = data?.flowStation;
+    if (flowstation in sortedProduction) {
+      sortedProduction[[flowstation]] = [
+        ...sortedProduction[flowstation],
+        ...data?.productionData,
+      ];
+    } else {
+      sortedProduction[[flowstation]] = [...data?.productionData];
+    }
+  }
+  return {
+    summary,
+    facilities,
+    oilProduced,
+    gasProduced,
+    gasExported,
+    gasFlared,
+    sortedProduction,
+  };
+};
+
 module.exports = {
   getDatesForCurrentMonth,
   getDatesBetween,
   aggregateDeferment,
   aggregateActualProduction,
+  getStartOfMonth,
+  aggregateOperationsData,
 };

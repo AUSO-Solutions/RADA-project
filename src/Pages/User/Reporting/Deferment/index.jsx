@@ -17,11 +17,11 @@ import pdfIcon from "Assets/images/pdf.svg";
 import * as XLSX from "xlsx";
 import { roundUp } from "utils";
 import {
-  // Document,
-  // Page,
-  // Text,
-  // View,
-  // StyleSheet,
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
   PDFDownloadLink,
 } from "@react-pdf/renderer";
 
@@ -87,10 +87,23 @@ const DefermentReport = () => {
     setOilScheduledDeferment(data.oilScheduledDeferment || {});
     setOilUnscheduledDeferment(data.oilUnscheduledDeferment || {});
     setOilThirdPartyDeferment(data.oilThirdPartyDeferment || {});
-    setGasScheduledDeferment(data.oilScheduledDeferment || {});
-    setGasUnscheduledDeferment(data.oilUnscheduledDeferment || {});
-    setGasThirdPartyDeferment(data.oilThirdPartyDeferment || {});
+    setGasScheduledDeferment(data.gasScheduledDeferment || {});
+    setGasUnscheduledDeferment(data.gasUnscheduledDeferment || {});
+    setGasThirdPartyDeferment(data.gasThirdPartyDeferment || {});
   }, [res?.data]);
+
+  const generatePDFData = () => {
+    let tableData = [];
+    if (frequency === "Day") {
+      tableData = dailyData;
+    } else if (frequency === "Month") {
+      tableData = monthlyData;
+    } else {
+      tableData = yearlyData;
+    }
+
+    return generateReportData(frequency, tableData, query?.flowstation);
+  };
 
   const exportResultToExcel = () => {
     let tableData = [];
@@ -220,7 +233,7 @@ const DefermentReport = () => {
                   onClick={exportResultToExcel}
                 />
                 <PDFDownloadLink
-                  // document={<PDFComponent data={generateReportData(frequency, tableData, query?.flowstation)} />}
+                  document={<PDFComponent data={generatePDFData()} />}
                   fileName="deferment-report.pdf"
                 >
                   <img src={pdfIcon} alt="pdf" className="w-[40px] h-[40px]" />
@@ -426,77 +439,77 @@ const generateReportData = (frequency, tableData = [], flowstation) => {
   return data;
 };
 
-// const styles = StyleSheet.create({
-//   page: {
-//     backgroundColor: "#fff",
-//     padding: 20,
-//   },
-//   title: {
-//     fontSize: 8, // Set font size for title to 8 (smallest)
-//     marginBottom: 10,
-//   },
-//   table: {
-//     display: "table",
-//     width: "auto",
-//     margin: "20px 0",
-//   },
-//   tableRow: {
-//     flexDirection: "row",
-//     // borderBottom: "1px dashed black",
-//     padding: 1, // Vertical padding in rows
-//   },
-//   tableCol: {
-//     width: "11.11%", // Each column takes up 1/9 of the table (100% / 9 columns)
-//     padding: "1px 1px", // Reduced horizontal padding in cells
-//     borderRight: "1px dashed black", // Dashed border for right side
-//     borderBottom: "1px dashed black", // Dashed border for bottom side
-//   },
-//   tableCell: {
-//     paddingLeft: 5,
-//     paddingRight: 5,
-//   },
-//   headerText: {
-//     fontSize: 4,
-//     fontWeight: "bold",
-//   },
-//   rowText: {
-//     fontSize: 4,
-//   },
-// });
+const styles = StyleSheet.create({
+  page: {
+    backgroundColor: "#fff",
+    padding: 20,
+  },
+  title: {
+    fontSize: 8, // Set font size for title to 8 (smallest)
+    marginBottom: 10,
+  },
+  table: {
+    display: "table",
+    width: "auto",
+    margin: "20px 0",
+  },
+  tableRow: {
+    flexDirection: "row",
+    // borderBottom: "1px dashed black",
+    padding: 1, // Vertical padding in rows
+  },
+  tableCol: {
+    width: "11.11%", // Each column takes up 1/9 of the table (100% / 9 columns)
+    padding: "1px 1px", // Reduced horizontal padding in cells
+    borderRight: "1px dashed black", // Dashed border for right side
+    borderBottom: "1px dashed black", // Dashed border for bottom side
+  },
+  tableCell: {
+    paddingLeft: 5,
+    paddingRight: 5,
+  },
+  headerText: {
+    fontSize: 4,
+    fontWeight: "bold",
+  },
+  rowText: {
+    fontSize: 4,
+  },
+});
 
 // Create a PDF Document with a Table
-// const PDFComponent = ({ data }) => {
-//   const headers = Object.keys(data[0] || {});
+const PDFComponent = ({ data }) => {
+  const headers = Object.keys(data[0] || {});
 
-//   return (
-//     <Document>
-//       <Page size="A4" style={styles.page}>
-//         {/* Table */}
-//         <View style={styles.table}>
-//           <View style={styles.tableRow}>
-//             {headers.map((header, index) => (
-//               <Text
-//                 key={`${header}-${index}`}
-//                 style={[styles.tableCol, styles.headerText]}
-//               >
-//                 {header}
-//               </Text>
-//             ))}
-//           </View>
-//           {data.map((row, index) => (
-//             <View key={index} style={styles.tableRow}>
-//               {headers.map((header, index) => (
-//                 <Text
-//                   key={`${header}-${index}`}
-//                   style={[styles.tableCol, styles.rowText]}
-//                 >
-//                   {row[header]}
-//                 </Text>
-//               ))}
-//             </View>
-//           ))}
-//         </View>
-//       </Page>
-//     </Document>
-//   );
-// };
+  return (
+    <Document>
+      <Page size="A4" style={styles.page}>
+        {/* Table */}
+        <View style={styles.table}>
+          <View style={styles.tableRow}>
+            {headers.map((header, index) => (
+              <Text
+                key={`${header}-${index}`}
+                style={[styles.tableCol, styles.headerText]}
+              >
+                {header}
+              </Text>
+            ))}
+          </View>
+          {data.map((row, index) => (
+            <View key={index} style={styles.tableRow}>
+              {headers.map((header, index) => (
+                <Text
+                  key={`${header}-${index}`}
+                  style={[styles.tableCol, styles.rowText]}
+                >
+                  {row[header]}
+                </Text>
+              ))}
+            </View>
+          ))}
+        </View>
+      </Page>
+    </Document>
+  );
+};
