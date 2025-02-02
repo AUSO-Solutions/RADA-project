@@ -276,9 +276,7 @@ export const getIntersectionBetweenTwoLines = (
 };
 export const bsw = ({ gross, oil, water }) => {
   let water__ = water || 0 || parseFloat(gross || 0) - parseFloat(oil || 0);
-  const result = ((water__ / (parseFloat(oil || 0) + water__)) * 100).toFixed(
-    4
-  );
+  const result = ((water__ / (parseFloat(oil || 0) + water__)) * 100);
 
   return isNaN(result) ? "" : roundUp(result);
 };

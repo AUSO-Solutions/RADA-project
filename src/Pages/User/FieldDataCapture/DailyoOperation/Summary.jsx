@@ -22,7 +22,7 @@ import SelectGroup from 'Partials/BroadCast/SelectGroup';
 import BroadCastSuccessfull from 'Partials/BroadCast/BroadCastSuccessfull';
 import { openModal } from 'Store/slices/modalSlice';
 import { useLocation, useSearchParams } from 'react-router-dom';
-import { bsw, roundUp } from 'utils';
+import { bsw, roundUp, sum } from 'utils';
 import { firebaseFunctions } from 'Services';
 import { useMe } from 'hooks/useMe';
 import RadioSelect from './RadioSelect';
@@ -52,12 +52,14 @@ const Summary = () => {
   const tableData = useMemo(() => {
     return res?.data?.length ? JSON.parse(res?.data) : {}
   }, [res])
-  // console.log(tableData)
+  // console.log("data for chart", tableData)
   const assets = useAssetByName(setupData?.asset)
   const { assetNames } = useAssetNames()
   const [showChart, setShowChart] = useState(false);
   // const switches = ['Oil/Condensate', 'Gas'];
   const [curr, setCurr] = useState({})
+  const [chCurr, setChCurr] = useState({})
+
   const [notes, setNotes] = useState({
     liquid: [], gas: []
   })
@@ -70,7 +72,7 @@ const Summary = () => {
       try {
         const { data: liquidData } = await firebaseFunctions('getOilOrCondensateVolumeByDateAndAsset', { asset: setupData?.asset, date: setupData?.startDate }, false, { loadingScreen: false })
         const { data: gasData } = await firebaseFunctions('getGasVolumeByDateAndAsset', { asset: setupData?.asset, date: setupData?.startDate }, false, { loadingScreen: false })
-        // console.log(liquidData, gasData)
+        // console.log("chartData",liquidData, gasData)
         const liquid = liquidData.flowstations.map(flowstation => (
           { flowstation: flowstation?.name, highlight: flowstation.highlight }
         ))
@@ -106,28 +108,125 @@ const Summary = () => {
     ]
   }, [tableData])
 
+  const dailyChartData = useMemo(() => {
+    let day = dayjs(setupData?.startDate).subtract(1, 'day')
+    // console.log(tableData?.assetOilProduction)
+    const chartData = []
+    while (day != dayjs(setupData?.endDate).format('YYYY-MM-DD')) {
+      const formattedDay = dayjs(day).add(1, 'day').format('DD/MM/YYYY')
+      const oilRes = tableData?.assetOilProduction?.[formattedDay]
+      const gasRes = tableData?.assetGasProduction?.[formattedDay]
+      const gasProduced = sum([
+        parseFloat(gasRes?.["Export Gas"] || 0),
+        parseFloat(gasRes?.["Fuel Gas"] || 0),
+        parseFloat(gasRes?.["Flared Gas"] || 0)
+      ])
+      chartData.push({
+        ...oilRes, ...gasRes, gasProduced
+      })
+      day = dayjs(day).add(1, 'day').format('YYYY-MM-DD')
+    }
+    // console.log(chartData)
+    return chartData
+
+  }, [tableData]);
+
+  const chartValues = useMemo(() => {
+    const ipscTarget = (tableData?.ipscTarget)
+    // console.log(ipscTarget)
+    const getTarget = (date, targetKey) => {
+      const target__ = ipscTarget?.find(ipscTarget_ => ipscTarget_?.month === `${date?.split("/")[2]}-${date?.split("/")[1]}`)
+      // console.log(target__, `${date?.split("/")[2]}-${date?.split("/")[0]}`) 
+      return sum(Object.values(target__?.flowstationsTargets || {})?.map(flowstationsTarget => flowstationsTarget?.[targetKey]))
+    }
+
+    return [
+      {
+        name: "Gross Liquid (bbls/day)",
+        // target: roundUp(parseFloat(tableData.grossTarget || 0)), actual: roundUp(parseFloat(dailyChartData.gross || 0)),
+        chartData: dailyChartData?.map(chartData => ({ actual: chartData?.gross, x: chartData?.x, target: getTarget(chartData?.x, 'gross') }))
+      },
+      {
+        name: "BS&W (%)",
+        // target: roundUp(parseFloat(dailyChartData.bsw || 0)), actual: roundUp(parseFloat(dailyChartData.bsw || 0)),
+        chartData: dailyChartData?.map(chartData => ({
+          actual: chartData?.bsw, x: chartData?.x, target: bsw({
+            oil: getTarget(chartData?.x, 'oilRate'),
+            gross: getTarget(chartData?.x, 'gross')
+          })
+        }))
+      },
+
+      {
+        name: "Net Oil (bbls/day)",
+        // target: roundUp(parseFloat(tableData.oilTarget || 0)), actual: roundUp(parseFloat(dailyChartData.oil || 0)),
+        chartData: dailyChartData?.map(chartData => ({ actual: chartData?.oil, x: chartData?.x, target: getTarget(chartData?.x, 'oilRate') }))
+      },
+      {
+        name: "Produced Gas (mmscf)",
+        // target: roundUp(parseFloat(tableData.gasProducedTarget || 0)), actual: roundUp(parseFloat(dailyChartData.gasProduced || 0)),
+        chartData: dailyChartData?.map(chartData => ({
+          actual: chartData?.gasProduced, x: chartData?.x,
+          target: sum([getTarget(chartData?.x, 'exportGas'), getTarget(chartData?.x, 'fuelGas'), getTarget(chartData?.x, 'gasFlaredUSM')])
+        }))
+      },
+      {
+        name: "Export Gas (mmscf)",
+        // target: roundUp(parseFloat(tableData.exportGasTarget || 0)), actual: roundUp(parseFloat(tableData['Export Gas'] || 0)),
+        chartData: dailyChartData?.map(chartData => ({ actual: chartData?.["Export Gas"], x: chartData?.x, target: getTarget(chartData?.x, 'exportGas') }))
+      },
+      {
+        name: "Fuel Gas Consumed (mmscf)",
+        // target: roundUp(parseFloat(tableData.gasUtilizedTarget || 0)), actual: roundUp(parseFloat(tableData['Fuel Gas'] || 0)),
+        chartData: dailyChartData?.map(chartData => ({ actual: chartData?.["Fuel Gas"], x: chartData?.x, target: getTarget(chartData?.x, 'fuelGas') }))
+      },
+      {
+        name: "Flare Gas (mmscf)",
+        // target: roundUp(parseFloat(tableData.gasFlaredTarget || 0)), actual: roundUp(parseFloat(tableData['Flared Gas'] || 0)),
+        chartData: dailyChartData?.map(chartData => ({ actual: chartData?.["Flared Gas"], x: chartData?.x, target: getTarget(chartData?.x, 'gasFlaredUSM') }))
+      },
+    ]
+    // return []
+  }, [tableData, dailyChartData])
+
+  // console.log(chartValues)
   const data = useMemo(() => {
+    const selectedChartData = chartValues?.find(({ name }) => name === chCurr?.name)
+    console.log(selectedChartData)
+    // let datasets = selectedChartData?.chartData?.map(dayData => dayData.actual)
+    // console.log(datasets)
     return {
-      labels: [`Target (${curr?.target})`, `Actual  (${curr?.actual})`],
+      labels: selectedChartData?.chartData?.map(data => data.x),
       datasets: [
+       
         {
-          label: curr?.name,
-          data: [curr?.target, curr?.actual,],
+          label: `Actual: ${chCurr?.name}`,
+          data: selectedChartData?.chartData?.map(dayData => dayData.actual || 0),
+          backgroundColor: [
+            "#D31E1E",
+          ],
+          borderColor: [
+            "rgba(255, 99, 132, 1)",
+          ],
+          borderWidth: 1,
+
+          stack: 'actual'
+        },
+        {
+          label: `Target: ${chCurr?.name}`,
+          data: selectedChartData?.chartData?.map(dayData => dayData.target || 0),
           backgroundColor: [
             "#29A2CC",
-            "#D31E1E",
-            // "#FFDE2E"
           ],
           borderColor: [
             "rgba(54, 162, 235, 1)",
-            "rgba(255, 99, 132, 1)",
-            // "rgba(255, 206, 86, 1)"
           ],
-          borderWidth: 1
-        }
+          borderWidth: 1,
+          stack: 'Target'
+        },
       ]
     }
-  }, [curr]);
+  }, [chCurr, chartValues]);
 
   const options = {
     responsive: true,
@@ -144,6 +243,14 @@ const Summary = () => {
           color: "#333",
           boxWidth: 12,
           padding: 20,
+        },
+        scales: {
+          x: {
+            stacked: true,
+          },
+          y: {
+            stacked: true
+          }
         }
       },
     },
@@ -165,6 +272,10 @@ const Summary = () => {
     dispatch(setSetupData({ name: 'endDate', value: endDate }))
   }, [searchParams, dispatch, assetNames])
 
+
+
+  // console.log("ooopppp",dailyChartData)
+
   const [currentHighlight, setCurrentHighlight] = useState({
     volumeType: "Gas",
     flowstation: "",
@@ -173,7 +284,7 @@ const Summary = () => {
   const currentNote = useMemo(() => {
     const result = notes?.[currentHighlight.volumeType.toLowerCase()]?.find(note => note?.flowstation === currentHighlight.flowstation)?.highlight?.[currentHighlight.highlightType?.toLowerCase()]
     if (!result) return "No highlight!"
-      return result
+    return result
 
   }, [currentHighlight.flowstation, currentHighlight.highlightType, currentHighlight.volumeType, notes])
   return (
@@ -230,11 +341,11 @@ const Summary = () => {
               startDate={setupData?.startDate}
               endDate={setupData?.endDate}
               // value={setupData?.startDate}
-              onChange={e =>  
-                // {
-                // dispatch(setSetupData({ name: 'startDate', value: dayjs(e?.startDate).format('YYYY-MM-DD') }))
-                // dispatch(setSetupData({ name: 'endDate', value: dayjs(e?.endDate).format('YYYY-MM-DD') }))
-                {
+              onChange={e =>
+              // {
+              // dispatch(setSetupData({ name: 'startDate', value: dayjs(e?.startDate).format('YYYY-MM-DD') }))
+              // dispatch(setSetupData({ name: 'endDate', value: dayjs(e?.endDate).format('YYYY-MM-DD') }))
+              {
                 setSearchParams(prev => {
                   prev.set('startDate', dayjs(e.startDate).format('YYYY-MM-DD'))
                   prev.set('endDate', dayjs(e.endDate).format('YYYY-MM-DD'))
@@ -285,7 +396,7 @@ const Summary = () => {
           >
             <div className='p-3' style={{ display: 'flex', cursor: 'move', flexDirection: 'column', backgroundColor: '#fff', width: '100%', height: 'auto', borderRadius: 5, boxShadow: '2px 1px 5px  #242424' }}>
               <div style={{ margin: "10 0", paddingRight: 20, paddingLeft: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Text weight={700} size={'16px'} > <Input type='select' onChange={(e) => setCurr(values.find(value => value.name === e.value))} containerClass={'!w-[200px]'} options={values.map(value => ({ label: value.name, value: value.name }))} /></Text>
+                <Text weight={700} size={'16px'} > <Input type='select' onChange={(e) => setChCurr(chartValues.find(value => value.name === e.value))} containerClass={'!w-[200px]'} options={chartValues.map(value => ({ label: value.name, value: value.name }))} /></Text>
                 <Close style={{ cursor: 'pointer' }} onClick={() => setShowChart(false)} />
               </div>
 
@@ -297,11 +408,11 @@ const Summary = () => {
               {/* </div> */}
 
               {/* <div style={{ height: '100%', width: '100%', padding: 20, display: 'flex', justifyContent: 'center', alignItems: 'center', }} > */}
-              <Bar
+              {chCurr?.name && <Bar
                 key={`${chartWidth}-${chartHeight}`}
                 data={data} options={options}
                 width={chartWidth} height={chartHeight}
-              />
+              />}
               {/* </div> */}
 
             </div>
