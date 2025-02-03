@@ -26,7 +26,11 @@ const ReconciledProductionDataTable = ({
 
   useEffect(() => {
     if (frequency === "Month") {
-      setTableData(monthlyData || []);
+      const data = monthlyData.map((item) => ({
+        ...item,
+        uptimeProduction: item?.uptimeProduction / 24.0 || 0,
+      }));
+      setTableData(data || []);
       setDateFormat("MMM YYYY");
     } else {
       setTableData(dailyData || []);
@@ -79,7 +83,7 @@ const ReconciledProductionDataTable = ({
                 colSpan={2}
                 sx={headerStyle}
               >
-                Uptime
+                Producing Days
               </TableCell>
               <TableCell
                 style={{ fontWeight: "600" }}
@@ -225,11 +229,7 @@ const ReconciledProductionDataTable = ({
                       {dayjs(well?.date).format(dateFormat)}
                     </TableCell>
                     <TableCell align="center" colSpan={2}>
-                      {roundUp(
-                        frequency === "Day"
-                          ? well?.uptimeProduction
-                          : well?.uptimeProduction / 24.0
-                      )}
+                      {roundUp(well?.uptimeProduction)}
                     </TableCell>
                     <TableCell align="center" colSpan={2}>
                       {well?.bean !== 0 ? well?.bean : ""}

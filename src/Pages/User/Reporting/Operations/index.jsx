@@ -18,6 +18,7 @@ import RadaDatePicker from "Components/Input/RadaDatePicker";
 import { setSetupData } from "Store/slices/setupSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useFetch } from "hooks/useFetch";
+import PDFReport from "./PDFReport";
 
 const OperationsReport = () => {
   const [tab, setTab] = useState(0);
@@ -54,7 +55,7 @@ const OperationsReport = () => {
     () => [
       {
         title: "Report",
-        Component: <div>Hello</div>,
+        Component: <PDFReport />,
       },
     ],
     []
