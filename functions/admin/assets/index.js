@@ -64,6 +64,7 @@ const createAsset = onCall(async (request) => {
 const importMasterXY = onCall(async (request) => {
   try {
     let { data } = request;
+    console.log(data)
     const db = admin.firestore();
     const dataList = data.dataList
     const promises = dataList.map(async (dataListItem) => {
@@ -77,6 +78,7 @@ const importMasterXY = onCall(async (request) => {
         assetName: name,
         ...rest
       };
+      console.log({ id, name })
       if (name) {
         return await db.collection('assets')
           .doc(name)
@@ -159,8 +161,8 @@ const getAssets = onCall(async (request) => {
   try {
     const db = admin.firestore();
     // const uid = (await admin.auth().verifyIdToken(idToken)).uid
-    const groupDetails =  await getUserGroups(idToken)
-    const groups =groupDetails.groups
+    const groupDetails = await getUserGroups(idToken)
+    const groups = groupDetails.groups
     const assets = groupDetails.assets
     const res = await db.collectionGroup("assetList").where('asset', 'in', assets).get()
     // const size = res.size

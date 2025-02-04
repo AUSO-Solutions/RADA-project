@@ -1,0 +1,16 @@
+[debug] [2025-02-04T21:44:45.702Z] ----------------------------------------------------------------------
+[debug] [2025-02-04T21:44:45.705Z] Command:       /Users/mac/.nvm/versions/node/v22.1.0/bin/node /Users/mac/.nvm/versions/node/v22.1.0/bin/firebase deploy --only functions:importMasterXY
+[debug] [2025-02-04T21:44:45.706Z] CLI Version:   13.29.2
+[debug] [2025-02-04T21:44:45.706Z] Platform:      darwin
+[debug] [2025-02-04T21:44:45.706Z] Node Version:  v22.1.0
+[debug] [2025-02-04T21:44:45.706Z] Time:          Tue Feb 04 2025 22:44:45 GMT+0100 (West Africa Standard Time)
+[debug] [2025-02-04T21:44:45.706Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-02-04T21:44:45.888Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-02-04T21:44:45.889Z] > authorizing via signed-in user (kehinde@urbaneatsapp.com)
+[debug] [2025-02-04T21:44:45.889Z] [iam] checking project ped-application-4d196 for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2025-02-04T21:44:45.890Z] Checked if tokens are valid: true, expires at: 1738708869881
+[debug] [2025-02-04T21:44:45.890Z] Checked if tokens are valid: true, expires at: 1738708869881
+[debug] [2025-02-04T21:44:45.891Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/ped-application-4d196:testIamPermissions [none]
+[debug] [2025-02-04T21:44:45.891Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/ped-application-4d196:testIamPermissions x-goog-quota-user=projects/ped-application-4d196
+[debug] [2025-02-04T21:44:45.891Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/ped-application-4d196:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
