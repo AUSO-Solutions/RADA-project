@@ -30,7 +30,7 @@ export default function OilGasAccountingTable() {
     const { setups: IPSCs } = useGetSetups("IPSC")
     const [date, setDate] = useState(dayjs().subtract(1, 'day').format('YYYY-MM-DD'))
     const matchingIPSC = React.useMemo(() => {
-        const gotten = IPSCs.find(IPSC => IPSC.asset === res.asset && IPSC.month === dayjs(date).format("YYYY-MM"))
+        const gotten = IPSCs?.find(IPSC => IPSC.asset === res.asset && IPSC.month === dayjs(date).format("YYYY-MM"))
         const wellTestResultData = Object.values(gotten?.wellTestResultData || {}).filter(item => item?.flowstation === flowStation)
 
         const newWellTestResultData = Object.fromEntries(
