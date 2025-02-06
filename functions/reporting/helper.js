@@ -397,6 +397,7 @@ function aggregateActualProduction(data) {
 
 const aggregateOperationsData = (liquidVolumes, gasVolumes, production) => {
   // Volumes Data Prep and Aggregate
+  console.log(liquidVolumes, gasVolumes, production);
   let oilProduced = [];
   let gasProduced = [];
   let gasExported = [];
@@ -469,7 +470,7 @@ const aggregateOperationsData = (liquidVolumes, gasVolumes, production) => {
       // Loop through the gas data to add the gas flowstation data to corresponding oil flowstations
       for (let flowstation in gas.flowstations) {
         const name = flowstation.name;
-        if (flowstationIndex.has(name)) {
+        if (flowstationsMap.has(name)) {
           const index = flowstationsMap.get(name);
           facilities[index]["producedGas"] =
             flowstation?.subtotal?.totalGas || 0;

@@ -9,7 +9,8 @@ import {
 } from "recharts";
 import Text from "Components/Text";
 
-const RadaPieChart = ({ data, title, colors, title_empty }) => {
+const RadaPieChart = ({ data = [], title, colors, title_empty }) => {
+  colors = colors || data?.colors;
   return (
     <div className="w-full pr-4">
       <div className="h-full p-4 w-full bg-[#fafafa]">

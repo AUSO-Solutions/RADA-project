@@ -97,7 +97,6 @@ const PDFReport = () => {
   };
 
   const handleRenderCanvas = () => {
-    console.log("Here");
     if (pdfBytes) {
       renderPDFOnCanvas(pdfBytes);
     }
