@@ -30,7 +30,6 @@ import BarChart from "./BarChart";
 import PieChart from "./PieChart";
 import { getRandomColor } from "./DefermentChart";
 import { Button } from "Components";
-import { saveAs } from "file-saver";
 
 const createOpt = (item) => ({ label: item, value: item });
 const aggregationFrequency = ["Day", "Month", "Year"];
@@ -362,7 +361,6 @@ const DefermentReport = () => {
           )}
         </div>
       </div>
-
       {showChart ? (
         <PDFComponent
           barData={dailyAggregate}
@@ -517,7 +515,6 @@ const PDFComponent = ({
   gasScheduledDeferment,
   gasUnscheduledDeferment,
   gasThirdPartyDeferment,
-  showChart,
   setShowChart,
 }) => {
   const chartRefs = [
@@ -530,6 +527,7 @@ const PDFComponent = ({
     useRef(),
     useRef(),
   ];
+  const [pdfUrl, setPdfUrl] = useState(null);
 
   const getBarChartData = (fluidType) => {
     return barData.map((item) => ({
@@ -565,7 +563,35 @@ const PDFComponent = ({
     return { data: result, colors };
   };
 
-  const downloadPdf = async () => {
+  const generatePdf = () => {
+    return new Promise((resolve) => {
+      Promise.all(
+        chartRefs
+          .filter((ref) => ref.current)
+          .map(
+            (ref) =>
+              new Promise((resolve) => {
+                const chartElement = ref.current;
+
+                setTimeout(() => {
+                  html2canvas(chartElement).then(
+                    (canvas) => {
+                      const imgData = canvas.toDataURL("image/png");
+                      resolve(imgData);
+                    },
+                    () => resolve(null)
+                  );
+                });
+              })
+          )
+      ).then((canvases) => {
+        setPdfUrl(canvases);
+        resolve(canvases);
+      });
+    });
+  };
+
+  const handleGeneratePDF = async () => {
     const imagesDataArray = await generatePdf();
 
     // const chartHeight = 300
@@ -599,53 +625,79 @@ const PDFComponent = ({
     pdf(PdfDocument)
       .toBlob()
       .then((blob) => {
-        saveAs(blob, "deferment-report.pdf");
+        const url = URL.createObjectURL(blob);
+        console.log(url);
+        setPdfUrl(url);
       });
-
-    setShowChart(false);
   };
 
-  const generatePdf = () => {
-    return new Promise((resolve) => {
-      Promise.all(
-        chartRefs
-          .filter((ref) => ref.current)
-          .map(
-            (ref) =>
-              new Promise((resolve) => {
-                const chartElement = ref.current;
+  const handleDownloadPDF = async () => {
+    const imagesDataArray = await generatePdf();
 
-                setTimeout(() => {
-                  html2canvas(chartElement).then(
-                    (canvas) => {
-                      const imgData = canvas.toDataURL("image/png");
-                      resolve(imgData);
-                    },
-                    () => resolve(null)
-                  );
-                });
-              })
-          )
-      ).then((canvases) => {
-        resolve(canvases);
+    // const chartHeight = 300
+    const chartsPerPage = 2;
+    const totalCharts = imagesDataArray.length;
+    const pages = [];
+    let chartIndex = 0;
+
+    while (chartIndex < totalCharts) {
+      const chartsInPage = [];
+      while (chartsInPage.length < chartsPerPage && chartIndex < totalCharts) {
+        chartsInPage.push(imagesDataArray[chartIndex]);
+        chartIndex++;
+      }
+
+      pages.push(
+        <Page key={chartIndex} size={"A4"} style={{ padding: 20 }}>
+          <View style={{ flexDirection: "column" }}>
+            {chartsInPage.map((imgData, index) => (
+              <View key={index} style={{ marginBottom: 20 }}>
+                <Image src={imgData} />
+              </View>
+            ))}
+          </View>
+        </Page>
+      );
+    }
+
+    const PdfDocument = <Document>{pages}</Document>;
+
+    pdf(PdfDocument)
+      .toBlob()
+      .then((blob) => {
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `Deferment Data`;
+        link.click();
       });
-    });
   };
 
   return (
     <div className=" h-full w-full px-4">
       <div className="flex justify-start p-4 mb-4 items-center gap-4">
+        <Button onClick={handleGeneratePDF} bgcolor={""} className={"px-3"}>
+          Generate Report
+        </Button>
+        <Button onClick={handleDownloadPDF} bgcolor={""} className={"px-3"}>
+          Download Pdf
+        </Button>
         <Button
-          onClick={() => setShowChart((prev) => !prev)}
+          onClick={() => setShowChart(false)}
           bgcolor={""}
           className={"px-3"}
         >
-          {showChart ? "Hide Report" : "View Report"}
-        </Button>
-        <Button onClick={downloadPdf} bgcolor={""} className={"px-3"}>
-          Download Pdf
+          Close
         </Button>
       </div>
+      {pdfUrl && (
+        <iframe
+          src={pdfUrl}
+          width={"100%"}
+          height={"600px"}
+          title="Report Preview"
+          style={{ border: "1px solid black", marginTop: "20px" }}
+        />
+      )}
 
       <div
         style={styles.chartContainer}
