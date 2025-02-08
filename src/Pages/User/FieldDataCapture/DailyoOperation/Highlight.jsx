@@ -48,7 +48,7 @@ const NoteBox = ({ onSave, onChange, highlightType, flowstation, captureData, on
 }
 
 const SelectFlowstation = ({ captureData, onSelect = () => null, }) => {
-    const highlightTypes = ['production', 'maintenance', 'operation']
+    // const highlightTypes = ['production', 'maintenance', 'operation']
     const { data: highlights } = useSelector(state => state.highlights)
 
     return (

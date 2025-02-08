@@ -1,9 +1,14 @@
 
 import { Delete } from '@mui/icons-material';
 import { Input, RadaForm } from 'Components';
+import ConfirmModal from 'Components/Modal/ConfirmModal';
 import Text from 'Components/Text'
 import { useFetch } from 'hooks/useFetch';
 import React, { useState } from 'react'
+import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+import { firebaseFunctions } from 'Services';
+import { closeModal, openModal } from 'Store/slices/modalSlice';
 // import { BsChevronDown } from 'react-icons/bs';
 
 const GlobalSettings = () => {
@@ -58,6 +63,29 @@ const GlobalSettings = () => {
     const forceRefresh = () => {
         setRefetch(Math.random())
     }
+    const deleteCategory = async (id) => {
+
+        try {
+            await firebaseFunctions('deleteCategory', { id })
+            dispatch(closeModal())
+            toast.success("Successful")
+            forceRefresh()
+        } catch (error) {
+
+        }
+    }
+    const deleteSubCategory = async (id, subCategory) => {
+
+        try {
+            await firebaseFunctions('deleteSubCategory', { id, subCategory })
+            dispatch(closeModal())
+            toast.success("Successful")
+            forceRefresh()
+        } catch (error) {
+
+        }
+    }
+    const dispatch = useDispatch()
     return (
         <div className='m-5  flex flex-col gap-3'>
             <div>
@@ -70,7 +98,7 @@ const GlobalSettings = () => {
 
 
             <hr />
-            <RadaForm className='w-[500px] flex flex-col gap-2' btnText={'Add'} url={'/createDefermentSubCategory'}  onSuccess={forceRefresh}>
+            <RadaForm className='w-[500px] flex flex-col gap-2' btnText={'Add'} url={'/createDefermentSubCategory'} onSuccess={forceRefresh}>
 
                 <Text weight={700} size={'20px'} >Add Deferment Sub-Category</Text>
                 <Input label={'Category'} required name='id' placeholder="Scheduled Deferment" type='select' options={defermentCategories?.map(defermentCategory => ({ label: defermentCategory?.name, value: defermentCategory?.id }))} />
@@ -86,7 +114,17 @@ const GlobalSettings = () => {
                         <Text size={16} weight={600}>
                             {defermentCategory?.name}
                         </Text>
-                        <Delete className='cursor-pointer' />
+                        <Delete className='cursor-pointer' onClick={() =>
+                            dispatch(
+                                openModal({
+                                    title: "Delete Category",
+                                    component:
+                                        <ConfirmModal color='red' message={`Are you sure you want to delete ${defermentCategory?.name} category`}
+                                            onProceed={() => deleteCategory(defermentCategory?.id)}
+                                        />
+                                })
+                            )
+                        } />
                     </div>
                     <div className='flex flex-col gap-3'>
                         {defermentCategory?.subCategories?.map(subCategory => {
@@ -94,7 +132,18 @@ const GlobalSettings = () => {
                                 <Text className={'block'}>
                                     {subCategory}
                                 </Text>
-                                <Delete className='cursor-pointer' />
+                                <Delete className='cursor-pointer' onClick={() =>
+                                    dispatch(
+                                        openModal({
+                                            title: "Delete Sub Category",
+                                            component:
+                                                <ConfirmModal color='red' message={`Are you sure you want to delete ${subCategory} sub category`}
+                                                    onProceed={() => deleteSubCategory(defermentCategory?.id, subCategory)}
+                                                />
+                                        })
+                                    )
+                                }
+                                />
                             </div>
                         })}
                     </div>
