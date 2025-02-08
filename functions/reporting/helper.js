@@ -417,6 +417,17 @@ const aggregateOperationsData = (liquidVolumes, gasVolumes, production) => {
   const len = liquidVolumes.length;
 
   let facilities = [];
+  let oilHighlights = {
+    operations: [],
+    maintenance: [],
+    production: [],
+  };
+
+  let gasHighlights = {
+    operations: [],
+    maintenance: [],
+    production: [],
+  };
 
   for (let i = 0; i < len; i++) {
     const oil = {};
@@ -467,6 +478,10 @@ const aggregateOperationsData = (liquidVolumes, gasVolumes, production) => {
     });
     flowstationsMap.set(name, flowstationIndex);
     flowstationIndex++;
+
+    Object.entries(flowstation?.highlight || {}).forEach(([key, value]) => {
+      oilHighlights[key].push({ name: name, highlight: value });
+    });
   }
 
   // Loop through the gas data to add the gas flowstation data to corresponding oil flowstations
@@ -490,6 +505,9 @@ const aggregateOperationsData = (liquidVolumes, gasVolumes, production) => {
       flowstationsMap.set(name, flowstationIndex);
       flowstationIndex++;
     }
+    Object.entries(flowstation?.highlight || {}).forEach(([key, value]) => {
+      gasHighlights[key].push({ name: name, highlight: value });
+    });
   }
 
   const summary = {
@@ -524,6 +542,8 @@ const aggregateOperationsData = (liquidVolumes, gasVolumes, production) => {
     gasExported,
     gasFlared,
     sortedProduction,
+    oilHighlights,
+    gasHighlights,
   };
 };
 

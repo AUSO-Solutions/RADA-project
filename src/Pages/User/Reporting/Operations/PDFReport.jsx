@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactPDF, {
   Document,
   Page,
@@ -6,21 +6,23 @@ import ReactPDF, {
   View,
   StyleSheet,
 } from "@react-pdf/renderer";
-// import * as pdfjs from "pdfjs-dist";
 import { Button } from "Components";
 import { roundUp } from "utils";
 
 const PDFReport = ({ data, date, asset }) => {
   const [pdfUrl, setPdfUrl] = useState(null);
 
-  const handleGeneratePDF = () => {
+  useEffect(() => {
+    if (Object.keys(data).length === 0) return;
     ReactPDF.pdf(<PdfDocument data={data} date={date} asset={asset} />)
       .toBlob()
       .then((blob) => {
         const url = URL.createObjectURL(blob);
         setPdfUrl(url);
       });
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
+
   const handleDownloadPDF = () => {
     ReactPDF.pdf(<PdfDocument data={data} date={date} asset={asset} />)
       .toBlob()
@@ -35,21 +37,9 @@ const PDFReport = ({ data, date, asset }) => {
   return (
     <div className="relative">
       <div className="flex justify-start pl-4 items-center gap-4">
-        <Button onClick={handleGeneratePDF} bgcolor={""} className={"px-3"}>
-          Generate Report
-        </Button>
         <Button onClick={handleDownloadPDF} bgcolor={""} className={"px-3"}>
           Download Report
         </Button>
-        {pdfUrl && (
-          <Button
-            onClick={() => setPdfUrl(null)}
-            bgcolor={""}
-            className={"px-3"}
-          >
-            Close
-          </Button>
-        )}
       </div>
 
       {pdfUrl && (
@@ -163,6 +153,7 @@ const ReportHeader = ({ asset, date }) => {
 };
 
 const SummaryTable = ({ asset, summaryData }) => {
+  if (summaryData.length === 0) return;
   return (
     <View style={styles.section}>
       <Text style={styles.subHeader}>{`${asset} Production Summary`}</Text>
@@ -185,6 +176,7 @@ const SummaryTable = ({ asset, summaryData }) => {
 };
 
 const FacilitiesTable = ({ asset, facilitiesData }) => {
+  if (facilitiesData.length === 0) return;
   return (
     <View style={styles.section}>
       <Text style={styles.subHeader}>{`${asset} Production Per Facility`}</Text>
@@ -255,6 +247,7 @@ const FacilitiesTable = ({ asset, facilitiesData }) => {
 };
 
 const FacilitiesProduction = ({ facilitiesData }) => {
+  if (facilitiesData.length === 0) return;
   return (
     <>
       <Text style={styles.subHeader}>PRODUCTION PER STRING</Text>
