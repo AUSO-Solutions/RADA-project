@@ -1,6 +1,7 @@
 
 import RadaTable from 'Components/RadaTable'
 import Header from 'Components/header'
+import dayjs from 'dayjs'
 
 import React from 'react'
 
@@ -17,12 +18,13 @@ const ActivityLog = () => {
             />
             <RadaTable
 noaction
+firebaseApi='getLogs'
                 columns={[
-                    { name: 'Date' },
-                    { name: 'Time' },
-                    { name: 'Email' },
-                    { name: 'Audit note' },
-                    { name: 'Log Type' }
+                    { name: 'Date' , key:'logTime', render:data=>dayjs(data?.logTime).format("MMM DD, YYYY.")},
+                    { name: 'Time' ,render:data=>dayjs(data?.logTime).format("hh:mmA")},
+                    { name: 'User', key:'user' },
+                    { name: 'Audit note', key:'message' },
+                    // { name: 'Log Type' }
                 ]} />
         </div>
     )

@@ -4,6 +4,7 @@ const logger = require("firebase-functions/logger");
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const { transporter, sender, appLogo, mailgunTransporter } = require("../helpers");
 const { broadcastTemplate } = require("../helpers/email_templates/broadcastTemplate");
+// const { logActivity_ } = require("../activitylog");
 
 const broadcast = onCall(async (request) => {
     try {
@@ -19,17 +20,13 @@ const broadcast = onCall(async (request) => {
 
         const link = 'https://ped-application-4d196.web.app'
         emailAddresses.forEach((address) => {
-            const name = members?.find(member => member?.email === address)?.name || users?.find(user => user?.email === address)?.name 
+            const name = members?.find(member => member?.email === address)?.name || users?.find(user => user?.email === address)?.name
             var msg = {
                 from: sender, // sender address
                 to: address,
                 subject, // Subject line
                 html: broadcastTemplate({ date, pageLink: link + pagelink, attactedFile: attachment, name, asset, broadcastType }),
-                // attachments: [{
-                //     filename: 'logo',
-                //     path: appLogo,
-                //     cid: 'appLogo' //same cid value as in the html img src
-                // }]
+
             }
 
             transporter.sendMail(msg, function (error, info) {
@@ -41,14 +38,11 @@ const broadcast = onCall(async (request) => {
             });
 
             mailgunTransporter({
-                to:address,
-                html:broadcastTemplate({ date, pageLink: link + pagelink, attactedFile: attachment, name, asset, broadcastType }),
+                to: address,
+                html: broadcastTemplate({ date, pageLink: link + pagelink, attactedFile: attachment, name, asset, broadcastType }),
                 subject,
             })
-            
         })
-
-        
 
         // transporter().sendMultiple(msg, function (error, info) {
         //     if (error) {

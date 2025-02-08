@@ -5,7 +5,7 @@ export const logActivity = async ({ message }) => {
     try {
         const user = store.getState().auth.user
         console.log(user)
-        // await firebaseFunctions('logActivity', { message })
+        await firebaseFunctions('logActivity', { message, user })
     } catch (error) {
 
     }

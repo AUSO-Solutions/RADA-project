@@ -3,7 +3,8 @@ const admin = require("firebase-admin");
 const logger = require("firebase-functions/logger");
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const crypto = require('crypto');
-const { frontendUrl, transporter, sender } = require("../helpers");
+const { frontendUrl, transporter, sender, camelCaseSeparator } = require("../helpers");
+const { logActivity_ } = require("../activitylog");
 
 const createSetup = onCall(async (request) => {
 
@@ -27,6 +28,7 @@ const createSetup = onCall(async (request) => {
 
         await db.collection('setups').doc(setupType).collection("setupList").doc(id).set(payload);
 
+        await logActivity_({ message: `deleted ${camelCaseSeparator(setupType)} ${rest?.title} `, idToken: data?.idToken })
         return { message: `Document created`, data: payload };
 
     } catch (error) {
@@ -77,7 +79,7 @@ const updateSetupStatus = onCall(async (request) => {
         if (!statuses.includes(status)) throw { message: `allowed status includes ${statuses?.join(', ')}`, code: 'cancelled' }
         const members = groups.flatMap(group => (group?.members.map(member => ({ group: group?.groupName, ...member }))))
         const emailAddresses = Array.from(new Set(members?.map(member => member?.email)?.concat(users?.map(user => user?.email))))
-        var maillist = emailAddresses .join(',');
+        var maillist = emailAddresses.join(',');
         console.log(maillist)
 
         var msg = {
@@ -101,10 +103,12 @@ const updateSetupStatus = onCall(async (request) => {
                 console.log('Email sent: ' + info.response);
             }
         });
-
+        const setupData = (await db.collection('setups').doc(setupType).collection("setupList").doc(id).get()).data()
         await db.collection('setups').doc(setupType).collection("setupList").doc(id).update({
             status: status?.toLowerCase(), statusMessage
         });
+
+        await logActivity_({ message: `${status?.toLowerCase()} ${camelCaseSeparator(setupType)} ${setupData?.title} `, idToken: data?.idToken })
 
         return { message: `Setup updated` };
 
@@ -125,8 +129,10 @@ const deleteSetup = onCall(async (request) => {
         }
 
         const db = admin.firestore();
+        const setupData = (await db.collection('setups').doc(setupType).collection("setupList").doc(id).get()).data()
         await db.collection('setups').doc(setupType).collection("setupList").doc(id).delete()
 
+        await logActivity_({ message: `deleted ${camelCaseSeparator(setupType)} ${setupData?.title} `, idToken: data?.idToken })
         return { message: `Setup deleted` };
 
     } catch (error) {

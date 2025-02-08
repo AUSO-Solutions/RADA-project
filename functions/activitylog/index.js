@@ -5,23 +5,23 @@ const crypto = require("crypto");
 const { getUser } = require("../helpers/user");
 const dayjs = require("dayjs");
 
-
-const logActivity = onCall(async (request) => {
+const logActivity_ = async (request) => {
     try {
         // let { data } = request;
         const db = admin.firestore();
 
-        const { idToken, message, user, userId } = request.data
-        // const  = request.data?.idToken
-        // const user = await getUser(idToken)
+        const { idToken, message } = request
+        const user = await getUser(idToken)
+        const name = `${user?.firstName} ${user?.lastName}`
+        const userId = user?.uid
         const logTime = dayjs().toISOString()
         const id = crypto.randomBytes(8).toString("hex");
         await db.collection('activityLogs')
             .doc(id)
             .set({
-                userId,
                 id,
-                user: `${user?.firstName} ${user?.lastName}`,
+                userId,
+                user: name,
                 message,
                 logTime
             })
@@ -31,7 +31,9 @@ const logActivity = onCall(async (request) => {
         logger.log("error ===> ", error);
         throw new HttpsError(error?.code, error?.message);
     }
-});
+}
+
+const logActivity = onCall(logActivity_);
 
 const getLogs = onCall(async (request) => {
     // const limit = 10;
@@ -50,5 +52,6 @@ const getLogs = onCall(async (request) => {
 
 module.exports = {
     logActivity,
-    getLogs
+    getLogs,
+    logActivity_
 };
