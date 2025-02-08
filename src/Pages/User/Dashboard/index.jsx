@@ -62,7 +62,7 @@ const Dashboard = () => {
           <div key={tab} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 20 }}>
             {
               <>
-                {(tabs[tab]?.title === 'Production Surveillance' || tabs[tab]?.title === 'Business Intelligence') &&
+                {(tabs[tab]?.title === 'Production Surveillance' || tabs[tab]?.title === 'Business Intelligence' || tabs[tab]?.title === 'Overview') &&
                   <>
                     <div style={{ width: '120px' }} >
                       <Input placeholder={'Assets'} required key={assetOptions.length}
@@ -101,7 +101,7 @@ const Dashboard = () => {
                     }} />
                 </div>}
                 {tabs[tab]?.title === 'Overview' && <div>
-                  <Input placeholder={'Date'} required defaultValue={dayjs().format('YYYY-MM-DD')}
+                  <Input placeholder={'Date'} required defaultValue={dayjs().subtract(1, 'day').format('YYYY-MM-DD')}
                     type='date' onChange={(e) => dispatch(setSetupData({ name: 'date', value: e?.target?.value }))}
                   />
                 </div>}

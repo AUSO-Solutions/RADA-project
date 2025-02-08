@@ -640,9 +640,9 @@ export default function IPSCTable() {
                           {/* <TableInput type='number' defaultValue={well?.[field.name]} onChange={(e) => handleChange(field.name, e.target.value)} /> */}
                         </TableCell>)
                       }
-                      <TableCell align="center" sx={{ minWidth: '200px' }} colSpan={3}>
-                        {well?.remark || "No remark"}
-                        <textarea defaultValue={well.remark} onChange={(e) => handleChange("remark", e.target.value)} className='border outline-none p-1' rows={2} cols={20}>
+                      <TableCell align="center" sx={{ minWidth: '200px', }} colSpan={3}>
+                        {/* {well?.remark || "No remark"} */}
+                        <textarea defaultValue={well.remark || "No remark"} onChange={(e) => handleChange("remark", e.target.value)} className='border outline-none p-1 !w-[100%]' rows={2} >
                         </textarea>
                       </TableCell>
                       {/* <TableCell align="center" colSpan={1}>

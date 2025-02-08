@@ -2,7 +2,7 @@ import Header from 'Components/header'
 import React, { useState } from 'react'
 import Tab from 'Components/tab'
 import UserDetails from './UserDetails'
-// import GlobalSettings from './GlobalSettings'
+import GlobalSettings from './GlobalSettings'
 import ChangePassword from './ChangePassword'
 import DecimalPlaces from './SetDecimalPlaces'
 
@@ -21,10 +21,10 @@ const tabs = [
         title: 'Decimal Places',
         Component: <DecimalPlaces />
     },
-    // {
-    //     title: 'Global Settings',
-    //     Component: <GlobalSettings />
-    // },
+    {
+        title: 'Global Settings',
+        Component: <GlobalSettings />
+    },
 ]
 
 

@@ -69,11 +69,21 @@ const {
   getReconciledProductionData,
   getOperationsData,
 } = require("./reporting");
+
+const {
+  createDefermentCategory,
+  createDefermentSubCategory,
+  getDefermentCategories,
+  deleteCategory,
+  deleteSubCategory
+} = require('./defermentcategories')
 const { getInsight } = require("./admin/insights");
 const { getInsights } = require("./admin/insights/index2");
 const { getSurveillanceData } = require("./admin/surveillance/index2");
 const { getOverviewData } = require("./admin/overview/index");
 const { broadcast } = require("./broadcast/index");
+
+
 // const { setupWellTestData, getSetups, updateWellTestData, deleteWellTestDataSetup } = require('./fielddatacapturesetup/welltestsetup')
 
 admin.initializeApp();
@@ -144,4 +154,11 @@ module.exports = {
   getDefermentData,
   getReconciledProductionData,
   getOperationsData,
+
+
+  createDefermentCategory,
+  createDefermentSubCategory,
+  getDefermentCategories,
+  deleteCategory,
+  deleteSubCategory
 };

@@ -59,6 +59,7 @@ const SelectAsset = () => {
     if (!setupData?.fluidType) dispatch(setSetupData({ name: 'fluidType', value: "Gas" }))
     // eslint-disable-next-line
   }, [dispatch])
+console.log({assetNames})
 
   return <>
     <Input defaultValue={{ label: setupData?.asset, value: setupData?.asset }}

@@ -57,7 +57,7 @@ const Summary = () => {
   const { assetNames } = useAssetNames()
   const [showChart, setShowChart] = useState(false);
   // const switches = ['Oil/Condensate', 'Gas'];
-  const [curr, setCurr] = useState({})
+  // const [curr, setCurr] = useState({})
   const [chCurr, setChCurr] = useState({})
 
   const [notes, setNotes] = useState({
@@ -112,7 +112,7 @@ const Summary = () => {
     let day = dayjs(setupData?.startDate).subtract(1, 'day')
     // console.log(tableData?.assetOilProduction)
     const chartData = []
-    while (day != dayjs(setupData?.endDate).format('YYYY-MM-DD')) {
+    while (day !== dayjs(setupData?.endDate).format('YYYY-MM-DD')) {
       const formattedDay = dayjs(day).add(1, 'day').format('DD/MM/YYYY')
       const oilRes = tableData?.assetOilProduction?.[formattedDay]
       const gasRes = tableData?.assetGasProduction?.[formattedDay]
@@ -129,7 +129,7 @@ const Summary = () => {
     // console.log(chartData)
     return chartData
 
-  }, [tableData]);
+  }, [tableData, setupData?.endDate, setupData?.startDate]);
 
   const chartValues = useMemo(() => {
     const ipscTarget = (tableData?.ipscTarget)
@@ -198,7 +198,7 @@ const Summary = () => {
     return {
       labels: selectedChartData?.chartData?.map(data => data.x),
       datasets: [
-       
+
         {
           label: `Actual: ${chCurr?.name}`,
           data: selectedChartData?.chartData?.map(dayData => dayData.actual || 0),
@@ -282,11 +282,11 @@ const Summary = () => {
     highlightType: ""
   })
   const currentNote = useMemo(() => {
-    const result = notes?.[currentHighlight.volumeType.toLowerCase()]?.find(note => note?.flowstation === currentHighlight.flowstation)?.highlight?.[currentHighlight.highlightType?.toLowerCase()]
+    const result = notes?.[currentHighlight.volumeType.toLowerCase()]?.find(note => note?.flowstation === setupData?.flowstation)?.highlight?.[currentHighlight.highlightType?.toLowerCase()]
     if (!result) return "No highlight!"
     return result
 
-  }, [currentHighlight.flowstation, currentHighlight.highlightType, currentHighlight.volumeType, notes])
+  }, [setupData?.flowstation, currentHighlight.highlightType, currentHighlight.volumeType, notes])
   return (
     <div className='relative !z-[1000] ' >
       <div className='w-full flex flex-row justify-between p-4' >
@@ -448,42 +448,19 @@ const Summary = () => {
         <div className='w-[20%] border-r p-2'>
           <Text weight={600} size={16}> Highlights   </Text>
           <RadioSelect list={['Gas', 'Liquid']} defaultValue={currentHighlight.volumeType} onChange={(e) => setCurrentHighlight(prev => ({ ...prev, volumeType: e }))} />
-          <Input type='select' placeholder='Select flowstation' options={notes.gas.map(note => ({ label: note.flowstation, value: note?.flowstation }))} containerClass={'w-[100px]'} onChange={(e) => setCurrentHighlight(prev => ({ ...prev, flowstation: e.value }))} />
+          {/* <Input type='select' placeholder='Select flowstation' options={notes.gas.map(note => ({ label: note.flowstation, value: note?.flowstation }))} containerClass={'w-[100px]'} onChange={(e) => setCurrentHighlight(prev => ({ ...prev, flowstation: e.value }))} /> */}
           <Input type='select' placeholder='Select highlight type' options={highlightTypes.map(highlightType => ({ label: highlightType, value: highlightType }))} containerClass={'w-[100px] mt-4'} onChange={(e) => setCurrentHighlight(prev => ({ ...prev, highlightType: e.value }))} />
         </div>
         <div className='w-[80%] p-2'>
-          <Text weight={600} size={16}> {currentHighlight.highlightType} highlight for {currentHighlight.flowstation}({currentHighlight.volumeType}) :</Text> <br />
+          <Text weight={600} size={16}> {currentHighlight.highlightType} highlight for {setupData?.flowstation}({currentHighlight.volumeType}) :</Text> <br />
           {<div dangerouslySetInnerHTML={{ __html: currentNote }} />}
-          {/* {currentHighlight.volumeType === 'Gas' && <div>
-            {notes?.gas?.map(note => (
-              <div>
-                <Text weight={600} > {note.flowstation}  </Text>
-                <div> <Text weight={500}> Production Highlight</Text> : {<div dangerouslySetInnerHTML={{ __html: note?.highlight?.production || "N/A" }} />}</div>
-                <div> <Text weight={500}>Operation Highlight</Text> : {<div dangerouslySetInnerHTML={{ __html: note?.highlight?.operation || "N/A" }} />}</div>
-                <div> <Text weight={500}> Maintenance Highlight</Text> : {<div dangerouslySetInnerHTML={{ __html: note?.highlight?.maintenance }} /> || "N/A"}</div>
-              </div>
-            ))}
-          </div>}
-          {currentHighlight.volumeType === 'Liquid' && <div>
-            {notes?.liquid?.map(note => (
-              <div>
-                <Text weight={600} > {note.flowstation}  </Text>
-                <div> <Text weight={500}> Production Highlight</Text> : {<div dangerouslySetInnerHTML={{ __html: note?.highlight?.production || "N/A" }} />}</div>
-                <div> <Text weight={500}>Operation Highlight</Text> : {<div dangerouslySetInnerHTML={{ __html: note?.highlight?.operation || "N/A" }} />}</div>
-                <div> <Text weight={500}> Maintenance Highlight</Text> : {<div dangerouslySetInnerHTML={{ __html: note?.highlight?.maintenance }} /> || "N/A"}</div>
-              </div>
-            ))}
-          </div>} */}
+
         </div>
 
 
       </div>
       {/* <img src='https://firebasestorage.googleapis.com/v0/b/ped-application-4d196.appspot.com/o/radaNewLogoo.svg?alt=media&token=e3249009-d0c3-497f-8b2a-873988ad9355' alt='?media&token=475ebfb1-9f96-4b2d-b7f0-12390171a51' /> */}
       {/* https://firebasestorage.googleapis.com/v0/b/ped-application-4d196.appspot.com/o/radaNewLogoo.svg?alt=media&token=e3249009-d0c3-497f-8b2a-873988ad9355 */}
-
-
-
-
 
     </div>
   )
