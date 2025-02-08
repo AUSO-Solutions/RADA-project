@@ -1,15 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Header from "Components/header";
 import Tab from "Components/tab";
 import pdfIcon from "Assets/images/pdf.svg";
-import {
-  //   Document,
-  //   Page,
-  //   Text,
-  //   View,
-  //   StyleSheet,
-  PDFDownloadLink,
-} from "@react-pdf/renderer";
 import { Setting2 } from "iconsax-react";
 import { Input } from "Components";
 import { useAssetNames } from "hooks/useAssetNames";
@@ -36,9 +28,9 @@ const OperationsReport = () => {
     refetch: query,
   });
 
-  useEffect(() => {
-    const data = res?.data ? JSON.parse(res?.data) : {};
-    console.log(data);
+  const data = useMemo(() => {
+    if (res?.data) return JSON.parse(res?.data);
+    return {};
   }, [res?.data]);
 
   const getDefaultDate = () => {
@@ -49,16 +41,16 @@ const OperationsReport = () => {
     return dayjs(previousDate).format("YYYY-MM-DD");
   };
 
-  console.log(query);
-
   const tabs = useMemo(
     () => [
       {
         title: "Report",
-        Component: <PDFReport />,
+        Component: (
+          <PDFReport data={data} date={query?.date} asset={query?.asset} />
+        ),
       },
     ],
-    []
+    [data, query?.asset, query?.date]
   );
   return (
     <div className="h-full relative">
@@ -82,12 +74,12 @@ const OperationsReport = () => {
       </tabs>
       <div className="w-full flex flex-row justify-between px-[32px] my-2">
         <div className="flex items-center justify-between gap-2">
-          <PDFDownloadLink
-            document={<PDFComponent data={[]} />}
-            fileName="deferment-report.pdf"
-          >
-            <img src={pdfIcon} alt="pdf" className="w-[40px] h-[40px]" />
-          </PDFDownloadLink>
+          <img
+            src={pdfIcon}
+            alt="pdf"
+            className="w-[40px] h-[40px]"
+            onClick={() => setTab(0)}
+          />
 
           <Setting2
             variant={"Linear"}
@@ -142,7 +134,3 @@ const OperationsReport = () => {
 };
 
 export default OperationsReport;
-
-const PDFComponent = () => {
-  return <div></div>;
-};
