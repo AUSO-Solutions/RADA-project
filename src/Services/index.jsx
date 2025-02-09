@@ -5,7 +5,7 @@ import { project_functions } from 'firebase-config';
 import { httpsCallable } from 'firebase/functions';
 import handleError from './handleError';
 import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
-import { logout_ } from 'utils/logout';
+// import { logout_ } from 'utils/logout';
 import { toast } from 'react-toastify';
 // import { getAuth } from 'firebase/auth';
 
@@ -69,7 +69,7 @@ const firebaseFunctions = async (functionName, payload, hideError = false, optio
             console.log("token has expired")
             // window.location.reload()
             toast.info('Session expired!')
-            await logout_()
+            // await logout_()
         }
         if (hideError) handleError(error)
         throw error
