@@ -396,14 +396,6 @@ function aggregateActualProduction(data) {
 }
 
 const aggregateOperationsData = (liquidVolumes, gasVolumes, production) => {
-  // Volumes Data Prep and Aggregate
-  // console.log(liquidVolumes, gasVolumes, production);
-  let oilProduced = [];
-  let gasProduced = [];
-  let gasExported = [];
-  let gasFlared = [];
-  let gasUtilised = [];
-
   let totalGross = 0;
   let totalOil = 0;
   let totalGas = 0;
@@ -417,30 +409,44 @@ const aggregateOperationsData = (liquidVolumes, gasVolumes, production) => {
   const len = liquidVolumes.length;
 
   let facilities = [];
-  let oilHighlights = {
-    operations: [],
-    maintenance: [],
-    production: [],
+  let oilHighlights = {};
+
+  let gasHighlights = {};
+
+  let oilProductionChart = {
+    date: [],
   };
 
-  let gasHighlights = {
-    operations: [],
-    maintenance: [],
-    production: [],
+  let gasProductionChart = {
+    date: [],
+  };
+
+  let gasExportChart = {
+    date: [],
+  };
+
+  let gasFlaredChart = {
+    date: [],
   };
 
   for (let i = 0; i < len; i++) {
-    const oil = {};
-    const gas = { date: gasVolumes[i].date };
-    const gExport = { date: gasVolumes[i].date };
-    const flared = { date: gasVolumes[i].date };
-    const utilised = { date: gasVolumes[i].date };
+    const date = gasVolumes[i].date;
+    oilProductionChart.date.push(date);
+    gasProductionChart.date.push(date);
+    gasExportChart.date.push(date);
+    gasFlaredChart.date.push(date);
 
     for (let flowstation of gasVolumes[i].flowstations) {
-      gas[[flowstation.name]] = flowstation?.subtotal?.totalGas || 0;
-      gExport[[flowstation.name]] = flowstation?.subtotal?.export || 0;
-      flared[[flowstation.name]] = flowstation?.subtotal?.gasFlaredUSM || 0;
-      utilised[[flowstation.name]] = flowstation?.subtotal?.gasFlaredUSM || 0;
+      const name = flowstation.name;
+      if (!(name in gasProductionChart)) {
+        gasProductionChart[name] = new Array(len).fill(0);
+        gasExportChart[name] = new Array(len).fill(0);
+        gasFlaredChart[name] = new Array(len).fill(0);
+      }
+
+      gasProductionChart[name][i] = flowstation?.subtotal?.totalGas || 0;
+      gasExportChart[name][i] = flowstation?.subtotal?.export || 0;
+      gasFlaredChart[name][i] = flowstation?.subtotal?.gasFlaredUSM || 0;
 
       totalGas += flowstation?.subtotal?.totalGas || 0;
       totalExportGas += flowstation?.subtotal?.export || 0;
@@ -449,16 +455,15 @@ const aggregateOperationsData = (liquidVolumes, gasVolumes, production) => {
     }
 
     for (let flowstation of liquidVolumes[i].flowstations) {
-      oil[[flowstation.name]] = flowstation?.subtotal?.netProduction || 0;
+      const name = flowstation.name;
+      if (!(name in oilProductionChart)) {
+        oilProductionChart[name] = new Array(len).fill(0);
+      }
+      oilProductionChart[name][i] = flowstation?.subtotal?.netProduction || 0;
 
       totalOil += flowstation?.subtotal?.netProduction || 0;
       totalGross += flowstation?.subtotal?.gross || 0;
     }
-    oilProduced.push(oil);
-    gasProduced.push(gas);
-    gasExported.push(gExport);
-    gasFlared.push(flared);
-    gasUtilised.push(utilised);
   }
 
   const last = len - 1;
@@ -480,6 +485,9 @@ const aggregateOperationsData = (liquidVolumes, gasVolumes, production) => {
     flowstationIndex++;
 
     Object.entries(flowstation?.highlight || {}).forEach(([key, value]) => {
+      if (!(key in oilHighlights)) {
+        oilHighlights[key] = [];
+      }
       oilHighlights[key].push({ name: name, highlight: value });
     });
   }
@@ -506,6 +514,9 @@ const aggregateOperationsData = (liquidVolumes, gasVolumes, production) => {
       flowstationIndex++;
     }
     Object.entries(flowstation?.highlight || {}).forEach(([key, value]) => {
+      if (!(key in gasHighlights)) {
+        gasHighlights[key] = [];
+      }
       gasHighlights[key].push({ name: name, highlight: value });
     });
   }
@@ -537,13 +548,13 @@ const aggregateOperationsData = (liquidVolumes, gasVolumes, production) => {
   return {
     summary,
     facilities,
-    oilProduced,
-    gasProduced,
-    gasExported,
-    gasFlared,
     sortedProduction,
     oilHighlights,
     gasHighlights,
+    oilProductionChart,
+    gasProductionChart,
+    gasFlaredChart,
+    gasExportChart,
   };
 };
 

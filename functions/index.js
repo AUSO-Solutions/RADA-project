@@ -74,6 +74,7 @@ const { getInsights } = require("./admin/insights/index2");
 const { getSurveillanceData } = require("./admin/surveillance/index2");
 const { getOverviewData } = require("./admin/overview/index");
 const { broadcast } = require("./broadcast/index");
+const { operationsReportScheduler } = require("./cron-jobs/reports");
 // const { setupWellTestData, getSetups, updateWellTestData, deleteWellTestDataSetup } = require('./fielddatacapturesetup/welltestsetup')
 
 admin.initializeApp();
@@ -144,4 +145,5 @@ module.exports = {
   getDefermentData,
   getReconciledProductionData,
   getOperationsData,
+  operationsReportScheduler,
 };

@@ -11,6 +11,7 @@ import { roundUp } from "utils";
 
 const PDFReport = ({ data, date, asset }) => {
   const [pdfUrl, setPdfUrl] = useState(null);
+  console.log(data);
 
   useEffect(() => {
     if (Object.keys(data).length === 0) return;
@@ -314,7 +315,7 @@ const FacilityProduction = ({ flowstation, productionData }) => {
                 {data?.thp ? roundUp(data?.thp) : ""}
               </Text>
               <Text style={styles.tableCell}>
-                {data?.bean ? roundUp(data?.utilisedGas) : ""}
+                {data?.bean ? data?.bean : ""}
               </Text>
             </View>
           ))}
