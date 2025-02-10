@@ -74,7 +74,9 @@ const { getInsights } = require("./admin/insights/index2");
 const { getSurveillanceData } = require("./admin/surveillance/index2");
 const { getOverviewData } = require("./admin/overview/index");
 const { broadcast } = require("./broadcast/index");
-const { operationsReportScheduler } = require("./cron-jobs/reports");
+const {
+  operationsReportScheduler,
+} = require("./cron-jobs/reports/production-report");
 // const { setupWellTestData, getSetups, updateWellTestData, deleteWellTestDataSetup } = require('./fielddatacapturesetup/welltestsetup')
 
 admin.initializeApp();

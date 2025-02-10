@@ -116,7 +116,22 @@ const getDefermentReportData = async (asset, startDate, endDate) => {
   }
 };
 
+const getAssets = async () => {
+  try {
+    const db = admin.firestore();
+    const docs = (await db.collectionGroup("assetList").get()).docs;
+
+    const assets = docs.map((doc) => doc.data()).map((item) => item?.assetName);
+    return assets;
+  } catch (error) {
+    console.log({ error });
+    if (error.message) throw new HttpsError(error?.code, error?.message);
+    throw error;
+  }
+};
+
 module.exports = {
   getOperationsReportData,
   getDefermentReportData,
+  getAssets,
 };

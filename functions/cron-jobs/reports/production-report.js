@@ -1,8 +1,16 @@
 const PDFDocument = require("pdfkit");
-const { getOperationsReportSchedule } = require("./schedules");
-const { getOperationsReportData } = require("./data");
-const { ChartJSNodeCanvas } = require("chartjs-node-canvas");
+const { getOperationsReportSchedule } = require("../schedules");
+const { getOperationsReportData, getAssets } = require("../data");
 const functions = require("firebase-functions");
+const { transporter } = require("../../helpers");
+const dayjs = require("dayjs");
+const utc = require("dayjs/plugin/utc");
+const timezone = require("dayjs/plugin/timezone.js");
+const Chart = require("chart.js");
+const { createCanvas } = require("canvas");
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const operationsReportScheduler = functions.pubsub
   .schedule("every 1 hours")
@@ -16,17 +24,20 @@ module.exports = { operationsReportScheduler };
 
 const generateOperationsReport = async () => {
   try {
-    const schedules = await getOperationsReportSchedule();
-    const now = new Date();
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
+    const schedule = await getOperationsReportSchedule();
+    if (!schedule) return;
+    const { hour } = schedule;
+    const currNigerianTime = dayjs().tz("Africa/Lagos");
 
-    for (let schedule of schedules) {
-      const { minute, hour, asset } = schedule;
-      if (minute === currentMinute && hour === currentHour) {
-        const reportData = await getOperationsReportData(asset);
-        await sendOperationsReport(reportData);
-      }
+    if (hour !== currNigerianTime.hour()) return;
+
+    const date = dayjs(getPreviousData).format("YYYY-MM-DD");
+
+    const assets = await getAssets();
+
+    for (let asset of assets) {
+      const reportData = await getOperationsReportData(asset, date);
+      await sendOperationsReport(reportData, asset, date);
     }
   } catch (error) {
     console.log(error);
@@ -345,22 +356,25 @@ const sendOperationsReport = async (data, asset, date) => {
       }
     });
 
-    const chartBuffers = generateProductionChartBuffers([
+    const stackedBarData = [
       data?.oilProductionChart,
       data?.gasProductionChart,
       data?.gasExportChart,
       data?.gasFlaredChart,
-    ]);
+    ];
 
-    for (let buffer of chartBuffers) {
-      doc.image(buffer, { x: 50, y: 150, width: 500, height: 200 });
-      doc.moveDown(2);
-    }
+    stackedBarData.forEach((chartData, index) => {
+      doc.addPage();
+      // Create a chart title
+      doc.fontSize(16).text(`Chart ${index}`, { align: "center" });
+      const chartImageBuffer = generateProductionChart(chartData);
+      doc.image(chartImageBuffer, { width: 600, align: "center" });
+    });
 
     doc.end();
   });
 
-  sendEmail(pdfBuffer);
+  sendEmail(pdfBuffer, ["emma.osademe@gmail.com"], asset, date);
 };
 
 // const drawHorizontalLine = (doc, verticalPosition) => {
@@ -476,7 +490,7 @@ const getStackedBarConfiguration = (data) => {
       datasets: datasets,
     },
     options: {
-      responsive: false,
+      responsive: true,
       maintainAspectRatio: false,
       scales: {
         x: {
@@ -491,34 +505,55 @@ const getStackedBarConfiguration = (data) => {
   return configuration;
 };
 
-const generateProductionChartBuffers = async (chartData) => {
+const generateProductionChart = async (chartData) => {
   const width = 600;
   const height = 400;
-  const chartJSNodeCanvas = new ChartJSNodeCanvas({ width, height });
-  const chartBuffers = [];
-  for (let i = 0; i < chartData.length; i++) {
-    const buffer = await chartJSNodeCanvas.renderToBuffer(
-      getStackedBarConfiguration(chartData[i]),
-      "image/png"
-    );
-    chartBuffers.push(buffer);
-  }
+  const canvas = createCanvas(width, height);
+  const context = canvas.getContext("2d");
 
-  return chartBuffers;
+  const config = getStackedBarConfiguration(chartData);
+
+  new Chart(context, config);
+
+  return canvas.toBuffer();
 };
 
-const sendEmail = (data) => {
+const sendEmail = (pdfBuffer, mailList, asset, date) => {
   // Add the attachment to other configurations
   const mailOptions = {
+    from: "emmanuel",
+    to: mailList.join(","),
+    subject: `${asset} Daily Production Report_${date}`,
+    html: `<b>Hello</b> <br>
+    <p>Attached is the production report for <b>${asset}</b> for ${date}.
+    <br> <br>
+    You are receiving this email because you are registered to the PEF application under ${asset} asset group.
+    </p>
+    `,
     attachments: [
       {
-        filename: "Production Report",
-        content: data,
-        encoding: "base64",
+        filename: `${asset} Production Report_${date}.pdf`,
+        content: pdfBuffer,
+        encodign: "base64",
       },
     ],
   };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log(`An Error occurred: ${error}`);
+    } else {
+      console.log(`Email sent: ${info.response}`);
+    }
+  });
+
   console.log(mailOptions);
+};
+
+const getPreviousData = () => {
+  const today = new Date();
+  today.setDate(today.getDate() - 1);
+  return today;
 };
 
 const colors = {
