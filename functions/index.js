@@ -77,6 +77,10 @@ const { broadcast } = require("./broadcast/index");
 const {
   operationsReportScheduler,
 } = require("./cron-jobs/reports/production-report");
+const {
+  upsertOperationsReportSchedule,
+  upsertDefermentReportSchedule,
+} = require("./cron-jobs/schedules");
 // const { setupWellTestData, getSetups, updateWellTestData, deleteWellTestDataSetup } = require('./fielddatacapturesetup/welltestsetup')
 
 admin.initializeApp();
@@ -148,4 +152,6 @@ module.exports = {
   getReconciledProductionData,
   getOperationsData,
   operationsReportScheduler,
+  upsertOperationsReportSchedule,
+  upsertDefermentReportSchedule,
 };
