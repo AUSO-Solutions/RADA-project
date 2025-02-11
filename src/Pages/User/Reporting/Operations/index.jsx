@@ -83,7 +83,7 @@ const OperationsReport = () => {
     try {
       dispatch(setLoadingScreen({ open: true }));
       const { data } = await firebaseFunctions("upsertOperationsReportSchedule", {
-        hour,
+        data: `${hour}`,
       });
       console.log("Response:", data);
       toast.success("Production/Operations Report Scheduled Successfully")
