@@ -81,7 +81,7 @@ const OperationsReport = () => {
 
     try {
       dispatch(setLoadingScreen({ open: true }));
-      const { data } = await firebaseFunctions(
+      const data  = await firebaseFunctions(
         "upsertOperationsReportSchedule",
         {
           data: { hour },

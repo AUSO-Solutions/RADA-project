@@ -236,7 +236,7 @@ const DefermentReport = () => {
     try {
       dispatch(setLoadingScreen({ open: true }));
       console.log({ hour, day });
-      const { data } = await firebaseFunctions(
+      const  data  = await firebaseFunctions(
         "upsertDefermentReportSchedule",
         {
           data: { hour, day },
@@ -246,6 +246,7 @@ const DefermentReport = () => {
       toast.success("Deferment Report Scheduled Successfully");
       dispatch(closeModal());
     } catch (error) {
+      console.log(error)
       console.error("Error schedling deferment report schedule:", error);
     } finally {
       dispatch(setLoadingScreen({ open: false }));
