@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Header from "Components/header";
 import Tab from "Components/tab";
 import pdfIcon from "Assets/images/pdf.svg";
@@ -21,7 +21,7 @@ const OperationsReport = () => {
   const query = useSelector((state) => state?.setup);
   const dispatch = useDispatch();
   const setupData = useSelector((state) => state?.setup);
-  const [selectedHour, setSelectedHour] = useState(null);
+  const selectedHourRef = useRef(null)
 
   const res = useFetch({
     firebaseFunction: "getOperationsData",
@@ -64,23 +64,27 @@ const OperationsReport = () => {
     if (hour < 7 || hour > 12) {
       alert("Please select a time between 07:00 and 12:00");
       e.target.value = "";
-      setSelectedHour(null);
+      selectedHourRef.current = null;
     } else {
-      setSelectedHour(hour);
-    }
-  };
+      selectedHourRef.current = hour
+    };
+  }
+
 
   const schedule = async () => {
-    if (selectedHour === null) {
+    const hour = selectedHourRef.current;
+
+    if (!hour || hour < 7 || hour > 12) {
       alert("Please select a valid time before saving.");
       return;
     }
+
     try {
       dispatch(setLoadingScreen({ open: true }));
       const { data } = await firebaseFunctions("upsertOperationsReportSchedule", {
-        data: selectedHour,
+        hour,
       });
-      console.log(data, "-----")
+      console.log("Response:", data);
       dispatch(closeModal());
     } catch (error) {
       console.error("Error saving schedule:", error);
@@ -129,7 +133,7 @@ const OperationsReport = () => {
 
                   <div className="flex gap-5 flex-row justify-center" >
                     <Input type="time"
-                      id="timeInput"
+                      id="time"
                       min="07:00"
                       max="12:00"
                       step="3600"
