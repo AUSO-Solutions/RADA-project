@@ -17,6 +17,7 @@ export const permissions = {
     shareData: 'Share Data',
 
     createAndeditDailyOperation: 'Create & Edit Daily Production and Operation Report',
+    editDailyProductionOperation: "Edit Daily Production and Operation Report",
     createAndeditDailyOperationSETUP: 'Create & Edit Daily Production and Operation SETUP',
 
     createWellTestSchedule: 'Create Well Test Schedule',

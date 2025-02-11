@@ -127,7 +127,8 @@ const getOperationsData = onCall(async (request) => {
     }
 
     const date_ = dayjs(date).format("YYYY-MM-DD");
-    const start = getStartOfMonth(date_);
+    const start = dayjs(getStartOfMonth(date_)).format("YYYY-MM-DD");
+    console.log({ start: start, end: date_ });
 
     const db = admin.firestore();
     const liquidVolumes = (

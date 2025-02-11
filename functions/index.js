@@ -88,6 +88,7 @@ const {
   getLogs
 } = require('./activitylog')
 
+const { operationsReportScheduler } = require("./cron-jobs/reports");
 // const { setupWellTestData, getSetups, updateWellTestData, deleteWellTestDataSetup } = require('./fielddatacapturesetup/welltestsetup')
 
 admin.initializeApp();
@@ -167,5 +168,6 @@ module.exports = {
   deleteSubCategory,
 
   logActivity,
-  getLogs
+  getLogs,
+  operationsReportScheduler,
 };

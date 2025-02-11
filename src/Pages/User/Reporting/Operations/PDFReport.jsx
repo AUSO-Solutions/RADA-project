@@ -1,132 +1,326 @@
-import React, { useState, useRef, useEffect } from "react";
-import {
+import React, { useState, useEffect } from "react";
+import ReactPDF, {
   Document,
   Page,
   Text,
   View,
   StyleSheet,
-  PDFDownloadLink,
 } from "@react-pdf/renderer";
-import * as pdfjs from "pdfjs-dist";
 import { Button } from "Components";
+import { roundUp } from "utils";
 
-// Styles for the PDF document
-const styles = StyleSheet.create({
-  page: {
-    backgroundColor: "#ffffff",
-    padding: 30,
-  },
-  section: {
-    marginBottom: 10,
-    padding: 10,
-    backgroundColor: "#f5f5f5",
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  bodyText: {
-    fontSize: 12,
-    marginBottom: 5,
-  },
-});
-
-const MyPDFDocument = ({ data }) => {
-  return (
-    <Document>
-      <Page style={styles.page}>
-        <View style={styles.section}>
-          <Text style={styles.title}>Generated PDF Example</Text>
-          <Text style={styles.bodyText}>
-            Here is some text rendered dynamically!
-          </Text>
-          {data && <Text style={styles.bodyText}>Dynamic Data: {data}</Text>}
-        </View>
-        <View style={styles.section}>
-          <Text style={styles.bodyText}>
-            This is another section of the PDF.
-          </Text>
-        </View>
-      </Page>
-    </Document>
-  );
-};
-
-const PDFReport = () => {
-  const [pdfBytes, setPdfBytes] = useState(null);
-  const canvasRef = useRef(null);
-
-  const dynamicData = "This is some dynamic content for the PDF.";
+const PDFReport = ({ data, date, asset }) => {
+  const [pdfUrl, setPdfUrl] = useState(null);
+  console.log(data);
 
   useEffect(() => {
-    // Specify the worker source (adjust the path to where pdf.worker.min.js is located)
-    pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js`;
-  }, []);
+    if (Object.keys(data).length === 0) return;
+    ReactPDF.pdf(<PdfDocument data={data} date={date} asset={asset} />)
+      .toBlob()
+      .then((blob) => {
+        const url = URL.createObjectURL(blob);
+        setPdfUrl(url);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
 
-  const handleGeneratePDF = async () => {
-    const pdfDoc = await pdfjs
-      .getDocument(<MyPDFDocument data={dynamicData} />)
-      .toBuffer();
-    const pdfData = await pdfDoc.save();
-    setPdfBytes(pdfData);
-  };
-
-  const renderPDFOnCanvas = async (pdfBytes) => {
-    try {
-      // Load the PDF document from the byte array
-      const pdf = await pdfjs.getDocument({ data: pdfBytes }).promise;
-
-      // Get the first page of the document
-      const page = await pdf.getPage(1);
-
-      // Get the canvas context and set the viewport of the page rendering
-      const canvas = canvasRef.current;
-      const context = canvas.getContext("2d");
-
-      const viewport = page.getViewport({ scale: 1.5 });
-
-      // Set canvas dimensions to match the page size
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-
-      // Render the page to the canvas
-      await page.render({ canvasContext: context, viewport }).promise;
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleRenderCanvas = () => {
-    console.log("Here");
-    if (pdfBytes) {
-      renderPDFOnCanvas(pdfBytes);
-    }
+  const handleDownloadPDF = () => {
+    ReactPDF.pdf(<PdfDocument data={data} date={date} asset={asset} />)
+      .toBlob()
+      .then((blob) => {
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `Daily Operations Data_${asset}_${date}`;
+        link.click();
+      });
   };
 
   return (
     <div className="relative">
       <div className="flex justify-start pl-4 items-center gap-4">
-        <Button onClick={handleGeneratePDF} bgcolor={""} className={"px-3"}>
-          Generate Report
-        </Button>
-        <Button onClick={handleRenderCanvas} bgcolor={""} className={"px-3"}>
-          View Report
+        <Button onClick={handleDownloadPDF} bgcolor={""} className={"px-3"}>
+          Download Report
         </Button>
       </div>
 
-      {pdfBytes && (
-        <div>
-          <canvas ref={canvasRef}></canvas>
-          <PDFDownloadLink
-            document={<MyPDFDocument data={dynamicData} />}
-            fileName="generated_pdf.pdf"
-          >
-            {({ loading }) => (loading ? "Generating PDF..." : "Download PDF")}
-          </PDFDownloadLink>
-        </div>
+      {pdfUrl && (
+        <iframe
+          src={pdfUrl}
+          width={"100%"}
+          height={"600px"}
+          title="Report Preview"
+          style={{ border: "1px solid black", marginTop: "20px" }}
+        />
       )}
     </div>
   );
 };
 
 export default PDFReport;
+
+const styles = StyleSheet.create({
+  page: {
+    flexDirection: "column",
+    padding: 20,
+    // width: "100%"
+  },
+  section: {
+    marginBottom: 10,
+    padding: 10,
+    backgroundColor: "#fff",
+  },
+  mainHeader: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  subHeader: {
+    fontSize: 14,
+    fontWeight: "demibold",
+  },
+  content: {
+    fontSize: 12,
+    lineHeight: 1.5,
+  },
+  table: {
+    display: "table",
+    width: "100%",
+    border: "1px solid black",
+    marginBottom: 20,
+  },
+  tableRow: {
+    flexDirection: "row",
+  },
+  tableCell: {
+    border: "1px solid #000",
+    paddingVertical: 1,
+    flex: 1,
+    textAlign: "left",
+    fontSize: 8,
+    paddingHorizontal: 4,
+    display: "flex",
+    justifyContent: "left",
+    alignItems: "center",
+  },
+  tableHeader: {
+    fontWeight: "bold",
+    backgroundColor: "#d9d9d9",
+  },
+});
+
+const PdfDocument = ({ data, asset, date }) => {
+  const summaryData = [
+    { name: "Gross (blpd)", value: roundUp(data?.summary?.totalGross) },
+    { name: "Net Oil (bopd)", value: roundUp(data?.summary?.totalOil) },
+    { name: "BS&W (%)", value: roundUp(data?.summary?.bsw) },
+    { name: "Produced Gas (MMscf/d)", value: roundUp(data?.summary?.totalGas) },
+    {
+      name: "Flared Gas (MMscf/d)",
+      value: roundUp(data?.summary?.totalFlaredGas),
+    },
+    {
+      name: "Export Gas (MMscf/d)",
+      value: roundUp(data?.summary?.totalExport),
+    },
+    {
+      name: "Utilized Gas (MMscf/d)",
+      value: roundUp(data?.summary?.totalUtilisedGas),
+    },
+  ];
+
+  return (
+    <Document>
+      <Page style={styles.page}>
+        <ReportHeader asset={asset} date={date} />
+        <SummaryTable asset={asset} summaryData={summaryData} />
+        <FacilitiesTable asset={asset} facilitiesData={data?.facilities} />
+        <FacilitiesProduction facilitiesData={data?.sortedProduction} />
+      </Page>
+    </Document>
+  );
+};
+
+const ReportHeader = ({ asset, date }) => {
+  return (
+    <View style={styles.section}>
+      <Text style={styles.mainHeader}>
+        {`${asset} Production Report - ${date}`}
+      </Text>
+      <Text style={{ fontSize: 14 }}>
+        RADA AMS Daily Production Data Report
+      </Text>
+    </View>
+  );
+};
+
+const SummaryTable = ({ asset, summaryData }) => {
+  if (summaryData.length === 0) return;
+  return (
+    <View style={styles.section}>
+      <Text style={styles.subHeader}>{`${asset} Production Summary`}</Text>
+      <View style={styles.table}>
+        <View style={styles.tableRow}>
+          <Text style={styles.tableCell}>Variables</Text>
+          <Text style={styles.tableCell}>Values</Text>
+        </View>
+        <>
+          {summaryData.map((data) => (
+            <View key={data.name} style={styles.tableRow}>
+              <Text style={styles.tableCell}>{data.name}</Text>
+              <Text style={styles.tableCell}>{data.value}</Text>
+            </View>
+          ))}
+        </>
+      </View>
+    </View>
+  );
+};
+
+const FacilitiesTable = ({ asset, facilitiesData }) => {
+  if (facilitiesData.length === 0) return;
+  return (
+    <View style={styles.section}>
+      <Text style={styles.subHeader}>{`${asset} Production Per Facility`}</Text>
+      <View style={styles.table}>
+        <View style={styles.tableRow}>
+          <Text style={styles.tableCell}></Text>
+          <Text style={styles.tableCell}>
+            Gross
+            {"\n"}
+            (blpd)
+          </Text>
+          <Text style={styles.tableCell}>
+            Net
+            {"\n"}
+            (bopd)
+          </Text>
+          <Text style={styles.tableCell}>
+            Water
+            {"\n"}
+            (bwpd)
+          </Text>
+          <Text style={styles.tableCell}>
+            BS&W
+            {"\n"}
+            (%)
+          </Text>
+          <Text style={styles.tableCell}>
+            Produced Gas
+            {"\n"}
+            (MMscf/d)
+          </Text>
+          <Text style={styles.tableCell}>
+            Utilised Gas
+            {"\n"}
+            (MMscf/d)
+          </Text>
+          <Text style={styles.tableCell}>
+            Export Gas
+            {"\n"}
+            (MMscf/d)
+          </Text>
+          <Text style={styles.tableCell}>
+            Flared Gas
+            {"\n"}
+            (MMscf/d)
+          </Text>
+        </View>
+        <>
+          {facilitiesData.map((data) => (
+            <View key={data.flowstation} style={styles.tableRow}>
+              <Text style={styles.tableCell}>{data.flowstation}</Text>
+              <Text style={styles.tableCell}>{roundUp(data?.gross)}</Text>
+              <Text style={styles.tableCell}>{roundUp(data?.net)}</Text>
+              <Text style={styles.tableCell}>
+                {roundUp(data?.gross * data?.bsw * 0.01)}
+              </Text>
+              <Text style={styles.tableCell}>{roundUp(data?.bsw)}</Text>
+              <Text style={styles.tableCell}>{roundUp(data?.producedGas)}</Text>
+              <Text style={styles.tableCell}>{roundUp(data?.utilisedGas)}</Text>
+              <Text style={styles.tableCell}>{roundUp(data?.exportGas)}</Text>
+              <Text style={styles.tableCell}>{roundUp(data?.flaredGas)}</Text>
+            </View>
+          ))}
+        </>
+      </View>
+    </View>
+  );
+};
+
+const FacilitiesProduction = ({ facilitiesData }) => {
+  if (facilitiesData.length === 0) return;
+  return (
+    <>
+      <Text style={styles.subHeader}>PRODUCTION PER STRING</Text>
+      {Object.entries(facilitiesData).map(([key, value]) => (
+        <FacilityProduction
+          key={key}
+          flowstation={key}
+          productionData={value}
+        />
+      ))}
+    </>
+  );
+};
+
+const FacilityProduction = ({ flowstation, productionData }) => {
+  return (
+    <View style={styles.section}>
+      <Text style={styles.subHeader}>{`${flowstation} Production Data`}</Text>
+      <View style={styles.table}>
+        <View style={styles.tableRow}>
+          <Text style={styles.tableCell}></Text>
+          <Text style={styles.tableCell}>
+            Gross
+            {"\n"}
+            (blpd)
+          </Text>
+          <Text style={styles.tableCell}>
+            Net
+            {"\n"}
+            (bopd)
+          </Text>
+          <Text style={styles.tableCell}>
+            Water
+            {"\n"}
+            (bwpd)
+          </Text>
+          <Text style={styles.tableCell}>
+            BS&W
+            {"\n"}
+            (%)
+          </Text>
+          <Text style={styles.tableCell}>
+            THP
+            {"\n"}
+            (psi)
+          </Text>
+          <Text style={styles.tableCell}>
+            Choke Size
+            {"\n"}
+            (/64)
+          </Text>
+        </View>
+        <>
+          {productionData.map((data) => (
+            <View key={data.flowstation} style={styles.tableRow}>
+              <Text style={styles.tableCell}>{data.productionString}</Text>
+              <Text style={styles.tableCell}>{roundUp(data?.gross)}</Text>
+              <Text style={styles.tableCell}>{roundUp(data?.oil)}</Text>
+              <Text style={styles.tableCell}>{roundUp(data?.water)}</Text>
+              <Text style={styles.tableCell}>
+                {roundUp((data?.water * 100) / (data?.oil + data?.water))}
+              </Text>
+              <Text style={styles.tableCell}>
+                {data?.thp ? roundUp(data?.thp) : ""}
+              </Text>
+              <Text style={styles.tableCell}>
+                {data?.bean ? data?.bean : ""}
+              </Text>
+            </View>
+          ))}
+        </>
+      </View>
+    </View>
+  );
+};
