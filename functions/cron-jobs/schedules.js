@@ -49,6 +49,7 @@ const upsertDefermentReportSchedule = onCall(async (request) => {
     const collectionRef = db.collection("monthlyReportSchedule");
     const snapshot = await collectionRef.get();
 
+    console.log({ hour, day }, snapshot.empty)
     if (!snapshot.empty) {
       const docRef = snapshot.docs[0].ref;
       await docRef.update({ hour, day });
@@ -57,6 +58,7 @@ const upsertDefermentReportSchedule = onCall(async (request) => {
       await collectionRef.add({ hour, day });
       console.log("Deferment report schedule created");
     }
+    return { data: null, message: 'Successfull' }
   } catch (error) {
     console.log({ error });
     if (error.message) throw new HttpsError(error?.code, error?.message);
