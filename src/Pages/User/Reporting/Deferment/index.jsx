@@ -241,7 +241,7 @@ const DefermentReport = () => {
       const data = await firebaseFunctions(
         "upsertDefermentReportSchedule",
         {
-          data: { hour, day },
+          hour, day
         }
       );
       console.log("Response:", data);
