@@ -275,3 +275,5 @@ const getRandomColor = () => {
   }
   return color;
 };
+
+export { getRandomColor };

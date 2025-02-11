@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import DefermentDataTable from "./DefermentDataTable";
 import DefermentChart from "./DefermentChart";
 import { useAssetNames } from "hooks/useAssetNames";
@@ -19,11 +19,17 @@ import { roundUp } from "utils";
 import {
   Document,
   Page,
-  Text,
+  Image,
+  // Text,
   View,
   StyleSheet,
-  PDFDownloadLink,
+  pdf,
 } from "@react-pdf/renderer";
+import html2canvas from "html2canvas";
+import BarChart from "./BarChart";
+import PieChart from "./PieChart";
+import { getRandomColor } from "./DefermentChart";
+import { Button } from "Components";
 
 const createOpt = (item) => ({ label: item, value: item });
 const aggregationFrequency = ["Day", "Month", "Year"];
@@ -56,6 +62,8 @@ const DefermentReport = () => {
   const [gasScheduledDeferment, setGasScheduledDeferment] = useState({});
   const [gasUnscheduledDeferment, setGasUnscheduledDeferment] = useState({});
   const [gasThirdPartyDeferment, setGasThirdPartyDeferment] = useState({});
+  const [chartImage, setChartImage] = useState(null);
+  const [showChart, setShowChart] = useState(false);
 
   const res = useFetch({
     firebaseFunction: "getDefermentData",
@@ -91,19 +99,6 @@ const DefermentReport = () => {
     setGasUnscheduledDeferment(data.gasUnscheduledDeferment || {});
     setGasThirdPartyDeferment(data.gasThirdPartyDeferment || {});
   }, [res?.data]);
-
-  const generatePDFData = () => {
-    let tableData = [];
-    if (frequency === "Day") {
-      tableData = dailyData;
-    } else if (frequency === "Month") {
-      tableData = monthlyData;
-    } else {
-      tableData = yearlyData;
-    }
-
-    return generateReportData(frequency, tableData, query?.flowstation);
-  };
 
   const exportResultToExcel = () => {
     let tableData = [];
@@ -203,7 +198,6 @@ const DefermentReport = () => {
   return (
     <div className="h-full relative">
       <Header name={"Production Deferment Report"} />
-
       <tabs
         style={{
           display: "flex",
@@ -232,12 +226,13 @@ const DefermentReport = () => {
                   className="w-[40px] h-[40px]"
                   onClick={exportResultToExcel}
                 />
-                <PDFDownloadLink
-                  document={<PDFComponent data={generatePDFData()} />}
-                  fileName="deferment-report.pdf"
-                >
-                  <img src={pdfIcon} alt="pdf" className="w-[40px] h-[40px]" />
-                </PDFDownloadLink>
+
+                <img
+                  src={pdfIcon}
+                  alt="pdf"
+                  className="w-[40px] h-[40px]"
+                  onClick={() => setShowChart(true)}
+                />
 
                 <Setting2
                   variant={"Linear"}
@@ -366,7 +361,26 @@ const DefermentReport = () => {
           )}
         </div>
       </div>
-      {tabs[tab].Component}
+      {showChart ? (
+        <PDFComponent
+          barData={dailyAggregate}
+          setChartImage={setChartImage}
+          asset={query.asset}
+          oilScheduledDeferment={oilScheduledDeferment}
+          oilUnscheduledDeferment={oilUnscheduledDeferment}
+          oilThirdPartyDeferment={oilThirdPartyDeferment}
+          gasScheduledDeferment={gasScheduledDeferment}
+          gasUnscheduledDeferment={gasUnscheduledDeferment}
+          gasThirdPartyDeferment={gasThirdPartyDeferment}
+          showChart={showChart}
+          setShowChart={setShowChart}
+          chartImage={chartImage}
+        />
+      ) : (
+        tabs[tab].Component
+      )}
+
+      {/* {!showChart && tabs[tab].Component} */}
     </div>
   );
 };
@@ -442,7 +456,21 @@ const generateReportData = (frequency, tableData = [], flowstation) => {
 const styles = StyleSheet.create({
   page: {
     backgroundColor: "#fff",
-    padding: 20,
+    padding: 30,
+  },
+  section: {
+    marginBottom: 10,
+  },
+  hiddenChartContainer: {
+    display: "none",
+  },
+  image: {
+    width: "100%",
+    height: "auto",
+  },
+  chartContainer: {
+    width: "100%",
+    height: 300,
   },
   title: {
     fontSize: 8, // Set font size for title to 8 (smallest)
@@ -478,38 +506,282 @@ const styles = StyleSheet.create({
 });
 
 // Create a PDF Document with a Table
-const PDFComponent = ({ data }) => {
-  const headers = Object.keys(data[0] || {});
+const PDFComponent = ({
+  barData,
+  asset,
+  oilScheduledDeferment,
+  oilUnscheduledDeferment,
+  oilThirdPartyDeferment,
+  gasScheduledDeferment,
+  gasUnscheduledDeferment,
+  gasThirdPartyDeferment,
+  setShowChart,
+}) => {
+  const chartRefs = [
+    useRef(),
+    useRef(),
+    useRef(),
+    useRef(),
+    useRef(),
+    useRef(),
+    useRef(),
+    useRef(),
+  ];
+  const [pdfUrl, setPdfUrl] = useState(null);
 
-  return (
-    <Document>
-      <Page size="A4" style={styles.page}>
-        {/* Table */}
-        <View style={styles.table}>
-          <View style={styles.tableRow}>
-            {headers.map((header, index) => (
-              <Text
-                key={`${header}-${index}`}
-                style={[styles.tableCol, styles.headerText]}
-              >
-                {header}
-              </Text>
+  const getBarChartData = (fluidType) => {
+    return barData.map((item) => ({
+      x: dayjs(item.date).format("DD-MM-YYYY"),
+      "Scheduled Deferment": roundUp(
+        fluidType === "Net Oil/Condensate"
+          ? item.totalOilScheduled
+          : item.totalGasScheduled
+      ),
+      "Unscheduled Deferment": roundUp(
+        fluidType === "Net Oil/Condensate"
+          ? item.totalOilUnscheduled
+          : item.totalGasUnscheduled
+      ),
+      "Third-Party Deferment": roundUp(
+        fluidType === "Net Oil/Condensate"
+          ? item.totalOilThirdParty
+          : item.totalGasThirdParty
+      ),
+      [[fluidType === "Net Oil/Condensate" ? "Total Oil" : "Total Gas"]]:
+        roundUp(
+          fluidType === "Net Oil/Condensate" ? item.totalOil : item.totalGas
+        ),
+    }));
+  };
+
+  const getPieChartData = (dataObject) => {
+    const result = Object.entries(dataObject?.subs).map(([key, value]) => ({
+      name: key,
+      value: Number(roundUp(value)),
+    }));
+    const colors = Object.keys(dataObject?.subs).map(() => getRandomColor());
+    return { data: result, colors };
+  };
+
+  const generatePdf = () => {
+    return new Promise((resolve) => {
+      Promise.all(
+        chartRefs
+          .filter((ref) => ref.current)
+          .map(
+            (ref) =>
+              new Promise((resolve) => {
+                const chartElement = ref.current;
+
+                setTimeout(() => {
+                  html2canvas(chartElement).then(
+                    (canvas) => {
+                      const imgData = canvas.toDataURL("image/png");
+                      resolve(imgData);
+                    },
+                    () => resolve(null)
+                  );
+                });
+              })
+          )
+      ).then((canvases) => {
+        setPdfUrl(canvases);
+        resolve(canvases);
+      });
+    });
+  };
+
+  const handleGeneratePDF = async () => {
+    const imagesDataArray = await generatePdf();
+
+    // const chartHeight = 300
+    const chartsPerPage = 2;
+    const totalCharts = imagesDataArray.length;
+    const pages = [];
+    let chartIndex = 0;
+
+    while (chartIndex < totalCharts) {
+      const chartsInPage = [];
+      while (chartsInPage.length < chartsPerPage && chartIndex < totalCharts) {
+        chartsInPage.push(imagesDataArray[chartIndex]);
+        chartIndex++;
+      }
+
+      pages.push(
+        <Page key={chartIndex} size={"A4"} style={{ padding: 20 }}>
+          <View style={{ flexDirection: "column" }}>
+            {chartsInPage.map((imgData, index) => (
+              <View key={index} style={{ marginBottom: 20 }}>
+                <Image src={imgData} />
+              </View>
             ))}
           </View>
-          {data.map((row, index) => (
-            <View key={index} style={styles.tableRow}>
-              {headers.map((header, index) => (
-                <Text
-                  key={`${header}-${index}`}
-                  style={[styles.tableCol, styles.rowText]}
-                >
-                  {row[header]}
-                </Text>
-              ))}
-            </View>
-          ))}
-        </View>
-      </Page>
-    </Document>
+        </Page>
+      );
+    }
+
+    const PdfDocument = <Document>{pages}</Document>;
+
+    pdf(PdfDocument)
+      .toBlob()
+      .then((blob) => {
+        const url = URL.createObjectURL(blob);
+        console.log(url);
+        setPdfUrl(url);
+      });
+  };
+
+  const handleDownloadPDF = async () => {
+    const imagesDataArray = await generatePdf();
+
+    // const chartHeight = 300
+    const chartsPerPage = 2;
+    const totalCharts = imagesDataArray.length;
+    const pages = [];
+    let chartIndex = 0;
+
+    while (chartIndex < totalCharts) {
+      const chartsInPage = [];
+      while (chartsInPage.length < chartsPerPage && chartIndex < totalCharts) {
+        chartsInPage.push(imagesDataArray[chartIndex]);
+        chartIndex++;
+      }
+
+      pages.push(
+        <Page key={chartIndex} size={"A4"} style={{ padding: 20 }}>
+          <View style={{ flexDirection: "column" }}>
+            {chartsInPage.map((imgData, index) => (
+              <View key={index} style={{ marginBottom: 20 }}>
+                <Image src={imgData} />
+              </View>
+            ))}
+          </View>
+        </Page>
+      );
+    }
+
+    const PdfDocument = <Document>{pages}</Document>;
+
+    pdf(PdfDocument)
+      .toBlob()
+      .then((blob) => {
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `Deferment Data`;
+        link.click();
+      });
+  };
+
+  return (
+    <div className=" h-full w-full px-4">
+      <div className="flex justify-start p-4 mb-4 items-center gap-4">
+        <Button onClick={handleGeneratePDF} bgcolor={""} className={"px-3"}>
+          Generate Report
+        </Button>
+        <Button onClick={handleDownloadPDF} bgcolor={""} className={"px-3"}>
+          Download Pdf
+        </Button>
+        <Button
+          onClick={() => setShowChart(false)}
+          bgcolor={""}
+          className={"px-3"}
+        >
+          Close
+        </Button>
+      </div>
+      {pdfUrl && (
+        <iframe
+          src={pdfUrl}
+          width={"100%"}
+          height={"600px"}
+          title="Report Preview"
+          style={{ border: "1px solid black", marginTop: "20px" }}
+        />
+      )}
+
+      <div
+        style={styles.chartContainer}
+        className="bg-[#fafafa] flex flex-col gap-4"
+      >
+        <div className="h-[500px]" ref={chartRefs[0]}>
+          <BarChart
+            chartData={getBarChartData("Net Oil/Condensate")}
+            fluidType={"Net Oil/Condensate"}
+            title={`${asset} Oil/Condensate Production Deferment Profile (bopd)`}
+          />
+        </div>
+        <div className="h-[500px]" ref={chartRefs[1]}>
+          <BarChart
+            chartData={getBarChartData("Gas")}
+            fluidType={"Gas"}
+            title={`${asset} Gas Production Deferment Profile (MMscf/d)`}
+          />
+        </div>
+
+        {oilScheduledDeferment?.total > 0 && (
+          <div ref={chartRefs[2]}>
+            <PieChart
+              data={getPieChartData(oilScheduledDeferment).data}
+              colors={getPieChartData(oilScheduledDeferment).colors}
+              title={`${asset} Net Oil/Condensate Scheduled Deferment Chart (bopd)`}
+              title_empty={"Test"}
+            />
+          </div>
+        )}
+        {oilUnscheduledDeferment?.total > 0 && (
+          <div ref={chartRefs[3]}>
+            <PieChart
+              data={getPieChartData(oilUnscheduledDeferment).data}
+              colors={getPieChartData(oilUnscheduledDeferment).colors}
+              title={`${asset} Net Oil/Condensate Unscheduled Deferment Chart (bopd)`}
+              title_empty={"Test"}
+            />
+          </div>
+        )}
+
+        {oilThirdPartyDeferment?.total > 0 && (
+          <div ref={chartRefs[4]}>
+            <PieChart
+              data={getPieChartData(oilThirdPartyDeferment || {}).data}
+              colors={getPieChartData(oilThirdPartyDeferment).colors}
+              title={`${asset} Net Oil/Condensate Third-Party Deferment Chart (bopd)`}
+              title_empty={"Test"}
+            />
+          </div>
+        )}
+
+        {gasScheduledDeferment?.total > 0 && (
+          <div ref={chartRefs[5]}>
+            <PieChart
+              data={getPieChartData(gasScheduledDeferment).data}
+              colors={getPieChartData(gasScheduledDeferment).colors}
+              title={`${asset} Gas Scheduled Deferment Chart (MMscf/d)`}
+              title_empty={"Test"}
+            />
+          </div>
+        )}
+        {gasUnscheduledDeferment?.total > 0 && (
+          <div ref={chartRefs[6]}>
+            <PieChart
+              data={getPieChartData(gasUnscheduledDeferment).data}
+              colors={getPieChartData(gasUnscheduledDeferment).colors}
+              title={`${asset} Gas Unscheduled Deferment Chart (MMscf/d)`}
+              title_empty={"Test"}
+            />
+          </div>
+        )}
+
+        {gasThirdPartyDeferment?.total > 0 && (
+          <div ref={chartRefs[7]}>
+            <PieChart
+              data={getPieChartData(gasThirdPartyDeferment || {}).data}
+              colors={getPieChartData(gasThirdPartyDeferment).colors}
+              title={`${asset} Gas Third-Party Deferment Chart (MMscf/d)`}
+              title_empty={"Test"}
+            />
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
