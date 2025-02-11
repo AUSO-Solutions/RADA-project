@@ -75,7 +75,7 @@ const ProductionSurveilance = ({assetOptions}) => {
       // }
     }
     const dailyGasDataset = {
-      label: "Daily Gas (MMscf)",
+      label: "Gas Produced (MMscf)",
       data: data?.map((item, i) => item?.gas),
       borderColor: "#319112",
       borderWidth: 3, pointRadius: .5,

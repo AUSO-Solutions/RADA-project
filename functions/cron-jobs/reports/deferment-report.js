@@ -6,17 +6,25 @@ const utc = require("dayjs/plugin/utc");
 const timezone = require("dayjs/plugin/timezone.js");
 const { getDefermentReportSchedule } = require("../schedules");
 const { getDefermentReportData, getAssets } = require("../data");
+const { onSchedule } = require("firebase-functions/v2/scheduler");
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-const defermentReportScheduler = functions.pubsub
-  .schedule("8 am every day")
-  .timezone("Africa/Lagos")
-  .onRun(async (context) => {
-    console.log("Running deferment report cron job");
-    await generateDefermentReport();
-  });
+// const defermentReportScheduler = functions.pubsub
+//   .schedule("8 am every day")
+//   .timezone("Africa/Lagos")
+//   .onRun(async (context) => {
+//     console.log("Running deferment report cron job");
+//     await generateDefermentReport();
+//   });
+
+  const defermentReportScheduler = onSchedule(
+    { schedule: "8 am every day", timeZone: "Africa/Lagos" },
+    async (context) => {
+          console.log("Running deferment report cron job");
+      await  generateDefermentReport();
+    })
 
 module.exports = { defermentReportScheduler };
 

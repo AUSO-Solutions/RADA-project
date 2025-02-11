@@ -27,6 +27,7 @@ const operationsReportScheduler = onSchedule(
     console.log("Running cron job");
     await generateOperationsReport();
   })
+  
 module.exports = { operationsReportScheduler };
 
 const generateOperationsReport = async () => {
