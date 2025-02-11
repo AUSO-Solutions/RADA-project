@@ -75,29 +75,27 @@ const {
   createDefermentSubCategory,
   getDefermentCategories,
   deleteCategory,
-  deleteSubCategory
-} = require('./defermentcategories')
+  deleteSubCategory,
+} = require("./defermentcategories");
 const { getInsight } = require("./admin/insights");
 const { getInsights } = require("./admin/insights/index2");
 const { getSurveillanceData } = require("./admin/surveillance/index2");
 const { getOverviewData } = require("./admin/overview/index");
 const { broadcast } = require("./broadcast/index");
-<<<<<<< HEAD
+
 const {
   operationsReportScheduler,
 } = require("./cron-jobs/reports/production-report");
 const {
+  defermentReportScheduler,
+} = require("./cron-jobs/reports/deferment-report");
+const {
   upsertOperationsReportSchedule,
   upsertDefermentReportSchedule,
 } = require("./cron-jobs/schedules");
-=======
 
-const {
-  logActivity,
-  getLogs
-} = require('./activitylog')
+const { logActivity, getLogs } = require("./activitylog");
 
->>>>>>> 69b2eb5bbcd22c971e721314dc1536ba8f04cfcf
 // const { setupWellTestData, getSetups, updateWellTestData, deleteWellTestDataSetup } = require('./fielddatacapturesetup/welltestsetup')
 
 admin.initializeApp();
@@ -168,12 +166,11 @@ module.exports = {
   getDefermentData,
   getReconciledProductionData,
   getOperationsData,
-<<<<<<< HEAD
+
   operationsReportScheduler,
+  defermentReportScheduler,
   upsertOperationsReportSchedule,
   upsertDefermentReportSchedule,
-=======
-
 
   createDefermentCategory,
   createDefermentSubCategory,
@@ -182,6 +179,5 @@ module.exports = {
   deleteSubCategory,
 
   logActivity,
-  getLogs
->>>>>>> 69b2eb5bbcd22c971e721314dc1536ba8f04cfcf
+  getLogs,
 };

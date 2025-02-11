@@ -1,5 +1,4 @@
 const PDFDocument = require("pdfkit");
-const functions = require("firebase-functions");
 const { transporter } = require("../../helpers");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
@@ -71,6 +70,34 @@ const sendDefermentReport = async (data, asset, date) => {
     doc.on("end", () => resolve(Buffer.concat(buffers)));
     doc.on("error", (error) => reject(error));
 
+    const monthlyOilBuffer = getVolumesChartConfig(
+      data.liquidData,
+      asset,
+      "Net Oil/Condensate",
+      date
+    );
+    doc.image(monthlyOilBuffer, {
+      fit: [500, 300],
+      align: "center",
+      valign: "center",
+    });
+
+    doc.addPage();
+
+    const monthlyGasBuffer = getVolumesChartConfig(
+      data.gasData,
+      asset,
+      "Gas",
+      date
+    );
+    doc.image(monthlyGasBuffer, {
+      fit: [500, 300],
+      align: "center",
+      valign: "center",
+    });
+
+    doc.addPage();
+
     const oilProductionBuffer = generateProductionStackedBarChart(
       data.monthlyAggregate || [],
       "Oil/Condensate",
@@ -98,6 +125,102 @@ const sendDefermentReport = async (data, asset, date) => {
     });
 
     doc.addPage();
+
+    const gasScheduledDefermentBuffer = generatePieChartBuffer(
+      data,
+      asset,
+      "Gas",
+      "Scheduled Deferment"
+    );
+    if (gasScheduledDefermentBuffer) {
+      doc.image(gasScheduledDefermentBuffer, {
+        fit: [500, 300],
+        align: "center",
+        valign: "center",
+      });
+
+      doc.addPage();
+    }
+
+    const gasUnscheduledDefermentBuffer = generatePieChartBuffer(
+      data,
+      asset,
+      "Gas",
+      "Unscheduled Deferment"
+    );
+    if (gasUnscheduledDefermentBuffer) {
+      doc.image(gasUnscheduledDefermentBuffer, {
+        fit: [500, 300],
+        align: "center",
+        valign: "center",
+      });
+
+      doc.addPage();
+    }
+
+    const gasThirdPartyDefermentBuffer = generatePieChartBuffer(
+      data,
+      asset,
+      "Gas",
+      "Third Party Deferment"
+    );
+    if (gasThirdPartyDefermentBuffer) {
+      doc.image(gasThirdPartyDefermentBuffer, {
+        fit: [500, 300],
+        align: "center",
+        valign: "center",
+      });
+
+      doc.addPage();
+    }
+
+    const oilScheduledDefermentBuffer = generatePieChartBuffer(
+      data,
+      asset,
+      "Net Oil/Condensate",
+      "Scheduled Deferment"
+    );
+    if (oilScheduledDefermentBuffer) {
+      doc.image(oilScheduledDefermentBuffer, {
+        fit: [500, 300],
+        align: "center",
+        valign: "center",
+      });
+
+      doc.addPage();
+    }
+
+    const oilUnscheduledDefermentBuffer = generatePieChartBuffer(
+      data,
+      asset,
+      "Net Oil/Condensate",
+      "Unscheduled Deferment"
+    );
+    if (oilUnscheduledDefermentBuffer) {
+      doc.image(oilUnscheduledDefermentBuffer, {
+        fit: [500, 300],
+        align: "center",
+        valign: "center",
+      });
+
+      doc.addPage();
+    }
+
+    const oilThirdPartyDefermentBuffer = generatePieChartBuffer(
+      data,
+      asset,
+      "Net Oil/Condensate",
+      "Third Party Deferment"
+    );
+    if (oilThirdPartyDefermentBuffer) {
+      doc.image(oilThirdPartyDefermentBuffer, {
+        fit: [500, 300],
+        align: "center",
+        valign: "center",
+      });
+
+      doc.addPage();
+    }
 
     doc.end();
   });
@@ -155,7 +278,7 @@ const getStackedBarConfigurationOil = (data, asset, format, month) => {
   const res = Object.entries(datasets || {}).map(([key, value]) => ({
     label: key,
     data: value,
-    backgroundColor: colors[key],
+    backgroundColor: ["#9A031E", "#03045E", "#344E41"],
     borderColor: "rgba(0, 123, 255, 1)",
     borderWidth: 1,
   }));
@@ -223,7 +346,7 @@ const getStackedBarConfigurationGas = (data, asset, format, month) => {
   const res = Object.entries(datasets || {}).map(([key, value]) => ({
     label: key,
     data: value,
-    backgroundColor: colors[key],
+    backgroundColor: ["#9A031E", "#03045E", "#344E41"],
     borderColor: "rgba(0, 123, 255, 1)",
     borderWidth: 1,
   }));
@@ -298,12 +421,78 @@ const generateProductionStackedBarChart = async (
   return canvas.toBuffer();
 };
 
-const getPieChartConfig = (data, title) => {
+const getPieChartConfig = (data, asset, fluidType, defermentType) => {
+  const labels = [];
+  const values = [];
+
+  if (defermentType === "Scheduled Deferment") {
+    if (fluidType === "Net Oil/Condensate") {
+      Object.entries(data.oilScheduledDeferment.subs || []).forEach(
+        ([key, value]) => {
+          labels.push(key);
+          values.push(value);
+        }
+      );
+    } else {
+      Object.entries(data.gasScheduledDeferment.subs || []).forEach(
+        ([key, value]) => {
+          labels.push(key);
+          values.push(value);
+        }
+      );
+    }
+  } else if (defermentType === "Unscheduled Deferment") {
+    if (fluidType === "Net Oil/Condensate") {
+      Object.entries(data.oilUnscheduledDeferment.subs || []).forEach(
+        ([key, value]) => {
+          labels.push(key);
+          values.push(value);
+        }
+      );
+    } else {
+      Object.entries(data.gasUnscheduledDeferment.subs || []).forEach(
+        ([key, value]) => {
+          labels.push(key);
+          values.push(value);
+        }
+      );
+    }
+  } else {
+    if (fluidType === "Net Oil/Condensate") {
+      Object.entries(data.oilThirdPartyDeferment.subs || []).forEach(
+        ([key, value]) => {
+          labels.push(key);
+          values.push(value);
+        }
+      );
+    } else {
+      Object.entries(data.gasThirdPartyDeferment.subs || []).forEach(
+        ([key, value]) => {
+          labels.push(key);
+          values.push(value);
+        }
+      );
+    }
+  }
+
+  const title = `${asset} ${fluidType} ${defermentType} (${
+    fluidType === "Net Oil/Condensate" ? "bopd" : "MMscf/d"
+  })`;
+
+  if (labels.length === 0) return null;
+
+  const colors = labels.map(() => getRandomColor());
+
   const config = {
     type: "pie",
     data: {
-      labels: [],
-      dataset: data,
+      labels: labels,
+      dataset: [
+        {
+          data: values,
+          backgroundColor: colors,
+        },
+      ],
     },
     options: {
       responsive: true,
@@ -332,23 +521,94 @@ const getPieChartConfig = (data, title) => {
   return config;
 };
 
-const generateChartBuffer = async (data, title) => {
+const getVolumesChartConfig = (data, asset, fluidType, month) => {
+  const date = data.date || [];
+
+  const datasets = {};
+
+  const title = `${asset} ${fluidType} Production Profile for ${month} `;
+
+  Object.entries(data).forEach(([key, value]) => {
+    if (key !== "date") {
+      datasets.push({
+        label: key,
+        data: value,
+        backgroundColor: getRandomColor(),
+        borderWidth: 1,
+      });
+    }
+  });
+
+  const configuration = {
+    type: "bar",
+    data: {
+      labels: date,
+      datasets: datasets,
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        title: {
+          display: true,
+          text: title,
+          font: {
+            size: 18,
+            weight: "bold",
+          },
+        },
+        legend: {
+          position: "top",
+        },
+      },
+      scales: {
+        x: {
+          stacked: false,
+          title: {
+            display: true,
+            text: "Date",
+            font: { size: 14 },
+          },
+        },
+        y: {
+          stacked: true,
+          title: {
+            display: true,
+            text: `${
+              fluidType ? "Oil/Condensate rate (bopd)" : "Gas rate (MMscf/d)"
+            }`,
+            font: { size: 14 },
+          },
+        },
+      },
+    },
+  };
+  return configuration;
+};
+
+const generatePieChartBuffer = async (
+  data,
+  asset,
+  fluidType,
+  defermentType
+) => {
   const width = 600;
   const height = 400;
   const canvas = createCanvas(width, height);
   const context = canvas.getContext("2d");
 
-  const config = getPieChartConfig(data, title);
+  const config = getPieChartConfig(data, asset, fluidType, defermentType);
 
   new Chart(context, config);
 
   return canvas.toBuffer("image/png");
 };
 
-const colors = {
-  "Ekulama 1 Flowstation": "green",
-  "Ekulama 2 Flowstation": "blue",
-  "Awoba Flowstation": "red",
-  "EFE Flowstation": "purple",
-  "OML 147 Flowstation": "orange",
+const getRandomColor = () => {
+  const letters = "0123456789ABCDEF";
+  let color = "#";
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
 };

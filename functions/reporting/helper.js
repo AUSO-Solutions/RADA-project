@@ -38,7 +38,7 @@ function getDatesBetween(startDate, endDate) {
   return dates;
 }
 
-function aggregateDeferment(data) {
+function aggregateDeferment(data, liquidVolumes = [], gasVolumes = []) {
   const monthlyMap = new Map();
   let monthlyIndex = 0;
   let monthlyData = [];
@@ -326,6 +326,34 @@ function aggregateDeferment(data) {
     }
   }
 
+  const liquidSize = liquidVolumes.length;
+  const liquidData = { date: new Array(liquidSize) };
+  for (let i = 0; i < liquidSize; i++) {
+    liquidData["date"][i] = liquidVolumes;
+
+    for (let flowstation of liquidVolumes[i].flowstations) {
+      const name = flowstation.name;
+      if (!(name in liquidData)) {
+        liquidData[name] = new Array(liquidSize).fill(0);
+      }
+      liquidData[name][i] = flowstation?.subtotal?.netProduction || 0;
+    }
+  }
+
+  const gasSize = gasVolumes.length;
+  const gasData = { date: new Array(gasSize) };
+  for (let i = 0; i < gasSize; i++) {
+    gasData["date"][i] = gasVolumes;
+
+    for (let flowstation of gasVolumes[i].flowstations) {
+      const name = flowstation.name;
+      if (!(name in liquidData)) {
+        gasData[name] = new Array(gasSize).fill(0);
+      }
+      gasData[name][i] = flowstation?.subtotal?.netProduction || 0;
+    }
+  }
+
   return {
     dailyData,
     monthlyData,
@@ -339,6 +367,8 @@ function aggregateDeferment(data) {
     gasScheduledDeferment,
     gasUnscheduledDeferment,
     gasThirdPartyDeferment,
+    liquidData,
+    gasData,
   };
 }
 
