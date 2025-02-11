@@ -23,6 +23,8 @@ const createDefermentCategory = onCall(async (request) => {
 
         const id = crypto.randomBytes(8).toString("hex");
         const { name } = request.data
+        const exists = (await db.collection('defermentCategories').where('name', "==", name).get()).docs
+        if (exists.length) throw ({ code: 'cancelled', message: 'This name is taken' })
         await db.collection('defermentCategories')
             .doc(id)
             .set({
@@ -43,9 +45,8 @@ const createDefermentSubCategory = onCall(async (request) => {
         const db = admin.firestore();
         const { id, subCategory } = request.data
         const prevsubCategories = (await db.collection('defermentCategories').doc(id).get()).data()?.subCategories
-        // if (prevsubCategories.includes(subCategory))
+        if (prevsubCategories.includes(subCategory)) throw ({ code: 'cancelled', message: 'This name is taken' })
         const subCategories = [...prevsubCategories, subCategory]
-
         await db.collection('defermentCategories')
             .doc(id)
             .update({ subCategories })

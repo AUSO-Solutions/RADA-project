@@ -13,6 +13,7 @@ import { useAssetByName } from 'hooks/useAssetByName'
 import { setSetupData } from 'Store/slices/setupSlice'
 import DateRangePicker from 'Components/DatePicker'
 import ProductionSurveilance from './ProductionSurveilance'
+import { useFetch } from 'hooks/useFetch'
 
 
 const Dashboard = () => {
@@ -29,11 +30,18 @@ const Dashboard = () => {
     return strings
   }, [assets, setupData?.flowstation])
 
+
+  const { data: overviewData } = useFetch({ firebaseFunction: 'getOverviewData', payload: { date: dayjs().format('YYYY-MM-DD'), }, })
+
   const assetOptions = useMemo(() => {
     const originalList = assetNames?.map(assetName => ({ value: assetName, label: assetName }))
-    if (assetNames.length === 3) return [{ label: 'All', value: '' }].concat(originalList)
+    // console.log(assetNames.length, )
+    const assetsLength = parseInt(JSON.parse(overviewData || "{}").assets || "0")
+    if (assetNames.length === assetsLength) return [{ label: 'All', value: '' }].concat(originalList)
     return originalList
-  }, [assetNames])
+  }, [assetNames, overviewData])
+
+
 
 
   const tabs = useMemo(() => [

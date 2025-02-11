@@ -83,6 +83,10 @@ const { getSurveillanceData } = require("./admin/surveillance/index2");
 const { getOverviewData } = require("./admin/overview/index");
 const { broadcast } = require("./broadcast/index");
 
+const {
+  logActivity,
+  getLogs
+} = require('./activitylog')
 
 // const { setupWellTestData, getSetups, updateWellTestData, deleteWellTestDataSetup } = require('./fielddatacapturesetup/welltestsetup')
 
@@ -160,5 +164,8 @@ module.exports = {
   createDefermentSubCategory,
   getDefermentCategories,
   deleteCategory,
-  deleteSubCategory
+  deleteSubCategory,
+
+  logActivity,
+  getLogs
 };
