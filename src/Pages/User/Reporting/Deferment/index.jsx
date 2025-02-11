@@ -215,9 +215,11 @@ const DefermentReport = () => {
   };
 
   const handleDayChange = (e) => {
-    const selectedDay = parseInt(e.target.value, 10);
+    const selectedDate = new Date(e.target.value);
+    const selectedDay = selectedDate.getDate();
+
     if (selectedDay < 1 || selectedDay > 10) {
-      alert("Please select a day between 1st and 10th");
+      alert("Please select a date between the 1st and 10th of the month");
       e.target.value = "";
       selectedDayRef.current = null;
     } else {
@@ -236,7 +238,7 @@ const DefermentReport = () => {
     try {
       dispatch(setLoadingScreen({ open: true }));
       console.log({ hour, day });
-      const  data  = await firebaseFunctions(
+      const data = await firebaseFunctions(
         "upsertDefermentReportSchedule",
         {
           data: { hour, day },
@@ -309,11 +311,11 @@ const DefermentReport = () => {
                             />
 
                             <Input
-                              type="number"
+                              type="date"
                               id="dayInput"
-                              min="1"
-                              max="10"
                               onChange={handleDayChange}
+                              max={new Date().toISOString().slice(0, 8) + "10"}
+                              min={new Date().toISOString().slice(0, 8) + "01"}
                             />
                             <Button onClick={scheduleDefermentReport}>
                               Schedule
@@ -424,26 +426,26 @@ const DefermentReport = () => {
 
           {((chartType === "Production Deferment Profile" && tab === 1) ||
             tab === 0) && (
-            <div className="flex items-center justify-normal gap-1">
-              <div className="text-4">Frequency</div>
-              <div className="w-[120px]">
-                <Input
-                  placeholder={"Day"}
-                  required
-                  type="select"
-                  options={aggregationFrequency?.map((freq) => ({
-                    value: freq,
-                    label: freq,
-                  }))}
-                  onChange={(e) => {
-                    setFrequency(e?.value);
-                  }}
-                  value={{ value: frequency, label: frequency }}
-                  defaultValue={"Day"}
-                />
+              <div className="flex items-center justify-normal gap-1">
+                <div className="text-4">Frequency</div>
+                <div className="w-[120px]">
+                  <Input
+                    placeholder={"Day"}
+                    required
+                    type="select"
+                    options={aggregationFrequency?.map((freq) => ({
+                      value: freq,
+                      label: freq,
+                    }))}
+                    onChange={(e) => {
+                      setFrequency(e?.value);
+                    }}
+                    value={{ value: frequency, label: frequency }}
+                    defaultValue={"Day"}
+                  />
+                </div>
               </div>
-            </div>
-          )}
+            )}
         </div>
       </div>
       {showChart ? (
