@@ -3,7 +3,7 @@ import Header from "Components/header";
 import Tab from "Components/tab";
 import pdfIcon from "Assets/images/pdf.svg";
 import { Setting2 } from "iconsax-react";
-import { Input } from "Components";
+import { Button, Input, RadaForm } from "Components";
 import { useAssetNames } from "hooks/useAssetNames";
 import dayjs from "dayjs";
 import RadaDatePicker from "Components/Input/RadaDatePicker";
@@ -11,6 +11,9 @@ import { setSetupData } from "Store/slices/setupSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useFetch } from "hooks/useFetch";
 import PDFReport from "./PDFReport";
+import { closeModal, openModal } from "Store/slices/modalSlice";
+import { setLoadingScreen } from "Store/slices/loadingScreenSlice";
+import { firebaseFunctions } from "Services";
 
 const OperationsReport = () => {
   const [tab, setTab] = useState(0);
@@ -18,6 +21,7 @@ const OperationsReport = () => {
   const query = useSelector((state) => state?.setup);
   const dispatch = useDispatch();
   const setupData = useSelector((state) => state?.setup);
+  const [selectedHour, setSelectedHour] = useState(null);
 
   const res = useFetch({
     firebaseFunction: "getOperationsData",
@@ -52,6 +56,39 @@ const OperationsReport = () => {
     ],
     [data, query?.asset, query?.date]
   );
+
+  const handleTimeChange = (e) => {
+    const selectedTime = e.target.value;
+    const hour = parseInt(selectedTime.split(":")[0], 10);
+
+    if (hour < 7 || hour > 12) {
+      alert("Please select a time between 07:00 and 12:00");
+      e.target.value = "";
+      setSelectedHour(null);
+    } else {
+      setSelectedHour(hour);
+    }
+  };
+
+  const schedule = async () => {
+    if (selectedHour === null) {
+      alert("Please select a valid time before saving.");
+      return;
+    }
+    try {
+      dispatch(setLoadingScreen({ open: true }));
+      const { data } = await firebaseFunctions("upsertOperationsReportSchedule", {
+        data: selectedHour,
+      });
+      console.log(data, "-----")
+      dispatch(closeModal());
+    } catch (error) {
+      console.error("Error saving schedule:", error);
+    } finally {
+      dispatch(setLoadingScreen({ open: false }));
+    }
+  };
+
   return (
     <div className="h-full relative">
       <Header name={"Production/Operations Report"} />
@@ -85,6 +122,24 @@ const OperationsReport = () => {
             variant={"Linear"}
             size={30}
             className="text-gray-500 hover:text-[#0274bd] transition-colors duration-200"
+            onClick={() => dispatch(
+              openModal({
+                title: 'Schedule Report',
+                component: (
+
+                  <div className="flex gap-5 flex-row justify-center" >
+                    <Input type="time"
+                      id="timeInput"
+                      min="07:00"
+                      max="12:00"
+                      step="3600"
+                      onChange={handleTimeChange} />
+                    <Button onClick={schedule} >Schedule</Button>
+                  </div>
+
+                ),
+              })
+            )}
           />
         </div>
 
