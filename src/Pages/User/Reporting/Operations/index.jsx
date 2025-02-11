@@ -72,7 +72,7 @@ const OperationsReport = () => {
   }
 
 
-  const schedule = async () => {
+  const scheduleOperationsReport = async () => {
     const hour = selectedHourRef.current;
 
     if (!hour || hour < 7 || hour > 12) {
@@ -140,7 +140,7 @@ const OperationsReport = () => {
                       max="12:00"
                       step="3600"
                       onChange={handleTimeChange} />
-                    <Button onClick={schedule} >Schedule</Button>
+                    <Button onClick={scheduleOperationsReport} >Schedule</Button>
                   </div>
 
                 ),
