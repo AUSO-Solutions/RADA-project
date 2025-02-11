@@ -106,7 +106,28 @@ const getDefermentReportData = async (asset, startDate, endDate) => {
     const deferments = (await query.get())?.docs.map(
       (doc) => doc?.data() || {}
     );
-    const result = aggregateDeferment(deferments);
+
+    const liquidVolumes = (
+      await db
+        .collection("liquidVolumes")
+        .where("asset", "==", asset)
+        .where("date", ">=", start)
+        .where("date", "<=", end)
+        .orderBy("date")
+        .get()
+    ).docs.map((doc) => doc.data());
+
+    const gasVolumes = (
+      await db
+        .collection("gasVolumes")
+        .where("asset", "==", asset)
+        .where("date", ">=", start)
+        .where("date", "<=", end)
+        .orderBy("date")
+        .get()
+    ).docs.map((doc) => doc.data());
+
+    const result = aggregateDeferment(deferments, liquidVolumes, gasVolumes);
 
     return result;
   } catch (error) {

@@ -1,24 +1,24 @@
 const PDFDocument = require("pdfkit");
 const { getOperationsReportSchedule } = require("../schedules");
 const { getOperationsReportData, getAssets } = require("../data");
-const functions = require("firebase-functions");
 const { transporter } = require("../../helpers");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
 const timezone = require("dayjs/plugin/timezone.js");
 const Chart = require("chart.js");
 const { createCanvas } = require("canvas");
+const { onSchedule } = require("firebase-functions/v2/scheduler");
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-const operationsReportScheduler = functions.pubsub
-  .schedule("every 1 hours")
-  .timeZone("Africa/Lagos")
-  .onRun(async (context) => {
+const operationsReportScheduler = onSchedule(
+  { schedule: "every 1 hours", timeZone: "Africa/Lagos" },
+  async (context) => {
     console.log("Running cron job");
     await generateOperationsReport();
-  });
+  }
+);
 
 module.exports = { operationsReportScheduler };
 
@@ -476,7 +476,7 @@ const getStackedBarConfiguration = (data) => {
       datasets.push({
         label: key,
         data: value,
-        backgroundColor: colors[key],
+        backgroundColor: getRandomColor(),
         borderColor: "rgba(0, 123, 255, 1)",
         borderWidth: 1,
       });
@@ -556,10 +556,11 @@ const getPreviousData = () => {
   return today;
 };
 
-const colors = {
-  "Ekulama 1 Flowstation": "green",
-  "Ekulama 2 Flowstation": "blue",
-  "Awoba Flowstation": "red",
-  "EFE Flowstation": "purple",
-  "OML 147 Flowstation": "orange",
+const getRandomColor = () => {
+  const letters = "0123456789ABCDEF";
+  let color = "#";
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
 };
