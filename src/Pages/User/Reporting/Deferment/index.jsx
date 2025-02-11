@@ -30,6 +30,10 @@ import BarChart from "./BarChart";
 import PieChart from "./PieChart";
 import { getRandomColor } from "./DefermentChart";
 import { Button } from "Components";
+import { setLoadingScreen } from "Store/slices/loadingScreenSlice";
+import { closeModal, openModal } from "Store/slices/modalSlice";
+import { firebaseFunctions } from "Services";
+import { toast } from "react-toastify";
 
 const createOpt = (item) => ({ label: item, value: item });
 const aggregationFrequency = ["Day", "Month", "Year"];
@@ -64,6 +68,8 @@ const DefermentReport = () => {
   const [gasThirdPartyDeferment, setGasThirdPartyDeferment] = useState({});
   const [chartImage, setChartImage] = useState(null);
   const [showChart, setShowChart] = useState(false);
+  const selectedHourRef = useRef(null);
+  const selectedDayRef = useRef(null);
 
   const res = useFetch({
     firebaseFunction: "getDefermentData",
@@ -195,6 +201,55 @@ const DefermentReport = () => {
     }
   }, [dispatch, query]);
 
+
+  const handleTimeChange = (e) => {
+    const selectedTime = e.target.value;
+    const hour = parseInt(selectedTime.split(":")[0], 10);
+    if (hour < 1 || hour > 24) {
+      alert("Please select an hour between 1 and 24");
+      e.target.value = "";
+      selectedHourRef.current = null;
+    } else {
+      selectedHourRef.current = hour;
+      // console.log("Selected Hour:", hour);
+    }
+  };
+
+  const handleDayChange = (e) => {
+    const selectedDay = parseInt(e.target.value, 10);
+    if (selectedDay < 1 || selectedDay > 10) {
+      alert("Please select a day between 1st and 10th");
+      e.target.value = "";
+      selectedDayRef.current = null;
+    } else {
+      selectedDayRef.current = selectedDay;
+    }
+  };
+
+  const scheduleDefermentReport = async () => {
+    const hour = selectedHourRef.current;
+    const day = selectedDayRef.current;
+
+    if (!day || day < 1 || day > 10) {
+      alert("Date should be between 1st and 10th");
+      return;
+    }
+    try {
+      dispatch(setLoadingScreen({ open: true }));
+      const { data } = await firebaseFunctions("upsertDefermentReportSchedule", {
+        data: `${hour}, ${day}`,
+      });
+      console.log("Response:", data);
+      toast.success("Deferment Report Scheduled Successfully")
+      dispatch(closeModal());
+    } catch (error) {
+      console.error("Error schedling deferment report schedule:", error);
+    } finally {
+      dispatch(setLoadingScreen({ open: false }));
+    }
+  };
+
+
   return (
     <div className="h-full relative">
       <Header name={"Production Deferment Report"} />
@@ -238,6 +293,31 @@ const DefermentReport = () => {
                   variant={"Linear"}
                   size={30}
                   className="text-gray-500 hover:text-[#0274bd] transition-colors duration-200"
+                  onClick={() => dispatch(
+                    openModal({
+                      title: 'Schedule Report',
+                      component: (
+
+                        <div className="flex gap-5 flex-row justify-center" >
+                          <Input
+                            type="time"
+                            id="hourInput"
+                            onChange={handleTimeChange}
+                          />
+
+                          <Input
+                            type="number"
+                            id="dayInput"
+                            min="1"
+                            max="10"
+                            onChange={handleDayChange}
+                          />
+                          <Button onClick={scheduleDefermentReport} >Schedule</Button>
+                        </div>
+
+                      ),
+                    })
+                  )}
                 />
               </div>
             )}
@@ -339,26 +419,26 @@ const DefermentReport = () => {
 
           {((chartType === "Production Deferment Profile" && tab === 1) ||
             tab === 0) && (
-            <div className="flex items-center justify-normal gap-1">
-              <div className="text-4">Frequency</div>
-              <div className="w-[120px]">
-                <Input
-                  placeholder={"Day"}
-                  required
-                  type="select"
-                  options={aggregationFrequency?.map((freq) => ({
-                    value: freq,
-                    label: freq,
-                  }))}
-                  onChange={(e) => {
-                    setFrequency(e?.value);
-                  }}
-                  value={{ value: frequency, label: frequency }}
-                  defaultValue={"Day"}
-                />
+              <div className="flex items-center justify-normal gap-1">
+                <div className="text-4">Frequency</div>
+                <div className="w-[120px]">
+                  <Input
+                    placeholder={"Day"}
+                    required
+                    type="select"
+                    options={aggregationFrequency?.map((freq) => ({
+                      value: freq,
+                      label: freq,
+                    }))}
+                    onChange={(e) => {
+                      setFrequency(e?.value);
+                    }}
+                    value={{ value: frequency, label: frequency }}
+                    defaultValue={"Day"}
+                  />
+                </div>
               </div>
-            </div>
-          )}
+            )}
         </div>
       </div>
       {showChart ? (

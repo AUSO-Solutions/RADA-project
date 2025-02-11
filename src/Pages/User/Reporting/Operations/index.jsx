@@ -14,6 +14,7 @@ import PDFReport from "./PDFReport";
 import { closeModal, openModal } from "Store/slices/modalSlice";
 import { setLoadingScreen } from "Store/slices/loadingScreenSlice";
 import { firebaseFunctions } from "Services";
+import { toast } from "react-toastify";
 
 const OperationsReport = () => {
   const [tab, setTab] = useState(0);
@@ -85,6 +86,7 @@ const OperationsReport = () => {
         hour,
       });
       console.log("Response:", data);
+      toast.success("Production/Operations Report Scheduled Successfully")
       dispatch(closeModal());
     } catch (error) {
       console.error("Error saving schedule:", error);
