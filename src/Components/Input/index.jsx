@@ -39,7 +39,7 @@ const Input = ({
     }
 
     const input_id = 'input-id'
-    const defaults = ['text', 'password', 'email', 'number','date','month']
+    const defaults = ['text', 'password', 'email', 'number','date','month', 'time']
     return (
         <Box className={`${styles.container} ${containerClass}`}>
             <Box component={'label'} htmlFor={input_id}>
