@@ -10,6 +10,9 @@ const mailgun = new Mailgun(formData);
 
 const functions = require('firebase-functions');
 
+exports.camelCaseSeparator = (text = '') => {
+  return text.split(/(?=[A-Z])/).map(s => s.toLowerCase()).join(' ');
+}
 
 exports.currentTime = {
   pretty: dayjs().format("MMM DD, YYYY. hh:mmA"),

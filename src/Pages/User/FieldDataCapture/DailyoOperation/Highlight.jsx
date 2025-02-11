@@ -48,7 +48,7 @@ const NoteBox = ({ onSave, onChange, highlightType, flowstation, captureData, on
 }
 
 const SelectFlowstation = ({ captureData, onSelect = () => null, }) => {
-    const highlightTypes = ['production', 'maintenance', 'operation']
+    // const highlightTypes = ['production', 'maintenance', 'operation']
     const { data: highlights } = useSelector(state => state.highlights)
 
     return (
@@ -56,7 +56,7 @@ const SelectFlowstation = ({ captureData, onSelect = () => null, }) => {
             <Text size={18} weight={600} color={'grey'}> Select Flowstation</Text><br />
             <div className='flex flex-col gap-2 '>
                 {
-                    Object.keys(captureData || {})?.map(flowstation => {
+                    Object.keys(captureData || {})?.sort((a, b) => a?.localeCompare(b))?.map(flowstation => {
                         return <div onClick={() => onSelect(flowstation)} className='border rounded-[12px] cursor-pointer  w-full p-2 flex items-center justify-between'>
                             <Text>{flowstation}</Text>
                             <div className='flex items-center'>

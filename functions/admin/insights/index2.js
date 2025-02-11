@@ -315,18 +315,37 @@ const getInsights = onCall(async (request) => {
             const format_ = time.format(format); //
             const filterByTimeFrameFormat = (flowstation) =>
                 dayjs(flowstation?.date).format(format) === format_;
+            let grossSum = 0, oilSum = 0;
+            const flowstationsOil = {}
             flowstations.forEach((flowstation___) => {
-                result.assetOilProduction[time.format(format)] = {
-                    ...result.assetOilProduction[time.format(format)],
-                    [flowstation___]: sum(
+                const getFlowstationDetail = (dataKey) => {
+                    return sum(
                         oilFlowstationsData
                             .filter(filterByTimeFrameFormat)
                             .filter((flowstation) => flowstation?.name === flowstation___)
-                            .map((flowstation) => flowstation?.subtotal?.netProduction)
-                    ),
-                    x: time.format(format),
-                };
+                            .map((flowstation) => flowstation?.subtotal?.[dataKey]),
+                    )
+                }
+                grossSum += parseFloat(getFlowstationDetail('gross'))
+                flowstationsOil[flowstation___] = getFlowstationDetail('netProduction')
+                oilSum += parseFloat(getFlowstationDetail('netProduction'))
             });
+            const water = parseFloat(grossSum) - parseFloat(oilSum)
+            result.assetOilProduction[time.format(format)] = {
+                ...result.assetOilProduction[time.format(format)],
+                ...flowstationsOil,
+                // [flowstation___]: getFlowstationDetail('netProduction'),
+                oil: oilSum,
+                bsw: ((water / (parseFloat(oilSum || 0) + water)) * 100),
+                gross: grossSum,
+                x: time.format(format),
+            };
+
+            // result.bsw[time.format(format)] = {
+
+            // }
+
+
 
             result.assetGasProduction[time.format(format)] = {
                 // ['Total Gas']: sum(gasFlowstationsData.filter(filterByTimeFrameFormat).map(flowstation => flowstation?.subtotal?.totalGas)),

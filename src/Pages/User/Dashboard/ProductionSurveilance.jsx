@@ -19,7 +19,7 @@ const ProductionSurveilance = ({assetOptions}) => {
   const { data } = useFetch({ firebaseFunction: 'getSurveillanceData', payload: { asset: setupData?.asset, flowstation: setupData?.flowstation }, refetch: setupData })
   const result = useMemo(() => {
     // console.log(setupData)
-    const x = data.length ? JSON.parse(data) : []
+    const x = data?.length ? JSON.parse(data) : []
     // console.log(x)
     let y = []
     if (setupData?.productionString && setupData?.flowstation) {

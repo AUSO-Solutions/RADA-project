@@ -13,10 +13,9 @@ import { useSelector } from "react-redux";
 
 
 const Overview = () => {
-
     // const [overviewData, setOverviewData] = useState({})
     const filter = useSelector(state => state?.setup)
-    const { data: overviewData } = useFetch({ firebaseFunction: 'getOverviewData', payload: { date: filter?.date }, refetch: filter })
+    const { data: overviewData } = useFetch({ firebaseFunction: 'getOverviewData', payload: { date: filter?.date, asset: filter?.asset, flowstation: filter?.flowstation, }, refetch: filter })
     // console.log( filter)
 
     const result = useMemo(() => {
@@ -25,8 +24,6 @@ const Overview = () => {
         }
         return {}
     }, [overviewData])
-
-
 
     return (
         <div className="bg-[#FAFAFA]" >

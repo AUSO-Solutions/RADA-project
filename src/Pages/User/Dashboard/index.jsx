@@ -13,6 +13,7 @@ import { useAssetByName } from 'hooks/useAssetByName'
 import { setSetupData } from 'Store/slices/setupSlice'
 import DateRangePicker from 'Components/DatePicker'
 import ProductionSurveilance from './ProductionSurveilance'
+import { useFetch } from 'hooks/useFetch'
 
 
 const Dashboard = () => {
@@ -29,11 +30,18 @@ const Dashboard = () => {
     return strings
   }, [assets, setupData?.flowstation])
 
+
+  const { data: overviewData } = useFetch({ firebaseFunction: 'getOverviewData', payload: { date: dayjs().format('YYYY-MM-DD'), }, })
+
   const assetOptions = useMemo(() => {
     const originalList = assetNames?.map(assetName => ({ value: assetName, label: assetName }))
-    if (assetNames.length === 3) return [{ label: 'All', value: '' }].concat(originalList)
+    // console.log(assetNames.length, )
+    const assetsLength = parseInt(JSON.parse(overviewData || "{}").assets || "0")
+    if (assetNames.length === assetsLength) return [{ label: 'All', value: '' }].concat(originalList)
     return originalList
-  }, [assetNames])
+  }, [assetNames, overviewData])
+
+
 
 
   const tabs = useMemo(() => [
@@ -62,7 +70,7 @@ const Dashboard = () => {
           <div key={tab} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 20 }}>
             {
               <>
-                {(tabs[tab]?.title === 'Production Surveillance' || tabs[tab]?.title === 'Business Intelligence') &&
+                {(tabs[tab]?.title === 'Production Surveillance' || tabs[tab]?.title === 'Business Intelligence' || tabs[tab]?.title === 'Overview') &&
                   <>
                     <div style={{ width: '120px' }} >
                       <Input placeholder={'Assets'} required key={assetOptions.length}
@@ -101,7 +109,7 @@ const Dashboard = () => {
                     }} />
                 </div>}
                 {tabs[tab]?.title === 'Overview' && <div>
-                  <Input placeholder={'Date'} required defaultValue={dayjs().format('YYYY-MM-DD')}
+                  <Input placeholder={'Date'} required defaultValue={dayjs().subtract(1, 'day').format('YYYY-MM-DD')}
                     type='date' onChange={(e) => dispatch(setSetupData({ name: 'date', value: e?.target?.value }))}
                   />
                 </div>}

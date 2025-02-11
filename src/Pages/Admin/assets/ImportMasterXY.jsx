@@ -50,6 +50,7 @@ const ImportMasterXY = () => {
         setLoading(true)
         try {
             await firebaseFunctions('importMasterXY', { dataList: data })
+            toast.success("Succesfull, add new asset(s) to groups where needed to effect!")
             dispatch(closeModal())
         } catch (error) {
             handleError(error)
