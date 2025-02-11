@@ -22,7 +22,7 @@ const OperationsReport = () => {
   const query = useSelector((state) => state?.setup);
   const dispatch = useDispatch();
   const setupData = useSelector((state) => state?.setup);
-  const selectedHourRef = useRef(null)
+  const selectedHourRef = useRef(null);
 
   const res = useFetch({
     firebaseFunction: "getOperationsData",
@@ -67,10 +67,9 @@ const OperationsReport = () => {
       e.target.value = "";
       selectedHourRef.current = null;
     } else {
-      selectedHourRef.current = hour
-    };
-  }
-
+      selectedHourRef.current = hour;
+    }
+  };
 
   const scheduleOperationsReport = async () => {
     const hour = selectedHourRef.current;
@@ -82,11 +81,14 @@ const OperationsReport = () => {
 
     try {
       dispatch(setLoadingScreen({ open: true }));
-      const { data } = await firebaseFunctions("upsertOperationsReportSchedule", {
-        data: `${hour}`,
-      });
+      const { data } = await firebaseFunctions(
+        "upsertOperationsReportSchedule",
+        {
+          data: { hour },
+        }
+      );
       console.log("Response:", data);
-      toast.success("Production/Operations Report Scheduled Successfully")
+      toast.success("Production/Operations Report Scheduled Successfully");
       dispatch(closeModal());
     } catch (error) {
       console.error("Error saving schedule:", error);
@@ -128,24 +130,28 @@ const OperationsReport = () => {
             variant={"Linear"}
             size={30}
             className="text-gray-500 hover:text-[#0274bd] transition-colors duration-200"
-            onClick={() => dispatch(
-              openModal({
-                title: 'Schedule Report',
-                component: (
-
-                  <div className="flex gap-5 flex-row justify-center" >
-                    <Input type="time"
-                      id="time"
-                      min="07:00"
-                      max="12:00"
-                      step="3600"
-                      onChange={handleTimeChange} />
-                    <Button onClick={scheduleOperationsReport} >Schedule</Button>
-                  </div>
-
-                ),
-              })
-            )}
+            onClick={() =>
+              dispatch(
+                openModal({
+                  title: "Schedule Report",
+                  component: (
+                    <div className="flex gap-5 flex-row justify-center">
+                      <Input
+                        type="time"
+                        id="time"
+                        min="07:00"
+                        max="12:00"
+                        step="3600"
+                        onChange={handleTimeChange}
+                      />
+                      <Button onClick={scheduleOperationsReport}>
+                        Schedule
+                      </Button>
+                    </div>
+                  ),
+                })
+              )
+            }
           />
         </div>
 

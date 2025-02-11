@@ -201,7 +201,6 @@ const DefermentReport = () => {
     }
   }, [dispatch, query]);
 
-
   const handleTimeChange = (e) => {
     const selectedTime = e.target.value;
     const hour = parseInt(selectedTime.split(":")[0], 10);
@@ -236,11 +235,15 @@ const DefermentReport = () => {
     }
     try {
       dispatch(setLoadingScreen({ open: true }));
-      const { data } = await firebaseFunctions("upsertDefermentReportSchedule", {
-        data: `${hour}, ${day}`,
-      });
+      console.log({ hour, day });
+      const { data } = await firebaseFunctions(
+        "upsertDefermentReportSchedule",
+        {
+          data: { hour, day },
+        }
+      );
       console.log("Response:", data);
-      toast.success("Deferment Report Scheduled Successfully")
+      toast.success("Deferment Report Scheduled Successfully");
       dispatch(closeModal());
     } catch (error) {
       console.error("Error schedling deferment report schedule:", error);
@@ -248,7 +251,6 @@ const DefermentReport = () => {
       dispatch(setLoadingScreen({ open: false }));
     }
   };
-
 
   return (
     <div className="h-full relative">
@@ -293,31 +295,33 @@ const DefermentReport = () => {
                   variant={"Linear"}
                   size={30}
                   className="text-gray-500 hover:text-[#0274bd] transition-colors duration-200"
-                  onClick={() => dispatch(
-                    openModal({
-                      title: 'Schedule Report',
-                      component: (
+                  onClick={() =>
+                    dispatch(
+                      openModal({
+                        title: "Schedule Report",
+                        component: (
+                          <div className="flex gap-5 flex-row justify-center">
+                            <Input
+                              type="time"
+                              id="hourInput"
+                              onChange={handleTimeChange}
+                            />
 
-                        <div className="flex gap-5 flex-row justify-center" >
-                          <Input
-                            type="time"
-                            id="hourInput"
-                            onChange={handleTimeChange}
-                          />
-
-                          <Input
-                            type="number"
-                            id="dayInput"
-                            min="1"
-                            max="10"
-                            onChange={handleDayChange}
-                          />
-                          <Button onClick={scheduleDefermentReport} >Schedule</Button>
-                        </div>
-
-                      ),
-                    })
-                  )}
+                            <Input
+                              type="number"
+                              id="dayInput"
+                              min="1"
+                              max="10"
+                              onChange={handleDayChange}
+                            />
+                            <Button onClick={scheduleDefermentReport}>
+                              Schedule
+                            </Button>
+                          </div>
+                        ),
+                      })
+                    )
+                  }
                 />
               </div>
             )}
@@ -419,26 +423,26 @@ const DefermentReport = () => {
 
           {((chartType === "Production Deferment Profile" && tab === 1) ||
             tab === 0) && (
-              <div className="flex items-center justify-normal gap-1">
-                <div className="text-4">Frequency</div>
-                <div className="w-[120px]">
-                  <Input
-                    placeholder={"Day"}
-                    required
-                    type="select"
-                    options={aggregationFrequency?.map((freq) => ({
-                      value: freq,
-                      label: freq,
-                    }))}
-                    onChange={(e) => {
-                      setFrequency(e?.value);
-                    }}
-                    value={{ value: frequency, label: frequency }}
-                    defaultValue={"Day"}
-                  />
-                </div>
+            <div className="flex items-center justify-normal gap-1">
+              <div className="text-4">Frequency</div>
+              <div className="w-[120px]">
+                <Input
+                  placeholder={"Day"}
+                  required
+                  type="select"
+                  options={aggregationFrequency?.map((freq) => ({
+                    value: freq,
+                    label: freq,
+                  }))}
+                  onChange={(e) => {
+                    setFrequency(e?.value);
+                  }}
+                  value={{ value: frequency, label: frequency }}
+                  defaultValue={"Day"}
+                />
               </div>
-            )}
+            </div>
+          )}
         </div>
       </div>
       {showChart ? (

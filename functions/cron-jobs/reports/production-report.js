@@ -521,7 +521,7 @@ const generateProductionChart = async (chartData) => {
 const sendEmail = (pdfBuffer, mailList, asset, date) => {
   // Add the attachment to other configurations
   const mailOptions = {
-    from: "emmanuel",
+    from: "rada.apps@gmail.com",
     to: mailList.join(","),
     subject: `${asset} Daily Production Report_${date}`,
     html: `<b>Hello</b> <br>
