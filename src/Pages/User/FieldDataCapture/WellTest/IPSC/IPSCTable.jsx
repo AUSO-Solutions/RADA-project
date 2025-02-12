@@ -625,9 +625,10 @@ export default function IPSCTable() {
                       </TableCell>
                       <TableCell align="center">
                         {dayjs(well?.endDate).format("DD/MMM/YYYY")}
-
-                        <input type="text" defaultValue={well?.chokeSize} onChange={(e) => handleChange('chokeSize', e.target.value)} className='text-center' />
                       </TableCell>
+                      {/* <TableCell align="center">
+                        <input type="text" defaultValue={well?.chokeSize} onChange={(e) => handleChange('chokeSize', e.target.value)} className='text-center' /> */}
+                      {/* </TableCell> */}
                       <TableCell align="center">
                         {well?.fluidType}
                       </TableCell>

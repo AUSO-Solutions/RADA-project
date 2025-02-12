@@ -60,22 +60,16 @@ const firebaseFunctions = async (functionName, payload, hideError = false, optio
         if (options?.loadingScreen) store.dispatch(setLoadingScreen({ open: true }))
         const call = httpsCallable(project_functions, functionName)
         const res = (await call({ ...payload, idToken: token })).data
-        // toast.success(res?.message)
         return res
     } catch (error) {
-        // console.log(error?.message, '---', typeof error?.message)
         if (error?.message?.includes("token has expired")) {
             console.log("token has expired")
-            // window.location.reload()
-            toast.info('Session expired!')
             getAuth().onIdTokenChanged((snap) => {
-
                 snap?.getIdToken(true).then(res => {
-                    // console.log(res===store.getState().auth?.user?.token)
                     store.dispatch(setUser({ ...store.getState().auth.user, token: res }))
                 })
+                window.location.reload()
             })
-            // await logout_()
         }
         if (hideError) handleError(error)
         throw error
