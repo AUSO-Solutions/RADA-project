@@ -39,9 +39,6 @@ const UserLogin = () => {
                 alignItems: 'center',
                 justifyContent: 'center'
             }}>
-
-
-
             <Grid item className='flex justify-center items-center' sx={{ backgroundImage: `url(${img})`, height: '100vh', backgroundSize: 'cover', backgroundPosition: 'top', backgroundRepeat: 'no-repeat', }} md={12} >
                 {/* <img style={{ filter: 'drop-shadow(0.13rem 0.13rem  white)', width: '200px', height: '100px', }} src={images.logo} alt="" /> */}
                 <div style={{
