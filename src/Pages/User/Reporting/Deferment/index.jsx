@@ -238,17 +238,14 @@ const DefermentReport = () => {
     try {
       dispatch(setLoadingScreen({ open: true }));
       console.log({ hour, day });
-      const data = await firebaseFunctions(
-        "upsertDefermentReportSchedule",
-        {
-          data: { hour, day },
-        }
-      );
+      const data = await firebaseFunctions("upsertDefermentReportSchedule", {
+        data: { hour, day },
+      });
       console.log("Response:", data);
       toast.success("Deferment Report Scheduled Successfully");
       dispatch(closeModal());
     } catch (error) {
-      console.log(error)
+      console.log(error);
       console.error("Error schedling deferment report schedule:", error);
     } finally {
       dispatch(setLoadingScreen({ open: false }));
@@ -426,26 +423,26 @@ const DefermentReport = () => {
 
           {((chartType === "Production Deferment Profile" && tab === 1) ||
             tab === 0) && (
-              <div className="flex items-center justify-normal gap-1">
-                <div className="text-4">Frequency</div>
-                <div className="w-[120px]">
-                  <Input
-                    placeholder={"Day"}
-                    required
-                    type="select"
-                    options={aggregationFrequency?.map((freq) => ({
-                      value: freq,
-                      label: freq,
-                    }))}
-                    onChange={(e) => {
-                      setFrequency(e?.value);
-                    }}
-                    value={{ value: frequency, label: frequency }}
-                    defaultValue={"Day"}
-                  />
-                </div>
+            <div className="flex items-center justify-normal gap-1">
+              <div className="text-4">Frequency</div>
+              <div className="w-[120px]">
+                <Input
+                  placeholder={"Day"}
+                  required
+                  type="select"
+                  options={aggregationFrequency?.map((freq) => ({
+                    value: freq,
+                    label: freq,
+                  }))}
+                  onChange={(e) => {
+                    setFrequency(e?.value);
+                  }}
+                  value={{ value: frequency, label: frequency }}
+                  defaultValue={"Day"}
+                />
               </div>
-            )}
+            </div>
+          )}
         </div>
       </div>
       {showChart ? (
@@ -757,6 +754,7 @@ const PDFComponent = ({
         link.download = `Deferment Data`;
         link.click();
       });
+    setShowChart(false);
   };
 
   return (

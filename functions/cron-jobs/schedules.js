@@ -1,3 +1,4 @@
+/* eslint-disable no-throw-literal */
 const admin = require("firebase-admin");
 const { HttpsError, onCall } = require("firebase-functions/v2/https");
 
@@ -7,7 +8,7 @@ const getOperationsReportSchedule = async () => {
     const collectionRef = db.collection("dailyReportSchedule");
     const snapshot = await collectionRef.limit(1).get();
 
-    const schedule = snapshot.empty() ? null : snapshot.docs[0].data();
+    const schedule = snapshot.empty ? null : snapshot.docs[0].data();
     return schedule;
   } catch (error) {
     console.log({ error });
@@ -20,6 +21,13 @@ const upsertOperationsReportSchedule = onCall(async (request) => {
   try {
     const { data } = request;
     const { hour } = data;
+
+    if (!hour) {
+      throw {
+        code: "cancelled",
+        message: `Please provide an Asset name`,
+      };
+    }
 
     const db = admin.firestore();
     const collectionRef = db.collection("dailyReportSchedule");
@@ -44,6 +52,13 @@ const upsertDefermentReportSchedule = onCall(async (request) => {
   try {
     const { data } = request;
     const { hour, day } = data;
+
+    if (!hour || !day) {
+      throw {
+        code: "cancelled",
+        message: `Please provide Day and Hour`,
+      };
+    }
 
     const db = admin.firestore();
     const collectionRef = db.collection("monthlyReportSchedule");
@@ -70,7 +85,7 @@ const getDefermentReportSchedule = async () => {
     const collectionRef = db.collection("monthlyReportSchedule");
     const snapshot = await collectionRef.limit(1).get();
 
-    const schedule = snapshot.empty() ? null : snapshot.docs[0].data();
+    const schedule = snapshot.empty ? null : snapshot.docs[0].data();
     return schedule;
   } catch (error) {
     console.log({ error });

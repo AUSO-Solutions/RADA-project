@@ -83,10 +83,7 @@ const { getSurveillanceData } = require("./admin/surveillance/index2");
 const { getOverviewData } = require("./admin/overview/index");
 const { broadcast } = require("./broadcast/index");
 
-const {
-  logActivity,
-  getLogs
-} = require('./activitylog')
+const { logActivity, getLogs } = require("./activitylog");
 
 const {
   operationsReportScheduler,
@@ -182,7 +179,4 @@ module.exports = {
 
   logActivity,
   getLogs,
-  operationsReportScheduler,
-  upsertOperationsReportSchedule,
-  upsertDefermentReportSchedule,
 };
