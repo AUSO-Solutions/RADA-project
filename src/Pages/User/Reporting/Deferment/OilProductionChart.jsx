@@ -13,16 +13,17 @@ import {
 } from "recharts";
 import { sum } from "utils";
 
-export const OilProductionChart = ({ asset, query, chartData }) => {
+export const OilAndGasDownloadReportChart = ({ asset, flowstation, startDate, endDate, chartType }) => {
+  console.log({ asset, flowstation, startDate, endDate })
   const res = useFetch({
     firebaseFunction: "getInsights",
     payload: {
-      asset: query?.asset,
-      flowstation: query?.flowstation,
-      startDate: query?.startDate,
-      endDate: query?.endDate,
+      asset: asset,
+      flowstation: flowstation,
+      startDate: startDate,
+      endDate: endDate,
     },
-    refetch: query,
+    refetch: JSON.stringify({ asset, flowstation, startDate, endDate }),
   });
 
   const fetchedData = useMemo(() => {
@@ -36,11 +37,16 @@ export const OilProductionChart = ({ asset, query, chartData }) => {
     }
     return {};
   }, [res?.data]);
+  const oilProdData = useMemo(() => {
+    // if (oilProdData?.length) return oilProdData;
+      return Object.values(fetchedData.assetOilProduction || {});
 
-  const OilProdData = useMemo(() => {
-    if (chartData?.length) return chartData; 
-    return Object.values(fetchedData.assetOilProduction || {}); 
-  }, [chartData, fetchedData]);
+  }, [fetchedData]);
+  const GasProdData = useMemo(
+    () => Object.values(fetchedData.assetGasProduction || {}),
+    [fetchedData]
+  );
+  console.log(fetchedData, oilProdData)
 
   const targetForthisMonth = useMemo(() => {
     const selectedFlowstationTarget = fetchedData?.ipscTarget?.flatMap((target) =>
@@ -62,12 +68,13 @@ export const OilProductionChart = ({ asset, query, chartData }) => {
     []
   );
 
-  return (
-    <ResponsiveContainer width="100%" height={350}>
+  return (<>
+   { chartType === "Oil" &&
+    <ResponsiveContainer width="100%" height={350} key={asset + flowstation + startDate + endDate}>
       <BarChart
         width={"100%"}
         height={"100%"}
-        data={OilProdData}
+        data={oilProdData}
         margin={{ top: 20, right: 20, left: 0, bottom: 0 }}
       >
         <CartesianGrid strokeDasharray="3 3" />
@@ -98,6 +105,61 @@ export const OilProductionChart = ({ asset, query, chartData }) => {
           strokeWidth={3}
         />
       </BarChart>
-    </ResponsiveContainer>
+    </ResponsiveContainer>}
+
+
+{chartType === "Gas" &&
+  <ResponsiveContainer width="100%" height={350}>
+<BarChart
+  width={"100%"}
+  height={"100%"}
+  data={GasProdData}
+  margin={{ top: 20, right: 20, left: 0, bottom: 0 }}
+>
+  <CartesianGrid strokeDasharray="3 3" />
+  <XAxis dataKey="x" />
+  <YAxis
+  // domain={[0, data?.gasProducedTarget]}
+  />
+  <Tooltip />
+
+  <Legend verticalAlign="bottom" align="center" height={36} />
+  <Bar
+    dataKey="Fuel Gas"
+    stackId="a"
+    fill="#14A459"
+    name="Utilized Gas"
+  />
+  <Bar
+    dataKey="Export Gas"
+    stackId="a"
+    fill="#A8D18D"
+    name="Export Gas"
+  />
+  <Bar
+    dataKey="Flared Gas"
+    stackId="a"
+    fill="#F4B184"
+    name="Flared Gas"
+  />
+  <ReferenceLine
+    alwaysShow
+    y={targetForthisMonth?.gas}
+    // label={`IPSC (${parseInt(targetForthisMonth?.gas)})`}
+
+    label={{
+      value: `IPSC (${parseInt(targetForthisMonth.gas)})`,
+      fill: "black",
+      fontWeight: 600,
+    }}
+    stroke="grey"
+    strokeDasharray="4 4"
+    strokeWidth={2}
+  />
+</BarChart>
+</ResponsiveContainer>}
+</>
   );
 };
+
+// export const 
