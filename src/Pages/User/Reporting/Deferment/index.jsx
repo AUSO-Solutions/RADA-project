@@ -35,6 +35,7 @@ import { closeModal, openModal } from "Store/slices/modalSlice";
 import { firebaseFunctions } from "Services";
 import { toast } from "react-toastify";
 import { OilAndGasDownloadReportChart } from "./OilProductionChart";
+import { useMe } from "hooks/useMe";
 
 const createOpt = (item) => ({ label: item, value: item });
 const aggregationFrequency = ["Day", "Month", "Year"];
@@ -72,6 +73,7 @@ const DefermentReport = () => {
   const [showChart, setShowChart] = useState(false);
   const selectedHourRef = useRef(null);
   const selectedDayRef = useRef(null);
+  const { user } = useMe()
 
   const res = useFetch({
     firebaseFunction: "getDefermentData",
@@ -250,7 +252,7 @@ const DefermentReport = () => {
       toast.success("Deferment Report Scheduled Successfully");
       dispatch(closeModal());
     } catch (error) {
-      console.log(error);
+      console.log(error)
       console.error("Error schedling deferment report schedule:", error);
     } finally {
       dispatch(setLoadingScreen({ open: false }));
@@ -296,38 +298,41 @@ const DefermentReport = () => {
                   onClick={() => setShowChart(true)}
                 />
 
-                <Setting2
-                  variant={"Linear"}
-                  size={30}
-                  className="text-gray-500 hover:text-[#0274bd] transition-colors duration-200"
-                  onClick={() =>
-                    dispatch(
-                      openModal({
-                        title: "Schedule Report",
-                        component: (
-                          <div className="flex gap-5 flex-row justify-center">
-                            <Input
-                              type="time"
-                              id="hourInput"
-                              onChange={handleTimeChange}
-                            />
+                {user?.permitted?.reportsSchedule &&
+                  <Setting2
+                    variant={"Linear"}
+                    size={30}
+                    className="text-gray-500 hover:text-[#0274bd] transition-colors duration-200"
+                    onClick={() =>
+                      dispatch(
+                        openModal({
+                          title: "Schedule Report",
+                          component: (
+                            <div className="flex gap-5 flex-row justify-center">
+                              <Input
+                                type="time"
+                                id="hourInput"
+                                onChange={handleTimeChange}
+                              />
 
-                            <Input
-                              type="date"
-                              id="dayInput"
-                              onChange={handleDayChange}
-                              max={new Date().toISOString().slice(0, 8) + "10"}
-                              min={new Date().toISOString().slice(0, 8) + "01"}
-                            />
-                            <Button onClick={scheduleDefermentReport}>
-                              Schedule
-                            </Button>
-                          </div>
-                        ),
-                      })
-                    )
-                  }
-                />
+                              <Input
+                                type="date"
+                                id="dayInput"
+                                onChange={handleDayChange}
+                                max={new Date().toISOString().slice(0, 8) + "10"}
+                                min={new Date().toISOString().slice(0, 8) + "01"}
+                              />
+                              <Button onClick={scheduleDefermentReport}>
+                                Schedule
+                              </Button>
+                            </div>
+                          ),
+                        })
+                      )
+                    }
+                  />
+
+                }
               </div>
             )}
 
@@ -428,26 +433,26 @@ const DefermentReport = () => {
 
           {((chartType === "Production Deferment Profile" && tab === 1) ||
             tab === 0) && (
-            <div className="flex items-center justify-normal gap-1">
-              <div className="text-4">Frequency</div>
-              <div className="w-[120px]">
-                <Input
-                  placeholder={"Day"}
-                  required
-                  type="select"
-                  options={aggregationFrequency?.map((freq) => ({
-                    value: freq,
-                    label: freq,
-                  }))}
-                  onChange={(e) => {
-                    setFrequency(e?.value);
-                  }}
-                  value={{ value: frequency, label: frequency }}
-                  defaultValue={"Day"}
-                />
+              <div className="flex items-center justify-normal gap-1">
+                <div className="text-4">Frequency</div>
+                <div className="w-[120px]">
+                  <Input
+                    placeholder={"Day"}
+                    required
+                    type="select"
+                    options={aggregationFrequency?.map((freq) => ({
+                      value: freq,
+                      label: freq,
+                    }))}
+                    onChange={(e) => {
+                      setFrequency(e?.value);
+                    }}
+                    value={{ value: frequency, label: frequency }}
+                    defaultValue={"Day"}
+                  />
+                </div>
               </div>
-            </div>
-          )}
+            )}
         </div>
       </div>
       {showChart ? (
@@ -763,7 +768,6 @@ const PDFComponent = ({
         link.download = `Deferment Data`;
         link.click();
       });
-    setShowChart(false);
   };
 
   return (
@@ -798,7 +802,7 @@ const PDFComponent = ({
         className="bg-[#fafafa] flex flex-col gap-4"
       >
         <div className="h-[500px]" ref={chartRefs[0]}>
-        <OilAndGasDownloadReportChart chartType={"Oil"} {...query} />
+          <OilAndGasDownloadReportChart chartType={"Oil"} {...query} />
         </div>
         <div className="h-[500px]" ref={chartRefs[1]}>
           <OilAndGasDownloadReportChart chartType={"Gas"} {...query} />

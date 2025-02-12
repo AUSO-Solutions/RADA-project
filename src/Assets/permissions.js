@@ -36,5 +36,6 @@ export const permissions = {
 
     approveData: 'Approve Data',
     queryData: 'Query Data',
-    rollBackData: 'Roll Back Data'
+    rollBackData: 'Roll Back Data',
+    reportsSchedule: 'Reports Schedule'
 }
