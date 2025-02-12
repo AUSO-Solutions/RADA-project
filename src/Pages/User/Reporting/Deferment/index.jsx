@@ -30,6 +30,11 @@ import BarChart from "./BarChart";
 import PieChart from "./PieChart";
 import { getRandomColor } from "./DefermentChart";
 import { Button } from "Components";
+import { setLoadingScreen } from "Store/slices/loadingScreenSlice";
+import { closeModal, openModal } from "Store/slices/modalSlice";
+import { firebaseFunctions } from "Services";
+import { toast } from "react-toastify";
+import { OilAndGasDownloadReportChart } from "./OilProductionChart";
 
 const createOpt = (item) => ({ label: item, value: item });
 const aggregationFrequency = ["Day", "Month", "Year"];
@@ -45,6 +50,7 @@ const DefermentReport = () => {
   const [tab, setTab] = useState(0);
   const dispatch = useDispatch();
   const query = useSelector((state) => state?.setup);
+  const querys = useSelector((state) => state?.setup);
   const setupData = useSelector((state) => state?.setup);
   const assets = useAssetByName(setupData?.asset);
   const [currFlowstation, setCurrFlowstation] = useState("All");
@@ -64,6 +70,8 @@ const DefermentReport = () => {
   const [gasThirdPartyDeferment, setGasThirdPartyDeferment] = useState({});
   const [chartImage, setChartImage] = useState(null);
   const [showChart, setShowChart] = useState(false);
+  const selectedHourRef = useRef(null);
+  const selectedDayRef = useRef(null);
 
   const res = useFetch({
     firebaseFunction: "getDefermentData",
@@ -76,9 +84,9 @@ const DefermentReport = () => {
     refetch: query,
   });
 
+
   const getDefaultDate = () => {
     const today = new Date();
-
     const previousDate = new Date(today);
     previousDate.setDate(today.getDate() - 1);
     return dayjs(previousDate).format("YYYY-MM-DD");
@@ -195,6 +203,60 @@ const DefermentReport = () => {
     }
   }, [dispatch, query]);
 
+  const handleTimeChange = (e) => {
+    const selectedTime = e.target.value;
+    const hour = parseInt(selectedTime.split(":")[0], 10);
+    if (hour < 1 || hour > 24) {
+      alert("Please select an hour between 1 and 24");
+      e.target.value = "";
+      selectedHourRef.current = null;
+    } else {
+      selectedHourRef.current = hour;
+      // console.log("Selected Hour:", hour);
+    }
+  };
+
+  const handleDayChange = (e) => {
+    const selectedDate = new Date(e.target.value);
+    const selectedDay = selectedDate.getDate();
+
+    if (selectedDay < 1 || selectedDay > 10) {
+      alert("Please select a date between the 1st and 10th of the month");
+      e.target.value = "";
+      selectedDayRef.current = null;
+    } else {
+      selectedDayRef.current = selectedDay;
+    }
+  };
+
+  const scheduleDefermentReport = async () => {
+    const hour = selectedHourRef.current;
+    const day = selectedDayRef.current;
+
+    if (!day || day < 1 || day > 10) {
+      alert("Date should be between 1st and 10th");
+      return;
+    }
+    try {
+      dispatch(setLoadingScreen({ open: true }));
+      console.log({ hour, day });
+      const data = await firebaseFunctions(
+        "upsertDefermentReportSchedule",
+        {
+          hour, day
+        }
+      );
+      console.log("Response:", data);
+      toast.success("Deferment Report Scheduled Successfully");
+      dispatch(closeModal());
+    } catch (error) {
+      console.log(error)
+      console.error("Error schedling deferment report schedule:", error);
+    } finally {
+      dispatch(setLoadingScreen({ open: false }));
+    }
+  };
+
   return (
     <div className="h-full relative">
       <Header name={"Production Deferment Report"} />
@@ -238,6 +300,33 @@ const DefermentReport = () => {
                   variant={"Linear"}
                   size={30}
                   className="text-gray-500 hover:text-[#0274bd] transition-colors duration-200"
+                  onClick={() =>
+                    dispatch(
+                      openModal({
+                        title: "Schedule Report",
+                        component: (
+                          <div className="flex gap-5 flex-row justify-center">
+                            <Input
+                              type="time"
+                              id="hourInput"
+                              onChange={handleTimeChange}
+                            />
+
+                            <Input
+                              type="date"
+                              id="dayInput"
+                              onChange={handleDayChange}
+                              max={new Date().toISOString().slice(0, 8) + "10"}
+                              min={new Date().toISOString().slice(0, 8) + "01"}
+                            />
+                            <Button onClick={scheduleDefermentReport}>
+                              Schedule
+                            </Button>
+                          </div>
+                        ),
+                      })
+                    )
+                  }
                 />
               </div>
             )}
@@ -339,26 +428,26 @@ const DefermentReport = () => {
 
           {((chartType === "Production Deferment Profile" && tab === 1) ||
             tab === 0) && (
-            <div className="flex items-center justify-normal gap-1">
-              <div className="text-4">Frequency</div>
-              <div className="w-[120px]">
-                <Input
-                  placeholder={"Day"}
-                  required
-                  type="select"
-                  options={aggregationFrequency?.map((freq) => ({
-                    value: freq,
-                    label: freq,
-                  }))}
-                  onChange={(e) => {
-                    setFrequency(e?.value);
-                  }}
-                  value={{ value: frequency, label: frequency }}
-                  defaultValue={"Day"}
-                />
+              <div className="flex items-center justify-normal gap-1">
+                <div className="text-4">Frequency</div>
+                <div className="w-[120px]">
+                  <Input
+                    placeholder={"Day"}
+                    required
+                    type="select"
+                    options={aggregationFrequency?.map((freq) => ({
+                      value: freq,
+                      label: freq,
+                    }))}
+                    onChange={(e) => {
+                      setFrequency(e?.value);
+                    }}
+                    value={{ value: frequency, label: frequency }}
+                    defaultValue={"Day"}
+                  />
+                </div>
               </div>
-            </div>
-          )}
+            )}
         </div>
       </div>
       {showChart ? (
@@ -366,6 +455,7 @@ const DefermentReport = () => {
           barData={dailyAggregate}
           setChartImage={setChartImage}
           asset={query.asset}
+          query={query}
           oilScheduledDeferment={oilScheduledDeferment}
           oilUnscheduledDeferment={oilUnscheduledDeferment}
           oilThirdPartyDeferment={oilThirdPartyDeferment}
@@ -509,6 +599,7 @@ const styles = StyleSheet.create({
 const PDFComponent = ({
   barData,
   asset,
+  query,
   oilScheduledDeferment,
   oilUnscheduledDeferment,
   oilThirdPartyDeferment,
@@ -518,6 +609,8 @@ const PDFComponent = ({
   setShowChart,
 }) => {
   const chartRefs = [
+    useRef(),
+    useRef(),
     useRef(),
     useRef(),
     useRef(),
@@ -704,13 +797,19 @@ const PDFComponent = ({
         className="bg-[#fafafa] flex flex-col gap-4"
       >
         <div className="h-[500px]" ref={chartRefs[0]}>
+        <OilAndGasDownloadReportChart chartType={"Oil"} {...query} />
+        </div>
+        <div className="h-[500px]" ref={chartRefs[1]}>
+          <OilAndGasDownloadReportChart chartType={"Gas"} {...query} />
+        </div>
+        <div className="h-[500px]" ref={chartRefs[2]}>
           <BarChart
             chartData={getBarChartData("Net Oil/Condensate")}
             fluidType={"Net Oil/Condensate"}
             title={`${asset} Oil/Condensate Production Deferment Profile (bopd)`}
           />
         </div>
-        <div className="h-[500px]" ref={chartRefs[1]}>
+        <div className="h-[500px]" ref={chartRefs[3]}>
           <BarChart
             chartData={getBarChartData("Gas")}
             fluidType={"Gas"}
@@ -719,7 +818,7 @@ const PDFComponent = ({
         </div>
 
         {oilScheduledDeferment?.total > 0 && (
-          <div ref={chartRefs[2]}>
+          <div ref={chartRefs[4]}>
             <PieChart
               data={getPieChartData(oilScheduledDeferment).data}
               colors={getPieChartData(oilScheduledDeferment).colors}
@@ -729,7 +828,7 @@ const PDFComponent = ({
           </div>
         )}
         {oilUnscheduledDeferment?.total > 0 && (
-          <div ref={chartRefs[3]}>
+          <div ref={chartRefs[5]}>
             <PieChart
               data={getPieChartData(oilUnscheduledDeferment).data}
               colors={getPieChartData(oilUnscheduledDeferment).colors}
@@ -740,7 +839,7 @@ const PDFComponent = ({
         )}
 
         {oilThirdPartyDeferment?.total > 0 && (
-          <div ref={chartRefs[4]}>
+          <div ref={chartRefs[6]}>
             <PieChart
               data={getPieChartData(oilThirdPartyDeferment || {}).data}
               colors={getPieChartData(oilThirdPartyDeferment).colors}
@@ -751,7 +850,7 @@ const PDFComponent = ({
         )}
 
         {gasScheduledDeferment?.total > 0 && (
-          <div ref={chartRefs[5]}>
+          <div ref={chartRefs[7]}>
             <PieChart
               data={getPieChartData(gasScheduledDeferment).data}
               colors={getPieChartData(gasScheduledDeferment).colors}
@@ -761,7 +860,7 @@ const PDFComponent = ({
           </div>
         )}
         {gasUnscheduledDeferment?.total > 0 && (
-          <div ref={chartRefs[6]}>
+          <div ref={chartRefs[8]}>
             <PieChart
               data={getPieChartData(gasUnscheduledDeferment).data}
               colors={getPieChartData(gasUnscheduledDeferment).colors}
@@ -772,7 +871,7 @@ const PDFComponent = ({
         )}
 
         {gasThirdPartyDeferment?.total > 0 && (
-          <div ref={chartRefs[7]}>
+          <div ref={chartRefs[9]}>
             <PieChart
               data={getPieChartData(gasThirdPartyDeferment || {}).data}
               colors={getPieChartData(gasThirdPartyDeferment).colors}

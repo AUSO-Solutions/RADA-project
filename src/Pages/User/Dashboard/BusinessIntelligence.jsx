@@ -92,6 +92,7 @@ const Insights = ({ assetOptions = [] }) => {
       })
     );
   }, [dispatch, assetOptions]);
+  
   const OilProductionChart = () => {
     return (
       <ResponsiveContainer width="100%" height={350}>

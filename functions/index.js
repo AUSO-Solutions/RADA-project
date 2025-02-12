@@ -75,8 +75,8 @@ const {
   createDefermentSubCategory,
   getDefermentCategories,
   deleteCategory,
-  deleteSubCategory
-} = require('./defermentcategories')
+  deleteSubCategory,
+} = require("./defermentcategories");
 const { getInsight } = require("./admin/insights");
 const { getInsights } = require("./admin/insights/index2");
 const { getSurveillanceData } = require("./admin/surveillance/index2");
@@ -91,6 +91,9 @@ const {
 const {
   operationsReportScheduler,
 } = require("./cron-jobs/reports/production-report");
+const {
+  defermentReportScheduler,
+} = require("./cron-jobs/reports/deferment-report");
 const {
   upsertOperationsReportSchedule,
   upsertDefermentReportSchedule,
@@ -166,6 +169,10 @@ module.exports = {
   getReconciledProductionData,
   getOperationsData,
 
+  operationsReportScheduler,
+  defermentReportScheduler,
+  upsertOperationsReportSchedule,
+  upsertDefermentReportSchedule,
 
   createDefermentCategory,
   createDefermentSubCategory,
