@@ -164,6 +164,7 @@ const getOperationsData = onCall(async (request) => {
       gasVolumes,
       production
     );
+    console.log(result);
 
     return { status: "success", data: JSON.stringify(result) };
   } catch (error) {

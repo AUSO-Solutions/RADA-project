@@ -1,3 +1,5 @@
+const { formatNumber } = require("../helpers");
+
 function getDatesForCurrentMonth() {
   const today = new Date();
   const currentMonth = today.getMonth();
@@ -459,9 +461,8 @@ const aggregateOperationsData = (liquidVolumes, gasVolumes, production) => {
     date: [],
   };
 
-  for (let i = 0; i < len; i++) {
+  for (let i = 0; i < gasVolumes.length; i++) {
     const date = gasVolumes[i].date;
-    oilProductionChart.date.push(date);
     gasProductionChart.date.push(date);
     gasExportChart.date.push(date);
     gasFlaredChart.date.push(date);
@@ -474,42 +475,52 @@ const aggregateOperationsData = (liquidVolumes, gasVolumes, production) => {
         gasFlaredChart[name] = new Array(len).fill(0);
       }
 
-      gasProductionChart[name][i] = flowstation?.subtotal?.totalGas || 0;
-      gasExportChart[name][i] = flowstation?.subtotal?.export || 0;
-      gasFlaredChart[name][i] = flowstation?.subtotal?.gasFlaredUSM || 0;
+      gasProductionChart[name][i] = formatNumber(
+        flowstation?.subtotal?.totalGas
+      );
+      gasExportChart[name][i] = formatNumber(flowstation?.subtotal?.exportGas);
+      gasFlaredChart[name][i] = formatNumber(
+        flowstation?.subtotal?.gasFlaredUSM
+      );
 
-      totalGas += flowstation?.subtotal?.totalGas || 0;
-      totalExportGas += flowstation?.subtotal?.export || 0;
-      totalFlaredGas += flowstation?.subtotal?.gasFlaredUSM || 0;
-      totalUtilisedGas += flowstation?.subtotal?.gasFlaredUSM || 0;
+      totalGas += formatNumber(flowstation?.subtotal?.totalGas) || 0;
+      totalExportGas += formatNumber(flowstation?.subtotal?.exportGas) || 0;
+      totalFlaredGas += formatNumber(flowstation?.subtotal?.gasFlaredUSM) || 0;
+      totalUtilisedGas += formatNumber(flowstation?.subtotal?.fuelGas) || 0;
     }
+  }
+
+  for (let i = 0; i < liquidVolumes.length; i++) {
+    const date = liquidVolumes[i].date;
+    oilProductionChart.date.push(date);
 
     for (let flowstation of liquidVolumes[i].flowstations) {
       const name = flowstation.name;
       if (!(name in oilProductionChart)) {
         oilProductionChart[name] = new Array(len).fill(0);
       }
-      oilProductionChart[name][i] = flowstation?.subtotal?.netProduction || 0;
+      oilProductionChart[name][i] =
+        formatNumber(flowstation?.subtotal?.netProduction) || 0;
 
-      totalOil += flowstation?.subtotal?.netProduction || 0;
-      totalGross += flowstation?.subtotal?.gross || 0;
+      totalOil += formatNumber(flowstation?.subtotal?.netProduction) || 0;
+      totalGross += formatNumber(flowstation?.subtotal?.gross) || 0;
     }
   }
 
-  const last = len - 1;
-  const liquid = liquidVolumes[last];
-  const gas = gasVolumes[last];
+  const lastOil = liquidVolumes.length - 1;
+  const liquid = liquidVolumes[lastOil];
+  const lastGas = gasVolumes.length - 1;
+  const gas = gasVolumes[lastGas];
 
   // Add the data in the oil flowstations to the facilities
   for (let flowstation of liquid.flowstations) {
     const name = flowstation.name;
-    console.log(flowstation);
 
     facilities.push({
       flowstation: name,
-      gross: flowstation?.subtotal?.gross || 0,
-      net: flowstation?.subtotal?.netProduction || 0,
-      bsw: flowstation?.subtotal?.bsw || 0,
+      gross: formatNumber(flowstation?.subtotal?.gross) || 0,
+      net: formatNumber(flowstation?.subtotal?.netProduction) || 0,
+      bsw: formatNumber(flowstation?.subtotal?.bsw) || 0,
     });
     flowstationsMap.set(name, flowstationIndex);
     flowstationIndex++;
@@ -528,17 +539,21 @@ const aggregateOperationsData = (liquidVolumes, gasVolumes, production) => {
     const name = flowstation.name;
     if (flowstationsMap.has(name)) {
       const index = flowstationsMap.get(name);
-      facilities[index]["producedGas"] = flowstation?.subtotal?.totalGas || 0;
-      facilities[index]["utilisedGas"] = flowstation?.subtotal?.fuelGas || 0;
-      facilities[index]["flaredGas"] = flowstation?.subtotal?.gasFlaredUSM || 0;
-      facilities[index]["exportGas"] = flowstation?.subtotal?.exportGas || 0;
+      facilities[index]["producedGas"] =
+        formatNumber(flowstation?.subtotal?.totalGas) || 0;
+      facilities[index]["utilisedGas"] =
+        formatNumber(flowstation?.subtotal?.fuelGas) || 0;
+      facilities[index]["flaredGas"] =
+        formatNumber(flowstation?.subtotal?.gasFlaredUSM) || 0;
+      facilities[index]["exportGas"] =
+        formatNumber(flowstation?.subtotal?.exportGas) || 0;
     } else {
       facilities.push({
         flowstation: name,
-        producedGas: flowstation?.subtotal?.totalGas || 0,
-        utilisedGas: flowstation?.subtotal?.fuelGas || 0,
-        flaredGas: flowstation?.subtotal?.gasFlaredUSM || 0,
-        exportGas: flowstation?.subtotal?.exportGas || 0,
+        producedGas: formatNumber(flowstation?.subtotal?.totalGas) || 0,
+        utilisedGas: formatNumber(flowstation?.subtotal?.fuelGas) || 0,
+        flaredGas: formatNumber(flowstation?.subtotal?.gasFlaredUSM) || 0,
+        exportGas: formatNumber(flowstation?.subtotal?.exportGas) || 0,
       });
       flowstationsMap.set(name, flowstationIndex);
       flowstationIndex++;

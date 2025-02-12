@@ -13,7 +13,7 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 const operationsReportScheduler = onSchedule(
-  { schedule: "every 1 hours", timeZone: "Africa/Lagos" },
+  { schedule: "every 59 minutes", timeZone: "Africa/Lagos" },
   async (context) => {
     console.log("Running cron job");
     await generateOperationsReport();
@@ -28,12 +28,13 @@ const generateOperationsReport = async () => {
     if (!schedule) return;
     const { hour } = schedule;
     const currNigerianTime = dayjs().tz("Africa/Lagos");
+    console.log({ currNigerianTime, hour });
 
     if (hour !== currNigerianTime.hour()) return;
 
-    const date = dayjs(getPreviousData).format("YYYY-MM-DD");
+    const date = "2025-02-04"; // dayjs(getPreviousData()).format("YYYY-MM-DD");
 
-    const assets = await getAssets();
+    const assets = ["OML 24"]; //await getAssets();
 
     for (let asset of assets) {
       const reportData = await getOperationsReportData(asset, date);
@@ -45,6 +46,7 @@ const generateOperationsReport = async () => {
 };
 
 const sendOperationsReport = async (data, asset, date) => {
+  console.log({ data, asset, date });
   const doc = new PDFDocument({ margin: 50, font: "Courier", size: "A4" });
 
   // Create a PDF Buffer in Memory
@@ -106,7 +108,7 @@ const sendOperationsReport = async (data, asset, date) => {
           width: 200,
           align: "left",
         })
-        .text(summaryData[i].value, 250, {
+        .text(summaryData[i].value || 0, 250, {
           width: 295,
           align: "left",
         });
@@ -162,35 +164,35 @@ const sendOperationsReport = async (data, asset, date) => {
           width: 75,
           align: "left",
         })
-        .text(facilitiesData[i].gross, 125, {
+        .text(facilitiesData[i].gross || 0, 125, {
           width: 52.5,
           align: "left",
         })
-        .text(facilitiesData[i].net, 177.5, {
+        .text(facilitiesData[i].net || 0, 177.5, {
           width: 52.5,
           align: "left",
         })
-        .text(facilitiesData[i].water, 230, {
+        .text(facilitiesData[i].water || 0, 230, {
           width: 52.5,
           align: "left",
         })
-        .text(facilitiesData[i].bsw, 282.5, {
+        .text(facilitiesData[i].bsw || 0, 282.5, {
           width: 52.5,
           align: "left",
         })
-        .text(facilitiesData[i].producedGas, 335, {
+        .text(facilitiesData[i].producedGas || 0, 335, {
           width: 52.5,
           align: "left",
         })
-        .text(facilitiesData[i].utilisedGas, 387.5, {
+        .text(facilitiesData[i].utilisedGas || 0, 387.5, {
           width: 52.5,
           align: "left",
         })
-        .text(facilitiesData[i].exportGas, 440, {
+        .text(facilitiesData[i].exportGas || 0, 440, {
           width: 52.5,
           align: "left",
         })
-        .text(facilitiesData[i].flaredGas, 492.5, {
+        .text(facilitiesData[i].flaredGas || 0, 492.5, {
           width: 52.5,
           align: "left",
         });
@@ -244,27 +246,27 @@ const sendOperationsReport = async (data, asset, date) => {
             width: 105,
             align: "left",
           })
-          .text(prodString.gross, 155, {
+          .text(prodString.gross || 0, 155, {
             width: 65,
             align: "left",
           })
-          .text(prodString.oil, 220, {
+          .text(prodString.oil || 0, 220, {
             width: 65,
             align: "left",
           })
-          .text(prodString.water, 285, {
+          .text(prodString.water || 0, 285, {
             width: 65,
             align: "left",
           })
-          .text(prodString.bsw, 350, {
+          .text(prodString.bsw || 0, 350, {
             width: 65,
             align: "left",
           })
-          .text(prodString.thp, 415, {
+          .text(prodString.thp || "", 415, {
             width: 65,
             align: "left",
           })
-          .text(prodString.bean, 480, {
+          .text(prodString.bean || "", 480, {
             width: 65,
             align: "left",
           });
@@ -388,24 +390,30 @@ const sendOperationsReport = async (data, asset, date) => {
 
 const getOperationsSummaryData = (data) => {
   return [
-    { name: "Gross (blpd)", value: (data?.summary?.totalGross).toFixed(2) },
-    { name: "Net Oil (bopd)", value: (data?.summary?.totalOil).toFixed(2) },
-    { name: "BS&W (%)", value: (data?.summary?.bsw).toFixed(2) },
+    {
+      name: "Gross (blpd)",
+      value: (data?.summary?.totalGross).toFixed(2) || 0,
+    },
+    {
+      name: "Net Oil (bopd)",
+      value: (data?.summary?.totalOil).toFixed(2) || 0,
+    },
+    { name: "BS&W (%)", value: (data?.summary?.bsw).toFixed(2) || 0 },
     {
       name: "Produced Gas (MMscf/d)",
-      value: (data?.summary?.totalGas).toFixed(2),
+      value: (data?.summary?.totalGas).toFixed(2) || 0,
     },
     {
       name: "Flared Gas (MMscf/d)",
-      value: (data?.summary?.totalFlaredGas).toFixed(2),
+      value: (data?.summary?.totalFlaredGas).toFixed(2) || 0,
     },
     {
       name: "Export Gas (MMscf/d)",
-      value: (data?.summary?.totalExport).toFixed(2),
+      value: (data?.summary?.totalExport).toFixed(2) || 0,
     },
     {
       name: "Utilized Gas (MMscf/d)",
-      value: (data?.summary?.totalUtilisedGas).toFixed(2),
+      value: (data?.summary?.totalUtilisedGas).toFixed(2) || 0,
     },
   ];
 };
