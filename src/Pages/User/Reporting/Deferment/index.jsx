@@ -34,6 +34,7 @@ import { setLoadingScreen } from "Store/slices/loadingScreenSlice";
 import { closeModal, openModal } from "Store/slices/modalSlice";
 import { firebaseFunctions } from "Services";
 import { toast } from "react-toastify";
+import { OilAndGasDownloadReportChart } from "./OilProductionChart";
 
 const createOpt = (item) => ({ label: item, value: item });
 const aggregationFrequency = ["Day", "Month", "Year"];
@@ -49,6 +50,7 @@ const DefermentReport = () => {
   const [tab, setTab] = useState(0);
   const dispatch = useDispatch();
   const query = useSelector((state) => state?.setup);
+  const querys = useSelector((state) => state?.setup);
   const setupData = useSelector((state) => state?.setup);
   const assets = useAssetByName(setupData?.asset);
   const [currFlowstation, setCurrFlowstation] = useState("All");
@@ -82,9 +84,9 @@ const DefermentReport = () => {
     refetch: query,
   });
 
+
   const getDefaultDate = () => {
     const today = new Date();
-
     const previousDate = new Date(today);
     previousDate.setDate(today.getDate() - 1);
     return dayjs(previousDate).format("YYYY-MM-DD");
@@ -453,6 +455,7 @@ const DefermentReport = () => {
           barData={dailyAggregate}
           setChartImage={setChartImage}
           asset={query.asset}
+          query={query}
           oilScheduledDeferment={oilScheduledDeferment}
           oilUnscheduledDeferment={oilUnscheduledDeferment}
           oilThirdPartyDeferment={oilThirdPartyDeferment}
@@ -596,6 +599,7 @@ const styles = StyleSheet.create({
 const PDFComponent = ({
   barData,
   asset,
+  query,
   oilScheduledDeferment,
   oilUnscheduledDeferment,
   oilThirdPartyDeferment,
@@ -605,6 +609,8 @@ const PDFComponent = ({
   setShowChart,
 }) => {
   const chartRefs = [
+    useRef(),
+    useRef(),
     useRef(),
     useRef(),
     useRef(),
@@ -791,13 +797,19 @@ const PDFComponent = ({
         className="bg-[#fafafa] flex flex-col gap-4"
       >
         <div className="h-[500px]" ref={chartRefs[0]}>
+        <OilAndGasDownloadReportChart chartType={"Oil"} {...query} />
+        </div>
+        <div className="h-[500px]" ref={chartRefs[1]}>
+          <OilAndGasDownloadReportChart chartType={"Gas"} {...query} />
+        </div>
+        <div className="h-[500px]" ref={chartRefs[2]}>
           <BarChart
             chartData={getBarChartData("Net Oil/Condensate")}
             fluidType={"Net Oil/Condensate"}
             title={`${asset} Oil/Condensate Production Deferment Profile (bopd)`}
           />
         </div>
-        <div className="h-[500px]" ref={chartRefs[1]}>
+        <div className="h-[500px]" ref={chartRefs[3]}>
           <BarChart
             chartData={getBarChartData("Gas")}
             fluidType={"Gas"}
@@ -806,7 +818,7 @@ const PDFComponent = ({
         </div>
 
         {oilScheduledDeferment?.total > 0 && (
-          <div ref={chartRefs[2]}>
+          <div ref={chartRefs[4]}>
             <PieChart
               data={getPieChartData(oilScheduledDeferment).data}
               colors={getPieChartData(oilScheduledDeferment).colors}
@@ -816,7 +828,7 @@ const PDFComponent = ({
           </div>
         )}
         {oilUnscheduledDeferment?.total > 0 && (
-          <div ref={chartRefs[3]}>
+          <div ref={chartRefs[5]}>
             <PieChart
               data={getPieChartData(oilUnscheduledDeferment).data}
               colors={getPieChartData(oilUnscheduledDeferment).colors}
@@ -827,7 +839,7 @@ const PDFComponent = ({
         )}
 
         {oilThirdPartyDeferment?.total > 0 && (
-          <div ref={chartRefs[4]}>
+          <div ref={chartRefs[6]}>
             <PieChart
               data={getPieChartData(oilThirdPartyDeferment || {}).data}
               colors={getPieChartData(oilThirdPartyDeferment).colors}
@@ -838,7 +850,7 @@ const PDFComponent = ({
         )}
 
         {gasScheduledDeferment?.total > 0 && (
-          <div ref={chartRefs[5]}>
+          <div ref={chartRefs[7]}>
             <PieChart
               data={getPieChartData(gasScheduledDeferment).data}
               colors={getPieChartData(gasScheduledDeferment).colors}
@@ -848,7 +860,7 @@ const PDFComponent = ({
           </div>
         )}
         {gasUnscheduledDeferment?.total > 0 && (
-          <div ref={chartRefs[6]}>
+          <div ref={chartRefs[8]}>
             <PieChart
               data={getPieChartData(gasUnscheduledDeferment).data}
               colors={getPieChartData(gasUnscheduledDeferment).colors}
@@ -859,7 +871,7 @@ const PDFComponent = ({
         )}
 
         {gasThirdPartyDeferment?.total > 0 && (
-          <div ref={chartRefs[7]}>
+          <div ref={chartRefs[9]}>
             <PieChart
               data={getPieChartData(gasThirdPartyDeferment || {}).data}
               colors={getPieChartData(gasThirdPartyDeferment).colors}

@@ -11,7 +11,7 @@ const getInsights = onCall(async (request) => {
         logger.log("Data ----", { data });
         const {
             asset,
-            flowstation,
+            flowstation = 'All',
             startDate = dayjs(),
             endDate = dayjs(),
         } = data;
@@ -146,7 +146,7 @@ const getInsights = onCall(async (request) => {
                 }))
             )
             ?.filter((flowstation_) =>
-                flowstation ? flowstation_?.name === flowstation : true
+                flowstation === 'All' || !flowstation ? true : flowstation_?.name === flowstation
             );
         let gasFlowstationsData = queryResult.gasQuery
             ?.flatMap((item) =>
@@ -156,7 +156,7 @@ const getInsights = onCall(async (request) => {
                 }))
             )
             ?.filter((flowstation_) =>
-                flowstation ? flowstation_?.name === flowstation : true
+                flowstation === 'All' || !flowstation ? true : flowstation_?.name === flowstation
             );
 
         const sum = (array = []) => {

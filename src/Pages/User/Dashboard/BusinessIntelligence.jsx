@@ -93,6 +93,7 @@ const Insights = ({ assetOptions = [] }) => {
       })
     );
   }, [dispatch, assetOptions]);
+  
   const OilProductionChart = () => {
     return (
       <ResponsiveContainer width="100%" height={350}>
@@ -194,7 +195,7 @@ const Insights = ({ assetOptions = [] }) => {
   const getStatus = (target, actual, reverse = false) => {
     const percent = roundUp(
       (Math.abs(parseFloat(target) - parseFloat(actual)) / parseFloat(target)) *
-        100
+      100
     );
     const check = reverse
       ? parseFloat(target) < parseFloat(actual)
@@ -274,9 +275,8 @@ const Insights = ({ assetOptions = [] }) => {
           {<OilProductionChart />}
         </InsightsGraphCard>
         <InsightsGraphCard
-          title={`${
-            querys?.asset || "All assets"
-          } Oil Production Variance Analysis`}
+          title={`${querys?.asset || "All assets"
+            } Oil Production Variance Analysis`}
         >
           {<OilProductionVariantChart data={data} />}
         </InsightsGraphCard>
@@ -286,9 +286,8 @@ const Insights = ({ assetOptions = [] }) => {
           {<GasProductionChart />}
         </InsightsGraphCard>
         <InsightsGraphCard
-          title={`${
-            querys?.asset || "All assets"
-          } Gas Production Variance Analysis `}
+          title={`${querys?.asset || "All assets"
+            } Gas Production Variance Analysis `}
         >
           {<GasProductionVariantChart data={data} />}
         </InsightsGraphCard>
