@@ -573,7 +573,7 @@ const aggregateOperationsData = (liquidVolumes, gasVolumes, production) => {
     totalFlaredGas,
     totalExportGas,
     totalUtilisedGas,
-    bsw: ((totalGross - totalOil) * 100) / totalGross,
+    bsw: formatNumber(((totalGross - totalOil) * 100) / totalGross),
   };
 
   // Actual Production Aggregation

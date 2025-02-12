@@ -1,3 +1,5 @@
+const { formatNumber } = require("../../helpers");
+
 const PDFDocument = require("pdfkit");
 const { getOperationsReportSchedule } = require("../schedules");
 const { getOperationsReportData, getAssets } = require("../data");
@@ -38,6 +40,7 @@ const generateOperationsReport = async () => {
 
     for (let asset of assets) {
       const reportData = await getOperationsReportData(asset, date);
+      // todo: Fetch the list of broadcast people, save as maillist. eg [emma.osademe@gmail.com, hilary.iyiebu@gmail]. The function will receive asset_name as argument, and return a list of all members within broadcast.
       await sendOperationsReport(reportData, asset, date);
     }
   } catch (error) {
@@ -45,9 +48,13 @@ const generateOperationsReport = async () => {
   }
 };
 
-const sendOperationsReport = async (data, asset, date) => {
-  console.log({ data, asset, date });
+const sendOperationsReport = async (
+  data,
+  asset = "OML 24",
+  date = "2025-02-02"
+) => {
   const doc = new PDFDocument({ margin: 50, font: "Courier", size: "A4" });
+  let verticalPosition = 50;
 
   // Create a PDF Buffer in Memory
   const pdfBuffer = await new Promise((resolve, reject) => {
@@ -61,317 +68,321 @@ const sendOperationsReport = async (data, asset, date) => {
       .fontSize(16)
       .font("Courier-Bold")
       .fillColor("#000000")
-      .text(`${asset} Production Report for ${date}`, 50, {
+      .text(`Production Report fo`, 50, verticalPosition, {
         width: 495,
         align: "center",
       });
+    console.log(doc);
+    // doc.moveDown(2);
 
-    doc.moveDown(2);
+    verticalPosition += 20;
 
     // drawHorizontalLine(doc, currentYPosition);
 
     doc
       .fontSize(16)
       .fillColor("#000000")
-      .text("RADA AMS Daily Production Data Report", 50, {
+      .text("RADA AMS Daily Production Data Report", 50, verticalPosition, {
         width: 495,
         align: "center",
       });
 
-    doc.moveDown(3);
+    verticalPosition += 20;
+    // doc.moveDown(3);
 
     // Production Summary
     doc
       .fontSize(16)
       .font("Courier-Bold")
       .fillColor("A2D2FF")
-      .text(`${asset} Production Summary`, 50, {
+      .text(`${asset} Production Summary`, 50, verticalPosition, {
         width: 495,
         align: "center",
       });
     const summaryData = getOperationsSummaryData(data);
-    doc.moveDown(1);
+    // doc.moveDown(1);
+    verticalPosition += 10;
 
     // Summary Table Header
     doc
       .fontSize(14)
       .font("Courier-Bold")
-      .text("VARIABLE", 50, { width: 200, align: "left" })
-      .text("VALUE", 250, { width: 295, align: "left" });
-    doc.moveDown(1);
+      .text("VARIABLE", 50, verticalPosition, { width: 200, align: "left" })
+      .text("VALUE", 250, verticalPosition, { width: 295, align: "left" });
+    // doc.moveDown(1);
 
-    for (let i = 0; i < summaryData.length; i++) {
-      doc
-        .fontSize(12)
-        .font("Courier")
-        .text(summaryData[i].name, 50, {
-          width: 200,
-          align: "left",
-        })
-        .text(summaryData[i].value || 0, 250, {
-          width: 295,
-          align: "left",
-        });
-      doc.moveDown(1);
-    }
+    // for (let i = 0; i < summaryData.length; i++) {
+    //   doc
+    //     .fontSize(12)
+    //     .font("Courier")
+    //     .text(summaryData[i].name, 50, {
+    //       width: 200,
+    //       align: "left",
+    //     })
+    //     .text(summaryData[i].value || 0, 250, {
+    //       width: 295,
+    //       align: "left",
+    //     });
+    //   doc.moveDown(1);
+    // }
 
-    doc.moveDown(2);
+    // doc.moveDown(2);
 
-    // Facilites summary
-    doc
-      .fontSize(16)
-      .font("Courier-Bold")
-      .fillColor("A2D2FF")
-      .text(`${asset} Daily Production Report`, 50, {
-        width: 495,
-        align: "center",
-      });
-    doc.moveDown(2);
+    // // Facilites summary
+    // doc
+    //   .fontSize(16)
+    //   .font("Courier-Bold")
+    //   .fillColor("A2D2FF")
+    //   .text(`${asset} Daily Production Report`, 50, {
+    //     width: 495,
+    //     align: "center",
+    //   });
+    // doc.moveDown(2);
 
-    doc
-      .fontSize(16)
-      .font("Courier-Bold")
-      .fillColor("A2D2FF")
-      .text(`Production Per Facility`, 50, {
-        width: 495,
-        align: "center",
-      });
-    doc.moveDown(2);
+    // doc
+    //   .fontSize(16)
+    //   .font("Courier-Bold")
+    //   .fillColor("A2D2FF")
+    //   .text(`Production Per Facility`, 50, {
+    //     width: 495,
+    //     align: "center",
+    //   });
+    // doc.moveDown(2);
 
-    const { header, facilitiesData } = getFacilitiesSummaryData(
-      data?.facilities || []
-    );
+    // const { header, facilitiesData } = getFacilitiesSummaryData(
+    //   data?.facilities || []
+    // );
 
-    // Header
-    doc.fontSize(12).font("Courier");
-    let horizontalPosition = 50;
-    for (let i = 0; i < header; i++) {
-      let width = i === 0 ? 75 : 52.5;
-      doc.text(header[i], horizontalPosition, {
-        width: width,
-        align: "left",
-      });
-      horizontalPosition += width;
-    }
-    doc.moveDown(1);
+    // // Header
+    // doc.fontSize(12).font("Courier");
+    // let horizontalPosition = 50;
+    // for (let i = 0; i < header; i++) {
+    //   let width = i === 0 ? 75 : 52.5;
+    //   doc.text(header[i], horizontalPosition, {
+    //     width: width,
+    //     align: "left",
+    //   });
+    //   horizontalPosition += width;
+    // }
+    // doc.moveDown(1);
 
-    // Body
-    for (let i = 0; i < facilitiesData.length; i++) {
-      doc
-        .fontSize(12)
-        .font("Courier")
-        .text(facilitiesData[i].flowstation, 50, {
-          width: 75,
-          align: "left",
-        })
-        .text(facilitiesData[i].gross || 0, 125, {
-          width: 52.5,
-          align: "left",
-        })
-        .text(facilitiesData[i].net || 0, 177.5, {
-          width: 52.5,
-          align: "left",
-        })
-        .text(facilitiesData[i].water || 0, 230, {
-          width: 52.5,
-          align: "left",
-        })
-        .text(facilitiesData[i].bsw || 0, 282.5, {
-          width: 52.5,
-          align: "left",
-        })
-        .text(facilitiesData[i].producedGas || 0, 335, {
-          width: 52.5,
-          align: "left",
-        })
-        .text(facilitiesData[i].utilisedGas || 0, 387.5, {
-          width: 52.5,
-          align: "left",
-        })
-        .text(facilitiesData[i].exportGas || 0, 440, {
-          width: 52.5,
-          align: "left",
-        })
-        .text(facilitiesData[i].flaredGas || 0, 492.5, {
-          width: 52.5,
-          align: "left",
-        });
-      doc.moveDown(1);
-    }
+    // // Body
+    // for (let i = 0; i < facilitiesData.length; i++) {
+    //   doc
+    //     .fontSize(12)
+    //     .font("Courier")
+    //     .text(facilitiesData[i].flowstation, 50, {
+    //       width: 75,
+    //       align: "left",
+    //     })
+    //     .text(facilitiesData[i].gross || 0, 125, {
+    //       width: 52.5,
+    //       align: "left",
+    //     })
+    //     .text(facilitiesData[i].net || 0, 177.5, {
+    //       width: 52.5,
+    //       align: "left",
+    //     })
+    //     .text(facilitiesData[i].water || 0, 230, {
+    //       width: 52.5,
+    //       align: "left",
+    //     })
+    //     .text(facilitiesData[i].bsw || 0, 282.5, {
+    //       width: 52.5,
+    //       align: "left",
+    //     })
+    //     .text(facilitiesData[i].producedGas || 0, 335, {
+    //       width: 52.5,
+    //       align: "left",
+    //     })
+    //     .text(facilitiesData[i].utilisedGas || 0, 387.5, {
+    //       width: 52.5,
+    //       align: "left",
+    //     })
+    //     .text(facilitiesData[i].exportGas || 0, 440, {
+    //       width: 52.5,
+    //       align: "left",
+    //     })
+    //     .text(facilitiesData[i].flaredGas || 0, 492.5, {
+    //       width: 52.5,
+    //       align: "left",
+    //     });
+    //   doc.moveDown(1);
+    // }
 
-    doc.moveDown(2);
+    // doc.moveDown(2);
 
-    // Production Per String
-    doc
-      .fontSize(16)
-      .font("Courier-Bold")
-      .fillColor("#A2D2FF")
-      .text(`PRODUCTION PER STRING`, 50, {
-        width: 495,
-        align: "center",
-      });
-    doc.moveDown(2);
+    // // Production Per String
+    // doc
+    //   .fontSize(16)
+    //   .font("Courier-Bold")
+    //   .fillColor("#A2D2FF")
+    //   .text(`PRODUCTION PER STRING`, 50, {
+    //     width: 495,
+    //     align: "center",
+    //   });
+    // doc.moveDown(2);
 
-    const facilitiesProdData = getFlowstationsProduction(
-      data.sortedProduction || {}
-    );
+    // const facilitiesProdData = getFlowstationsProduction(
+    //   data.sortedProduction || {}
+    // );
 
-    for (let facility of facilitiesProdData) {
-      const { flowstation, header, data } = facility;
-      doc
-        .fontSize(16)
-        .font("Courier-Bold")
-        .fillColor("#A2D2FF")
-        .text(`${flowstation.toUpperCase()} Flowstation`, 50, {
-          width: 495,
-          align: "center",
-        });
-      doc.moveDown(1);
+    // for (let facility of facilitiesProdData) {
+    //   const { flowstation, header, data } = facility;
+    //   doc
+    //     .fontSize(16)
+    //     .font("Courier-Bold")
+    //     .fillColor("#A2D2FF")
+    //     .text(`${flowstation.toUpperCase()} Flowstation`, 50, {
+    //       width: 495,
+    //       align: "center",
+    //     });
+    //   doc.moveDown(1);
 
-      let horizontalPosition = 50;
-      for (let i = 0; i < header; i++) {
-        let width = i === 0 ? 105 : 65;
-        doc.fontSize(12).font("Courier").text(header[i], horizontalPosition, {
-          width: width,
-          align: "left",
-        });
-        horizontalPosition += width;
-      }
-      doc.moveDown(1);
-      for (let prodString of data) {
-        doc
-          .fontSize(12)
-          .font("Courier")
-          .text(prodString.productionString, 50, {
-            width: 105,
-            align: "left",
-          })
-          .text(prodString.gross || 0, 155, {
-            width: 65,
-            align: "left",
-          })
-          .text(prodString.oil || 0, 220, {
-            width: 65,
-            align: "left",
-          })
-          .text(prodString.water || 0, 285, {
-            width: 65,
-            align: "left",
-          })
-          .text(prodString.bsw || 0, 350, {
-            width: 65,
-            align: "left",
-          })
-          .text(prodString.thp || "", 415, {
-            width: 65,
-            align: "left",
-          })
-          .text(prodString.bean || "", 480, {
-            width: 65,
-            align: "left",
-          });
+    //   let horizontalPosition = 50;
+    //   for (let i = 0; i < header; i++) {
+    //     let width = i === 0 ? 105 : 65;
+    //     doc.fontSize(12).font("Courier").text(header[i], horizontalPosition, {
+    //       width: width,
+    //       align: "left",
+    //     });
+    //     horizontalPosition += width;
+    //   }
+    //   doc.moveDown(1);
+    //   for (let prodString of data) {
+    //     doc
+    //       .fontSize(12)
+    //       .font("Courier")
+    //       .text(prodString.productionString, 50, {
+    //         width: 105,
+    //         align: "left",
+    //       })
+    //       .text(prodString.gross || 0, 155, {
+    //         width: 65,
+    //         align: "left",
+    //       })
+    //       .text(prodString.oil || 0, 220, {
+    //         width: 65,
+    //         align: "left",
+    //       })
+    //       .text(prodString.water || 0, 285, {
+    //         width: 65,
+    //         align: "left",
+    //       })
+    //       .text(prodString.bsw || 0, 350, {
+    //         width: 65,
+    //         align: "left",
+    //       })
+    //       .text(prodString.thp || "", 415, {
+    //         width: 65,
+    //         align: "left",
+    //       })
+    //       .text(prodString.bean || "", 480, {
+    //         width: 65,
+    //         align: "left",
+    //       });
 
-        doc.moveDown(2);
-      }
-    }
+    //     doc.moveDown(2);
+    //   }
+    // }
 
-    // Key Highlights
-    doc
-      .fontSize(16)
-      .font("Courier-Bold")
-      .fillColor("#A2D2FF")
-      .text(`KEY HIGHLIGHTS - OIL FACILITIES`, 50, {
-        width: 495,
-        align: "center",
-      });
-    doc.moveDown(2);
+    // // Key Highlights
+    // doc
+    //   .fontSize(16)
+    //   .font("Courier-Bold")
+    //   .fillColor("#A2D2FF")
+    //   .text(`KEY HIGHLIGHTS - OIL FACILITIES`, 50, {
+    //     width: 495,
+    //     align: "center",
+    //   });
+    // doc.moveDown(2);
 
-    Object.entries(data?.oilHightlights).forEach(([key, value]) => {
-      const highlights = Array.isArray(value) ? value : [];
-      if (highlights.length > 0) {
-        doc
-          .fontSize(16)
-          .font("Courier-Bold")
-          .fillColor("#A2D2FF")
-          .text(`${key.toUpperCase()}`, 50, {
-            width: 495,
-            align: "center",
-          });
-        doc.moveDown(1);
+    // Object.entries(data?.oilHightlights).forEach(([key, value]) => {
+    //   const highlights = Array.isArray(value) ? value : [];
+    //   if (highlights.length > 0) {
+    //     doc
+    //       .fontSize(16)
+    //       .font("Courier-Bold")
+    //       .fillColor("#A2D2FF")
+    //       .text(`${key.toUpperCase()}`, 50, {
+    //         width: 495,
+    //         align: "center",
+    //       });
+    //     doc.moveDown(1);
 
-        for (let highlight of highlights) {
-          doc
-            .fontSize(12)
-            .font("Courier")
-            .text(highlight.name, 50, {
-              width: 110,
-              align: "left",
-            })
-            .text(highlight.value, 160, {
-              width: 385,
-              align: "left",
-            });
+    //     for (let highlight of highlights) {
+    //       doc
+    //         .fontSize(12)
+    //         .font("Courier")
+    //         .text(highlight.name, 50, {
+    //           width: 110,
+    //           align: "left",
+    //         })
+    //         .text(highlight.value, 160, {
+    //           width: 385,
+    //           align: "left",
+    //         });
 
-          doc.moveDown(2);
-        }
-      }
-    });
+    //       doc.moveDown(2);
+    //     }
+    //   }
+    // });
 
-    doc
-      .fontSize(16)
-      .font("Courier-Bold")
-      .fillColor("#A2D2FF")
-      .text(`KEY HIGHLIGHTS - GAS FACILITIES`, 50, {
-        width: 495,
-        align: "center",
-      });
-    doc.moveDown(2);
+    // doc
+    //   .fontSize(16)
+    //   .font("Courier-Bold")
+    //   .fillColor("#A2D2FF")
+    //   .text(`KEY HIGHLIGHTS - GAS FACILITIES`, 50, {
+    //     width: 495,
+    //     align: "center",
+    //   });
+    // doc.moveDown(2);
 
-    Object.entries(data?.gasHightlights).forEach(([key, value]) => {
-      const highlights = Array.isArray(value) ? value : [];
-      if (highlights.length > 0) {
-        doc
-          .fontSize(16)
-          .font("Courier-Bold")
-          .fillColor("#A2D2FF")
-          .text(`${key.toUpperCase()}`, 50, {
-            width: 495,
-            align: "center",
-          });
+    // Object.entries(data?.gasHightlights).forEach(([key, value]) => {
+    //   const highlights = Array.isArray(value) ? value : [];
+    //   if (highlights.length > 0) {
+    //     doc
+    //       .fontSize(16)
+    //       .font("Courier-Bold")
+    //       .fillColor("#A2D2FF")
+    //       .text(`${key.toUpperCase()}`, 50, {
+    //         width: 495,
+    //         align: "center",
+    //       });
 
-        doc.moveDown(2);
-        for (let highlight of highlights) {
-          doc
-            .fontSize(12)
-            .font("Courier")
-            .text(highlight.name, 50, {
-              width: 110,
-              align: "left",
-            })
-            .text(highlight.value, 160, {
-              width: 385,
-              align: "left",
-            });
+    //     doc.moveDown(2);
+    //     for (let highlight of highlights) {
+    //       doc
+    //         .fontSize(12)
+    //         .font("Courier")
+    //         .text(highlight.name, 50, {
+    //           width: 110,
+    //           align: "left",
+    //         })
+    //         .text(highlight.value, 160, {
+    //           width: 385,
+    //           align: "left",
+    //         });
 
-          doc.moveDown(2);
-        }
-      }
-    });
+    //       doc.moveDown(2);
+    //     }
+    //   }
+    // });
 
-    const stackedBarData = [
-      data?.oilProductionChart,
-      data?.gasProductionChart,
-      data?.gasExportChart,
-      data?.gasFlaredChart,
-    ];
+    // const stackedBarData = [
+    //   data?.oilProductionChart,
+    //   data?.gasProductionChart,
+    //   data?.gasExportChart,
+    //   data?.gasFlaredChart,
+    // ];
 
-    stackedBarData.forEach((chartData, index) => {
-      doc.addPage();
-      // Create a chart title
-      doc.fontSize(16).text(`Chart ${index}`, { align: "center" });
-      const chartImageBuffer = generateProductionChart(chartData);
-      doc.image(chartImageBuffer, { width: 600, align: "center" });
-    });
+    // stackedBarData.forEach((chartData, index) => {
+    //   doc.addPage();
+    //   // Create a chart title
+    //   doc.fontSize(16).text(`Chart ${index}`, { align: "center" });
+    //   const chartImageBuffer = generateProductionChart(chartData);
+    //   doc.image(chartImageBuffer, { width: 600, align: "center" });
+    // });
 
     doc.end();
   });
@@ -392,28 +403,28 @@ const getOperationsSummaryData = (data) => {
   return [
     {
       name: "Gross (blpd)",
-      value: (data?.summary?.totalGross).toFixed(2) || 0,
+      value: data?.summary?.totalGross || 0,
     },
     {
       name: "Net Oil (bopd)",
-      value: (data?.summary?.totalOil).toFixed(2) || 0,
+      value: data?.summary?.totalOil || 0,
     },
-    { name: "BS&W (%)", value: (data?.summary?.bsw).toFixed(2) || 0 },
+    { name: "BS&W (%)", value: data?.summary?.bsw || 0 },
     {
       name: "Produced Gas (MMscf/d)",
-      value: (data?.summary?.totalGas).toFixed(2) || 0,
+      value: data?.summary?.totalGas || 0,
     },
     {
       name: "Flared Gas (MMscf/d)",
-      value: (data?.summary?.totalFlaredGas).toFixed(2) || 0,
+      value: data?.summary?.totalFlaredGas || 0,
     },
     {
       name: "Export Gas (MMscf/d)",
-      value: (data?.summary?.totalExport).toFixed(2) || 0,
+      value: data?.summary?.totalExport || 0,
     },
     {
       name: "Utilized Gas (MMscf/d)",
-      value: (data?.summary?.totalUtilisedGas).toFixed(2) || 0,
+      value: data?.summary?.totalUtilisedGas || 0,
     },
   ];
 };
@@ -461,13 +472,12 @@ const getFlowstationsProduction = (data) => {
     ];
     const body = prodData.map((prodString) => ({
       productionString: prodString.productionString,
-      gross: (prodString.gross || 0).toFixed(2),
-      oil: (prodString.oil || 0).Fixed(2),
-      water: (prodString.water || 0).toFixed(2),
-      bsw: (
-        ((prodString.water || 0) * 100) /
-        ((prodString.oil || 0) + (prodString.water || 0))
-      ).toFixed(2),
+      gross: formatNumber(prodString.gross),
+      oil: formatNumber(prodString.oil),
+      water: formatNumber(prodString.water),
+      bsw:
+        formatNumber((prodString.water || 0) * 100) /
+        ((prodString.oil || 0) + (prodString.water || 0)),
       thp: prodString.thp ? prodString.thp.toFixed(2) : "",
       bean: prodString.bean || "",
     }));
