@@ -15,7 +15,7 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 const operationsReportScheduler = onSchedule(
-  { schedule: "every 5 minutes", timeZone: "Africa/Lagos" },
+  { schedule: "every 10 minutes", timeZone: "Africa/Lagos" },
   async (context) => {
     console.log("Running cron job");
     await generateOperationsReport();
@@ -460,12 +460,18 @@ const sendOperationsReport = async (
 
     let resetData = resetVerticalPosition(verticalPosition);
     verticalPosition = resetData.newVerticalPosition;
-    // const stackedBarData = [
-    //   data?.oilProductionChart,
-    //   data?.gasProductionChart,
-    //   data?.gasExportChart,
-    //   data?.gasFlaredChart,
-    // ];
+    const stackedBarData = [
+      data?.oilProductionChart,
+      data?.gasProductionChart,
+      data?.gasExportChart,
+      data?.gasFlaredChart,
+    ];
+    console.log({
+      oil: data.oilProductionChart,
+      gas: data.gasProductionChart,
+      flared: data.gasFlaredChart,
+      export: data.gasExportChart,
+    });
 
     // stackedBarData.forEach((chartData, index) => {
     //   doc.addPage();
