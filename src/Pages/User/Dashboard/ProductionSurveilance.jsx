@@ -19,12 +19,12 @@ const ProductionSurveilance = ({ assetOptions }) => {
   const { data } = useFetch({ firebaseFunction: 'getSurveillanceData', payload: { asset: setupData?.asset, flowstation: setupData?.flowstation }, refetch: setupData })
   const result = useMemo(() => {
     const x = data?.length ? JSON.parse(data) : []
-    console.log({x})
+    console.log({ x })
     let y = []
     if (setupData?.productionString && setupData?.flowstation) {
       y = (x?.productionStrings?.[setupData?.productionString])
     } else {
-      // const 
+      // only on asset level
       const dates = Array.from(new Set(x?.flowStationData?.map(item => item?.date)))
       const compiledFlowstations = (dates?.map(date => {
         const collation = x?.flowStationData?.filter(item => item?.date === date)
@@ -36,7 +36,7 @@ const ProductionSurveilance = ({ assetOptions }) => {
           // waterCut: sum(collation?.map(item => item?.waterCut)), 
           waterCut: (sum(collation?.map(item => item?.water)) / sum(collation?.map(item => item?.gross))) * 100, // because its in percentage
           date,
-          gor: sum(collation?.map(item => item?.date)),
+          gor: (sum(collation?.map(item => item?.gas)) * 10000000) / sum(collation?.map(item => item?.oil)),
         }
 
       }))

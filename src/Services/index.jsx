@@ -68,7 +68,7 @@ const firebaseFunctions = async (functionName, payload, hideError = false, optio
                 snap?.getIdToken(true).then(res => {
                     store.dispatch(setUser({ ...store.getState().auth.user, token: res }))
                 })
-                window.location.reload()
+                // window.location.reload()
             })
         }
         if (hideError) handleError(error)
