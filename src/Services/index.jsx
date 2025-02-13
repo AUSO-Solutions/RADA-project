@@ -1,12 +1,13 @@
 import { store } from 'Store';
-import { reuse } from 'Store/slices/auth';
+import { reuse, setUser } from 'Store/slices/auth';
 import axios from 'axios'
 import { project_functions } from 'firebase-config';
 import { httpsCallable } from 'firebase/functions';
 import handleError from './handleError';
 import { setLoadingScreen } from 'Store/slices/loadingScreenSlice';
-import { logout_ } from 'utils/logout';
+// import { logout_ } from 'utils/logout';
 import { toast } from 'react-toastify';
+import { getAuth } from 'firebase/auth';
 // import { getAuth } from 'firebase/auth';
 
 const baseURL = process.env.REACT_APP_BASE_URL
@@ -55,21 +56,20 @@ const apiRequest = async ({
 
 const firebaseFunctions = async (functionName, payload, hideError = false, options) => {
     try {
-
         const token = store.getState().auth?.user?.token
-
         if (options?.loadingScreen) store.dispatch(setLoadingScreen({ open: true }))
         const call = httpsCallable(project_functions, functionName)
         const res = (await call({ ...payload, idToken: token })).data
-        // toast.success(res?.message)
         return res
     } catch (error) {
-        // console.log(error?.message, '---', typeof error?.message)
         if (error?.message?.includes("token has expired")) {
             console.log("token has expired")
-            // window.location.reload()
-            toast.info('Session expired!')
-            await logout_()
+            getAuth().onIdTokenChanged((snap) => {
+                snap?.getIdToken(true).then(res => {
+                    store.dispatch(setUser({ ...store.getState().auth.user, token: res }))
+                })
+                window.location.reload()
+            })
         }
         if (hideError) handleError(error)
         throw error

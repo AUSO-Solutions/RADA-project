@@ -67,6 +67,7 @@ const Summary = () => {
   const [chartWidth, setChartWidth] = useState(400);
   const [chartHeight, setChartHeight] = useState(350);
 
+
   useEffect(() => {
     const getNotes = async () => {
       try {
@@ -79,7 +80,7 @@ const Summary = () => {
         const gas = gasData.flowstations.map(flowstation => ({
           flowstation: flowstation?.name, highlight: flowstation.highlight
         }))
-        console.log({ gas, liquid })
+        // console.log({ gas, liquid })
         setNotes({ gas, liquid })
 
       } catch (error) {
@@ -192,7 +193,7 @@ const Summary = () => {
   // console.log(chartValues)
   const data = useMemo(() => {
     const selectedChartData = chartValues?.find(({ name }) => name === chCurr?.name)
-    console.log(selectedChartData)
+    // console.log(selectedChartData)
     // let datasets = selectedChartData?.chartData?.map(dayData => dayData.actual)
     // console.log(datasets)
     return {
@@ -282,7 +283,13 @@ const Summary = () => {
     highlightType: ""
   })
   const currentNote = useMemo(() => {
-    const result = notes?.[currentHighlight.volumeType.toLowerCase()]?.find(note => note?.flowstation === setupData?.flowstation)?.highlight?.[currentHighlight.highlightType?.toLowerCase()]
+    const result = notes
+      ?.[currentHighlight.volumeType.toLowerCase()]
+      ?.find(note => note?.flowstation === setupData?.flowstation)
+      ?.highlight
+      ?.[currentHighlight.highlightType?.toLowerCase()]
+
+    console.log(currentHighlight.volumeType.toLowerCase(), setupData?.flowstation, currentHighlight.highlightType?.toLowerCase())
     if (!result) return "No highlight!"
     return result
 

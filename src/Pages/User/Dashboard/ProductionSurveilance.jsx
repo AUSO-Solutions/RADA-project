@@ -6,7 +6,7 @@ import { setSetupData } from 'Store/slices/setupSlice'
 import { sum } from 'utils'
 // import { Line2 } from './Line2'
 
-const ProductionSurveilance = ({assetOptions}) => {
+const ProductionSurveilance = ({ assetOptions }) => {
   const setupData = useSelector(state => state?.setup)
   const dispatch = useDispatch()
   useEffect(() => {
@@ -15,12 +15,11 @@ const ProductionSurveilance = ({assetOptions}) => {
     // return () => {
     //   dispatch(clearSetup())
     // }
-  }, [dispatch,assetOptions])
+  }, [dispatch, assetOptions])
   const { data } = useFetch({ firebaseFunction: 'getSurveillanceData', payload: { asset: setupData?.asset, flowstation: setupData?.flowstation }, refetch: setupData })
   const result = useMemo(() => {
-    // console.log(setupData)
     const x = data?.length ? JSON.parse(data) : []
-    // console.log(x)
+    console.log({x})
     let y = []
     if (setupData?.productionString && setupData?.flowstation) {
       y = (x?.productionStrings?.[setupData?.productionString])
@@ -43,12 +42,14 @@ const ProductionSurveilance = ({assetOptions}) => {
       }))
       y = (compiledFlowstations)
     }
+
     return y
   }, [data, setupData])
   const graphs = useMemo(() => {
     const data = result
+
     const labels = data?.map((item, i) => item?.date)
-    // console.log(result)
+    // console.log({result})
     const liquidOilData = data?.map((item, i) => ({ liquid: item?.gross, oil: item?.oil }))
     const oilDataset = {
       label: "Oil Produced (bopd)",
@@ -147,6 +148,7 @@ const ProductionSurveilance = ({assetOptions}) => {
     }
   }, [result, setupData?.productionString])
   // console.log(graphs)
+  // console.log(graphs.dailyGas)
   return (
     <div className='p-3 flex flex-wrap gap-3 w-full '>
       {/* <Line2 labels={graphs.liquidOil.labels} datasets={graphs?.liquidOil?.dataset}  /> */}

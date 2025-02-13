@@ -17,6 +17,7 @@ export const permissions = {
     shareData: 'Share Data',
 
     createAndeditDailyOperation: 'Create & Edit Daily Production and Operation Report',
+    editDailyProductionOperation: "Edit Daily Production and Operation Report",
     createAndeditDailyOperationSETUP: 'Create & Edit Daily Production and Operation SETUP',
 
     createWellTestSchedule: 'Create Well Test Schedule',
@@ -35,5 +36,6 @@ export const permissions = {
 
     approveData: 'Approve Data',
     queryData: 'Query Data',
-    rollBackData: 'Roll Back Data'
+    rollBackData: 'Roll Back Data',
+    reportsSchedule: 'Reports Schedule'
 }

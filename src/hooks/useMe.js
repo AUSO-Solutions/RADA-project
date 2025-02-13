@@ -32,7 +32,8 @@ export const useMe = () => {
             "createAndeditFGSGsurvey": false,
             "approveData": false,
             "queryData": false,
-            "rollBackData": false
+            "rollBackData": false,
+            "reportsSchedule": false,
         }
     })
     const [loading, setLoading] = useState(false)

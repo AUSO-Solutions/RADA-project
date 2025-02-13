@@ -3,7 +3,7 @@ import Header from "Components/header";
 import Tab from "Components/tab";
 import pdfIcon from "Assets/images/pdf.svg";
 import { Setting2 } from "iconsax-react";
-import { Button, Input, RadaForm } from "Components";
+import { Button, Input } from "Components";
 import { useAssetNames } from "hooks/useAssetNames";
 import dayjs from "dayjs";
 import RadaDatePicker from "Components/Input/RadaDatePicker";
@@ -15,6 +15,7 @@ import { closeModal, openModal } from "Store/slices/modalSlice";
 import { setLoadingScreen } from "Store/slices/loadingScreenSlice";
 import { firebaseFunctions } from "Services";
 import { toast } from "react-toastify";
+import { useMe } from "hooks/useMe";
 
 const OperationsReport = () => {
   const [tab, setTab] = useState(0);
@@ -23,6 +24,7 @@ const OperationsReport = () => {
   const dispatch = useDispatch();
   const setupData = useSelector((state) => state?.setup);
   const selectedHourRef = useRef(null);
+  const { user } = useMe();
 
   const res = useFetch({
     firebaseFunction: "getOperationsData",
@@ -81,10 +83,10 @@ const OperationsReport = () => {
 
     try {
       dispatch(setLoadingScreen({ open: true }));
-      const data  = await firebaseFunctions(
+      const data = await firebaseFunctions(
         "upsertOperationsReportSchedule",
         {
-          data: { hour },
+          hour
         }
       );
       console.log("Response:", data);
@@ -126,33 +128,36 @@ const OperationsReport = () => {
             onClick={() => setTab(0)}
           />
 
-          <Setting2
-            variant={"Linear"}
-            size={30}
-            className="text-gray-500 hover:text-[#0274bd] transition-colors duration-200"
-            onClick={() =>
-              dispatch(
-                openModal({
-                  title: "Schedule Report",
-                  component: (
-                    <div className="flex gap-5 flex-row justify-center">
-                      <Input
-                        type="time"
-                        id="time"
-                        min="07:00"
-                        max="12:00"
-                        step="3600"
-                        onChange={handleTimeChange}
-                      />
-                      <Button onClick={scheduleOperationsReport}>
-                        Schedule
-                      </Button>
-                    </div>
-                  ),
-                })
-              )
-            }
-          />
+          {
+            user?.permitted?.reportsSchedule &&
+            <Setting2
+              variant={"Linear"}
+              size={30}
+              className="text-gray-500 hover:text-[#0274bd] transition-colors duration-200"
+              onClick={() =>
+                dispatch(
+                  openModal({
+                    title: "Schedule Report",
+                    component: (
+                      <div className="flex gap-5 flex-row justify-center">
+                        <Input
+                          type="time"
+                          id="time"
+                          min="07:00"
+                          max="12:00"
+                          step="3600"
+                          onChange={handleTimeChange}
+                        />
+                        <Button onClick={scheduleOperationsReport}>
+                          Schedule
+                        </Button>
+                      </div>
+                    ),
+                  })
+                )
+              }
+            />
+          }
         </div>
 
         <div className="flex items-center justify-center gap-2">

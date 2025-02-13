@@ -86,7 +86,7 @@ const { broadcast } = require("./broadcast/index");
 const { logActivity, getLogs } = require("./activitylog");
 
 const {
-  operationsReportScheduler,
+  operationsReportScheduler
 } = require("./cron-jobs/reports/production-report");
 const {
   defermentReportScheduler,

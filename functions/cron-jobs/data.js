@@ -24,7 +24,6 @@ const getOperationsReportData = async (asset, date) => {
         message: `Please provide a valid date`,
       };
     }
-
     const date_ = dayjs(date).format("YYYY-MM-DD");
     const start = dayjs(getStartOfMonth(date_)).format("YYYY-MM-DD");
 
