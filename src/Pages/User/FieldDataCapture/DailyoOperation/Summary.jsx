@@ -67,6 +67,7 @@ const Summary = () => {
   const [chartWidth, setChartWidth] = useState(400);
   const [chartHeight, setChartHeight] = useState(350);
 
+
   useEffect(() => {
     const getNotes = async () => {
       try {
