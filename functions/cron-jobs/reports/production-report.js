@@ -12,6 +12,7 @@ const Chart = require("chart.js");
 const { createCanvas } = require("canvas");
 const { onSchedule } = require("firebase-functions/v2/scheduler");
 const { onCall } = require("firebase-functions/https");
+const getUsersPerAsset = require("../../helpers/getUsersPerAsset");
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -27,54 +28,57 @@ const operationsReportScheduler = onSchedule(
 module.exports = { operationsReportScheduler };
 
 const generateOperationsReport = async () => {
-    try {
-      const schedule = await getOperationsReportSchedule();
-      if (!schedule) return;
-      const { hour } = schedule;
-      const currNigerianTime = dayjs().tz("Africa/Lagos");
-      console.log({ currNigerianTime, hour });
+  try {
+    const schedule = await getOperationsReportSchedule();
+    if (!schedule) return;
+    const { hour } = schedule;
+    const currNigerianTime = dayjs().tz("Africa/Lagos");
+    console.log({ currNigerianTime, hour });
 
-      const db = admin.firestore();
+    const db = admin.firestore();
 
-      if (hour !== currNigerianTime.hour()) return;
+    if (hour !== currNigerianTime.hour()) return;
 
-      const date = "2025-02-04"; // dayjs(getPreviousData()).format("YYYY-MM-DD");
+    const date = "2025-02-04"; // dayjs(getPreviousData()).format("YYYY-MM-DD");
 
-      // const assets = ["OML 24"]; //await getAssets(); 
-      const assets = (await db.collection('assets').listDocuments()).map(doc => doc.id)
-      const assetsMembersUid = {}, assetsUsers = {}
-      const assetsPromise = assets.map(async asset => {
-        const groups = (await (db.collection("groups").where('assets', 'array-contains', asset).get())).docs.map(doc => doc.data())
+    // const assets = ["OML 24"]; //await getAssets(); 
+    // const assets = (await db.collection('assets').listDocuments()).map(doc => doc.id)
+    // const assetsMembersUid = {}, assetsUsers = {}
+    // const assetsPromise = assets.map(async asset => {
+    //   const groups = (await (db.collection("groups").where('assets', 'array-contains', asset).get())).docs.map(doc => doc.data())
 
-        const allMembersUID = Array.from(new Set(groups?.flatMap(group => group?.members)))
-        allMembersUID.forEach(uid => {
-          if (assetsMembersUid[asset]?.length) {
-            if (!assetsMembersUid[asset].includes(uid)) assetsMembersUid[asset].push(uid)
-          } else {
-            assetsMembersUid[asset] = [uid]
-          }
-        })
-        const assetUsers = (await Promise.all(assetsMembersUid[asset]?.map(async (member) => (await db.collection("users").doc(member).get()).data()))).filter(user => user?.email)
-        const mailList = assetUsers.map(user => user?.email)
-        const reportData = await getOperationsReportData(asset, date);
-        // todo: Fetch the list of broadcast people, save as maillist. eg [emma.osademe@gmail.com, hilary.iyiebu@gmail]. The function will receive asset_name as argument, and return a list of all members within broadcast.
-        await sendOperationsReport(reportData, asset, date);
-        return assetUsers
-      })
-      await Promise.all(assetsPromise)
-      // for (let asset of assetsMembers) {
+    //   const allMembersUID = Array.from(new Set(groups?.flatMap(group => group?.members)))
+    //   allMembersUID.forEach(uid => {
+    //     if (assetsMembersUid[asset]?.length) {
+    //       if (!assetsMembersUid[asset].includes(uid)) assetsMembersUid[asset].push(uid)
+    //     } else {
+    //       assetsMembersUid[asset] = [uid]
+    //     }
+    //   })
+    //   const assetUsers = (await Promise.all(assetsMembersUid[asset]?.map(async (member) => (await db.collection("users").doc(member).get()).data()))).filter(user => user?.email)
+    //   const mailList = assetUsers.map(user => user?.email)
+    //   const reportData = await getOperationsReportData(asset, date);
+    //   // todo: Fetch the list of broadcast people, save as maillist. eg [emma.osademe@gmail.com, hilary.iyiebu@gmail]. The function will receive asset_name as argument, and return a list of all members within broadcast.
+    //   await sendOperationsReport(reportData, asset, date);
+    //   return assetUsers
+    // })
+    // await Promise.all(assetsPromise)
+    const usersPerAssets = await getUsersPerAsset()
+
+    for (let usersInAsset of usersPerAssets) {
       // const members = asset
-      // const reportData = await getOperationsReportData(asset, date);
+      const mailList = usersInAsset.map(user => user?.email)
+      const reportData = await getOperationsReportData(asset, date);
       // todo: Fetch the list of broadcast people, save as maillist. eg [emma.osademe@gmail.com, hilary.iyiebu@gmail]. The function will receive asset_name as argument, and return a list of all members within broadcast.
-      // await sendOperationsReport(reportData, asset, date);
-      // }
-      return { data: null, message: 'successful' }
-
-    } catch (error) {
-      console.log(error);
-      throw error
+      await sendOperationsReport(reportData, asset, date);
     }
+    return { data: null, message: 'successful' }
+
+  } catch (error) {
+    console.log(error);
+    throw error
   }
+}
 
 
 const sendOperationsReport = async (
