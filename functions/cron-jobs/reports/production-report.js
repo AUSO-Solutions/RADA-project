@@ -77,7 +77,6 @@ const generateOperationsReport = async () => {
   }
 
 
-module.exports = { generateOperationsReport }
 const sendOperationsReport = async (
   data,
   asset = "OML 24",
