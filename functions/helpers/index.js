@@ -78,5 +78,5 @@ exports.formatNumber = (input) => {
   if (!input) return 0;
   const formattedInput = parseFloat(input);
 
-  return isNaN(formattedInput) ? 0 : formattedInput.toFixed(2);
+  return isNaN(formattedInput) ? 0 : parseFloat(formattedInput.toFixed(2));
 };

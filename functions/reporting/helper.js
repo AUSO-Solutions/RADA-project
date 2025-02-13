@@ -535,7 +535,6 @@ const aggregateOperationsData = (liquidVolumes, gasVolumes, production) => {
 
   // Loop through the gas data to add the gas flowstation data to corresponding oil flowstations
   for (let flowstation of gas.flowstations) {
-    console.log(flowstation);
     const name = flowstation.name;
     if (flowstationsMap.has(name)) {
       const index = flowstationsMap.get(name);
