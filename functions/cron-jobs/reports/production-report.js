@@ -34,7 +34,7 @@ const generateOperationsReport = async () => {
     const currNigerianTime = dayjs().tz("Africa/Lagos");
     console.log({ currNigerianTime, hour });
 
-    // if (hour !== currNigerianTime.hour()) return;
+    if (hour !== currNigerianTime.hour()) return;
 
     const date = "2025-02-12"; // dayjs(getPreviousData()).format("YYYY-MM-DD");
 
@@ -45,7 +45,8 @@ const generateOperationsReport = async () => {
       const usersInAsset = item[1]
       const mailList = usersInAsset.map(user => user?.email)
       const reportData = await getOperationsReportData(asset, date);
-      await sendOperationsReport(reportData, asset, date, ['kehindesalaudeen222@gmail.com', 'emma.osademe@gmail.com', 'emmanueloludairo61@gmail.com', 'geediegramgu@gmail.com'])
+      //['kehindesalaudeen222@gmail.com', 'emma.osademe@gmail.com', 'emmanueloludairo61@gmail.com', 'geediegramgu@gmail.com']
+      await sendOperationsReport(reportData, asset, date, mailList)
     })
   } catch (error) {
     console.log(error);
