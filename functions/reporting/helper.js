@@ -349,10 +349,10 @@ function aggregateDeferment(data, liquidVolumes = [], gasVolumes = []) {
 
     for (let flowstation of gasVolumes[i].flowstations) {
       const name = flowstation.name;
-      if (!(name in liquidData)) {
+      if (!(name in gasData)) {
         gasData[name] = new Array(gasSize).fill(0);
       }
-      gasData[name][i] = flowstation?.subtotal?.netProduction || 0;
+      gasData[name][i] = flowstation?.subtotal?.totalGas || 0;
     }
   }
 
