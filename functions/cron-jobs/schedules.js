@@ -17,6 +17,21 @@ const getOperationsReportSchedule = async () => {
   }
 };
 
+const getDefermentReportSchedule = async () => {
+  try {
+    const db = admin.firestore();
+    const collectionRef = db.collection("monthlyReportSchedule");
+    const snapshot = await collectionRef.limit(1).get();
+
+    const schedule = snapshot.empty ? null : snapshot.docs[0].data();
+    return schedule;
+  } catch (error) {
+    console.log({ error });
+    if (error.message) throw new HttpsError(error?.code, error?.message);
+    throw error;
+  }
+};
+
 const upsertOperationsReportSchedule = onCall(async (request) => {
   try {
     const { data } = request;
@@ -64,7 +79,7 @@ const upsertDefermentReportSchedule = onCall(async (request) => {
     const collectionRef = db.collection("monthlyReportSchedule");
     const snapshot = await collectionRef.get();
 
-    console.log({ hour, day }, snapshot.empty)
+    console.log({ hour, day }, snapshot.empty);
     if (!snapshot.empty) {
       const docRef = snapshot.docs[0].ref;
       await docRef.update({ hour, day });
@@ -73,28 +88,13 @@ const upsertDefermentReportSchedule = onCall(async (request) => {
       await collectionRef.add({ hour, day });
       console.log("Deferment report schedule created");
     }
-    return { data: null, message: 'Successfull' }
+    return { data: null, message: "Successfull" };
   } catch (error) {
     console.log({ error });
     if (error.message) throw new HttpsError(error?.code, error?.message);
     throw error;
   }
 });
-
-const getDefermentReportSchedule = async () => {
-  try {
-    const db = admin.firestore();
-    const collectionRef = db.collection("monthlyReportSchedule");
-    const snapshot = await collectionRef.limit(1).get();
-
-    const schedule = snapshot.empty ? null : snapshot.docs[0].data();
-    return schedule;
-  } catch (error) {
-    console.log({ error });
-    if (error.message) throw new HttpsError(error?.code, error?.message);
-    throw error;
-  }
-};
 
 module.exports = {
   getDefermentReportSchedule,

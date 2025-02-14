@@ -20,6 +20,7 @@ module.exports = async () => {
             const assetUsers = (await Promise.all(assetsMembersUid[asset]?.map(async (member) => (await db.collection("users").doc(member).get()).data()))).filter(user => user?.email)
             // const mailList = assetUsers.map(user => user?.email)
             assetsUsers[asset] = assetUsers
+            
             return assetUsers
 
         })
